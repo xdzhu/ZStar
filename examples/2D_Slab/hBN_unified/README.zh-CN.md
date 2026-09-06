@@ -25,6 +25,7 @@ python examples/Benchmarks/run_control.py hBN
 INPUT 的 `kspacing` 优先于保留的 KPT。片层响应保留源数据的电场约定，
 消除体积因子并不自动意味着得到面外本征介电常数。
 
-该流程不产生完整声子能带或 Raman 极化率导数；相应功能仍是独立计算。
-离线核验和完整对照定义见[父目录教程](../README.zh-CN.md)。
-
+本案例脚本只执行 BEC/Gamma 基准，不计算完整声子能带或 Raman 导数。
+保留矩阵后可接入 [Unified 谱学](../../../docs/unified_spectroscopy.zh-CN.md)，
+以额外 PYATB 后处理得到 Raman，无需新增 SCF。
+离线核验和完整对照定义见[效率基准教程](../../Benchmarks/README.zh-CN.md)。

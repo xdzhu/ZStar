@@ -1,0 +1,66 @@
+# ZStar User Manual
+
+[简体中文](README.zh-CN.md) | [Project overview](../README.md) |
+[English PDF](README.en.pdf) | [Chinese PDF](README.zh-CN.pdf)
+
+These instructions apply to the released **ZStar 0.3.1**. Install with
+`pip install zstar==0.3.1`. ABACUS and PYATB are external requirements for the
+default route; installing the Python package does not install those solvers.
+
+## Start With a Task
+
+| Task | Guide | Main entry |
+| --- | --- | --- |
+| BEC/APT and Gamma phonons from the same calculations | [Unified BEC and phonons](research/shared_response/USAGE.md) | `zstar bec pre/run/stat/post` |
+| IR and Raman from the Unified ensemble | [Unified spectroscopy](unified_spectroscopy.md) | `zstar spectra pre/run/stat/post` |
+| Static and frequency-dependent dielectric response | [Dielectric response](dielectric_response.md) | `zstar dielectric static/freq/optics` |
+| Supercell phonons and mode labels | [Command reference](cli_reference.md#representative-lifecycles) | `zstar phonon pre/run/post/irrep` |
+| Potential maps, profiles and vacuum steps | [Electrostatic potential](potential_examples.md) | `zstar pot` |
+| Configure executables, MPI/OMP and PP/orbitals | [Configuration and assets](cli_reference.md#calculator-configuration) | `zstar config` |
+| Shell, Slurm and Torque/PBS execution | [Job headers](job_headers.md) | `zstar bec/phonon/spectra job` |
+| Agent-assisted execution | [Agent Skill](agent_skill.md) | `zstar skill` |
+
+The command-reference tables list actions, not literal slash-containing commands.
+For example, run `zstar bec pre --stru STRU`, then `zstar bec run`, followed by
+`zstar bec post`. `job` generates a driver; it does not submit a scheduler job.
+
+## Choose a System
+
+| System | Physical dimension | Examples and conventions |
+| --- | --- | --- |
+| Bulk crystal | `--dim 3` (default) | [Bulk cases](../examples/3D_Bulk) |
+| Slab, normal along z | `--dim 2` | [Slab cases](../examples/2D_Slab), [response normalization](response_conventions.md) |
+| Wire, periodic along z | `--dim 1` | [One-dimensional guide](one_dimensional_workflow.md), [wire cases](../examples/1D_Nanowire) |
+| Molecule | `--dim 0` | [Molecular spectroscopy](molecular_spectroscopy.md), [molecular cases](../examples/0D_Molecules) |
+
+For `zstar bec pre`, `--dim` is the physical dimensionality. For the independent
+`zstar phonon pre` command, `--dim "2 2 2"` instead specifies a supercell.
+Molecules use APTs and polarizabilities; wires and slabs use their documented
+line/sheet responses, not a vacuum-dependent bulk dielectric constant.
+
+## Reproduce and Compare
+
+- [Case library](../examples/README.md): clean `run/`, retained `results/`, and `run.sh`.
+- [IR/Raman cases](../examples/IR_Raman_Spectra/README.md) and
+  [potential cases](../examples/Electrostatic_Potential/README.md).
+- [Ten-system BEC/phonon benchmarks](../examples/Benchmarks/README.md) and
+  [four-system IR/Raman benchmarks](research/unified_spectroscopy_20260906/README.md).
+- [Validation record](validation.md) and [manuscript-quality figures](paper_figures/README.md).
+
+Use the [v0.3.1 source tree](https://github.com/xdzhu/zstar/tree/v0.3.1/examples)
+for frozen manuscript inputs. Examples are not in the PyPI wheel or source
+distribution. Dry runs, offline reconstruction and new DFT calculations are
+different reproduction levels; each case README states its requirements.
+
+**Unified** names the joint response framework; **Separate** names the old
+independent workflows. `cartesian` remains a compatibility option, not the
+name of the old workflow. Historical filenames and benchmark records retain
+their original spelling and numerical provenance.
+
+## Other Interfaces
+
+Consult [backend capabilities](calculator_independent_backends.md) before using
+[VASP](vasp_bec.md), [CP2K](cp2k_bec.md), or the QE adapters. Their documented
+native routes do not automatically inherit ABACUS matrix reuse. See also
+[High-K/BEC datasets](highk_bec_database.md), [qNEP export](qnep_dataset.md),
+and [output-name compatibility](bec_output_compatibility.md).

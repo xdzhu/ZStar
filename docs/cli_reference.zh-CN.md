@@ -115,23 +115,27 @@ ABACUS 任务目录中。
 
 ```bash
 zstar bec pre --stru STRU
-zstar bec job --system slurm --header header.sh
+zstar bec run
 zstar bec stat --root .
 zstar bec post --root .
 ```
 
-`0.3.0rc2` 的 `zstar bec pre` 默认使用 ABACUS + PYATB 和 Phonopy 对称性适配的
-BEC/Gamma 声子共用位移，自动选择所需正负位移。计算器和 `--pyatb` 开关仍可
+这里演示本地执行。Slurm 用户将 `run` 换成 `zstar bec job --system slurm`，
+检查生成的 `run_zstar_born.slurm`，再执行 `sbatch run_zstar_born.slurm`。
+计算完成后才执行 `post`；仅运行 `job` 不会执行计算。
+
+ZStar 0.3.1 的 `zstar bec pre` 默认使用 ABACUS + PYATB 和 Phonopy 对称性适配的
+Unified BEC/Gamma 声子位移，自动选择所需正负位移。计算器和 `--pyatb` 开关仍可
 省略；切换后端时才指定 `--calculator cp2k`、`vasp` 或 `qe`。
 `--ensemble cartesian` 保留旧的原子/笛卡尔方向布局。完整说明见
-[共用位移教程](research/shared_response/USAGE.zh-CN.md)。
+[Unified BEC/声子教程](research/shared_response/USAGE.zh-CN.md)。
 
-共用 Gamma 流程的 `zstar bec post` 已同时生成声子结果。有限波矢/扩胞声子
+Unified Gamma 流程的 `zstar bec post` 已同时生成声子结果。有限波矢/扩胞声子
 请在另一个独立目录中准备：
 
 ```bash
 zstar phonon pre --stru STRU --dim "2 2 2"
-zstar phonon job --system slurm
+zstar phonon run
 zstar phonon stat
 zstar phonon post
 zstar phonon irrep
@@ -142,12 +146,13 @@ IR 与 Raman：
 ```bash
 zstar bec pre --stru STRU
 zstar spectra pre
-zstar spectra job --system slurm
+zstar spectra run
 zstar spectra stat
 zstar spectra post
 ```
 
-检查 header 后提交生成的作业脚本；本地执行则使用 `zstar spectra run`。
+调度执行可使用 `zstar spectra job --system slurm` 或
+`zstar phonon job --system slurm`，检查生成的脚本后自行提交。
 上述路线默认使用 Unified 位移集合。独立模式位移对照需显式指定
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml`。
 
@@ -162,7 +167,7 @@ zstar dielectric freq
 超胞响应时，才使用 `--slab-boundary macroscopic` 与 `--thickness`，对总张量
 进行面内直接、面外逆响应转换。该选项不能给 PYATB 结果补上缺失的局域场物理。
 详见[响应定义与单位](response_conventions.md)及
-[八体系效率基准](../examples/Benchmarks/README.zh-CN.md)。
+[十体系效率基准](../examples/Benchmarks/README.zh-CN.md)。
 
 ## 静电势能力闭环
 

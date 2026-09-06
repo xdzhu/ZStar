@@ -1,12 +1,12 @@
 # Cubic BaTiO3：统一框架的 BEC 与 Gamma 点声子
 
 本例采用同一个 Pm-3m 立方结构和 PBEsol 设置，实测 unified 框架与
-“旧 Cartesian BEC + 独立声子”流程的结果及核时。所有结果已经计算完成。
+“Separate：旧式笛卡尔位移 BEC + 独立声子”流程的结果及核时。所有结果已经计算完成。
 这里的旧流程不是此前采用显式正负位移的联合响应对照，不能混用分母。
 
 ## 一键运行
 
-从当前源码安装 ZStar，将 PYATB 安装在同一 Python 环境，并通过
+安装 `zstar==0.3.1`，将 PYATB 安装在同一 Python 环境是最简单的设置，并通过
 `zstar config` 设置 ABACUS 路径与 MPI/OMP 配置，然后执行：
 
 ```bash

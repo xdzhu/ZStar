@@ -9,7 +9,7 @@ reconstruction uses the actual written displacement vectors.
 
 ## Run
 
-Install this ZStar source revision and PYATB, then configure the ABACUS path
+Install `zstar==0.3.1` and PYATB, then configure the ABACUS path
 and MPI/OMP using `zstar config`. From this directory run `bash run.sh`.
 Arguments are forwarded to `zstar bec run`; set `ZSTAR_WORK` for a fresh work
 directory. Included pseudopotentials and orbitals are resolved from `run/`.
@@ -35,6 +35,7 @@ separately in `results/relaxation.json` and excluded from response speedups.
 The earlier nonstationary starting-geometry trials are not publication results.
 
 The scripts do not calculate finite-q dispersion or Raman polarizability
-derivatives. Those are separate workflows. Use the [parent guide](../README.md)
+derivatives. With retained matrices, [Unified spectroscopy](../../../docs/unified_spectroscopy.md)
+adds Raman through PYATB postprocessing without new SCFs. Use the
+[benchmark guide](../../Benchmarks/README.md)
 for offline verification and the comparison protocol.
-

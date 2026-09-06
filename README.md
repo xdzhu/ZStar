@@ -29,7 +29,7 @@ static nonresonant Raman. Raman reuses retained electronic matrices, adding
 PYATB postprocessing rather than new SCFs.
 
 ```bash
-zstar bec pre --stru STRU --input INPUT --dim 3
+zstar bec pre --stru STRU
 zstar spectra pre
 zstar spectra run
 zstar spectra post
@@ -50,11 +50,14 @@ response routes; they are complementary to the Unified framework.
 
 The toolkit keeps every stage visible: structures, solver inputs, band-gap gates, polarization values, charge-density data, tensor reconstruction reports, spectra, and progress records remain available for inspection and restart.
 
+Start with the [user manual](docs/README.md) for task-based tutorials, configuration,
+examples and capability boundaries.
+
 The numerical checks used for the current release are summarized in [docs/validation.md](docs/validation.md).
 
 The Unified ABACUS + PYATB workflow shares Phonopy-generated
 displacements between BEC and Gamma phonons. See the
-[shared-response guide](docs/research/shared_response/USAGE.md) and
+[Unified BEC/phonon guide](docs/research/shared_response/USAGE.md) and
 [matched examples](examples/Benchmarks/README.md) for its theory,
 actual-displacement convention, precision safeguards, and validation status.
 The released package and historical examples retain their recorded versions.
@@ -71,7 +74,7 @@ mesh/step diagnostics, and separately accounted CPU core-hours.
 ### Main capabilities
 
 - Unified BEC/APT, Gamma force constants and static nonresonant Raman derivatives,
-  with independent Cartesian/mode-displacement controls.
+  with Separate controls using Cartesian or normal-mode displacements.
 - Symmetry reduction, full-cell tensor reconstruction, and acoustic-sum-rule correction.
 - A serial, resumable `0.no-move -> displaced structures` execution model.
 - Reuse of the converged `0.no-move` charge density for every displacement.
@@ -135,7 +138,7 @@ as columns. Phonopy `BORN` and the unified reconstruction use polarization-first
 tensors, as in the equation above; structured records declare their axes.
 A complete 2D BEC calculation needs information spanning all three displacement directions. The default unified
 workflow obtains this from Phonopy seeds and their site-symmetry images;
-the legacy Cartesian route explicitly generates `x`, `y`, and `z`. The current hybrid
+the legacy BEC route (`--ensemble cartesian`) explicitly generates `x`, `y`, and `z`. The current hybrid
 implementation requires the slab normal to align with Cartesian `z`; a tilted
 slab is rejected explicitly.
 
@@ -158,7 +161,7 @@ The revised manuscript accompanies **0.3.1**. For exact reproduction, install
 its wheel with `pip install zstar==0.3.1` and obtain the examples from the
 matching GitHub tag. Examples are not included in the PyPI package.
 See [the reproducible benchmarks](examples/Benchmarks/README.md) and
-[revision validation](docs/research/PUBLICATION_REVISION_20260904.md).
+[release validation](docs/validation.md).
 
 Install the released package:
 
@@ -268,11 +271,11 @@ Useful generation options:
 
 | Option | Meaning |
 | --- | --- |
-| `--method auto\|forward\|central` | Automatic sign selection (shared default), one-sided, or explicit central sampling. |
-| `--ensemble phonopy\|cartesian` | Shared BEC/Gamma displacements (default) or the legacy Cartesian layout. |
+| `--method auto\|forward\|central` | Automatic sign selection (Unified default), one-sided, or explicit central sampling. |
+| `--ensemble phonopy\|cartesian` | Unified BEC/Gamma displacements (default) or the legacy Cartesian layout. |
 | `--reduce` / `--all` | Symmetry-reduced atoms (default) or every atom. |
-| `--move "x y z"` | Specified directions, using the legacy Cartesian route. |
-| `--displacement 0.01` | Specified step in Angstrom; shared default is 0.02 bohr, using the actual serialized displacement vector in the fit. |
+| `--move "x y z"` | Specified directions, using the legacy BEC route (`--ensemble cartesian`). |
+| `--displacement 0.01` | Specified step in Angstrom; Unified default is 0.02 bohr, using the actual serialized displacement vector in the fit. |
 | `--dim 0\|1\|2\|3` | Molecular, one-dimensional, two-dimensional, or three-dimensional analysis. |
 | `--input-mode abacus\|pyatb\|hamgnn\|custom` | Input preparation route. |
 | `--input_sets FILES` | Extra files or directories copied into generated tasks. |
@@ -505,11 +508,11 @@ cluster scripts, tensor conventions, and the VASP 6.3.2 SiC validation.
 
 ## Phonons and Dielectric Response
 
-For the shared BEC workflow, `zstar bec post` already writes Gamma force
+For the Unified BEC workflow, `zstar bec post` already writes Gamma force
 constants, `qpoints.yaml`, `irreps.yaml`, and `BORN`. Continue directly with
 `zstar phonon irrep` and `zstar dielectric static`; no second Gamma SCF set is
 needed. The separate-directory workflow below is for supercell phonons or
-legacy archives. Keep a finite-q supercell calculation outside a shared Gamma
+legacy archives. Keep a finite-q supercell calculation outside a Unified Gamma
 ensemble, whose real-space interactions cannot resolve a dispersion.
 
 ### 1. Generate phonon calculations

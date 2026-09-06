@@ -33,7 +33,11 @@ Set-Location $RepoRoot
 
 - `pyproject.toml` 中的 `project.version`
 - `zstar/__init__.py` 中的 `__version__`
+- `CITATION.cff` 中的版本与日期
 - `CHANGELOG.md` 中的发布记录
+
+还应同步当前 README、教程和稿件中的安装版本、GitHub 标签与图片 URL。
+历史验证报告、原始计算的版本号及哈希保留，不做全局替换。
 
 ## 1. 检查工作区
 
@@ -81,6 +85,17 @@ Linux 上运行 `tools/release_example_audit.py --repo 仓库路径 --output dry
 以及一个短案例的实际计算和重复执行，确认续算不会重新运行已完成的求解器阶段。
 
 分别记录所用 Phonopy 版本、测试命令及数量；不要把不同范围的历史测试总数混用。
+
+Windows 上必须额外核对 Git 索引的实际大小写，而不能只检查文件是否存在：
+`python -m pytest tests/test_examples_layout.py -q` 包含这项检查。
+0.3.0 曾因索引中的 `3d_bulk` 与清单中的 `3D_Bulk` 不一致而在 Linux 失败，
+0.3.1 已修复。Windows dry-run 应明确选择 Git Bash，例如给
+`tools/release_example_audit.py` 添加 `--shell "C:/Program Files/Git/bin/bash.exe"`，
+并将已安装 ZStar 的环境加入 PATH，避免误调用看不到 Windows 环境的 WSL Bash。
+
+先等待 main 分支的 Linux CI 和独立安装检查通过，再创建版本标签；标签触发
+Release 构建和自动更新说明。确认 Release 构建成功后再上传 PyPI。
+main 上仅修改手册时会自动构建可下载的 Actions 产物，不会覆盖旧版本发布文件。
 
 ## 3. 更新中英文 README 与 PDF
 

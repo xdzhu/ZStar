@@ -29,8 +29,8 @@ python examples/3D_Bulk/cubic_BaTiO3/verify.py
 The first command requires configured ABACUS and PYATB. Verification uses
 temporary copies of archived outputs and requires neither solver.
 Each material has clean `run/` inputs and basis files, archived `results/`,
-and a separate `work/` for new execution. Install this source revision;
-older PyPI versions may not contain the Unified implementation.
+and a separate `work/` for new execution. Install `zstar==0.3.1` and use
+the matching GitHub tag for frozen example inputs.
 
 ## Timing definition
 
@@ -50,8 +50,9 @@ subtracted from the Cartesian BEC timings.
 
 The default step is 0.02 bohr; derivatives use actual written STRU differences.
 The unstable cubic BaTiO3 reference does not support a stable static phonon
-dielectric constant. Raman derivatives and full phonon dispersions require
-additional calculations beyond this Gamma ensemble.
+dielectric constant. Raman adds PYATB dielectric derivatives, not new SCFs,
+when matrices are retained; see the [Unified spectroscopy guide](../../docs/unified_spectroscopy.md).
+Full phonon dispersions still require additional calculations.
 
 Historical machine-readable names such as `shared_response.json` and original
 result-scheme keys remain unchanged for compatibility and evidence integrity.

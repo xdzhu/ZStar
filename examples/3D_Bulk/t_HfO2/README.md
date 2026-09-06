@@ -1,4 +1,4 @@
-# Tetragonal HfO2: shared BEC and Gamma phonons
+# Tetragonal HfO2: Unified BEC and Gamma phonons
 
 Six-atom tetragonal cell; PBEsol, ONCV pseudopotentials and 9-au orbitals
 (Hf: 6s3p3d2f1g; O: 2s2p1d),

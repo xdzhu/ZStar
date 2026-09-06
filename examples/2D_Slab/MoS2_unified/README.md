@@ -9,7 +9,7 @@ reconstruction uses the actual written displacement vectors.
 
 ## Run
 
-Install this ZStar source revision and PYATB, then configure the ABACUS path
+Install `zstar==0.3.1` and PYATB, then configure the ABACUS path
 and MPI/OMP using `zstar config`. From this directory run `bash run.sh`.
 Arguments are forwarded to `zstar bec run`; set `ZSTAR_WORK` for a fresh work
 directory. Included pseudopotentials and orbitals are resolved from `run/`.
@@ -34,7 +34,9 @@ source; volume normalization alone does not establish an intrinsic normal
 permittivity.
 
 The scripts do not calculate finite-q dispersion or Raman polarizability
-derivatives. Those are separate workflows. Use the [parent guide](../README.md)
+derivatives. With retained matrices, [Unified spectroscopy](../../../docs/unified_spectroscopy.md)
+adds Raman through PYATB postprocessing without new SCFs. Use the
+[benchmark guide](../../Benchmarks/README.md)
 for offline verification and the comparison protocol.
 
 The baseline Berry mesh is 28x28x2. Separate `*-mesh112/` result trees
@@ -42,4 +44,3 @@ repeat only polarization on a 112x112x2 mesh, keeping forces and reference
 electronic response fixed. Their additional costs are not part of the baseline
 speedup. These benchmark records do not replace the manuscript spectroscopy
 case in `IR_Raman_Spectra/2D_MoS2`.
-

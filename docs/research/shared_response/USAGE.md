@@ -1,6 +1,7 @@
 # Unified BEC and Gamma-phonon workflow
 
-Available in the 0.3.0rc2 source candidate, not in the older PyPI 0.2.1 release.
+Available in the released ZStar 0.3.1: `pip install zstar==0.3.1`.
+This is a current user guide; dated research reports retain their original scope.
 See [direct validation](DIRECT_VALIDATION.md) for measured comparisons and
 their numerical-convergence qualifications.
 
@@ -38,7 +39,7 @@ If KPT is supplied and `--kspacing` is omitted, its explicit mesh is retained.
   `cal_force 1` is added to their SCF input.
 - Default +/- selection is Phonopy `auto`. `--method central` explicitly
   requests both signs; `--method forward` has different truncation accuracy.
-- `--displacement` is in Angstrom. The shared default is 0.02 bohr, or
+- `--displacement` is in Angstrom. The Unified default is 0.02 bohr, or
   approximately 0.010583544 Angstrom. Fits use actual serialized vectors.
 - `shared_response.json` stores geometry, stages, units, and input hashes.
   Changing a prepared input is detected before resuming; prepare a fresh
@@ -58,13 +59,15 @@ force-first Jacobian used in the derivation is its full transpose in combined
 atom/Cartesian indices. This distinction disappears only after reciprocity
 projection; the unprojected records must not assume exact symmetry.
 
-The shared runner uses a process-local PYATB polarization output adapter. It
+The Unified runner uses a process-local PYATB polarization output adapter. It
 retains double-precision values and preserves the original rounded file as
 `polarization.rounded.dat`, with `zstar_precision.json` recording both hashes.
 The installed PYATB files and numerical kernels are unchanged. Install ZStar
-and PYATB in the same Python environment. An opaque custom launcher must call
-`python -m zstar.pyatb_precision`; ordinary `mpirun ... pyatb` commands are
-adapted automatically without changing their MPI arguments. The new lazy
+and PYATB together for the simplest setup. A direct PYATB executable with a
+resolvable Python shebang can also belong to another environment: ZStar runs
+its current adapter with that interpreter. An opaque custom launcher must call
+`python -m zstar.pyatb_precision` in an environment containing the current
+ZStar; ordinary `mpirun ... pyatb` commands retain their MPI arguments. The new lazy
 PYATB runtime and older eager initialization are both supported.
 
 This preserves output precision, not eight-digit physical accuracy. SCF and
@@ -89,11 +92,13 @@ directory layout. Explicit partial atom/direction selections retain that
 legacy route. Existing old directories remain readable by `zstar bec post`.
 Native VASP/QE DFPT and CP2K routes are not replaced by this ABACUS workflow.
 
-The initial shared implementation is nonmagnetic, zero applied field, fixed
+The Unified implementation is nonmagnetic, zero applied field, fixed
 cell, and Gamma only. Symmetry must preserve electrostatic boundaries.
 Low-dimensional transverse responses require charge cubes and vacuum checks.
-Raman polarizability derivatives and finite-q dispersions need additional
-calculations. A stable Gamma spectrum alone is not a full dispersion test.
+Raman requires additional PYATB dielectric derivatives, but the
+[Unified spectroscopy route](../../unified_spectroscopy.md) reuses retained
+matrices without additional SCFs. Finite-q dispersions still require separate
+supercell or native phonon calculations. A stable Gamma spectrum alone is not a full dispersion test.
 
 `--force` does not erase an existing shared ensemble. Use a fresh directory
 for a new physical calculation. SCFs without force output are not silently

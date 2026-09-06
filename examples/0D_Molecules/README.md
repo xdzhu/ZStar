@@ -5,8 +5,8 @@
 | [H2O](H2O/) | Polar molecule, PBE and HSE APT evidence / 极性分子及 HSE 对照 |
 | [CH4](CH4/) | Nonpolar molecule, PBE and HSE APT evidence / 非极性分子及 HSE 对照 |
 | [CO2](CO2/) | Linear-molecule workflow / 线性分子 |
-| [H2O_unified](H2O_unified/) | Matched unified/Cartesian PBE benchmark / PBE 效率对照 |
-| [CH4_unified](CH4_unified/) | Matched unified/Cartesian PBE benchmark / PBE 效率对照 |
+| [H2O_unified](H2O_unified/) | Matched Unified/Separate PBE benchmark / PBE 效率对照 |
+| [CH4_unified](CH4_unified/) | Matched Unified/Separate PBE benchmark / PBE 效率对照 |
 
 Use each case's README and `run.sh`; `run/` contains clean inputs and `results/`
 contains retained outputs. HSE APTs use ABACUS charge-density cube integration,

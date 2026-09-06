@@ -28,7 +28,7 @@
 Raman 复用已有电子矩阵，新增 PYATB 后处理而不新增 SCF。
 
 ```bash
-zstar bec pre --stru STRU --input INPUT --dim 3
+zstar bec pre --stru STRU
 zstar spectra pre
 zstar spectra run
 zstar spectra post
@@ -47,11 +47,13 @@ Raman 导数，通过极化、力与电子介电响应得到 IR、Raman 和介�
 
 ZStar 不会隐藏中间步骤。结构、输入文件、绝缘性门控、极化值、电荷密度、张量重构报告、光谱和任务状态都会保留下来，便于检查、复现与断点续算。
 
+按任务查找教程、配置、案例及适用边界，请从[使用手册](docs/README.zh-CN.md)开始。
+
 当前版本的数值验证与运行环境汇总见 [docs/validation.zh-CN.md](docs/validation.zh-CN.md)。
 
 Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 与 Gamma 点声子响应。推导、真实位移处理、极化输出精度及验证状态见
-[共用位移教程](docs/research/shared_response/USAGE.zh-CN.md) 和
+[Unified BEC/声子教程](docs/research/shared_response/USAGE.zh-CN.md) 和
 [配对案例](examples/Benchmarks/README.md)。已发布版本与历史案例仍保留其原有版本记录。
 
 `0.3.1` 包含 Unified 框架、短输出文件名与 Separate/Unified 实测基准。
@@ -65,7 +67,7 @@ Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 ### 主要功能
 
 - Unified BEC/APT、Gamma 力常数与静态非共振 Raman 导数，保留独立的
-  Cartesian 和模式位移对照。
+  Separate 对照采用笛卡尔或模式位移。
 - 对称性约化、全原子张量重构和声学求和规则修正。
 - `0.no-move -> 位移结构` 的单任务串行、可恢复工作流。
 - 所有位移任务复用 `0.no-move` 的收敛电荷密度。
@@ -250,7 +252,7 @@ zstar bec pre --stru STRU --dim 1 --method central
 
 | 选项 | 含义 |
 | --- | --- |
-| `--method auto\|forward\|central` | 自动选择正负位移（共享流程默认）、单边或显式中心差分。 |
+| `--method auto\|forward\|central` | 自动选择正负位移（Unified 默认）、单边或显式中心差分。 |
 | `--ensemble phonopy\|cartesian` | 默认共用 BEC/Gamma 位移，或采用旧笛卡尔布局。 |
 | `--reduce` / `--all` | 默认只算对称性代表原子，或强制计算全部原子。 |
 | `--move "x y z"` | 显式指定方向，使用旧笛卡尔流程。 |
@@ -381,7 +383,7 @@ zstar bec post --root .
 Unified 收集器同时重构分子 APT 与力常数，将原始及投影后张量保存在
 `response_fit.json`，并写出统一格式的 `response.json`。
 PYATB 输出适配器保留完整精度的极化数值，不修改已安装的 PYATB 内核。
-旧 Cartesian 分子流程仍写出 `apt.json`；对于旧的舍入输出，
+旧式分子收集流程（`--ensemble cartesian`）仍写出 `apt.json`；对于旧的舍入输出，
 它也可以从分别打印的离子相位与电子相位中恢复微小的极化信号。
 
 三维：
@@ -417,10 +419,10 @@ zstar bec post --root .
 | `force_fit.json` | 力响应拟合诊断，与统一响应交换记录分开保存。 |
 | `response_fit.json` | Unified 原始及投影后的 BEC/APT、力常数、单位与诊断。 |
 | `response.json` | 统一响应记录，包括维度和数据来源。 |
-| `BEC_symmetry.json` | 旧 Cartesian 流程的对称重构与残差报告。 |
-| `zstar_2d_bec.json` | 旧 Cartesian 二维混合 BEC 诊断。 |
-| `zstar_1d_bec.json` | 旧 Cartesian 一维混合 BEC 诊断。 |
-| `apt.json` | 旧 Cartesian/cube 分子 APT 及平移求和诊断。 |
+| `BEC_symmetry.json` | 旧式笛卡尔位移结果的对称重构与残差报告。 |
+| `zstar_2d_bec.json` | 旧式笛卡尔位移的二维混合 BEC 诊断。 |
+| `zstar_1d_bec.json` | 旧式笛卡尔位移的一维混合 BEC 诊断。 |
+| `apt.json` | 旧式笛卡尔位移/cube 分子 APT 及平移求和诊断。 |
 
 新计算使用上述短文件名。历史档案保留 `Z-BORN-symm.out`、
 `zstar_response.json`、`molecular_apt.json` 等原名和原始哈希。

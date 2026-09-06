@@ -2,6 +2,14 @@
 
 ## 当前版本：0.3.1
 
+最终 0.3.1 wheel 通过 477 项测试、66 项子测试（含仓库验证工具）及 30 个
+已安装 CLI 检查。两组 Linux Phonopy 测试、独立安装和自动发布均通过：
+[构建验收](https://github.com/xdzhu/zstar/actions/runs/34056725679)、
+[发布验收](https://github.com/xdzhu/zstar/actions/runs/34056874177)。
+[GitHub Release](https://github.com/xdzhu/zstar/releases/tag/v0.3.1) 与
+[PyPI](https://pypi.org/project/zstar/0.3.1/) 已发布，PyPI 文件哈希与本地测试包一致。
+该补丁修复交付路径，不改动响应计算或已有数值结果。
+
 0.3.1 修复了 Git 索引中的 `examples/3D_Bulk` 大小写。0.3.0 索引仍是
 `3d_bulk`，Windows 可以访问，而 Linux CI 正确发现了此问题。新增测试
 直接对比案例清单与 Git 索引路径。数值实现未变；下列独立安装记录来自 0.3.0。

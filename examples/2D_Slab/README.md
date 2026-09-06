@@ -8,12 +8,12 @@ outputs are separated into `run/` and `results/`.
 | Case | Purpose / 用途 |
 |---|---|
 | [hBN](hBN/) | Monolayer hybrid in-plane/out-of-plane BEC / 单层混合极化路线 |
-| [hBN_unified](hBN_unified/) | Unified/Cartesian matched benchmark / 同设置对照 |
+| [hBN_unified](hBN_unified/) | Unified/Separate matched benchmark / 同设置对照 |
 | [In2Se3_PBEsol](In2Se3_PBEsol/) | PBEsol monolayer paper comparison / 正文文献对照 |
 | [alpha_In2Se3_PBE](alpha_In2Se3_PBE/) | Separately relaxed PBE unified benchmark / PBE 效率对照 |
 | [In2Se3](In2Se3/) | Retained hybrid-response example / 混合响应示例 |
 | [MoS2](MoS2/) | Retained slab BEC example / 二维 BEC 示例 |
-| [MoS2_unified](MoS2_unified/) | Unified/Cartesian benchmark and mesh controls / 网格与效率对照 |
+| [MoS2_unified](MoS2_unified/) | Unified/Separate benchmark and mesh controls / 网格与效率对照 |
 
 The spectroscopy-matched MoS2 BECs are also retained with
 [IR/Raman data](../IR_Raman_Spectra/2D_MoS2/).

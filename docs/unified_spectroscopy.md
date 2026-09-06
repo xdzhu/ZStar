@@ -2,9 +2,9 @@
 
 [Chinese](unified_spectroscopy.zh-CN.md)
 
-This guide describes the current source snapshot. Install it with
-`python -m pip install -e .` from the repository; older published packages may
-not contain the Unified spectroscopy integration.
+This guide applies to the released ZStar 0.3.1. Install with
+`python -m pip install zstar==0.3.1`; an editable source installation is not
+required. See the [user manual](README.md) for configuration and example links.
 
 ![Unified response workflow](paper_figures/unified_workflow.png)
 
@@ -24,7 +24,7 @@ Preparation sets `gamma_only=0` for PYATB matrix export even when the physical
 k-point sampling consists of Gamma alone. It leaves the source INPUT unchanged.
 
 ```bash
-zstar bec pre --stru STRU --input INPUT --dim 3
+zstar bec pre --stru STRU
 zstar spectra pre
 zstar spectra run
 zstar spectra post
@@ -93,7 +93,7 @@ Raman sum-rule residuals are reported without silently projecting them away.
 Rigid translations/rotations are separated by mass-weighted overlaps; unstable
 internal modes or ambiguous rigid-mode mixing stop collection.
 
-## Independent Control and Examples
+## Separate Controls and Examples
 
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` retains
 normal-mode finite differences. VASP, CP2K and QE retain their documented native

@@ -2,6 +2,16 @@
 
 ## Current Release: 0.3.1
 
+The final 0.3.1 wheel passes 477 tests and 66 subtests (including repository
+tools) and 30 installed CLI checks. Both Linux Phonopy profiles, independent
+wheel installation, and the automatic release build pass:
+[build acceptance](https://github.com/xdzhu/zstar/actions/runs/34056725679),
+[release acceptance](https://github.com/xdzhu/zstar/actions/runs/34056874177).
+The [GitHub release](https://github.com/xdzhu/zstar/releases/tag/v0.3.1) and
+[PyPI files](https://pypi.org/project/zstar/0.3.1/) are published. PyPI hashes
+match the locally tested distributions. This patch changes delivery paths,
+not response calculations or the retained numerical results.
+
 Version 0.3.1 corrects the Git-index case of `examples/3D_Bulk`; 0.3.0 stored
 `3d_bulk`, which Windows accepted but Linux CI correctly rejected. A new test
 compares manifest paths with the Git index. The numerical implementation is

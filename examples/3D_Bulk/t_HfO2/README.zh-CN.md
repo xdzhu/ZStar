@@ -11,4 +11,4 @@ Gamma 中心的 10x10x7 网格，SCF 阈值 1e-8。
 `python examples/Benchmarks/run_control.py t_HfO2` 可运行对照组。
 
 最终效率只比较两组相同执行配置下成功的 ABACUS/PYATB 调用，不混入先前
-探索性任务的时间。数值验证与计时定义见[上级教程](../README.zh-CN.md)。
+探索性任务的时间。数值验证与计时定义见[效率基准教程](../../Benchmarks/README.zh-CN.md)。

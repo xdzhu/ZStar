@@ -1,4 +1,4 @@
-# Cubic BaTiO3: unified BEC and Gamma phonons
+# Cubic BaTiO3: Unified BEC and Gamma phonons
 
 This PBEsol example compares the unified framework with the previous
 **separate BEC and phonon workflows**, not with a central joint-response
@@ -6,7 +6,7 @@ control. All calculations have completed; the raw outputs are included.
 
 ## Run
 
-Install ZStar from this source checkout and PYATB in the same environment.
+Install `zstar==0.3.1` and PYATB; a common Python environment is the simplest setup.
 Configure the ABACUS executable and MPI/OMP settings using `zstar config`.
 Then, from this directory:
 

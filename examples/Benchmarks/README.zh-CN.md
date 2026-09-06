@@ -16,6 +16,7 @@ python examples/3D_Bulk/cubic_BaTiO3/verify.py
 实际计算需要配置 ABACUS 与 PYATB。离线核验在临时副本中重建 BEC、Gamma
 频率和静态响应，不调用 DFT，不覆盖原始结果。每个材料具有独立的 `run/`
 输入、`results/` 已有结果，以及执行时建立的 `work/`。
+安装 `zstar==0.3.1` 并使用相同 GitHub 标签下的冻结案例输入。
 
 Unified 从同一批位移 SCF 同时获得 BEC 和 Gamma 力常数。Separate 的机时
 包含 Cartesian BEC 与另外实际执行的力计算。立方 BTO 历史计时采用 forward，
@@ -27,5 +28,6 @@ Unified 从同一批位移 SCF 同时获得 BEC 和 Gamma 力常数。Separate �
 历史 BEC 任务中输出力的开销没有扣除。
 
 默认位移为 0.02 bohr，导数使用实际 STRU 差分距离。立方 BTO 不输出稳定的
-静态声子介电响应。Gamma 统一框架不能代替完整声子能带或额外的 Raman
-极化率导数。历史 `shared_response.json` 等原始文件名、数据键不为美化目录而改写。
+静态声子介电响应。Gamma 统一框架不能代替完整声子能带。Raman 仍需
+PYATB 介电导数，但保留矩阵后不新增 SCF，见[Unified 谱学教程](../../docs/unified_spectroscopy.zh-CN.md)。
+历史 `shared_response.json` 等原始文件名、数据键不为美化目录而改写。

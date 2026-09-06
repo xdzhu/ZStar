@@ -1,4 +1,4 @@
-# 3C-SiC: shared BEC and Gamma phonons
+# 3C-SiC: Unified BEC and Gamma phonons
 
 Two-atom primitive cell; PBE, SG15 ONCV pseudopotentials, DZP 7-au orbitals,
 100-Ry cutoff, Gamma-centered 13x13x13 mesh, SCF threshold 1e-8.

@@ -1,6 +1,7 @@
-# BEC 与 Gamma 声子的共用位移工作流
+# Unified BEC 与 Gamma 声子工作流
 
-本页对应当前源代码版本，尚未包含在此前的 PyPI 发布版中。实测对照与
+本教程适用于已发布的 ZStar 0.3.1，安装命令为 `pip install zstar==0.3.1`。
+带日期的研究报告保留其历史范围。实测对照与
 数值收敛边界见 [DIRECT_VALIDATION.md](DIRECT_VALIDATION.md)。
 
 ## 常用命令
@@ -55,11 +56,12 @@ DFT 可执行程序、MPI/OMP 和作业 header 沿用已有配置方法。赝势
 “受力原子优先”原始 Jacobian 与它相差一次原子及笛卡尔组合指标的完整转置。
 只有施加互易性约束后两者才相同，原始数值数据不能假定已经严格对称。
 
-共享流程通过进程内适配器保留 PYATB 极化输出的双精度数值，同时保存原始
+Unified 流程通过进程内适配器保留 PYATB 极化输出的双精度数值，同时保存原始
 舍入文件 `polarization.rounded.dat` 及哈希记录 `zstar_precision.json`。
-适配器不改动 PYATB 安装文件或数值内核。ZStar 与 PYATB 应安装在同一环境；
-普通的 `mpirun ... pyatb` 命令会自动适配，MPI 参数保持不变。自定义的
-不透明启动脚本需在内部调用 `python -m zstar.pyatb_precision`。
+适配器不改动 PYATB 安装文件或数值内核。同一环境安装最简单；PYATB 位于
+其他环境且可执行文件具有可解析的 Python shebang 时，也可使用该解释器运行
+当前 ZStar 的适配器。普通 `mpirun ... pyatb` 的 MPI 参数保持不变；不透明
+启动脚本需在安装了当前 ZStar 的环境中调用 `python -m zstar.pyatb_precision`。
 
 这解决的是输出舍入，不代表八位有效数字的物理精度。SCF、基组、位移步长、
 积分网格与求解器本身仍需收敛检查。仅把最终 BEC 多打印几位并不能恢复输入
@@ -77,7 +79,9 @@ PYATB 响应积分网格应独立于 DFT 的 SCF 网格检查收敛。例如
 `--ensemble cartesian` 保留旧的约化原子 x/y/z 布局，旧算例仍可后处理。
 当前新流程首先支持非磁、无外加电场、固定晶胞的 ABACUS + PYATB 计算。
 VASP/QE 的原生 DFPT 与 CP2K 路径不受替换。Gamma 点力常数不等于完整
-声子色散；Raman 极化率导数也仍需相应的额外响应计算。
+声子色散。Raman 仍需额外的 PYATB 介电导数计算，但
+[Unified 谱学](../../unified_spectroscopy.zh-CN.md)复用保留的矩阵，不新增 SCF；
+有限波矢色散仍需独立的超胞或原生声子计算。
 
 `--force` 不删除已经存在的共用位移计算目录。改变结构或计算参数时，
 请采用新目录。没有力输出的旧 SCF 不会被当成完整的联合计算静默跳过。

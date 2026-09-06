@@ -118,25 +118,30 @@ calculator inputs. ABACUS + PYATB bulk BEC:
 
 ```bash
 zstar bec pre --stru STRU
-zstar bec job --system slurm --header header.sh
+zstar bec run
 zstar bec stat --root .
 zstar bec post --root .
 ```
 
-In `0.3.0rc2`, `zstar bec pre` defaults to ABACUS + PYATB and
+These examples use local execution. On Slurm, replace the local `run` with
+`zstar bec job --system slurm`, inspect the generated `run_zstar_born.slurm`,
+then submit it with `sbatch run_zstar_born.slurm`. Wait for completion before
+`post`; `job` alone does not execute any calculation.
+
+In ZStar 0.3.1, `zstar bec pre` defaults to ABACUS + PYATB and
 Phonopy's symmetry-adapted Unified BEC/Gamma displacement ensemble, with
 automatic +/- selection. The calculator and `--pyatb` switch remain optional;
 specify `--calculator cp2k`, `vasp`, or `qe` only when changing backends.
-`--ensemble cartesian` retains the legacy atom/direction layout. See the
-[shared response tutorial](research/shared_response/USAGE.md) for scope,
+`--ensemble cartesian` retains the legacy atom/direction layout used by the Separate BEC controls. See the
+[Unified BEC/phonon tutorial](research/shared_response/USAGE.md) for scope,
 actual displacement units, raw diagnostics, and compatibility.
 
-For the shared Gamma route, `zstar bec post` already generates the phonon
+For the Unified Gamma route, `zstar bec post` already generates the phonon
 outputs. Prepare finite-q/supercell phonons in a separate directory:
 
 ```bash
 zstar phonon pre --stru STRU --dim "2 2 2"
-zstar phonon job --system slurm
+zstar phonon run
 zstar phonon stat
 zstar phonon post
 zstar phonon irrep
@@ -147,13 +152,14 @@ IR and Raman:
 ```bash
 zstar bec pre --stru STRU
 zstar spectra pre
-zstar spectra job --system slurm
+zstar spectra run
 zstar spectra stat
 zstar spectra post
 ```
 
-Submit the generated job script after inspecting its header, or use
-`zstar spectra run` for local execution. The example uses the Unified ensemble;
+For scheduled execution, use `zstar spectra job --system slurm` or
+`zstar phonon job --system slurm`, inspect the generated driver and submit it.
+The spectroscopy example uses the Unified ensemble;
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` explicitly
 selects the independent mode-displacement route.
 
@@ -170,7 +176,7 @@ For independently screened macroscopic slab data only, the optional
 using direct in-plane and inverse out-of-plane response. It does not add
 missing local-field physics to PYATB results. See
 [response conventions](response_conventions.md) and the
-[eight-system benchmarks](../examples/Benchmarks/README.md).
+[ten-system benchmarks](../examples/Benchmarks/README.md).
 
 ## Electrostatic-potential coverage
 

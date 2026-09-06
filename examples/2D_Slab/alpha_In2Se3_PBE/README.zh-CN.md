@@ -24,4 +24,4 @@ ABACUS ONCV/LCAO 与原文的 VASP PAW 基组不同；本例不加 HSE 或 D3。
 本例与论文 BEC 文献对照中的 PBEsol 档案不同，后者在
 `examples/2D_Slab/In2Se3_PBEsol/`。
 报告面极化率，不将其当作真空无关的三维介电常数。完整验证方法见
-[上级教程](../README.zh-CN.md)。
+[效率基准教程](../../Benchmarks/README.zh-CN.md)。

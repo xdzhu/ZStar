@@ -26,6 +26,7 @@ python examples/Benchmarks/run_control.py H2O
 优化耗时单列在 `results/relaxation.json`，不计入响应计算提速。
 此前未充分优化的初始结构试算不作为发表结果。
 
-该流程不产生完整声子能带或 Raman 极化率导数；相应功能仍是独立计算。
-离线核验和完整对照定义见[父目录教程](../README.zh-CN.md)。
-
+本案例脚本只执行 BEC/Gamma 基准，不计算完整声子能带或 Raman 导数。
+保留矩阵后可接入 [Unified 谱学](../../../docs/unified_spectroscopy.zh-CN.md)，
+以额外 PYATB 后处理得到 Raman，无需新增 SCF。
+离线核验和完整对照定义见[效率基准教程](../../Benchmarks/README.zh-CN.md)。
