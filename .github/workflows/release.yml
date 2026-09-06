@@ -30,6 +30,13 @@ jobs:
           python -m build
           python -m twine check dist/*
 
+      - name: Verify independently installed wheel
+        run: |
+          python -m venv "$RUNNER_TEMP/zstar-review"
+          "$RUNNER_TEMP/zstar-review/bin/python" -m pip install dist/*.whl pytest pytest-subtests
+          "$RUNNER_TEMP/zstar-review/bin/python" -I tools/release_acceptance.py smoke --output "$RUNNER_TEMP/zstar-smoke"
+          "$RUNNER_TEMP/zstar-review/bin/python" -I tools/release_acceptance.py tests --repo "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/zstar-tests"
+
       - name: Read versioned change summary
         env:
           RELEASE_TAG: ${{ github.ref_name }}

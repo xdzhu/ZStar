@@ -118,7 +118,8 @@ def read_bec_data(path: str | Path) -> BecData:
     field as columns. qNEP conversion is deliberately done at export time.
     """
 
-    source = Path(path)
+    from .artifacts import resolve_artifact
+    source = resolve_artifact(path)
     if source.suffix.lower() == ".json":
         data = json.loads(source.read_text(encoding="utf-8"))
         atoms = data.get("atoms")

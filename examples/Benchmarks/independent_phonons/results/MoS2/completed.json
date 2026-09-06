@@ -1,0 +1,8 @@
+{
+  "case": "MoS2",
+  "host": "cu23",
+  "SCFs": 3,
+  "independent_force_core_hours": 2.254919289942417,
+  "max_force_difference_from_unified_eV_A": 3.5558000000008444e-06,
+  "status": "completed"
+}

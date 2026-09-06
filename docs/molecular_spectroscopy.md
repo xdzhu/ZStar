@@ -1,5 +1,9 @@
 # Molecular IR and Raman spectroscopy
 
+The preferred ABACUS route now reuses the [Unified displacement ensemble](unified_spectroscopy.md)
+for APT, Gamma modes, IR and Raman. The explicit normal-mode workflow below remains
+available with `zstar spectra pre --method mode` as an independent control.
+
 This guide describes the production `--dim 0` workflow for isolated molecules
 in periodic vacuum cells. It covers the physical convention, execution chain,
 outputs, convergence checks, and benchmark acceptance criteria.

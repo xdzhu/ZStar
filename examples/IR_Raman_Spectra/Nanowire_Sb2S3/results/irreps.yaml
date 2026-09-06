@@ -1,0 +1,140 @@
+q-position: [    0.0000000,    0.0000000,    0.0000000 ]
+point_group: 2/m
+transformation_matrix:
+- [  0.0000000, -1.0000000,  0.0000000 ]
+- [  0.0000000,  0.0000000,  1.0000000 ]
+- [ -1.0000000,  0.0000000,  0.0000000 ]
+rotations:
+- matrix:
+  - [  1,  0,  0 ]
+  - [  0,  1,  0 ]
+  - [  0,  0,  1 ]
+  symbol: E
+- matrix:
+  - [ -1,  0,  0 ]
+  - [  0, -1,  0 ]
+  - [  0,  0, -1 ]
+  symbol: i
+- matrix:
+  - [ -1,  0,  0 ]
+  - [  0,  1,  0 ]
+  - [  0,  0, -1 ]
+  symbol: C2
+- matrix:
+  - [  1,  0,  0 ]
+  - [  0, -1,  0 ]
+  - [  0,  0,  1 ]
+  symbol: sgh
+normal_modes:
+- band_indices: [ 1, 2, 3 ]
+  frequency: -0.0000000635  
+  ir_label: None
+  characters: [ [  3,   0.0 ], [  3, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 4 ]
+  frequency: 0.0454269022   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 5 ]
+  frequency: 1.1805726627   
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 6 ]
+  frequency: 1.2332981957   
+  ir_label: Bg
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 7 ]
+  frequency: 1.3684686614   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 8 ]
+  frequency: 1.5776891145   
+  ir_label: Au
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 9 ]
+  frequency: 1.7447271921   
+  ir_label: Bg
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 10 ]
+  frequency: 2.7895335298   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 11 ]
+  frequency: 2.8088300821   
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 12 ]
+  frequency: 2.8961571633   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 13 ]
+  frequency: 3.0935965202   
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 14 ]
+  frequency: 3.5809016676   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 15 ]
+  frequency: 3.8132416876   
+  ir_label: Au
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 16 ]
+  frequency: 5.5620848480   
+  ir_label: Bg
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 17 ]
+  frequency: 5.6518550654   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 18 ]
+  frequency: 5.8771968686   
+  ir_label: Bg
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 19 ]
+  frequency: 5.9082941471   
+  ir_label: Au
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 20 ]
+  frequency: 6.6328602539   
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 21 ]
+  frequency: 7.1368203685   
+  ir_label: Au
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 22 ]
+  frequency: 7.1614630007   
+  ir_label: Bg
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 23 ]
+  frequency: 7.7648896139   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 24 ]
+  frequency: 7.8325165387   
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 25 ]
+  frequency: 8.8716960294   
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 26 ]
+  frequency: 9.0267193647   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 27 ]
+  frequency: 9.6573744373   
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 28 ]
+  frequency: 9.9215403467   
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 29 ]
+  frequency: 10.0095193045  
+  ir_label: Ag
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 30 ]
+  frequency: 10.5902832374  
+  ir_label: Bu
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]

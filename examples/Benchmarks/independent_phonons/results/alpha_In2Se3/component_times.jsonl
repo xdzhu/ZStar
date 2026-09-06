@@ -1,0 +1,11 @@
+{"host": "cu20", "stage": "disp-001", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": false, "wall_seconds": 0.6451581460132729, "core_hours": 0.007168423844591922}
+{"host": "cu20", "stage": "disp-001", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 37.553623704996426, "core_hours": 0.4172624856110714}
+{"host": "cu20", "stage": "disp-002", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 36.31491626999923, "core_hours": 0.4034990696666581}
+{"host": "cu20", "stage": "disp-003", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 37.333092187996954, "core_hours": 0.41481213542218837}
+{"host": "cu20", "stage": "disp-004", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 34.247138283011736, "core_hours": 0.3805237587001304}
+{"host": "cu20", "stage": "disp-005", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 32.60336304301745, "core_hours": 0.3622595893668606}
+{"host": "cu20", "stage": "disp-006", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 35.38161571000819, "core_hours": 0.39312906344453546}
+{"host": "cu20", "stage": "disp-007", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 33.71264966297895, "core_hours": 0.37458499625532166}
+{"host": "cu20", "stage": "disp-008", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 33.93792927201139, "core_hours": 0.37708810302234874}
+{"host": "cu20", "stage": "disp-009", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 37.27322885199101, "core_hours": 0.4141469872443445}
+{"host": "cu20", "stage": "disp-010", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 37.50596472501638, "core_hours": 0.4167329413890709}

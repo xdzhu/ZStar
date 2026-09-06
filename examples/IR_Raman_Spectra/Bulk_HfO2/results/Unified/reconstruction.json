@@ -1,0 +1,82 @@
+{
+  "source_manifest": {
+    "schema": "zstar-example-unified-observations",
+    "version": 1,
+    "case": "HfO2",
+    "dimension": 3,
+    "symprec_A": 1e-05,
+    "source_ensemble_sha256": "e8cbfb7ac77a1d0436e7ae2e712d24d80e596f00d4c217a5a545df70b43a2064",
+    "source": "docs/research/unified_spectroscopy_20260906/evidence/HfO2/unified",
+    "sha256": {
+      "BEC.dat": "c09cd0c42d6bc7e1f108c893b580ab22e3eaea5902071fdc1d639c9aaacf8e06",
+      "BORN": "ca55c124d9c4c3735ac678eb21cfce0dd430873af5f4b88ee50b7d964f94da1f",
+      "observations.json": "760b9d21f2f556b2a353de17691a90e423a58d717556704eee72eef9c2db841d",
+      "phonopy.yaml": "8885404e2b42d2bd15b24724f73aaf212d28bc893aa576c17ece1317ad107091",
+      "qpoints.yaml": "25ab22399bd0aa9d00b2b4111a9d63c343f34b854a5dbc402c6cdfce8844c0c5",
+      "STRU": "e632447ad1d0d57133a0ef203d957a55df425935817b7e02bf0e8e44a828890c"
+    }
+  },
+  "diagnostics": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 2.0418277672767844,
+        "max_epsilon_residual": 0.00022053310571745757
+      },
+      {
+        "atom": 2,
+        "rank": 3,
+        "condition": 1.4437902602563566,
+        "max_epsilon_residual": 0.00011808062363827341
+      }
+    ],
+    "translation_sum_max_per_A": 0.0,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false
+  },
+  "mode_selection": {
+    "rigid_mode_numbers": [
+      1,
+      2,
+      3
+    ],
+    "rigid_frequencies_cm1": [
+      -1.184486102048638e-05,
+      -1.096758745011524e-05,
+      6.9548113848814704e-06
+    ],
+    "rigid_overlaps": [
+      1.000000000000011,
+      0.9999999999999939,
+      1.000000000000011,
+      2.2180194082437812e-29,
+      1.5566712802837778e-29,
+      2.0350242054302632e-29,
+      2.7959246003175445e-32,
+      2.0093074569145553e-32,
+      0.0,
+      3.0830579904698504e-29,
+      1.5096072086541336e-29,
+      7.721059842933359e-30,
+      3.965975080231945e-29,
+      8.179322298061033e-29,
+      9.308825723623373e-34,
+      0.0,
+      6.495831443622548e-34,
+      1.502056810386331e-34
+    ]
+  },
+  "raman_convention": {
+    "response_definition": "epsilon_r",
+    "response_unit": "1",
+    "response_convention": "relative dielectric tensor",
+    "normal_coordinate": "q",
+    "normal_coordinate_unit": "angstrom*sqrt(amu)",
+    "tensor_unit": "1/(angstrom*sqrt(amu))",
+    "field_convention": "inherited from the electronic-response source",
+    "local_field_correction_added": false
+  },
+  "additional_DFT_calls": 0
+}

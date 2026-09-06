@@ -119,7 +119,7 @@ def collect_molecular_cube_apts(
     displacement_angstrom: float = 0.01,
     symprec: float = 1.0e-3,
     neutrality_tolerance: float = 0.05,
-    response_output: str | Path = "zstar_response.json",
+    response_output: str | Path = "response.json",
 ) -> dict:
     """Collect molecular APTs from cube outputs and apply molecular symmetry."""
 
@@ -154,10 +154,10 @@ def collect_molecular_cube_apts(
     if not atoms:
         raise ValueError(f"No molecular atom-displacement folders found under {root_path}")
 
-    raw_path = root_path / "Z-BORN-reduced.out"
+    raw_path = root_path / "BEC.rep.raw.dat"
     _write_zborn(raw_path, atoms)
     natoms_total = _natoms_from_stru(stru)
-    all_path = root_path / "Z-BORN-all.out"
+    all_path = root_path / "BEC.raw.dat"
     if len(atoms) == natoms_total:
         _write_zborn(all_path, atoms)
 
@@ -167,18 +167,18 @@ def collect_molecular_cube_apts(
         "stru": str(stru),
         "reduced": str(raw_path),
         "symprec": float(symprec),
-        "out": str(root_path / "molecular_apt_symmetry_report.txt"),
-        "json_path": str(root_path / "molecular_apt_symmetry_report.json"),
+        "out": str(root_path / "apt_symmetry.txt"),
+        "json_path": str(root_path / "apt_symmetry.json"),
         "csv_path": None,
-        "symm_out": str(root_path / "Z-BORN-symm.out"),
+        "symm_out": str(root_path / "BEC.dat"),
     }
     if all_path.is_file():
         kwargs["all"] = str(all_path)
     run_symcheck(**kwargs)
-    symmetry_report_path = root_path / "molecular_apt_symmetry_report.json"
+    symmetry_report_path = root_path / "apt_symmetry.json"
     symmetry_report = json.loads(symmetry_report_path.read_text(encoding="utf-8"))
     symmetry_born = symmetry_report["symmetry_born"]
-    corrected_atoms = _read_zborn(root_path / "Z-BORN-symm.out")
+    corrected_atoms = _read_zborn(root_path / "BEC.dat")
     raw_expanded = symmetry_born["Z_symmetry_mean"]
     corrected = symmetry_born["Z_corrected"]
     for atom in corrected_atoms:
@@ -216,11 +216,11 @@ def collect_molecular_cube_apts(
         "files": {
             "raw_reduced": str(raw_path),
             "raw_all": str(all_path) if all_path.is_file() else None,
-            "symmetry_corrected": str(root_path / "Z-BORN-symm.out"),
+            "symmetry_corrected": str(root_path / "BEC.dat"),
             "symmetry_report": str(symmetry_report_path),
         },
     }
-    json_path = root_path / "molecular_apt.json"
+    json_path = root_path / "apt.json"
     json_path.write_text(json.dumps(result, indent=2), encoding="utf-8", newline="\n")
     from .response_schema import response_record_from_bec_result
 
@@ -335,6 +335,8 @@ def _write_zborn(path: Path, atoms: list[dict]) -> None:
 
 
 def _read_zborn(path: Path) -> list[dict]:
+    from .artifacts import resolve_artifact
+    path = resolve_artifact(path)
     atoms: list[dict] = []
     for raw in path.read_text(encoding="utf-8").splitlines()[1:]:
         fields = raw.replace("*", " ", 1).split()
@@ -366,7 +368,7 @@ def collect_molecular_apts(
     method: str = "central",
     displacement_angstrom: float = 0.01,
     symprec: float = 1.0e-3,
-    response_output: str | Path = "zstar_response.json",
+    response_output: str | Path = "response.json",
 ) -> dict:
     """Collect molecular APTs, reconstruct symmetry, and enforce translation invariance."""
 
@@ -401,10 +403,10 @@ def collect_molecular_apts(
     if not atoms:
         raise ValueError(f"No molecular atom-displacement folders found under {root_path}")
 
-    raw_path = root_path / "Z-BORN-reduced.out"
+    raw_path = root_path / "BEC.rep.raw.dat"
     _write_zborn(raw_path, atoms)
     natoms_total = _natoms_from_stru(stru)
-    all_path = root_path / "Z-BORN-all.out"
+    all_path = root_path / "BEC.raw.dat"
     if len(atoms) == natoms_total:
         _write_zborn(all_path, atoms)
 
@@ -414,17 +416,17 @@ def collect_molecular_apts(
         "stru": str(stru),
         "reduced": str(raw_path),
         "symprec": float(symprec),
-        "out": str(root_path / "molecular_apt_symmetry_report.txt"),
-        "json_path": str(root_path / "molecular_apt_symmetry_report.json"),
+        "out": str(root_path / "apt_symmetry.txt"),
+        "json_path": str(root_path / "apt_symmetry.json"),
         "csv_path": None,
-        "symm_out": str(root_path / "Z-BORN-symm.out"),
+        "symm_out": str(root_path / "BEC.dat"),
     }
     if all_path.is_file():
         kwargs["all"] = str(all_path)
     run_symcheck(**kwargs)
-    symm_path = root_path / "Z-BORN-symm.out"
+    symm_path = root_path / "BEC.dat"
     corrected_atoms = _read_zborn(symm_path)
-    symmetry_report_path = root_path / "molecular_apt_symmetry_report.json"
+    symmetry_report_path = root_path / "apt_symmetry.json"
     symmetry_report = json.loads(symmetry_report_path.read_text(encoding="utf-8"))
     symmetry_born = symmetry_report["symmetry_born"]
     raw_expanded = symmetry_born["Z_symmetry_mean"]
@@ -471,7 +473,7 @@ def collect_molecular_apts(
             "symmetry_report": str(symmetry_report_path),
         },
     }
-    json_path = root_path / "molecular_apt.json"
+    json_path = root_path / "apt.json"
     json_path.write_text(json.dumps(result, indent=2), encoding="utf-8", newline="\n")
 
     from .response_schema import response_record_from_bec_result

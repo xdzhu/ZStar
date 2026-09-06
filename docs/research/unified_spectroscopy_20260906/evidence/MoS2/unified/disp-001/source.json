@@ -1,0 +1,17 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001",
+  "source_input_sha256": "e7b721d38c92e952bb8ae34de522d09e8dce6faa43c635985b1842f826221df7",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/pyatb/STRU": "5ccda5aa5de5562738c1b67512ff942f5254b2370171ec004a34ee2e96714145",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/pyatb/Mo.upf": "b5a929dee3378934d30b33a8f510c8a715450d22b4f1a3469276569ac47ab29d",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/pyatb/S.upf": "47dc390784fa31acb520275f817fbe0bb42219399f641ecbcfb97ca9a1f947fa",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/pyatb/Mo_gga_7au_100Ry_4s2p2d1f.orb": "40815a5d260af9590f9ec749eeff4aaa1ac4462ffcb8786c7041be0bbcf61fd6",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/pyatb/S_gga_6au_100Ry_2s2p1d.orb": "5e2628093932604fe3e7857c021ef3fd29b5bbc376a8e9d5dc7dc97764fdbd22",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/OUT.POLAR/data-HR-sparse_SPIN0.csr": "c93c16a3e19ca90411588a8505015e070e4735494582cb626ee65e7ea44f640a",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/OUT.POLAR/data-SR-sparse_SPIN0.csr": "4a18c0d313e8a4c49c01a257c932fe27280020aedf5a1abbec2160fe4d3cfab6",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/disp-001/OUT.POLAR/data-rR-sparse.csr": "738bfad9c98fc592934810b1acceac2ccd0f7c431d71e3038b17bc8223e0f401"
+  },
+  "dimension": 2,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   13\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       45 45 1\n    static_dielectric_only      1\n}"
+}

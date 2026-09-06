@@ -1,0 +1,12 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move",
+  "source_input_sha256": "bfbc8a3c99e3cd7c9dd8cadc1a9d0efe1949ebe6fe5e8191322575c9e2c767f1",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/OUT.CH4/data-HR-sparse_SPIN0.csr": "e21e59826159466c2ceface021583a91335cfa8db02b38de477e70953dbfd861",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/OUT.CH4/data-SR-sparse_SPIN0.csr": "0efa516304b8890a43426644acb3285575c82bf068a67d7bd3c15221b41deb5c",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/OUT.CH4/data-rR-sparse.csr": "0a3a40b37b3d4f00ad69ce34b26302ae0feb9ea568399e40ba1382d756414c81"
+  },
+  "dimension": 0,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   4\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       6 6 6\n    static_dielectric_only      1\n}"
+}

@@ -1,0 +1,14 @@
+{
+  "response": {
+    "ABACUS": 109.4055066299728,
+    "PYATB": 15.62973637154533,
+    "preparation": 0.29125669161892603
+  },
+  "raman": {
+    "ABACUS": 272.6646505774135,
+    "PYATB": 21.650303147376967,
+    "preparation": 1.061820230159523
+  },
+  "relaxation_core_hours": 22.35948383933347,
+  "interruption_caveat": "cu20 reboot interrupted one PYATB call; its elapsed cost is unrecorded. Listed totals cover completed calls, not the full billed total."
+}

@@ -1,0 +1,17 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001",
+  "source_input_sha256": "a10c97a6c923a1499ccb751be6cdc747758ea54472b0f3df10f50e88e8036b2d",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/pyatb/STRU": "77fc0b90149e9f737d368c1ea2cc09b49fc619b46a94176f2ba866b21bbdc483",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/pyatb/Hf.upf": "7c516a68310c779a4f572c9ea6b3a73f27ca3a61908b9ade0da3db6db727c8a5",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/pyatb/O.upf": "8c6886f443f3bfe7b8d18f2f6b28dd8749746d996499a542fff9666da34d7cf6",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/pyatb/Hf_gga_9au_100Ry_6s3p3d2f1g.orb": "a6cb4c79bb1245a4ca4fd4e8cd909aae8179bbedb6174d40e336f50e50df547f",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/pyatb/O_gga_9au_100Ry_2s2p1d.orb": "0a2cfe1ef4bee549a1ab23f0f7f4e175144d32932baa095f7b6bc483bbbdc610",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/OUT.POLAR/data-HR-sparse_SPIN0.csr": "a0e172927c5c0082bba7c050a79d6201cfd6f331fcefc1116e4fa3f9d981c81f",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/OUT.POLAR/data-SR-sparse_SPIN0.csr": "08981d8bd47b2bffd37998f65b832b9b669b2c5dfd98aef3fd7f68d2f182f12e",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/disp-001/OUT.POLAR/data-rR-sparse.csr": "e276ebbc5ad64075509676026a5e226bd15a686aa089b19358cdb6198e6657b7"
+  },
+  "dimension": 3,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   24\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       35 35 24\n    static_dielectric_only      1\n}"
+}

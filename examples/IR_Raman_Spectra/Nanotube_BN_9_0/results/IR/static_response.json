@@ -1,0 +1,26 @@
+{
+  "frequency_cm-1": 0.0,
+  "tensor": [
+    [
+      201.99584968391508,
+      -1.711098012469691e-13,
+      1.7562838142845125e-13
+    ],
+    [
+      -1.711098012469691e-13,
+      201.9966011134699,
+      -1.6035680113965913e-13
+    ],
+    [
+      1.7562838142845125e-13,
+      -1.6035680113965913e-13,
+      429.92581637980464
+    ]
+  ],
+  "response_kind": "total 1D line polarizability (Angstrom^2)",
+  "response_unit": "angstrom^2",
+  "response_convention": "alpha_1D/epsilon_0 = nonperiodic_cross_section*(epsilon_source-I); source-field normalization, not an intrinsic transverse wire permittivity",
+  "electronic_response_included": true,
+  "mode_effective_charge_unit": "e/sqrt(amu)",
+  "oscillator_strength_unit": "e^2/amu"
+}

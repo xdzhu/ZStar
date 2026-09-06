@@ -1,0 +1,21 @@
+{
+  "case": "CH4",
+  "scheme": "unified",
+  "stage": "0.no-move",
+  "host": "cu26",
+  "command": [
+    "mpirun",
+    "-np",
+    "40",
+    "/home/zhuxd/Software/anaconda3/envs/icu_copy/bin/python",
+    "-m",
+    "tools.spectroscopy_benchmark.precision_static"
+  ],
+  "mpi": 40,
+  "omp": 1,
+  "additional_DFT_calls": 0,
+  "success": false,
+  "error": "Command '['mpirun', '-np', '40', '/home/zhuxd/Software/anaconda3/envs/icu_copy/bin/python', '-m', 'tools.spectroscopy_benchmark.precision_static']' returned non-zero exit status 1.",
+  "wall_seconds": 2.6596622420474887,
+  "core_hours": 0.02955180268941654
+}

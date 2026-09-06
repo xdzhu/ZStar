@@ -1,0 +1,6 @@
+{"host": "cu24", "stage": "disp-001", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 128.3100926731713, "core_hours": 1.4256676963685702}
+{"host": "cu24", "stage": "disp-002", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 92.7509677382186, "core_hours": 1.030566308202429}
+{"host": "cu24", "stage": "disp-003", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 128.00492240814492, "core_hours": 1.4222769156460546}
+{"host": "cu24", "stage": "disp-004", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 128.85031349398196, "core_hours": 1.4316701499331328}
+{"host": "cu24", "stage": "disp-005", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 78.41949699819088, "core_hours": 0.8713277444243431}
+{"host": "cu24", "stage": "disp-006", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 109.50226278696209, "core_hours": 1.2166918087440233}

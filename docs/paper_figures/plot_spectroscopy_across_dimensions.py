@@ -6,6 +6,7 @@ import argparse
 import csv
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import matplotlib as mpl
@@ -347,6 +348,7 @@ def draw_axis_triad(
     ax,
     out_of_plane_a: bool,
     b_angle_deg: float = 0.0,
+    a_length_scale: float = 1.0,
 ) -> None:
     """Draw a compact crystallographic axis marker in axes coordinates."""
 
@@ -362,7 +364,7 @@ def draw_axis_triad(
     }
     if not out_of_plane_a:
         endpoints["a"] = (
-            origin + 0.8 * 1.5 * np.array((-0.14, -0.13)),
+            origin + a_length_scale * 0.8 * 1.5 * np.array((-0.14, -0.13)),
             "#e11b22",
         )
     for label, (endpoint, color) in endpoints.items():
@@ -419,6 +421,27 @@ def draw_axis_triad(
         )
 
 
+def draw_sb2s3_axis_triad(ax) -> None:
+    """Match the author's side view: c up, a left, b toward the viewer."""
+    origin = np.array((0.14, 0.13))
+    for label, delta, color, offset in (
+        ("a", (-0.14, 0), "#e11b22", (-0.025, 0)),
+        ("c", (0, 0.24), "#1f43d5", (0, 0.025)),
+    ):
+        endpoint = origin + delta
+        ax.annotate("", xy=endpoint, xytext=origin, xycoords=ax.transAxes,
+                    arrowprops={"arrowstyle": "-|>", "color": color,
+                                "lw": 1.8, "mutation_scale": 12}, zorder=12)
+        ax.text(*(endpoint + offset), label, transform=ax.transAxes,
+                ha="center", va="center", fontsize=9.4, zorder=13)
+    ax.scatter(*origin[:, None], transform=ax.transAxes, s=46, facecolor="white",
+               edgecolor="black", linewidth=1, zorder=13)
+    ax.scatter(*origin[:, None], transform=ax.transAxes, s=12, facecolor="#19b92f",
+               edgecolor="none", zorder=14)
+    ax.text(origin[0] + .06, origin[1], "b", transform=ax.transAxes,
+            ha="left", va="center", fontsize=9.4, zorder=13)
+
+
 def draw_spectrum(
     ax,
     data: np.ndarray,
@@ -428,6 +451,7 @@ def draw_spectrum(
     reference_peaks: np.ndarray,
     reference_label: str,
     reference_broadening: float,
+    sampled_reference: np.ndarray | None = None,
 ) -> None:
     frequency = data[:, 0]
     color = COLORS[kind]
@@ -438,6 +462,10 @@ def draw_spectrum(
             -0.5 * ((reference_frequency - peak) / reference_broadening) ** 2
         )
     reference_intensity = normalize(reference_intensity)
+    if sampled_reference is not None:
+        # Keep the deposited grid and relative intensities; no fitted envelope.
+        reference_frequency = sampled_reference[:, 0]
+        reference_intensity = normalize(sampled_reference[:, 1])
     reference_line, = ax.plot(
         reference_frequency,
         reference_intensity,
@@ -517,7 +545,7 @@ def draw_spectrum(
 
 def panel_label(ax, label: str, column: int) -> None:
     ax.text(
-        -0.16 if column else 0.00,
+        -0.20 if column else 0.00,
         1.18,
         f"({label})",
         transform=ax.transAxes,
@@ -571,7 +599,7 @@ def update_figure_manifest(
         item["path"]: item for item in manifest.get("source_data", [])
     }
     for path in source_files:
-        relative = str(path.relative_to(data_root)).replace("\\", "/")
+        relative = os.path.relpath(path, data_root).replace("\\", "/")
         records[relative] = {
             "path": relative,
             "size": path.stat().st_size,
@@ -587,11 +615,15 @@ def update_figure_manifest(
 def build_figure(
     data_root: Path,
     output: Path,
+    sb2s3_case: Path | None = None,
+    sb2s3_image: Path | None = None,
+    *,
+    reference_numbers: dict[str, int],
 ) -> dict[str, object]:
     available_systems = [
         {
             "name": "CH4",
-            "row": "CH$_4$\nMolecule",
+            "row": "CH$_4$\n0D, molecule",
             "image": data_root / "structure_images" / "CH4_molecule.png",
             "stru": data_root / "molecular" / "ch4" / "STRU",
             "ir": data_root / "molecular" / "ch4" / "ir_spectrum.dat",
@@ -611,7 +643,7 @@ def build_figure(
                 (12, r"$\nu_1(A_1)$", 0.82, -0.167),
                 (15, r"$\nu_3(F_2)$", 0.92, 0.042),
             ],
-            "reference_label": "Ref. [56]",
+            "reference_key": "Shimanouchi1972",
             "reference_broadening": {"ir": 16.0, "raman": 16.0},
             "out_of_plane_a": False,
             "b_axis_angle_deg": -15.0,
@@ -641,14 +673,14 @@ def build_figure(
                 (24, r"$A_2$", 0.70, 0.035),
                 (29, r"$B_2$", 0.82, 0.070),
             ],
-            "reference_label": "Ref. [25]",
+            "reference_key": "unused_GaAs",
             "reference_broadening": {"ir": 7.0, "raman": 7.0},
             "out_of_plane_a": True,
             "image_bounds": (0.28, 0.20, 0.69, 0.58),
         },
         {
             "name": "MoS2",
-            "row": "MoS$_2$\n2D",
+            "row": "MoS$_2$\n2D, slab",
             "image": data_root / "structure_images" / "MoS2_monolayer.png",
             "stru": data_root / "mos2" / "STRU",
             "ir": data_root / "mos2" / "ir" / "ir_spectrum.dat",
@@ -668,7 +700,7 @@ def build_figure(
                 (6, r"$E'$", 0.92, -0.103),
                 (8, r"$A_1'$", 0.92, 0.143),
             ],
-            "reference_label": "Ref. [57]",
+            "reference_key": "Ulian2023MoS2",
             "reference_broadening": {"ir": 5.0, "raman": 5.0},
             "out_of_plane_a": True,
             "b_axis_angle_deg": 0.0,
@@ -676,7 +708,7 @@ def build_figure(
         },
         {
             "name": "HfO2",
-            "row": "HfO$_2$\nBulk",
+            "row": "HfO$_2$\n3D, bulk",
             "image": data_root / "structure_images" / "HfO2_tetragonal.png",
             "stru": data_root / "hfo2" / "STRU",
             "ir": data_root / "hfo2" / "ir" / "ir_spectrum.dat",
@@ -699,7 +731,7 @@ def build_figure(
                 (15, r"$B_{1g}$", 0.78, -0.109),
                 (17, r"$E_g$", 0.92, 0.045),
             ],
-            "reference_label": "Ref. [47]",
+            "reference_key": "Fan2022HfO2",
             "reference_broadening": {"ir": 8.0, "raman": 8.0},
             "out_of_plane_a": False,
             "b_axis_angle_deg": -15.0,
@@ -709,16 +741,55 @@ def build_figure(
 
     systems_by_name = {system["name"]: system for system in available_systems}
     systems = [systems_by_name[name] for name in ("HfO2", "MoS2", "CH4")]
+    if sb2s3_case is not None:
+        if sb2s3_image is None:
+            raise ValueError("The author's Sb2S3 image is required.")
+        result = sb2s3_case / "results"
+        reference = result / "reference/B3LYP-D3/gamma-point"
+        systems.insert(2, {
+            "name": "Sb2S3", "row": "Sb$_2$S$_3$\n1D, nanowire",
+            "image": sb2s3_image,
+            "stru": sb2s3_case / "run/STRU",
+            "ir": result / "IR/ir_spectrum.dat",
+            "ir_modes": result / "IR/ir_modes.csv",
+            "raman": result / "Raman/raman_spectrum.dat",
+            "raman_modes": result / "Raman/raman_modes.csv",
+            "ir_xlim": (0, 390), "raman_xlim": (0, 390),
+            "ir_labels": [(15, r"$A_u$", .89, -.13),
+                          (21, r"$A_u$", .70, .11),
+                          (25, r"$B_u$", .34, .07)],
+            "raman_labels": [(7, r"$A_g$", .76, .11),
+                             (18, r"$B_g$", .92, .12),
+                             (27, r"$A_g$", .68, -.14)],
+            "reference_key": "Ulian2026Sb2S3Data",
+            "reference_broadening": {"ir": 0, "raman": 0},
+            "ir_reference": reference / "sb2s3_fc_b3lyp-d3_freq.irspec.dat",
+            "raman_reference": reference / "sb2s3_fc_b3lyp-d3_freq.ramspec.dat",
+            "ir_reference_column": 2, "raman_reference_column": 1,
+            # Enlarge uniformly by 8% and lower the center by one text line.
+            "image_bounds": (.2204, -.0031, .7992, .8856),
+        })
+
+    for system in systems:
+        key = system["reference_key"]
+        if key not in reference_numbers:
+            raise ValueError(f"Missing bibliography key for spectrum: {key}")
+        system["reference_label"] = f"Ref. [{reference_numbers[key]}]"
 
     reference_path = data_root / "spectroscopy_literature_peaks.csv"
     row_count = len(systems)
+    row_height = 6.6 * (0.95 - 0.07) / (3 + 2 * 0.58)
+    row_pitch = row_height * (1 + 0.58)
+    figure_height = 6.6 + (row_count - 3) * row_pitch
     fig, axes = plt.subplots(
         row_count,
         3,
-        figsize=(8.0, 6.6),
+        figsize=(8.0, figure_height),
         gridspec_kw={"width_ratios": (1.04, 1.14, 1.14), "hspace": 0.58, "wspace": 0.38},
     )
-    fig.subplots_adjust(left=0.13, right=0.985, top=0.95, bottom=0.07)
+    fig.subplots_adjust(left=0.13, right=0.985,
+                        top=1 - 6.6 * .05 / figure_height,
+                        bottom=6.6 * .07 / figure_height)
     fig.canvas.draw()
 
     panel = ord("a")
@@ -730,11 +801,12 @@ def build_figure(
             system["image"],
             system["image_bounds"],
         )
-        draw_axis_triad(
-            axes[row, 0],
-            system["out_of_plane_a"],
-            system["b_axis_angle_deg"],
-        )
+        if system["name"] == "Sb2S3":
+            draw_sb2s3_axis_triad(axes[row, 0])
+        else:
+            draw_axis_triad(axes[row, 0], system["out_of_plane_a"],
+                            system["b_axis_angle_deg"],
+                            a_length_scale=.8 if system["name"] in ("HfO2", "CH4") else 1.0)
         ir_data = load_spectrum(system["ir"])
         raman_data = load_spectrum(system["raman"])
         draw_spectrum(
@@ -743,9 +815,12 @@ def build_figure(
             "ir",
             system["ir_xlim"],
             resolve_annotations(system["ir_modes"], system["ir_labels"]),
-            load_reference_peaks(reference_path, system["name"], "ir"),
+            load_reference_peaks(reference_path, system["name"], "ir")
+            if "ir_reference" not in system else np.empty((0, 2)),
             system["reference_label"],
             system["reference_broadening"]["ir"],
+            np.loadtxt(system["ir_reference"])[:, [0, system["ir_reference_column"]]]
+            if "ir_reference" in system else None,
         )
         draw_spectrum(
             axes[row, 2],
@@ -753,12 +828,15 @@ def build_figure(
             "raman",
             system["raman_xlim"],
             resolve_annotations(system["raman_modes"], system["raman_labels"]),
-            load_reference_peaks(reference_path, system["name"], "raman"),
+            load_reference_peaks(reference_path, system["name"], "raman")
+            if "raman_reference" not in system else np.empty((0, 2)),
             system["reference_label"],
             system["reference_broadening"]["raman"],
+            np.loadtxt(system["raman_reference"])[:, [0, system["raman_reference_column"]]]
+            if "raman_reference" in system else None,
         )
-        axes[row, 1].set_ylabel("Normalized IR intensity")
-        axes[row, 2].set_ylabel("Normalized Raman intensity")
+        axes[row, 1].set_ylabel("IR intensity")
+        axes[row, 2].set_ylabel("Raman intensity")
         for column in range(3):
             panel_label(axes[row, column], chr(panel), column)
             panel += 1
@@ -772,6 +850,9 @@ def build_figure(
                 system["raman"],
             )
         )
+        if system["name"] == "Sb2S3":
+            source_files.extend([system["ir_reference"], system["raman_reference"],
+                                 sb2s3_case / "results/irreps.yaml"])
 
     source_files.append(reference_path)
     source_files.extend(
@@ -789,7 +870,7 @@ def build_figure(
     )
 
     output.mkdir(parents=True, exist_ok=True)
-    stem = "spectroscopy_across_dimensions"
+    stem = "Figure_7_Spectroscopy_with_1D_layout_v2" if sb2s3_case else "spectroscopy_across_dimensions"
     products = {
         "png": output / f"{stem}.png",
         "pdf": output / f"{stem}.pdf",
@@ -797,7 +878,7 @@ def build_figure(
         "powerpoint_svg": output / f"{stem}_powerpoint.svg",
         "tiff": output / f"{stem}.tiff",
     }
-    fig.savefig(products["png"], dpi=400, bbox_inches="tight")
+    fig.savefig(products["png"], dpi=600, bbox_inches="tight")
     fig.savefig(products["pdf"], dpi=600, bbox_inches="tight")
     fig.savefig(products["svg"], dpi=600, bbox_inches="tight")
     svg_text = products["svg"].read_text(encoding="utf-8")
@@ -807,23 +888,37 @@ def build_figure(
     )
     with mpl.rc_context({"svg.fonttype": "path"}):
         fig.savefig(products["powerpoint_svg"], dpi=600, bbox_inches="tight")
+    powerpoint_svg = products["powerpoint_svg"].read_text(encoding="utf-8")
+    products["powerpoint_svg"].write_text(
+        "\n".join(line.rstrip() for line in powerpoint_svg.splitlines()) + "\n",
+        encoding="utf-8",
+    )
     fig.savefig(products["tiff"], dpi=600, bbox_inches="tight", pil_kwargs={"compression": "tiff_lzw"})
     plt.close(fig)
 
     metadata = {
         "figure": stem,
         "backend": f"Python/matplotlib {mpl.__version__}",
-        "core_conclusion": "ZStar reproduces mode-resolved IR and Raman selection rules and reference frequencies for representative bulk, slab, and molecular systems.",
+        "core_conclusion": "Compare mode-resolved IR and Raman spectra for bulk, slab, wire, and molecular systems; agreement with references is assessed, not assumed.",
         "normalization": "ZStar spectra are normalized independently in every panel; intensities are not compared across rows or response types.",
         "placeholder": False,
         "image_scaling": "Aspect-preserving uniform scaling, centered at the largest size that fits each structure panel.",
         "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all three two-line labels use one common left edge across rows.",
-        "reference_overlay": "Light-gray continuous envelopes are reconstructed from published or archived mode frequencies using the documented relative weights and Gaussian broadening; they are normalized independently and are not absolute-intensity traces.",
+        "reference_overlay": "Original three rows unchanged. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled IR and Raman curves, DOI 10.17632/6tntvw37tr.1, independently normalized with no peak shifts. Raman relative-intensity agreement is not claimed.",
+        "row_geometry_inches": {"height": row_height, "pitch": row_pitch},
+        "layout_revision": {"HfO2_CH4_a_axis_scale": .8,
+                            "Sb2S3_image_scale": 1.08,
+                            "Sb2S3_image_center_down_points": .1303 * row_height * 72,
+                            "spectrum_panel_label_x": -.20,
+                            "intensity_labels": ["IR intensity", "Raman intensity"],
+                            "reference_numbers_updated": True},
+        "bibliography_labels": {system["reference_key"]: reference_numbers[system["reference_key"]]
+                                for system in systems},
         "systems": [system["name"] for system in systems],
         "display_systems": [system["row"].split("\n", 1)[0] for system in systems],
         "layout": f"{row_count} rows by 3 columns",
         "source_data": {
-            str(path.relative_to(data_root)).replace("\\", "/"): {"bytes": path.stat().st_size, "sha256": sha256(path)}
+            os.path.relpath(path, data_root).replace("\\", "/"): {"bytes": path.stat().st_size, "sha256": sha256(path)}
             for path in source_files
         },
         "outputs": {key: path.name for key, path in products.items()},
@@ -846,11 +941,18 @@ def main() -> None:
         type=Path,
         default=Path(__file__).resolve().parent,
     )
+    parser.add_argument("--reference-map", type=Path, required=True,
+                        help="JSON mapping of BibTeX keys to the final manuscript numbers.")
+    parser.add_argument("--sb2s3-case", type=Path)
+    parser.add_argument("--sb2s3-image", type=Path)
     args = parser.parse_args()
     configure_matplotlib()
     metadata = build_figure(
         args.data_root.resolve(),
         args.output.resolve(),
+        args.sb2s3_case,
+        args.sb2s3_image,
+        reference_numbers=json.loads(args.reference_map.read_text(encoding="utf-8")),
     )
     print(json.dumps(metadata, indent=2))
 

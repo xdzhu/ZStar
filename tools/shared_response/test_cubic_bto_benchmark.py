@@ -16,7 +16,7 @@ from zstar.workflow import discover_stages
 @pytest.fixture(scope="module")
 def experiment(tmp_path_factory):
     root = tmp_path_factory.mktemp("cubic-bto")
-    source = Path(__file__).resolve().parents[2] / "examples/3d_bulk/BaTiO3_cubic/run"
+    source = Path(__file__).resolve().parents[2] / "examples/3D_Bulk/BaTiO3_cubic/run"
     prepare(root, source)
     return root, source
 

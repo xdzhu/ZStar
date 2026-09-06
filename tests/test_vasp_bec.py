@@ -52,6 +52,29 @@ def outcar_text():
 
 
 class VaspBecTests(unittest.TestCase):
+    def test_low_dimensional_metadata_preserved_without_changing_solver_input(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'input'
+            source.mkdir()
+            for name, content in {'INCAR':'ENCUT = 500\n', 'POSCAR':POSCAR,
+                                  'KPOINTS':'Gamma\n0\nGamma\n1 1 12\n0 0 0\n',
+                                  'POTCAR':'test'}.items():
+                (source/name).write_text(content)
+            wire = prepare_vasp_bec(source, Path(tmp)/'wire', dimensionality=1, periodic_axes='z')
+            bulk = prepare_vasp_bec(source, Path(tmp)/'bulk')
+            for stage in ('reference', 'response'):
+                self.assertEqual((wire/stage/'INCAR').read_bytes(), (bulk/stage/'INCAR').read_bytes())
+            (wire/'response/OUTCAR').write_text(outcar_text())
+            collect_vasp_bec(wire)
+            result = json.loads((wire/'response.json').read_text())
+            self.assertEqual(result['dimensionality']['value'], 1)
+            self.assertEqual(result['dimensionality']['periodic_axes'], ['z'])
+            quantities = {q['name']:q for q in result['quantities']}
+            self.assertNotIn('electronic_dielectric', quantities)
+            self.assertIn('supercell_electronic_dielectric', quantities)
+            self.assertTrue(quantities['supercell_electronic_dielectric']['metadata'][
+                'intrinsic_low_dimensional_response_required'])
+
     def test_render_incar_removes_conflicting_response_tags(self):
         rendered = render_incar(
             "ENCUT = 500\nLEPSILON = .FALSE.\nEDIFF = 1E-10\n",
@@ -150,15 +173,15 @@ class VaspBecTests(unittest.TestCase):
                 encoding="utf-8",
             )
             result = collect_vasp_bec(root)
-            self.assertTrue((root / "Z-BORN-all.out").is_file())
+            self.assertTrue((root / "BEC.raw.dat").is_file())
             self.assertIn(
                 "2.00000000",
-                (root / "Z-BORN-all.out").read_text(encoding="utf-8"),
+                (root / "BEC.raw.dat").read_text(encoding="utf-8"),
             )
             self.assertTrue((root / "BORN").is_file())
             self.assertTrue((root / "vasp_bec.json").is_file())
-            self.assertTrue((root / "zstar_response.json").is_file())
-            response = json.loads((root / "zstar_response.json").read_text())
+            self.assertTrue((root / "response.json").is_file())
+            response = json.loads((root / "response.json").read_text())
             self.assertEqual(response["schema"], "zstar-response")
             self.assertEqual(response["dimensionality"]["value"], 3)
             self.assertEqual(response["quantities"][0]["shape"], [3, 3, 3])

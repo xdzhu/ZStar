@@ -1,0 +1,38 @@
+{
+  "dimensionality": 1,
+  "response_kind": "total 1D line polarizability (Angstrom^2)",
+  "response_unit": "angstrom^2",
+  "response_convention": "alpha_1D/epsilon_0 = nonperiodic_cross_section*(epsilon_source-I); source-field normalization, not an intrinsic transverse wire permittivity",
+  "electronic_response_included": true,
+  "static_response": [
+    [
+      201.99584968391508,
+      -1.711098012469691e-13,
+      1.7562838142845125e-13
+    ],
+    [
+      -1.711098012469691e-13,
+      201.9966011134699,
+      -1.6035680113965913e-13
+    ],
+    [
+      1.7562838142845125e-13,
+      -1.6035680113965913e-13,
+      429.92581637980464
+    ]
+  ],
+  "modes": 104,
+  "files": {
+    "modes": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/ir_modes.csv",
+    "spectrum": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/ir_spectrum.dat",
+    "response_real": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/ir_response_real.dat",
+    "response_imag": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/ir_response_imag.dat",
+    "static_response": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/static_response.json",
+    "plot": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/ir_spectrum.png",
+    "plot_pdf": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/ir_spectrum.pdf",
+    "plot_svg": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/ir_spectrum.svg",
+    "response_plot": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/dielectric_response.png",
+    "response_plot_pdf": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/dielectric_response.pdf",
+    "response_plot_svg": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/ir/dielectric_response.svg"
+  }
+}

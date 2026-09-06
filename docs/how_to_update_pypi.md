@@ -9,8 +9,8 @@ Set-Location $RepoRoot
 
 ## 基本约定
 
-- `examples/` 是 GitHub 上公开的可复现实例库；它不打入 wheel，源码包是否
-  包含它由构建清单决定，发布前应明确检查。
+- `examples/` 是 GitHub 上公开的案例库；wheel 和 PyPI 源码包均不包含它。
+  完整审稿交付包另附案例，并区分 DFT 重跑、离线重建和需用户提供 cube 的分析。
 - `dist/`、`build/` 和 `*.egg-info/` 是本地构建产物，不提交 GitHub。
 - 调度脚本由 ZStar CLI 按系统自动生成；仓库不再维护站点专用的旧作业模板。
 - 开发和测试使用 `zstar-test` 环境。
@@ -55,12 +55,12 @@ git diff --check
 
 ```powershell
 python -m compileall -q zstar tests
-python -m unittest discover -v
-python -m zstar.cli --version
-python -m zstar.cli --help
-python -m zstar.cli workflow run --help
-python -m zstar.cli agent-skill path
-python -m zstar.cli agent-skill preflight --root . --lane bec --dim bulk
+python -m pytest tests -q
+python -m zstar --version
+python -m zstar --help
+python -m zstar spectra run --help
+python -m zstar skill path
+python -m zstar skill preflight --root . --lane bec --dim bulk
 ```
 
 需要外部程序的例子应在仓库的 `examples/` 中验证。至少确认：
@@ -69,6 +69,18 @@ python -m zstar.cli agent-skill preflight --root . --lane bec --dim bulk
 - 默认绝缘性门控只对 `0.no-move` 执行一次普通 `--band`。
 - `zstar bec stat` 能识别完成、失败和恢复状态。
 - 新旧 PYATB 环境都能读取电子介电张量。
+
+### 独立安装验收
+
+从最终 wheel 安装到新建环境，不使用 `--system-site-packages` 或 editable 安装。
+在仓库外运行 `tools/release_acceptance.py smoke`，然后用同一解释器运行
+`tools/release_acceptance.py tests --repo 仓库路径 --output 验收输出目录`。
+脚本先加载已安装的 ZStar，再开放测试辅助工具目录，并记录所有 ZStar 模块路径。
+Linux 上运行 `tools/release_example_audit.py --repo 仓库路径 --output dry-runs.json`，
+逐例检查 `bash run.sh --dry-run`。再运行四个 Unified 谱学案例的 `--post-only`，
+以及一个短案例的实际计算和重复执行，确认续算不会重新运行已完成的求解器阶段。
+
+分别记录所用 Phonopy 版本、测试命令及数量；不要把不同范围的历史测试总数混用。
 
 ## 3. 更新中英文 README 与 PDF
 
@@ -227,6 +239,10 @@ tmp\pypi-smoke\Scripts\zstar --help
 - 仓库提交中包含整理后的 `examples/`，但不包含 `dist/`、scratch 输出或凭据。
 
 ## 常见问题
+
+发布候选版可使用 `tools/release_acceptance.py` 在独立环境中检查 wheel。
+完整研究辅助脚本测试额外需要 `tools/requirements-research-tests.txt`，使用
+`tests --include-tools`；这不增加普通用户安装 ZStar 的依赖。
 
 ### PyPI 提示文件已经存在
 

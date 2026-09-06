@@ -1,0 +1,17 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011",
+  "source_input_sha256": "5332339034f44b8687f7c8ac177baba94cfd52f55b8a91dde6aa0c9c4a97df8e",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/pyatb/STRU": "e63629b2ac9efdafbbe70d02b2e216bdf25175682c8d94a486321a8f1012dbb1",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/pyatb/Hf.upf": "7c516a68310c779a4f572c9ea6b3a73f27ca3a61908b9ade0da3db6db727c8a5",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/pyatb/O.upf": "8c6886f443f3bfe7b8d18f2f6b28dd8749746d996499a542fff9666da34d7cf6",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/pyatb/Hf_gga_9au_100Ry_6s3p3d2f1g.orb": "a6cb4c79bb1245a4ca4fd4e8cd909aae8179bbedb6174d40e336f50e50df547f",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/pyatb/O_gga_9au_100Ry_2s2p1d.orb": "0a2cfe1ef4bee549a1ab23f0f7f4e175144d32932baa095f7b6bc483bbbdc610",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/OUT.POLAR/data-HR-sparse_SPIN0.csr": "cf2d4be5218b93489f5ac07ca55f51eb9eff5bced1e691896284f54c64cd84ca",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/OUT.POLAR/data-SR-sparse_SPIN0.csr": "823d8528c0da95b379a842cdc4a958dae64ba1eeef490c96437898b966ac171d",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian/disp-011/OUT.POLAR/data-rR-sparse.csr": "65d8d9b685eba17d63a8e064d5f3e66228c52f0e8782fa0b9c07c6748f14aa92"
+  },
+  "dimension": 3,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   24\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       35 35 24\n    static_dielectric_only      1\n}"
+}

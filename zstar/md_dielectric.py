@@ -767,7 +767,7 @@ def write_outputs(outdir: Path, result: MDDielectricResult, used_bec_steps: Sequ
             "volume_A3_avg": result.volume_A3_avg,
             "reference": result.reference_mode,
         },
-    ).write(outdir / "zstar_response.json")
+    ).write(outdir / "response.json")
     with (outdir / "md_diagnostics.txt").open("w", encoding="utf-8") as handle:
         handle.write("Zstar MD dielectric diagnostics\n")
         handle.write(f"temperature_K = {result.temperature_K:.8g}\n")

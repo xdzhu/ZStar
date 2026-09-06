@@ -1,0 +1,166 @@
+{
+  "scope": "Primitive-cell Gamma nonresonant Placzek IR/Raman; fixed relaxed geometry",
+  "accounting": "Assembled measured components, not newly timed full workflows. Relaxation excluded. ABACUS+PYATB only; preparation excluded. Extra precision reference included conservatively. Reused-matrix PYATB timers include read-only provenance/hash checks. Cartesian optical reconstruction is verification cost, not new production cost. Old Raman computes both signs for all nonrigid modes, not a maximally symmetry-reduced mode baseline.",
+  "HfO2_caveat": null,
+  "retained_BEC_baseline_caveat": "Non-cubic-BaTiO3 retained BEC routes already requested forces. That output cost was not subtracted; independent force tasks supply the Separate phonons.",
+  "records": [
+    {
+      "case": "HfO2",
+      "dimension": 3,
+      "IR_SCF_old": 17,
+      "IR_SCF_unified": 5,
+      "IR_core_h_old": 29.976658615050837,
+      "IR_core_h_unified": 10.87362902115306,
+      "IR_speedup": 2.7568218997296685,
+      "Raman_mode_SCF_old": 30,
+      "Raman_extra_SCF_unified": 0,
+      "full_SCF_old": 47,
+      "full_SCF_unified": 5,
+      "old_mode_Raman_core_h": 57.411057176673786,
+      "new_static_postprocessing_core_h": 4.603304468778273,
+      "full_core_h_old": 87.38771579172462,
+      "full_core_h_unified": 15.476933489931334,
+      "assembled_speedup": 5.646319786059398,
+      "parallelism_matched": true,
+      "Raman_atomic_Cartesian_tensor_error": 0.00012091507428172684,
+      "Raman_direct_tensor_error": 0.00018183441766854105,
+      "Raman_direct_activity_error": 0.00023124756267807014,
+      "IR_validation": {
+        "mode_charge_relative_L2_common_basis": 5.3311362307054304e-05,
+        "maximum_sorted_frequency_difference_cm1": 0.0686936527269495
+      }
+    },
+    {
+      "case": "MoS2",
+      "dimension": 2,
+      "IR_SCF_old": 16,
+      "IR_SCF_unified": 4,
+      "IR_core_h_old": 7.22440886033906,
+      "IR_core_h_unified": 3.0131735380428535,
+      "IR_speedup": 2.39760796022108,
+      "Raman_mode_SCF_old": 12,
+      "Raman_extra_SCF_unified": 0,
+      "full_SCF_old": 28,
+      "full_SCF_unified": 4,
+      "old_mode_Raman_core_h": 3.322299555094085,
+      "new_static_postprocessing_core_h": 0.09953080280166533,
+      "full_core_h_old": 10.546708415433145,
+      "full_core_h_unified": 3.1127043408445187,
+      "assembled_speedup": 3.3882782495724215,
+      "parallelism_matched": true,
+      "Raman_atomic_Cartesian_tensor_error": 0.0005513582938870035,
+      "Raman_direct_tensor_error": 0.0005360164934547725,
+      "Raman_direct_activity_error": 0.0007764666010237221,
+      "IR_validation": {
+        "mode_charge_relative_L2_common_basis": 0.007358942950475131,
+        "maximum_sorted_frequency_difference_cm1": 0.5268680174735891
+      }
+    },
+    {
+      "case": "Sb2S3",
+      "dimension": 1,
+      "IR_SCF_old": 51,
+      "IR_SCF_unified": 21,
+      "IR_core_h_old": 41.669086078264655,
+      "IR_core_h_unified": 18.94506395142008,
+      "IR_speedup": 2.199469275222015,
+      "Raman_mode_SCF_old": 52,
+      "Raman_extra_SCF_unified": 0,
+      "full_SCF_old": 103,
+      "full_SCF_unified": 21,
+      "old_mode_Raman_core_h": 30.091572300810373,
+      "new_static_postprocessing_core_h": 0.5660195539808937,
+      "full_core_h_old": 71.76065837907502,
+      "full_core_h_unified": 19.511083505400975,
+      "assembled_speedup": 3.677943275636668,
+      "parallelism_matched": true,
+      "Raman_atomic_Cartesian_tensor_error": 0.0002123858823942825,
+      "Raman_direct_tensor_error": 0.00035748103994354407,
+      "Raman_direct_activity_error": 0.00026494718108952296,
+      "IR_validation": {
+        "mode_charge_relative_L2_common_basis": 8.255698076204544e-05,
+        "maximum_sorted_frequency_difference_cm1": 3.578608461857975
+      }
+    },
+    {
+      "case": "CH4",
+      "dimension": 0,
+      "IR_SCF_old": 16,
+      "IR_SCF_unified": 4,
+      "IR_core_h_old": 12.978126084297482,
+      "IR_core_h_unified": 3.2605297272093594,
+      "IR_speedup": 3.9803734883918,
+      "Raman_mode_SCF_old": 18,
+      "Raman_extra_SCF_unified": 0,
+      "full_SCF_old": 34,
+      "full_SCF_unified": 4,
+      "old_mode_Raman_core_h": 14.906413354900563,
+      "new_static_postprocessing_core_h": 0.07756975207270847,
+      "full_core_h_old": 27.884539439198043,
+      "full_core_h_unified": 3.338099479282068,
+      "assembled_speedup": 8.353417749310225,
+      "parallelism_matched": true,
+      "Raman_atomic_Cartesian_tensor_error": 2.3374472827178356e-08,
+      "Raman_direct_tensor_error": 7.653238681722386e-05,
+      "Raman_direct_activity_error": 0.00016126130911381235,
+      "IR_validation": {
+        "mode_charge_relative_L2_common_basis": 1.1225693187045653e-05,
+        "maximum_sorted_frequency_difference_cm1": 4.8667002374713775e-06
+      }
+    }
+  ],
+  "new_campaign_spending": {
+    "HfO2": {
+      "successful_solver_core_h": 74.45985147271615,
+      "failed_solver_core_h": 0.030088677298691538,
+      "preparation_allocated_core_h": 0.1631126816953636
+    },
+    "MoS2": {
+      "successful_solver_core_h": 3.740850796943738,
+      "failed_solver_core_h": 0.12524830114303365,
+      "preparation_allocated_core_h": 0.04124852495474948
+    },
+    "Sb2S3": {
+      "successful_solver_core_h": 1.3944370001347526,
+      "failed_solver_core_h": 0.028573162610539132,
+      "preparation_allocated_core_h": 0.0
+    },
+    "CH4": {
+      "successful_solver_core_h": 15.22965387457775,
+      "failed_solver_core_h": 0.02955180268941654,
+      "preparation_allocated_core_h": 0.06965127746678061
+    }
+  },
+  "source_sha256": {
+    "docs/research/separate_unified_efficiency.json": "c4ab9accf88d96c353c97eb5142ddb259735545ae746494af5ad307915dbe9bf",
+    "docs/research/unified_spectroscopy_20260906/evidence/HfO2/analysis/comparison.json": "bd4684f62c2ab0c73c6c5b27fc8d1e12ab0c28b76570e8eb68d9add90f08a88e",
+    "docs/research/unified_spectroscopy_20260906/evidence/HfO2/analysis/direct_comparison.json": "d42929bf61d3c28e2d839beacd0475f3a8dd0f1dd3f661abcb94b2e782f9979e",
+    "docs/research/unified_spectroscopy_20260906/evidence/HfO2/direct_control/component_times.jsonl": "95c7833b46231058ad44aad4224bef0fc2447b58fa99c5ef82daa537161f7cf5",
+    "docs/research/unified_spectroscopy_20260906/evidence/MoS2/analysis/comparison.json": "b64835eb823d80d8d6ce7acad29871b9867c459d89e13fa2234acb3cad4e1978",
+    "docs/research/unified_spectroscopy_20260906/evidence/MoS2/analysis/direct_comparison.json": "39fbc0c17e06a03b9c99bb69a7e655e2bec9a0d393074c081d623d1b93cba4f1",
+    "docs/research/unified_spectroscopy_20260906/evidence/MoS2/direct_control/component_times.jsonl": "f20055b9c8cf7c22862b15c65bfd0dc4a695fd05e5907ab4666ae29547756c50",
+    "docs/research/unified_spectroscopy_20260906/evidence/Sb2S3/analysis/comparison.json": "238511a28dd56185f46bb0f1a181f43373141bde31b41d4d13751c8f8a0dbcf7",
+    "docs/research/unified_spectroscopy_20260906/evidence/Sb2S3/analysis/direct_comparison.json": "23e6e420bd69904f4bf703d748a5969a91995103d946e5502df66b698f982f0c",
+    "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/compute_costs.json": "5b2afc8fb044997705fa1e5862ac65c96c557d3167f5e548daeaba538fa9e8e4",
+    "docs/research/unified_spectroscopy_20260906/evidence/CH4/analysis/comparison.json": "e82f615613e4f7a39734b76f5b40805857769234f72f062d2a7838734a9f6b28",
+    "docs/research/unified_spectroscopy_20260906/evidence/CH4/analysis/direct_comparison.json": "7a299df6b05b5ffff7e7965401c14a043ec2e1e48ce1f45eeaf837747e3dd358",
+    "docs/research/unified_spectroscopy_20260906/evidence/CH4/direct_control/component_times.jsonl": "f49cd24634d0401ff03f1f5f6c9b38370f567f690710c07180ce0726cec92cd6"
+  },
+  "analysis_code_sha256": {
+    "atomic_raman.py": "ad8f624f8dbec08251153fe51555b82bbc81a91450cb01ae42699b33fbf6e13e",
+    "audit_integration.py": "eb7a1bf3c19c8d4c65d55927d525e1ddb321645759030a757b0cdaf96f422c5f",
+    "collect.py": "702db056ce68026222eb5150a36c095d7140fc146eb041db673607df619b8651",
+    "direct_control.py": "0c5ef3eab54599ef35729c4777916818000067a1f107548a8fdbc0a698bde01f",
+    "export_evidence.py": "a51734209ff453f9640370a9312ace851b30abf31a13e40a8ca85f2fca53e5fe",
+    "gather_legacy.py": "6d9b05b8912e9ea7570dbc4e09eb2b088813347661700b9eb8cdb73395f0dcda",
+    "launch_remote.py": "66d51eed0df5a1d5d2f39f4c99f27b7efd521a5cebf2d5239660f0a145c6bdf1",
+    "merge_controls.py": "84270f87e91d22e9256f0d19dc9a7acc8d9ac6e1af115abe5f1c2ceb583caf7b",
+    "package_results.py": "565a32fbf2636c0bfabf027aa0322236130cd858594000cf3395f621c16f8c22",
+    "precision_static.py": "cb1dba13a48c27749c99d554038b096580350af40be91fa9027ece731683af2a",
+    "report.py": "0176a81a004868e7d26c04dd66d0c01ddc5a5d3e1320eecb3acf94f866b37117",
+    "run_optical_reuse.py": "8c14c9c37f28879faaaff829eab58ac6567431375719634020a3d0d0839e5a4c",
+    "runtime_record.py": "497be65aac96f5fe6937c3fbdc839cb7836412893025ea7ce151b7b0f74d26ef",
+    "test_atomic_raman.py": "473a1066a452f47fb072e1949e587d7b31d8d665bd81621841e8a8a81ed9e006",
+    "validate_direct.py": "ee502bf56b83108485fe1a8a5f4e5f6c671f363bf39b43a43cc8ac714a7a46c8"
+  }
+}

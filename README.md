@@ -22,24 +22,46 @@
 
 ---
 
+## Unified Spectroscopy
+
+One symmetry-adapted SCF ensemble now supports BEC/APT, Gamma phonons, IR and
+static nonresonant Raman. Raman reuses retained electronic matrices, adding
+PYATB postprocessing rather than new SCFs.
+
+```bash
+zstar bec pre --stru STRU --input INPUT --dim 3
+zstar spectra pre
+zstar spectra run
+zstar spectra post
+```
+
+Set `--dim 2`, `1`, or `0` at BEC preparation for slabs, wires, or molecules.
+[Full tutorial](docs/unified_spectroscopy.md) · [Four-dimensional cost and accuracy comparison](docs/research/unified_spectroscopy_20260906/README.md)
+
 ## Overview
 
-ZStar is a Python workflow toolkit that connects ABACUS + PYATB, VASP, CP2K,
-Quantum ESPRESSO, and Phonopy calculations to reproducible polarization
-and dielectric-response results. Its main task is to turn atomic response data
-into symmetry-consistent Born effective charge (BEC) tensors, then use those
-tensors for phonon, infrared (IR), dielectric, and Raman analysis.
+ZStar automates efficient, symmetry-adapted finite-displacement response
+calculations. Its Unified ABACUS + PYATB framework reconstructs Born effective
+charges (BECs), Gamma force constants and Raman derivatives from one displacement
+ensemble. Polarization, force and electronic dielectric observations yield
+infrared (IR), Raman and dielectric responses with explicit accuracy checks.
+Additional VASP, CP2K and Quantum ESPRESSO adapters support their documented
+response routes; they are complementary to the Unified framework.
 
 The toolkit keeps every stage visible: structures, solver inputs, band-gap gates, polarization values, charge-density data, tensor reconstruction reports, spectra, and progress records remain available for inspection and restart.
 
 The numerical checks used for the current release are summarized in [docs/validation.md](docs/validation.md).
 
-The development ABACUS + PYATB workflow now shares Phonopy-generated
+The Unified ABACUS + PYATB workflow shares Phonopy-generated
 displacements between BEC and Gamma phonons. See the
 [shared-response guide](docs/research/shared_response/USAGE.md) and
-[matched examples](examples/Shared_Response/README.md) for its theory,
+[matched examples](examples/Benchmarks/README.md) for its theory,
 actual-displacement convention, precision safeguards, and validation status.
 The released package and historical examples retain their recorded versions.
+
+Version `0.3.0` includes the Unified framework, short output names, and completed
+Separate/Unified benchmarks. Use the matching release when reproducing the
+manuscript; historical examples retain their original provenance.
 
 For mixed displacements, converge the PYATB Berry mesh as well as the SCF and
 displacement amplitude. The [direct validation report](docs/research/shared_response/DIRECT_VALIDATION.md)
@@ -48,7 +70,8 @@ mesh/step diagnostics, and separately accounted CPU core-hours.
 
 ### Main capabilities
 
-- Forward and central finite-difference BEC calculations.
+- Unified BEC/APT, Gamma force constants and static nonresonant Raman derivatives,
+  with independent Cartesian/mode-displacement controls.
 - Symmetry reduction, full-cell tensor reconstruction, and acoustic-sum-rule correction.
 - A serial, resumable `0.no-move -> displaced structures` execution model.
 - Reuse of the converged `0.no-move` charge density for every displacement.
@@ -89,6 +112,16 @@ polarizabilities, and supports Gamma-point IR and Raman spectra. A bulk NAC is
 explicitly rejected because finite-wavevector polar phonons require a genuine
 1D Coulomb cutoff. See the [one-dimensional workflow](docs/one_dimensional_workflow.md).
 
+The [BN(9,0) nanotube](examples/IR_Raman_Spectra/Nanotube_BN_9_0) and
+[Sb2S3 chain](examples/IR_Raman_Spectra/Nanowire_Sb2S3) provide complete unified
+BEC/Gamma calculations, full tensors, IR/Raman results, input assets and resumable
+`run.sh` scripts. Their BEC and force constants use the same SCFs. The Sb2S3
+comparison retains the original public reference curves and the observed Raman
+intensity differences; its reference is a computational dataset, not a verified
+associated journal article.
+
+![Sb2S3 one-dimensional IR and Raman comparison](examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.png)
+
 ### Two-dimensional slabs
 
 A slab requires separate treatment of in-plane and out-of-plane response:
@@ -121,10 +154,10 @@ effective charge, diagnostics, and PNG/PDF/SVG plots.
 
 ZStar requires Python 3.9 or newer.
 
-The unified-framework submission candidate is **0.3.0rc2**. Its eight-system
-examples and revised headers require that tagged source, not the older PyPI
-0.2.1 release: `git checkout v0.3.0rc2` before installing the checkout below.
-See [the reproducible benchmarks](examples/Shared_Response/README.md) and
+The revised manuscript accompanies **0.3.0**. For exact reproduction, install
+its wheel with `pip install zstar==0.3.0` and obtain the examples from the
+matching GitHub tag. Examples are not included in the PyPI package.
+See [the reproducible benchmarks](examples/Benchmarks/README.md) and
 [revision validation](docs/research/PUBLICATION_REVISION_20260904.md).
 
 Install the released package:
@@ -382,10 +415,10 @@ zstar bec post --root .
 ```
 
 The Unified collector reconstructs molecular APTs and force constants together,
-retaining raw and projected tensors in `shared_response_result.json` and the
-normalized `zstar_response.json`. Its PYATB output adapter retains full-precision
+retaining raw and projected tensors in `response_fit.json` and the
+normalized `response.json`. Its PYATB output adapter retains full-precision
 polarization values without modifying the installed PYATB kernel.
-The legacy Cartesian molecular collector writes `molecular_apt.json`; for old
+The legacy Cartesian molecular collector writes `apt.json`; for old
 rounded outputs it can also recover small signals from separately printed phases.
 
 Three-dimensional:
@@ -414,17 +447,25 @@ Key outputs:
 
 | File | Meaning |
 | --- | --- |
-| `Z-BORN-reduced.out` | Raw tensors for explicitly calculated symmetry representatives. |
-| `Z-BORN-symm.out` | Full-cell tensors reconstructed by symmetry and corrected by the acoustic sum rule. |
-| `Z-BORN-reduced-neutral.out` | Reduced tensors after reconstruction and neutrality correction. |
+| `BEC.rep.raw.dat` | Raw tensors for explicitly calculated symmetry representatives. |
+| `BEC.raw.dat` | Raw full-cell tensors, before charge-neutrality projection. |
+| `BEC.dat` | Full-cell tensors reconstructed by symmetry and corrected by the acoustic sum rule. |
+| `BEC.rep.dat` | Reduced tensors after reconstruction and neutrality correction. |
 | `BORN` | Electronic dielectric tensor plus Phonopy-order BEC tensors. |
-| `BORN-for-phonopy.out` | Explicitly named copy of the Phonopy-compatible data. |
-| `shared_response_result.json` | Unified raw/projected BEC or APT, force constants, units and diagnostics. |
-| `zstar_response.json` | Standardized response record, including dimensionality and provenance. |
-| `born_symmetry_report.json` | Legacy Cartesian reconstruction and residual report. |
+| `force_fit.json` | Force reconstruction diagnostics, separate from the response exchange record. |
+| `response_fit.json` | Unified raw/projected BEC or APT, force constants, units and diagnostics. |
+| `response.json` | Standardized response record, including dimensionality and provenance. |
+| `BEC_symmetry.json` | Legacy Cartesian reconstruction and residual report. |
 | `zstar_2d_bec.json` | Legacy Cartesian hybrid 2D diagnostics. |
 | `zstar_1d_bec.json` | Legacy Cartesian hybrid 1D diagnostics. |
-| `molecular_apt.json` | Legacy Cartesian/cube molecular APT and translational-sum diagnostics. |
+| `apt.json` | Legacy Cartesian/cube molecular APT and translational-sum diagnostics. |
+
+New outputs use these short names. Existing archives keep their original names
+(such as `Z-BORN-symm.out`, `zstar_response.json`, and `molecular_apt.json`).
+Readers fall back to the corresponding old name only when the requested
+standard file is absent; an explicitly existing file always takes precedence.
+The rename does not change tensor axes or units. `BORN` is written once, without
+the redundant `BORN-for-phonopy.out` copy.
 
 ## CP2K BEC Backend
 
@@ -504,20 +545,20 @@ Copy the full tensors as well:
 
 ```bash
 cp ../polar/BORN .
-cp ../polar/Z-BORN-symm.out .
+cp ../polar/BEC.dat .
 ```
 
 Static response:
 
 ```bash
-zstar dielectric static --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3
 ```
 
 Frequency-dependent response:
 
 ```bash
-zstar dielectric freq --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric freq --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3
 ```
 
@@ -528,7 +569,7 @@ Modes below 5 cm-1 are excluded by default; change this with `--acoustic-cutoff`
 For 2D, omit `--thickness` to obtain a vacuum-independent sheet polarizability in angstroms:
 
 ```bash
-zstar dielectric static --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 2
 ```
 
@@ -651,10 +692,11 @@ SiC/HfO2 ABACUS-VASP comparison, including CPU core-hours, is available in the
 [backend benchmark](docs/spectroscopy_backend_benchmark.md).
 
 The molecular APT examples also include compact HSE reference records in
-`examples/molecules/{H2O,CH4}/reference/hse_apt_summary.json`. The associated
+`examples/0D_Molecules/{H2O,CH4}/results/hse_apt_summary.json`. The associated
 solver scratch directories and cube files are intentionally excluded; the JSON
 records retain the functional, convergence threshold, displacement, tensor
 convention, and symmetry-corrected values needed to identify the benchmark.
+Both HSE examples use ABACUS charge-density cube dipoles, without PYATB.
 
 ## Representative Validation Figures
 
@@ -662,11 +704,12 @@ The compact source data, plotting script, vector files, and integrity manifest
 are archived in [docs/paper_figures](docs/paper_figures/README.md).
 
 <p align="center">
-  <img src="docs/paper_figures/spectroscopy_across_dimensions.png" alt="Validated IR and Raman spectra for a bulk crystal, two-dimensional slab, and molecule" width="820">
+  <img src="docs/paper_figures/spectroscopy_across_dimensions.png" alt="IR and Raman spectra for bulk, slab, nanowire, and molecule" width="820">
 </p>
 
-The three-row comparison follows the manuscript order: tetragonal HfO2
-(`Bulk`), monolayer MoS2 (`2D`), and CH4 (`Molecule`). The
+The four-row comparison follows the manuscript order: tetragonal HfO2
+(`3D, bulk`), monolayer MoS2 (`2D, slab`), Sb2S3 (`1D, nanowire`),
+and CH4 (`0D, molecule`). The
 PBEsol HfO2 row contains all 15 stable optical modes and 30 completed Raman
 response stages. The refreshed ABACUS/PBE-D3(BJ) MoS2 row combines all six
 optical modes with production BEC-derived IR intensities and 12 completed

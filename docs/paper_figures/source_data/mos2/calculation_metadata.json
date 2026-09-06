@@ -26,5 +26,5 @@
     "raman_forbidden_A2pp_activity_normalized": 3.022142860689492e-14,
     "born_acoustic_sum_residual_e": 0.0
   },
-  "provenance": "Compact outputs archived from the ABACUS PBE+D3(BJ) validation; raw DFT folders, pseudopotentials, and orbitals remain outside Git."
+  "provenance": "Original BEC inputs, polarization observations, and tensors are retained in examples/IR_Raman_Spectra/2D_MoS2/results/bec with source hashes. Matching PP/ORB files are included under run/assets. The BEC archive uses forward displacements; central differences above refer to Raman mode derivatives. Large cubes and Hamiltonian scratch files are not distributed."
 }

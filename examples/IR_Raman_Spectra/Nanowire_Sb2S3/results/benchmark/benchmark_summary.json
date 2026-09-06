@@ -1,0 +1,187 @@
+{
+  "case": "Sb2S3",
+  "plan": {
+    "case": "Sb2S3",
+    "source": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3",
+    "dimension": 1,
+    "cartesian_displacements": 30,
+    "unified_displacements": 20,
+    "cartesian_BEC_SCFs": 31,
+    "independent_phonon_SCFs": 20,
+    "unified_BEC_and_phonon_SCFs": 21,
+    "reference_convention": "One reference counted in Cartesian BEC; independent force route contains only displacements.",
+    "control_caveat": "Cartesian response runner also exports forces, as in earlier benchmark; no speculative timing subtraction.",
+    "seed_sha256": {
+      "STRU": "b0897b8928f879926dbd32393fe8cac1e3b7f65fab2de07f921687035656b00c",
+      "Sb_gga_9au_100Ry_2s2p2d1f.orb": "aedf05921182e0971810c765d1f2482b2e97073a18dcec7593caae77b7b1d724",
+      "Sb_ONCV_PBE-1.0.upf": "d50f209980736c643c855ff13616e68d2867096911e2d48a86796aa6ab755eb2",
+      "S_gga_9au_100Ry_2s2p1d.orb": "14dcb95037fe2d02368eb074fb5a5f80cc62fa1cdb347e07fcbf950639880d7e",
+      "S_ONCV_PBE-1.0.upf": "b11d51bb7fd40027ffa0b3886e33d0ec9ba622a7291036011070affa766789a4",
+      "KPT": "1e6ed3551f95a145d06ddcd6de8e2408abe74b7f07b45f903adbdb0d40ca9b09",
+      "INPUT": "9a64cad5893b13e94f42aa3524488e3c0cc558433d2c6e55129019b380c8b740"
+    }
+  },
+  "unified": {
+    "successful_SCFs": 21,
+    "costs": {
+      "ABACUS": 17.919839405816877,
+      "PYATB": 1.0252245456032043,
+      "independent_force_scf": 0
+    },
+    "failed_calls": 0,
+    "failed_core_hours": 0
+  },
+  "cartesian": {
+    "successful_SCFs": 31,
+    "costs": {
+      "ABACUS": 22.288375126347983,
+      "PYATB": 1.4541502749909545,
+      "independent_force_scf": 0
+    },
+    "failed_calls": 0,
+    "failed_core_hours": 0
+  },
+  "independent_phonon": {
+    "successful_SCFs": 20,
+    "costs": {
+      "ABACUS": 0,
+      "PYATB": 0,
+      "independent_force_scf": 17.926560676925718
+    },
+    "failed_calls": 0,
+    "failed_core_hours": 0
+  },
+  "complete": true,
+  "separate_BEC_core_h": 23.742525401338938,
+  "separate_phonon_core_h": 17.926560676925718,
+  "separate_total_core_h": 41.669086078264655,
+  "unified_total_core_h": 18.94506395142008,
+  "speedup": 2.199469275222015,
+  "saved_fraction": 0.5453448651156723,
+  "max_raw_BEC_difference_e": 0.001039788640814443,
+  "max_projected_frequency_difference_cm1": 0.7690373097663641,
+  "max_internal_frequency_difference_cm1": 0.018433342917269613,
+  "internal_modes": 26,
+  "rigid_mode_audit": {
+    "unified": [
+      {
+        "mode": 1,
+        "frequency_cm1": -2.117533459502659e-06,
+        "rigid_overlap": 1.0,
+        "classified_rigid": true
+      },
+      {
+        "mode": 2,
+        "frequency_cm1": 1.0691898779332983e-06,
+        "rigid_overlap": 1.0,
+        "classified_rigid": true
+      },
+      {
+        "mode": 3,
+        "frequency_cm1": 3.1221597742211585e-06,
+        "rigid_overlap": 1.0000000000000004,
+        "classified_rigid": true
+      },
+      {
+        "mode": 4,
+        "frequency_cm1": 1.5152783528457747,
+        "rigid_overlap": 0.9997191541881302,
+        "classified_rigid": true
+      }
+    ],
+    "separate": [
+      {
+        "mode": 1,
+        "frequency_cm1": -3.6330629236859517e-06,
+        "rigid_overlap": 1.0000000000000022,
+        "classified_rigid": true
+      },
+      {
+        "mode": 2,
+        "frequency_cm1": -2.7881588738747636e-06,
+        "rigid_overlap": 1.0000000000000009,
+        "classified_rigid": true
+      },
+      {
+        "mode": 3,
+        "frequency_cm1": 1.6757116900637553e-06,
+        "rigid_overlap": 1.0000000000000009,
+        "classified_rigid": true
+      },
+      {
+        "mode": 4,
+        "frequency_cm1": 2.284315662612139,
+        "rigid_overlap": 0.9997117663925155,
+        "classified_rigid": true
+      }
+    ]
+  },
+  "independent_force_Hessian_relative_difference": 4.9076150533403745e-05,
+  "separate_Gamma_frequencies_cm1": [
+    -3.6330629236859517e-06,
+    -2.7881588738747636e-06,
+    1.6757116900637553e-06,
+    2.284315662612139,
+    39.387966672061076,
+    41.13823099708885,
+    45.66563442610428,
+    52.62922484976817,
+    58.196686464167364,
+    93.05337497906045,
+    93.69254430146098,
+    96.6109069617755,
+    103.19766563812308,
+    119.4603703886041,
+    127.1973299678143,
+    185.53126577306944,
+    188.52532923740628,
+    196.0419682859282,
+    197.0798991228808,
+    221.24789151812053,
+    238.05872603918067,
+    238.880422125608,
+    259.0099385910934,
+    261.2645438395283,
+    295.92665309619537,
+    301.10099072946304,
+    322.13834433565165,
+    330.9473986451118,
+    333.88242621909313,
+    353.2523141472802
+  ],
+  "unified_Gamma_frequencies_cm1": [
+    -2.117533459502659e-06,
+    1.0691898779332983e-06,
+    3.1221597742211585e-06,
+    1.5152783528457747,
+    39.37966520621567,
+    41.13839967562793,
+    45.647201083187014,
+    52.6260441986047,
+    58.19783472079165,
+    93.04882278929777,
+    93.69248649081037,
+    96.60540437288074,
+    103.19127241643434,
+    119.44602247457945,
+    127.1960513290472,
+    185.53117997468752,
+    188.52559210650918,
+    196.04218557708023,
+    197.07947913370046,
+    221.248402916991,
+    238.05870288192617,
+    238.8806926112391,
+    259.0088378375387,
+    261.26462923603924,
+    295.9279258917287,
+    301.098947749147,
+    322.1353366177695,
+    330.94696287149117,
+    333.88162501645394,
+    353.2538245975302
+  ],
+  "reference_force_max_difference_eV_A": 3.0000000010230177e-10,
+  "scope": "BEC and Gamma Hessian; exclude relaxation and Raman; retain rigid modes in this diagnostic.",
+  "raw_BEC_convention": "Z[atom, polarization, displacement]"
+}

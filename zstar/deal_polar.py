@@ -118,7 +118,7 @@ def _parse_reduced_atom_out_ordered(path="reduced_atom.out"):
 
 def _load_born_indexed(path):
     """
-    解析 Z-BORN-symm.out / Z-BORN-all-neutral.out 等：返回 dict[idx] = 3x3 ndarray
+    解析 BEC.dat / Z-BORN-all-neutral.out 等：返回 dict[idx] = 3x3 ndarray
     解析策略: 每行末尾 9 个浮点数 -> reshape(3,3)
     """
     mp = {}
@@ -145,12 +145,12 @@ def _load_born_indexed(path):
 def _write_born_for_phonopy(
     diel_3x3,
     reduced_mats,
-    out_path='BORN-for-phonopy.out',
+    out_path='BORN',
     width=BORN_OUTPUT_WIDTH,
     prec=BORN_OUTPUT_PRECISION,
 ):
     """
-    BORN-for-phonopy.out:
+    BORN:
       # header(列名)
       <epsilon 3x3>
       <Z(reduced) 3x3>  # 一行 9 个数，不带编号
@@ -207,7 +207,7 @@ def _parse_starred_reduced_primitive(path="reduced_atom.out"):
     return res
 
 # =========================
-#  Helper: 从 Z-BORN-symm.out 读取星标 Born（中性修正后）
+#  Helper: 从 BEC.dat 读取星标 Born（中性修正后）
 # =========================
 def _load_starred_map_from_symm(path):
     """只提取 '*' 行，返回 dict: idx -> (symbol, 3x3 np.array)"""
@@ -1675,9 +1675,9 @@ def format_and_combine_data(
     xx_len=BORN_OUTPUT_WIDTH,
 ):
     """
-    格式化并合并处理后的矩阵数据到 Z-BORN-all.out 的格式。
+    格式化并合并处理后的矩阵数据到 BEC.raw.dat 的格式。
 
-    :param z_data: 原始的 Z-BORN-all.out 数据（行列表）。
+    :param z_data: 原始的 BEC.raw.dat 数据（行列表）。
     :param dielectric_matrix_zero: 处理后的3x3矩阵。
     :param xx_len: 每个元素的格式化宽度。
     :return: 合并后的数据。
@@ -1689,7 +1689,7 @@ def format_and_combine_data(
         for element in flattened_matrix
     )
 
-    # 将格式化后的矩阵数据插入到 Z-BORN-all.out 数据的第一行后
+    # 将格式化后的矩阵数据插入到 BEC.raw.dat 数据的第一行后
     z_data[1:1] = [formatted_matrix + '\n']
 
     return ''.join(z_data)
@@ -1851,11 +1851,11 @@ def main(
 
             # 收集每个原子的 Z（用于决定是否能写 all.out）
             entries = []   # [{'idx': int, 'label': str, 'star': bool, 'Z': np.ndarray(3,3)}]
-            all_rows = []  # 可能写 Z-BORN-all.out 用
+            all_rows = []  # 可能写 BEC.raw.dat 用
             dielectric_data_processed = None  # 保持与后文兼容
 
             # 先写 reduced 文件（无论如何都写）
-            with open('Z-BORN-reduced.out', 'w') as file_reduced:
+            with open('BEC.rep.raw.dat', 'w') as file_reduced:
                 file_reduced.write(header)
 
                 for folder in subfolders:
@@ -1899,7 +1899,7 @@ def main(
                     mark = '*' if star_flag else ' '
                     all_rows.append(f"{mark}{folder_number: >4} {folder_label: <3} {formatted_row}\n")
 
-            # —— 是否可以写 Z-BORN-all.out？（仅当统计的原子数 == 体系总原子数）——
+            # —— 是否可以写 BEC.raw.dat？（仅当统计的原子数 == 体系总原子数）——
             try:
                 tot_natoms, _reduced_set = _parse_reduced_atom_out("reduced_atom.out")  # 你已有的小函数
             except Exception:
@@ -1909,18 +1909,18 @@ def main(
             can_write_all = (tot_natoms is not None and tot_natoms > 0 and computed_count == tot_natoms)
 
             if can_write_all:
-                with open('Z-BORN-all.out', 'w') as file_all:
+                with open('BEC.raw.dat', 'w') as file_all:
                     file_all.write(header)
                     file_all.writelines(all_rows)
-                print(f"[INFO] Z-BORN-all.out has been written ({computed_count}/{tot_natoms} atoms).")
+                print(f"[INFO] BEC.raw.dat has been written ({computed_count}/{tot_natoms} atoms).")
             else:
                 if tot_natoms is None or tot_natoms == 0:
                     print("[INFO] Cannot determine total number of atoms from reduced_atom.out; "
-                          "skip Z-BORN-all.out.")
+                          "skip BEC.raw.dat.")
                 else:
                     print(f"[INFO] Partial Born set detected ({computed_count}/{tot_natoms}); "
-                          "skip Z-BORN-all.out. A full symmetric Born will be reconstructed later "
-                          "to Z-BORN-symm.out if needed.")
+                          "skip BEC.raw.dat. A full symmetric Born will be reconstructed later "
+                          "to BEC.dat if needed.")
 
             dielectric_data_processed = None  # 初始化为空，确保后续判断不会崩溃
 
@@ -1938,7 +1938,7 @@ def main(
                 except Exception as e:
                     print(f"[WARN] Could not process dielectric data: {e}")
 
-            # 新的标题行，用于 BORN-for-phonopy.out
+            # 新的标题行，用于 BORN
             new_header = (
                 f"{'#': <4} "
                 f"{'xx': <{xx_len}} {'xy': <{xx_len}} {'xz': <{xx_len}} "
@@ -1947,9 +1947,9 @@ def main(
             )
 
             # =========================
-            #  确保 Z-BORN-symm.out 存在
+            #  确保 BEC.dat 存在
             # =========================
-            symm_src = "Z-BORN-symm.out"
+            symm_src = "BEC.dat"
 
             # 根据 entries（来自前面循环）判定是否 reduced-only：entries 的编号集合 == primitive 段星标集合
             computed_indices = sorted({e['idx'] for e in entries})
@@ -1958,36 +1958,36 @@ def main(
 
             reduced_only = (computed_indices and prim_star_idx and set(computed_indices) == set(prim_star_idx))
 
-            # 调用 verify_born_symmetry 的对称重建（会写 Z-BORN-symm.out 且满足电中性）
+            # 调用 verify_born_symmetry 的对称重建（会写 BEC.dat 且满足电中性）
             try:
                 from .verify_born_symmetry import run_symcheck
 
                 # 只在 all.out 存在时才传给 run_symcheck；否则省略该参数
                 kwargs = dict(
                     stru=os.path.join("0.no-move", "STRU"),
-                    reduced="Z-BORN-reduced.out",
+                    reduced="BEC.rep.raw.dat",
                     symprec=symm_tol,
-                    out="born_symmetry_report.txt",
-                    json_path="born_symmetry_report.json",
+                    out="BEC_symmetry.txt",
+                    json_path="BEC_symmetry.json",
                     csv_path=None,
                 )
-                if os.path.isfile("Z-BORN-all.out"):
+                if os.path.isfile("BEC.raw.dat"):
                     # 注意键名与 run_symcheck 的参数一致
-                    kwargs["all"] = "Z-BORN-all.out"
+                    kwargs["all"] = "BEC.raw.dat"
 
                 run_symcheck(**kwargs)
-                print("[symm] Reconstructed Z-BORN-symm.out via symmetry (reduced-only run).")
+                print("[symm] Reconstructed BEC.dat via symmetry (reduced-only run).")
             except Exception as e:
                 print(f"[symm][ERROR] Symmetry reconstruction failed: {e}")
 
 
 
             # =========================
-            #  写 Z-BORN-reduced-neutral.out（始终写）
+            #  写 BEC.rep.dat（始终写）
             # =========================
             starred_map = _load_starred_map_from_symm(symm_src)  # idx -> (sym, M)
             if not starred_map:
-                print("[symm][WARN] No starred entries in Z-BORN-symm.out; skip reduced-neutral export.")
+                print("[symm][WARN] No starred entries in BEC.dat; skip reduced-neutral export.")
             else:
                 # 严格按 primitive 段顺序抽取
                 reduced_neutral = []
@@ -1999,7 +1999,7 @@ def main(
                         print(f"[symm][WARN] Reduced atom #{idx} not found in {symm_src}")
 
                 if reduced_neutral:
-                    with open("Z-BORN-reduced-neutral.out", "w") as fz:
+                    with open("BEC.rep.dat", "w") as fz:
                         fz.write(header)
                         for idx, sym, M in reduced_neutral:
                             row = " ".join(
@@ -2007,10 +2007,10 @@ def main(
                                 for v in M.reshape(9)
                             )
                             fz.write(f"*{idx: >4} {sym: <3} {row}\n")
-                    print("[symm] Wrote Z-BORN-reduced-neutral.out")
+                    print("[symm] Wrote BEC.rep.dat")
 
             # =========================
-            #  写 BORN-for-phonopy.out（仅当介电可用）
+            #  写 BORN（仅当介电可用）
             # =========================
             if dielectric_data_processed and starred_map:
                 # 介电优先使用矩阵变量；否则从字符串解析
@@ -2026,14 +2026,14 @@ def main(
                     diel_mat = None
 
                 if diel_mat is None:
-                    print("[symm][WARN] Dielectric not ready; skip BORN-for-phonopy.out.")
+                    print("[symm][WARN] Dielectric not ready; skip BORN.")
                 else:
                     # 用刚写出的 reduced-neutral（primitive 顺序）
                     mats = [M for _idx, _sym, M in reduced_neutral] if reduced_neutral else []
                     if not mats:
-                        print("[symm][WARN] No reduced-neutral Born to write into BORN-for-phonopy.out.")
+                        print("[symm][WARN] No reduced-neutral Born to write into BORN.")
                     else:
-                        # 生成 BORN(for phonopy) 内容：一份写 BORN-for-phonopy.out，一份写 BORN
+                        # 生成 BORN(for phonopy) 内容：一份写 BORN，一份写 BORN
                         born_lines = []
                         born_lines.append(new_header)
                         born_lines.append(
@@ -2052,17 +2052,15 @@ def main(
                                 + "\n"
                             )
 
-                        with open('BORN-for-phonopy.out', 'w') as f:
-                            f.writelines(born_lines)
                         with open('BORN', 'w') as f:
                             f.writelines(born_lines)
-                        print("[symm] Wrote BORN-for-phonopy.out and BORN (electronic epsilon + primitive reduced-neutral Born Effective Charge)")
+                        print("[symm] Wrote BORN (electronic epsilon + primitive reduced-neutral Born Effective Charge)")
 
             else:
                 if not dielectric_data_processed:
-                    print("[INFO] Skipped BORN-for-phonopy.out (dielectric not available).")
+                    print("[INFO] Skipped BORN (dielectric not available).")
                 elif not starred_map:
-                    print("[INFO] Skipped BORN-for-phonopy.out (no starred Born in Z-BORN-symm.out).")
+                    print("[INFO] Skipped BORN (no starred Born in BEC.dat).")
 
         return
 
@@ -2116,11 +2114,11 @@ def main(
 
             # 收集每个原子的 Z（用于决定是否能写 all.out）
             entries = []   # [{'idx': int, 'label': str, 'star': bool, 'Z': np.ndarray(3,3)}]
-            all_rows = []  # 可能写 Z-BORN-all.out 用
+            all_rows = []  # 可能写 BEC.raw.dat 用
             dielectric_data_processed = None  # 保持与后文兼容
 
             # 先写 reduced 文件（无论如何都写）
-            with open('Z-BORN-reduced.out', 'w') as file_reduced:
+            with open('BEC.rep.raw.dat', 'w') as file_reduced:
                 file_reduced.write(header)
 
                 for folder in subfolders:
@@ -2162,7 +2160,7 @@ def main(
                     mark = '*' if star_flag else ' '
                     all_rows.append(f"{mark}{folder_number: >4} {folder_label: <3} {formatted_row}\n")
 
-            # —— 是否可以写 Z-BORN-all.out？（仅当统计的原子数 == 体系总原子数）——
+            # —— 是否可以写 BEC.raw.dat？（仅当统计的原子数 == 体系总原子数）——
             try:
                 tot_natoms, _reduced_set = _parse_reduced_atom_out("reduced_atom.out")  # 你已有的小函数
             except Exception:
@@ -2172,18 +2170,18 @@ def main(
             can_write_all = (tot_natoms is not None and tot_natoms > 0 and computed_count == tot_natoms)
 
             if can_write_all:
-                with open('Z-BORN-all.out', 'w') as file_all:
+                with open('BEC.raw.dat', 'w') as file_all:
                     file_all.write(header)
                     file_all.writelines(all_rows)
-                print(f"[INFO] Z-BORN-all.out has been written ({computed_count}/{tot_natoms} atoms).")
+                print(f"[INFO] BEC.raw.dat has been written ({computed_count}/{tot_natoms} atoms).")
             else:
                 if tot_natoms is None or tot_natoms == 0:
                     print("[INFO] Cannot determine total number of atoms from reduced_atom.out; "
-                          "skip Z-BORN-all.out.")
+                          "skip BEC.raw.dat.")
                 else:
                     print(f"[INFO] Partial Born set detected ({computed_count}/{tot_natoms}); "
-                          "skip Z-BORN-all.out. A full symmetric Born will be reconstructed later "
-                          "to Z-BORN-symm.out if needed.")
+                          "skip BEC.raw.dat. A full symmetric Born will be reconstructed later "
+                          "to BEC.dat if needed.")
 
             dielectric_data_processed = None  # 初始化为空，确保后续判断不会崩溃
 
@@ -2201,7 +2199,7 @@ def main(
                 except Exception as e:
                     print(f"[WARN] Could not process dielectric data: {e}")
 
-            # 新的标题行，用于 BORN-for-phonopy.out
+            # 新的标题行，用于 BORN
             new_header = (
                 f"{'#': <4} "
                 f"{'xx': <{xx_len}} {'xy': <{xx_len}} {'xz': <{xx_len}} "
@@ -2210,9 +2208,9 @@ def main(
             )
 
             # =========================
-            #  确保 Z-BORN-symm.out 存在
+            #  确保 BEC.dat 存在
             # =========================
-            symm_src = "Z-BORN-symm.out"
+            symm_src = "BEC.dat"
 
             # 根据 entries（来自前面循环）判定是否 reduced-only：entries 的编号集合 == primitive 段星标集合
             computed_indices = sorted({e['idx'] for e in entries})
@@ -2221,36 +2219,36 @@ def main(
 
             reduced_only = (computed_indices and prim_star_idx and set(computed_indices) == set(prim_star_idx))
 
-            # 调用 verify_born_symmetry 的对称重建（会写 Z-BORN-symm.out 且满足电中性）
+            # 调用 verify_born_symmetry 的对称重建（会写 BEC.dat 且满足电中性）
             try:
                 from .verify_born_symmetry import run_symcheck
 
                 # 只在 all.out 存在时才传给 run_symcheck；否则省略该参数
                 kwargs = dict(
                     stru=os.path.join("0.no-move", "STRU"),
-                    reduced="Z-BORN-reduced.out",
+                    reduced="BEC.rep.raw.dat",
                     symprec=symm_tol,
-                    out="born_symmetry_report.txt",
-                    json_path="born_symmetry_report.json",
+                    out="BEC_symmetry.txt",
+                    json_path="BEC_symmetry.json",
                     csv_path=None,
                 )
-                if os.path.isfile("Z-BORN-all.out"):
+                if os.path.isfile("BEC.raw.dat"):
                     # 注意键名与 run_symcheck 的参数一致
-                    kwargs["all"] = "Z-BORN-all.out"
+                    kwargs["all"] = "BEC.raw.dat"
 
                 run_symcheck(**kwargs)
-                print("[symm] Reconstructed Z-BORN-symm.out via symmetry (reduced-only run).")
+                print("[symm] Reconstructed BEC.dat via symmetry (reduced-only run).")
             except Exception as e:
                 print(f"[symm][ERROR] Symmetry reconstruction failed: {e}")
 
 
 
             # =========================
-            #  写 Z-BORN-reduced-neutral.out（始终写）
+            #  写 BEC.rep.dat（始终写）
             # =========================
             starred_map = _load_starred_map_from_symm(symm_src)  # idx -> (sym, M)
             if not starred_map:
-                print("[symm][WARN] No starred entries in Z-BORN-symm.out; skip reduced-neutral export.")
+                print("[symm][WARN] No starred entries in BEC.dat; skip reduced-neutral export.")
             else:
                 # 严格按 primitive 段顺序抽取
                 reduced_neutral = []
@@ -2262,7 +2260,7 @@ def main(
                         print(f"[symm][WARN] Reduced atom #{idx} not found in {symm_src}")
 
                 if reduced_neutral:
-                    with open("Z-BORN-reduced-neutral.out", "w") as fz:
+                    with open("BEC.rep.dat", "w") as fz:
                         fz.write(header)
                         for idx, sym, M in reduced_neutral:
                             row = " ".join(
@@ -2270,10 +2268,10 @@ def main(
                                 for v in M.reshape(9)
                             )
                             fz.write(f"*{idx: >4} {sym: <3} {row}\n")
-                    print("[symm] Wrote Z-BORN-reduced-neutral.out")
+                    print("[symm] Wrote BEC.rep.dat")
 
             # =========================
-            #  写 BORN-for-phonopy.out（仅当介电可用）
+            #  写 BORN（仅当介电可用）
             # =========================
             if dielectric_data_processed and starred_map:
                 # 介电优先使用矩阵变量；否则从字符串解析
@@ -2289,14 +2287,14 @@ def main(
                     diel_mat = None
 
                 if diel_mat is None:
-                    print("[symm][WARN] Dielectric not ready; skip BORN-for-phonopy.out.")
+                    print("[symm][WARN] Dielectric not ready; skip BORN.")
                 else:
                     # 用刚写出的 reduced-neutral（primitive 顺序）
                     mats = [M for _idx, _sym, M in reduced_neutral] if reduced_neutral else []
                     if not mats:
-                        print("[symm][WARN] No reduced-neutral Born to write into BORN-for-phonopy.out.")
+                        print("[symm][WARN] No reduced-neutral Born to write into BORN.")
                     else:
-                        # 生成 BORN(for phonopy) 内容：一份写 BORN-for-phonopy.out，一份写 BORN
+                        # 生成 BORN(for phonopy) 内容：一份写 BORN，一份写 BORN
                         born_lines = []
                         born_lines.append(new_header)
                         born_lines.append(
@@ -2315,17 +2313,15 @@ def main(
                                 + "\n"
                             )
 
-                        with open('BORN-for-phonopy.out', 'w') as f:
-                            f.writelines(born_lines)
                         with open('BORN', 'w') as f:
                             f.writelines(born_lines)
-                        print("[symm] Wrote BORN-for-phonopy.out and BORN (electronic epsilon + primitive reduced-neutral Born Effective Charge)")
+                        print("[symm] Wrote BORN (electronic epsilon + primitive reduced-neutral Born Effective Charge)")
 
             else:
                 if not dielectric_data_processed:
-                    print("[INFO] Skipped BORN-for-phonopy.out (dielectric not available).")
+                    print("[INFO] Skipped BORN (dielectric not available).")
                 elif not starred_map:
-                    print("[INFO] Skipped BORN-for-phonopy.out (no starred Born in Z-BORN-symm.out).")
+                    print("[INFO] Skipped BORN (no starred Born in BEC.dat).")
 
     elif dimension in (1, 2):
         # Low-dimensional hybrid cases.  A slab uses Berry polarization for
@@ -2376,7 +2372,7 @@ def main(
             dielectric_data_processed = None
             dielectric_matrix_ready = None
 
-            with open('Z-BORN-reduced.out', 'w') as file_reduced:
+            with open('BEC.rep.raw.dat', 'w') as file_reduced:
                 file_reduced.write(header)
 
                 for folder in subfolders:
@@ -2442,7 +2438,7 @@ def main(
                     mark = '*' if star_flag else ' '
                     all_rows.append(f"{mark}{folder_number: >4} {folder_label: <3} {formatted_row}\n")
 
-            # —— 是否可以写 Z-BORN-all.out？——
+            # —— 是否可以写 BEC.raw.dat？——
             try:
                 tot_natoms, _reduced_set = _parse_reduced_atom_out("reduced_atom.out")
             except Exception:
@@ -2452,18 +2448,18 @@ def main(
             can_write_all = (tot_natoms is not None and tot_natoms > 0 and computed_count == tot_natoms)
 
             if can_write_all:
-                with open('Z-BORN-all.out', 'w') as file_all:
+                with open('BEC.raw.dat', 'w') as file_all:
                     file_all.write(header)
                     file_all.writelines(all_rows)
-                print(f"[INFO] Z-BORN-all.out has been written ({computed_count}/{tot_natoms} atoms).")
+                print(f"[INFO] BEC.raw.dat has been written ({computed_count}/{tot_natoms} atoms).")
             else:
                 if tot_natoms is None or tot_natoms == 0:
                     print("[INFO] Cannot determine total number of atoms from reduced_atom.out; "
-                          "skip Z-BORN-all.out.")
+                          "skip BEC.raw.dat.")
                 else:
                     print(f"[INFO] Partial Born set detected ({computed_count}/{tot_natoms}); "
-                          "skip Z-BORN-all.out. A full symmetric Born will be reconstructed later "
-                          "to Z-BORN-symm.out.")
+                          "skip BEC.raw.dat. A full symmetric Born will be reconstructed later "
+                          "to BEC.dat.")
 
             # =========================
             #  dielectric（可选）
@@ -2494,7 +2490,7 @@ def main(
             # =========================
             #  统一做 symmetry expansion + ASR
             # =========================
-            symm_src = "Z-BORN-symm.out"
+            symm_src = "BEC.dat"
 
             computed_indices = sorted({e['idx'] for e in entries})
             reduced_prim     = _parse_starred_reduced_primitive("reduced_atom.out")
@@ -2506,29 +2502,29 @@ def main(
 
                 kwargs = dict(
                     stru=os.path.join("0.no-move", "STRU"),
-                    reduced="Z-BORN-reduced.out",
+                    reduced="BEC.rep.raw.dat",
                     symprec=symm_tol,
-                    out="born_symmetry_report.txt",
-                    json_path="born_symmetry_report.json",
+                    out="BEC_symmetry.txt",
+                    json_path="BEC_symmetry.json",
                     csv_path=None,
                 )
-                if os.path.isfile("Z-BORN-all.out"):
-                    kwargs["all"] = "Z-BORN-all.out"
+                if os.path.isfile("BEC.raw.dat"):
+                    kwargs["all"] = "BEC.raw.dat"
 
                 run_symcheck(**kwargs)
                 print(
                     f"[symm] Reconstructed hybrid {dimension}D "
-                    "Z-BORN-symm.out via symmetry + ASR."
+                    "BEC.dat via symmetry + ASR."
                 )
             except Exception as e:
                 print(f"[symm][ERROR] Symmetry reconstruction failed: {e}")
 
             # =========================
-            #  写 Z-BORN-reduced-neutral.out
+            #  写 BEC.rep.dat
             # =========================
             starred_map = _load_starred_map_from_symm(symm_src)
             if not starred_map:
-                print("[symm][WARN] No starred entries in Z-BORN-symm.out; skip reduced-neutral export.")
+                print("[symm][WARN] No starred entries in BEC.dat; skip reduced-neutral export.")
                 reduced_neutral = []
             else:
                 reduced_neutral = []
@@ -2540,7 +2536,7 @@ def main(
                         print(f"[symm][WARN] Reduced atom #{idx} not found in {symm_src}")
 
                 if reduced_neutral:
-                    with open("Z-BORN-reduced-neutral.out", "w") as fz:
+                    with open("BEC.rep.dat", "w") as fz:
                         fz.write(header)
                         for idx, sym, M in reduced_neutral:
                             row = " ".join(
@@ -2548,10 +2544,10 @@ def main(
                                 for v in M.reshape(9)
                             )
                             fz.write(f"*{idx: >4} {sym: <3} {row}\n")
-                    print("[symm] Wrote Z-BORN-reduced-neutral.out")
+                    print("[symm] Wrote BEC.rep.dat")
 
             # =========================
-            #  写 BORN-for-phonopy.out / BORN
+            #  写 BORN / BORN
             # =========================
             if dielectric_data_processed and reduced_neutral:
                 diel_mat = None
@@ -2566,11 +2562,11 @@ def main(
                     diel_mat = None
 
                 if diel_mat is None:
-                    print("[symm][WARN] Dielectric not ready; skip BORN-for-phonopy.out.")
+                    print("[symm][WARN] Dielectric not ready; skip BORN.")
                 else:
                     mats = [M for _idx, _sym, M in reduced_neutral]
                     if not mats:
-                        print("[symm][WARN] No reduced-neutral Born to write into BORN-for-phonopy.out.")
+                        print("[symm][WARN] No reduced-neutral Born to write into BORN.")
                     else:
                         born_lines = []
                         born_lines.append(new_header)
@@ -2590,22 +2586,20 @@ def main(
                                 + "\n"
                             )
 
-                        with open('BORN-for-phonopy.out', 'w') as f:
-                            f.writelines(born_lines)
                         with open('BORN', 'w') as f:
                             f.writelines(born_lines)
 
-                        print("[symm] Wrote BORN-for-phonopy.out and BORN "
+                        print("[symm] Wrote BORN "
                               "(electronic epsilon + primitive reduced-neutral Born Effective Charge)")
             else:
                 if not dielectric_data_processed:
-                    print("[INFO] Skipped BORN-for-phonopy.out (dielectric not available).")
+                    print("[INFO] Skipped BORN (dielectric not available).")
                 elif not reduced_neutral:
-                    print("[INFO] Skipped BORN-for-phonopy.out (no reduced-neutral Born).")
+                    print("[INFO] Skipped BORN (no reduced-neutral Born).")
 
             if (
                 dimension == 1
-                and os.path.isfile("Z-BORN-symm.out")
+                and os.path.isfile("BEC.dat")
                 and os.path.isfile("BORN")
             ):
                 try:
@@ -2617,7 +2611,7 @@ def main(
                         os.path.join("0.no-move", "pyatb", "Out", "input.json")
                     )
                     response = response_record_from_abacus_files(
-                        "Z-BORN-symm.out",
+                        "BEC.dat",
                         born_path="BORN",
                         dimensionality=1,
                         periodic_axes="z",
@@ -2627,9 +2621,9 @@ def main(
                         lattice,
                         convention="gaussian",
                     )
-                    response.write("zstar_response.json")
+                    response.write("response.json")
                     print(
-                        "[INFO] Wrote zstar_response.json with the vacuum-independent "
+                        "[INFO] Wrote response.json with the vacuum-independent "
                         "1D line polarizability."
                     )
                 except Exception as e:

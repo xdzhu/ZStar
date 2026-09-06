@@ -1,0 +1,144 @@
+{
+  "method": "forward",
+  "displacement_angstrom": 0.01,
+  "tensor_convention": "rows=atomic displacement/force; columns=polarization/electric field",
+  "tensor": [
+    [
+      0.4036087149489765,
+      -0.004641904386936673,
+      -0.000642074141664092
+    ],
+    [
+      0.0005360009483690537,
+      0.4075592051703395,
+      -0.000639106638572794
+    ],
+    [
+      0.0010720018989061437,
+      0.0,
+      -0.0006123658359875773
+    ]
+  ],
+  "in_plane_tensor": [
+    [
+      0.4036087149489765,
+      -0.004641904386936673
+    ],
+    [
+      0.0005360009483690537,
+      0.4075592051703395
+    ],
+    [
+      0.0010720018989061437,
+      0.0
+    ]
+  ],
+  "out_of_plane_column": [
+    -0.000642074141664092,
+    -0.000639106638572794,
+    -0.0006123658359875773
+  ],
+  "diagnostics": {
+    "reference_dipole": {
+      "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/0.no-move/OUT.POLAR/SPIN1_CHG.cube",
+      "dipole_e_bohr": 4.416288157926829e-05,
+      "polarization_C_per_m": 4.360071724644799e-15,
+      "area_bohr2": 30.667122644800003,
+      "height_bohr": 37.79451899999996,
+      "electron_count_raw": 25.999958228142262,
+      "ionic_charge": 26.0,
+      "neutrality_scale": 1.0000016066124942,
+      "normal": [
+        0.0,
+        -0.0,
+        1.0
+      ]
+    },
+    "directions": {
+      "x": {
+        "plus": {
+          "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/2.S/x+/OUT.POLAR/SPIN1_CHG.cube",
+          "dipole_e_bohr": 3.2029438784775266e-05,
+          "polarization_C_per_m": 3.1621725170057146e-15,
+          "area_bohr2": 30.667122644800003,
+          "height_bohr": 37.79451899999996,
+          "electron_count_raw": 25.999958228150245,
+          "ionic_charge": 26.0,
+          "neutrality_scale": 1.000001606612187,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ]
+        },
+        "minus": null,
+        "berry_delta_C_per_m2": [
+          0.00037399999999998546,
+          -5.000000000032756e-06,
+          0.0
+        ],
+        "in_plane_column": [
+          0.4036087149489765,
+          -0.004641904386936673
+        ],
+        "out_of_plane_component": -0.000642074141664092
+      },
+      "y": {
+        "plus": {
+          "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/2.S/y+/OUT.POLAR/SPIN1_CHG.cube",
+          "dipole_e_bohr": 3.20855164659406e-05,
+          "polarization_C_per_m": 3.1677089019355284e-15,
+          "area_bohr2": 30.667122644800003,
+          "height_bohr": 37.79451899999996,
+          "electron_count_raw": 25.99995822815069,
+          "ionic_charge": 26.0,
+          "neutrality_scale": 1.0000016066121702,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ]
+        },
+        "minus": null,
+        "berry_delta_C_per_m2": [
+          0.00021999999999999797,
+          0.0004389999999999672,
+          0.0
+        ],
+        "in_plane_column": [
+          0.0005360009483690537,
+          0.4075592051703395
+        ],
+        "out_of_plane_component": -0.000639106638572794
+      },
+      "z": {
+        "plus": {
+          "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/2.S/z+/OUT.POLAR/SPIN1_CHG.cube",
+          "dipole_e_bohr": 3.2590844398328045e-05,
+          "polarization_C_per_m": 3.217598446070484e-15,
+          "area_bohr2": 30.667122644800003,
+          "height_bohr": 37.79451899999996,
+          "electron_count_raw": 25.99995822815834,
+          "ionic_charge": 26.0,
+          "neutrality_scale": 1.0000016066118758,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ]
+        },
+        "minus": null,
+        "berry_delta_C_per_m2": [
+          9.999999999732445e-07,
+          0.0,
+          0.005592999999999959
+        ],
+        "in_plane_column": [
+          0.0010720018989061437,
+          0.0
+        ],
+        "out_of_plane_component": -0.0006123658359875773
+      }
+    }
+  }
+}

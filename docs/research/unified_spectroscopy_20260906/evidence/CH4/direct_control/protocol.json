@@ -1,0 +1,42 @@
+{
+  "case": "CH4",
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified",
+  "gap": {
+    "gap_eV": 10.06017707,
+    "vbm_eV": -9.42066133,
+    "cbm_eV": 0.63951574,
+    "insulating": true,
+    "threshold_eV": 0.01,
+    "source": "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/pyatb-band/Out/Band_Structure/band.dat"
+  },
+  "source_hashes": {
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/STRU": "64b37a8c086bc03d8ec0e8dc1a3803d2e5d6d0c669ad1c2768307ac2502a31be",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/qpoints.yaml": "273643b15fa2f573831e391cbda7c4db40780b233629443b16333aedad90766a",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/INPUT-scf": "086a380bff357fb85e5a392af82483ddd28343cbe0569f5b2d89b5c094b092ab",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/KPT": "91042b39ee493cb5c1bee648adc865a2e5935a29278eb405dc009f994db55ece",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/C.upf": "a5b0fe8d6b63f703745b99d47e2dd47ed18efdb35a01ff410bc8e8d0af4e247f",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/H.upf": "8272fc45fbee2b45a490830c61ef9b2f2b894591b2c9a310fe4af152b76502a6",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/C_gga_9au_100Ry_3s3p2d.orb": "357472063c9f249d7cfa74ee68901bab80b738b6502db9a2f52fe4e7e67ea264",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/H_gga_9au_100Ry_3s2p.orb": "7234ccdfeed67ab25561fec0d3bf48c0fbf1080f05b1ca6686fa029df49be9e9",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/OUT.CH4/CH4-CHARGE-DENSITY.restart": "7ca2db60f7e77ecc9628628e3acd1420859827c2f8d3ff30eda7db8a666d37ed",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/OUT.CH4/SPIN1_CHG.cube": "4a38a7008b6d5905ccd18571a244e4d95246b85418accc4f469ccc27226a40c9"
+  },
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   4\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       6 6 6\n    static_dielectric_only      1\n}",
+  "mode_numbers": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "role": "Missing matched conventional control, not the Unified production route",
+  "expected_new_SCF_calls": 18,
+  "mpi_ABACUS": 1,
+  "omp_ABACUS": 40,
+  "mpi_PYATB": 40,
+  "omp_PYATB": 1
+}

@@ -1,5 +1,7 @@
 # ZStar
 
+<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/v0.3.0/docs/logo.png" alt="ZStar logo" width="176"></p>
+
 [![PyPI](https://img.shields.io/pypi/v/zstar)](https://pypi.org/project/zstar/)
 [![Python](https://img.shields.io/pypi/pyversions/zstar)](https://pypi.org/project/zstar/)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](https://www.gnu.org/licenses/gpl-3.0.html)
@@ -8,8 +10,9 @@ ZStar is a Python workflow toolkit for polarization, Born effective charge (BEC)
 
 ## Highlights
 
-- Unified symmetry-adapted BEC/APT and Gamma force-constant reconstruction
-  from the same displaced SCFs; legacy Cartesian differences remain available.
+- Unified symmetry-adapted BEC/APT, Gamma force constants and static nonresonant
+  Raman derivatives from one displacement ensemble. Retained electronic matrices
+  supply additional PYATB responses without additional SCFs.
 - Molecular atomic polar tensors (APT) from ABACUS + PYATB or CP2K dipoles.
 - Symmetry reduction, full-cell reconstruction, and acoustic-sum-rule correction.
 - Serial and resumable `0.no-move -> displacements` execution.
@@ -24,16 +27,27 @@ ZStar is a Python workflow toolkit for polarization, Born effective charge (BEC)
 - Slab electrostatic-potential maps, directional profiles, and local two-sided
   vacuum diagnostics.
 
+## Examples
+
+![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/v0.3.0/docs/paper_figures/spectroscopy_across_dimensions.png)
+
+The four-dimensional examples compare calculated spectra with literature
+frequencies or published curves. Relative Raman intensities for Sb2S3 remain
+different from the reference; the examples document this limitation explicitly.
+Full inputs, results, and bilingual tutorials are in the
+[versioned GitHub example library](https://github.com/xdzhu/zstar/tree/v0.3.0/examples).
+
 ## Installation
 
-The Unified framework described here is in the `0.3.0rc2` GitHub candidate.
-It is not in the older PyPI `0.2.1` release. Install this exact candidate with:
+Version `0.3.0` includes the Unified BEC, phonon, IR, and Raman framework.
+Install the version associated with the manuscript:
 
 ```bash
-pip install "zstar @ git+https://github.com/xdzhu/zstar.git@v0.3.0rc2"
+pip install zstar==0.3.0
+zstar --version
 ```
 
-For the last stable PyPI release:
+To upgrade to the latest stable release:
 
 ```bash
 pip install -U zstar
@@ -112,17 +126,26 @@ transverse polarization columns from high-precision charge-density cubes and
 the longitudinal column from PYATB Berry polarization:
 
 ```bash
-zstar bec pre --calculator abacus --stru STRU --dim 1 --pyatb --method central --force
+zstar bec pre --stru STRU --dim 1
 zstar bec run --root .
 zstar bec post --root .
 ```
+
+The source snapshot includes complete BN(9,0) nanotube and Sb2S3-chain examples
+with clean `run/` inputs, `results/` archives and resumable `run.sh` scripts.
+Their BECs and Gamma force constants come from the same symmetry-adapted SCFs.
+Additional normal-mode polarizability derivatives provide Raman spectra.
+The Sb2S3 comparison retains original public reference curves and the observed
+Raman-intensity differences; its reference is a computational dataset, not a
+verified associated journal article. See the
+[one-dimensional guide](https://github.com/xdzhu/zstar/blob/main/docs/one_dimensional_workflow.md).
 
 For an isolated molecule, `--dim 0` generates and collects atomic polar
 tensors in units of `e`. The name is deliberate: an APT is the molecular
 analogue of a periodic-crystal BEC.
 
 ```bash
-zstar bec pre --calculator abacus --stru STRU --dim 0 --pyatb --method central --force
+zstar bec pre --stru STRU --dim 0
 zstar bec run --root .
 zstar bec post --root .
 ```
@@ -189,6 +212,14 @@ polar phonons still require a genuine 1D Coulomb cutoff and must not use bulk NA
 
 ## Raman Workflow
 
+The ABACUS + PYATB Unified route now uses the same displacement SCFs for
+BEC/APT, Gamma phonons, IR and static nonresonant Raman. In a prepared BEC
+directory, use `zstar spectra pre`, `zstar spectra run`, and `zstar spectra post`.
+Raman adds dielectric postprocessing of retained matrices, not additional SCFs.
+`--response PATH` selects another completed ensemble; `--method mode` keeps
+explicit normal-mode finite differences for comparison. Other calculators
+retain their documented native response workflows.
+
 ```bash
 zstar spectra pre --calculator abacus --kind raman --root raman \
   --stru STRU --qpoints qpoints.yaml \
@@ -239,10 +270,12 @@ polarization magnitudes.
 
 | File | Meaning |
 | --- | --- |
-| `Z-BORN-reduced.out` | Raw explicitly calculated representative tensors. |
-| `Z-BORN-symm.out` | Full-cell symmetry-reconstructed and neutral BEC tensors. |
+| `BEC.rep.raw.dat` | Raw explicitly calculated representative tensors. |
+| `BEC.raw.dat` / `BEC.dat` | Full-cell raw / symmetry-reconstructed and neutral BEC tensors. |
 | `BORN` | Electronic dielectric tensor plus Phonopy-order BECs. |
-| `zstar_response.json` | Calculator-neutral BEC and intrinsic 1D/2D electronic response. |
+| `response.json` | Calculator-neutral responses, dimensionality, field conventions and provenance. |
+| `response_fit.json` | Unified raw/projected BECs and joint reconstruction diagnostics. |
+| `FORCE_CONSTANTS` / `qpoints.yaml` | Gamma force constants and the zone-center eigensystem. |
 | `ir_spectrum/` | Mode charges, IR spectrum, static tensor, and complex line/sheet/bulk response. |
 | `static_response.json` | Zero-frequency tensor with dimensional convention and electronic-background provenance. |
 | `dielectric_response.pdf` / `.svg` | Editable real/imaginary frequency-response plots. |

@@ -1,0 +1,25 @@
+{
+  "maximum_force_eV_A": 0.0013058141024110783,
+  "final_stress_kbar": [
+    [
+      -0.0283732917,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      -0.0282877733,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      -0.0039672571
+    ]
+  ],
+  "axial_period_A": 4.3383851746408375,
+  "source_final_structure": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_9_0/relaxation/OUT.BNNT/STRU_ION_D",
+  "relaxation_core_hours": 22.35948383933347,
+  "status": "accepted",
+  "displacement_stages": 56
+}

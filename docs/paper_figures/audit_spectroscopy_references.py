@@ -23,7 +23,7 @@ MODE_FILES = {
 SCOPES = {
     "CH4": "NIST evaluated gas-phase fundamentals; experiment includes anharmonicity",
     "GaAsNW": "same 24-atom nanowire; independent QE/PBE 1D-DFPT calculation",
-    "MoS2": "same monolayer phase; VASP/PBE-D3 versus ABACUS/PBE-D3(BJ)",
+    "MoS2": "same monolayer phase; VASP/PBE-D3(BJ) versus ABACUS/PBE-D3(BJ)",
     "HfO2": "same tetragonal P42/nmc phase and PBEsol functional; ABACUS/PYATB versus VASP lattice dynamics",
 }
 FIELDS = (

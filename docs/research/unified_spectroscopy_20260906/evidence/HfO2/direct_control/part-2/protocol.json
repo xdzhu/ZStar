@@ -1,0 +1,37 @@
+{
+  "case": "HfO2",
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared",
+  "gap": {
+    "gap_eV": 4.710312610000001,
+    "vbm_eV": 11.60009133,
+    "cbm_eV": 16.31040394,
+    "insulating": true,
+    "threshold_eV": 0.01,
+    "source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/pyatb-band/Out/Band_Structure/band.dat"
+  },
+  "source_hashes": {
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/STRU": "e632447ad1d0d57133a0ef203d957a55df425935817b7e02bf0e8e44a828890c",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/qpoints.yaml": "25ab22399bd0aa9d00b2b4111a9d63c343f34b854a5dbc402c6cdfce8844c0c5",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/INPUT-scf": "dcea419f74e792c31af0f35dc8a382eef3eac2c0cb61544f29bd5f1a23336516",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/KPT": "e0e2798b3a8ccf936ecf26782f8366fdd1fe22509912dd96fe337aca43befefd",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/Hf.upf": "7c516a68310c779a4f572c9ea6b3a73f27ca3a61908b9ade0da3db6db727c8a5",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/O.upf": "8c6886f443f3bfe7b8d18f2f6b28dd8749746d996499a542fff9666da34d7cf6",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/Hf_gga_9au_100Ry_6s3p3d2f1g.orb": "a6cb4c79bb1245a4ca4fd4e8cd909aae8179bbedb6174d40e336f50e50df547f",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/O_gga_9au_100Ry_2s2p1d.orb": "0a2cfe1ef4bee549a1ab23f0f7f4e175144d32932baa095f7b6bc483bbbdc610",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/OUT.POLAR/POLAR-CHARGE-DENSITY.restart": "b2231457a020f82a2ee17d14873a5396f0dbaee162231e462ab658a9c5b27b91",
+    "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move/OUT.POLAR/SPIN1_CHG.cube": "841bbb9c41f0e36be73783e914c48fccf781f55204ff9ee9376733522ce3fb76"
+  },
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   24\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       35 35 24\n    static_dielectric_only      1\n}",
+  "mode_numbers": [
+    5,
+    9,
+    13,
+    17
+  ],
+  "role": "Missing matched conventional control, not the Unified production route",
+  "expected_new_SCF_calls": 8,
+  "mpi_ABACUS": 1,
+  "omp_ABACUS": 40,
+  "mpi_PYATB": 40,
+  "omp_PYATB": 1
+}

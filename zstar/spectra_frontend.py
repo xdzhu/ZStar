@@ -8,6 +8,8 @@ from pathlib import Path
 import shlex
 from typing import Callable, Sequence
 
+from .artifacts import resolve_artifact
+
 from .configuration import (
     launcher_command,
     normalize_execution_system,
@@ -24,7 +26,7 @@ ALIASES = {"prepare": "pre", "status": "stat", "collect": "post", "script": "job
 
 def _default_root() -> str:
     """Return the prepared default workspace, preferring the ABACUS layout."""
-    for candidate in ("raman", "calculator_spectra"):
+    for candidate in ("spectra", "raman", "calculator_spectra"):
         if manifest_path(candidate, "spectra").is_file():
             return candidate
     return "calculator_spectra"
@@ -167,6 +169,7 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
     if any(token in {"-h", "--help"} for token in rest):
         print(f"usage: zstar spectra {action} [options]")
         print("workflow options: --calculator, --kind, --root, --dim")
+        print("ABACUS: --response PATH reuses a Unified BEC ensemble; --method mode retains normal-mode differences")
         if action == "job":
             print("job options: --system, --header, --tasks, --cpus-per-task, --walltime")
         return
@@ -196,6 +199,24 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         kind = str(kind or "all").lower()
         if kind not in {"ir", "raman", "all"}:
             raise SystemExit("--kind must be ir, raman, or all")
+        if calculator == 'abacus':
+            response = _option(rest, '--response', default='.')
+            method = _option(rest, '--method', default='auto')
+            if method not in ('auto', 'unified', 'mode'):
+                raise SystemExit('Spectroscopy --method must be auto, unified, or mode')
+            use_unified = method == 'unified' or (method == 'auto' and (Path(response)/'shared_response.json').is_file())
+            if _has(rest, '--response') and method != 'mode':
+                use_unified = True
+            if use_unified:
+                from .unified_spectra import prepare
+                unsupported = _drop(rest, '--root', '--response', '--method', '--kind', '--dim', '--calculator', '--calc')
+                if unsupported:
+                    raise SystemExit('Configure the geometry and SCF inputs with `zstar bec pre`; '
+                                     'Unified spectra pre accepts --response, --root, --kind, --dim, --method')
+                path = prepare(root_given or 'spectra', response, kind=kind, dimension=dim)
+                print(f'[MANIFEST] {path}')
+                return
+            clean = _drop(clean, '--method', '--response')
         root = str(root_given or ("raman" if calculator == "abacus" else "calculator_spectra"))
         dim = 3 if dim is None else dim
         if calculator == "abacus":
@@ -226,7 +247,8 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             options={
                 "kind": kind,
                 "qpoints": str(Path(_option(rest, "--qpoints", default="qpoints.yaml")).resolve()),
-                "born": str(Path(_option(rest, "--born", default="Z-BORN-symm.out")).resolve()),
+                "born": str(Path(_option(rest, "--born", default="BEC.dat")).resolve()),
+                "born_explicit": _has(rest, "--born"),
                 "dielectric": (
                     None
                     if _option(rest, "--dielectric") is None
@@ -261,6 +283,14 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             calculator=calculator,
         )
         print(f"[OUT] {target}")
+        return
+
+    if calculator == 'abacus' and options.get('method') == 'unified':
+        from .unified_spectra import run_cli, source
+        _, manifest, saved_options = source(root)
+        if dim != manifest['dimension'] or kind != saved_options['kind']:
+            raise ValueError('Kind/dimension differs from the prepared Unified spectra workflow')
+        run_cli(action, _drop(clean, '--dim', '--kind', '--calculator', '--calc'), root)
         return
 
     if calculator in {"vasp", "cp2k"}:
@@ -309,7 +339,12 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
     elif action == "post":
         qpoints = str(options.get("qpoints", "qpoints.yaml"))
         if kind in {"ir", "all"}:
-            ir_args = ["ir", "--qpoints", qpoints, "--born", str(options.get("born", "Z-BORN-symm.out")), "--dim", str(dim)]
+            supplied_born = _option(rest, "--born")
+            born = resolve_artifact(
+                supplied_born or str(options.get("born", "BEC.dat")),
+                explicit=supplied_born is not None or bool(options.get("born_explicit", False)),
+            )
+            ir_args = ["ir", "--qpoints", qpoints, "--born", str(born), "--dim", str(dim)]
             if options.get("dielectric"):
                 ir_args.extend(["--dielectric", str(options["dielectric"])])
             legacy(ir_args)

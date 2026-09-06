@@ -1,0 +1,21 @@
+INPUT_PARAMETERS
+suffix              POLAR
+calculation         scf
+basis_type          lcao
+ks_solver           genelpa
+dft_functional       pbe
+vdw_method         d3_bj
+ecutwfc             100
+nspin               1
+smearing_method     gauss
+smearing_sigma      0.001
+scf_nmax            200
+scf_thr             1e-8
+mixing_type         broyden
+mixing_beta         0.3
+init_chg            auto
+out_mat_hs2         1
+out_mat_r           1
+out_chg             1 10
+symmetry            1
+stru_file           STRU

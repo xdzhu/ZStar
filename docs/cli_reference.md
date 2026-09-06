@@ -1,10 +1,13 @@
 # ZStar command-line reference
 
+For joint BEC/phonon/IR/Raman sampling, see the
+[Unified spectroscopy tutorial](unified_spectroscopy.md).
+
 ZStar groups public commands by scientific object. Calculation workflows use
 the same lifecycle wherever the operation exists:
 
 ```text
-pre -> run -> job -> stat -> post
+pre -> job (optional) -> run -> stat -> post
 ```
 
 - `pre` creates inputs and writes `.zstar/<family>.json`.
@@ -133,7 +136,7 @@ outputs. Prepare finite-q/supercell phonons in a separate directory:
 
 ```bash
 zstar phonon pre --stru STRU --dim "2 2 2"
-zstar phonon job --system slurm --tasks 28
+zstar phonon job --system slurm
 zstar phonon stat
 zstar phonon post
 zstar phonon irrep
@@ -142,11 +145,17 @@ zstar phonon irrep
 IR and Raman:
 
 ```bash
-zstar spectra pre --stru STRU
-zstar spectra job --system slurm --tasks 28
+zstar bec pre --stru STRU
+zstar spectra pre
+zstar spectra job --system slurm
 zstar spectra stat
 zstar spectra post
 ```
+
+Submit the generated job script after inspecting its header, or use
+`zstar spectra run` for local execution. The example uses the Unified ensemble;
+`zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` explicitly
+selects the independent mode-displacement route.
 
 Static and frequency-dependent dielectric response:
 
@@ -161,7 +170,7 @@ For independently screened macroscopic slab data only, the optional
 using direct in-plane and inverse out-of-plane response. It does not add
 missing local-field physics to PYATB results. See
 [response conventions](response_conventions.md) and the
-[eight-system benchmarks](../examples/Shared_Response/README.md).
+[eight-system benchmarks](../examples/Benchmarks/README.md).
 
 ## Electrostatic-potential coverage
 

@@ -1,0 +1,19 @@
+{
+  "structure_sha256": "71705bffea6b825e31ab6830f1ba87395f9041ce12777223344be2251f25fae8",
+  "geometry_source": "STRU",
+  "structure_relaxed_in": "ABACUS PBE; no additional VASP relaxation",
+  "xc": "PBE",
+  "kmesh": [
+    1,
+    1,
+    12
+  ],
+  "cutoff_eV": 500,
+  "potential_sha256": [
+    "a32ced30f5ae56fd4d10b4325ff17eb3e4e38ee0f4288bc219fb012fddfa6e97",
+    "e053789ff3a61a86a1b75d8a110fcc91f86041011e7b0817c7c99e4e8a6349d7"
+  ],
+  "potential_redistribution": false,
+  "purpose": "Independent DFPT BEC at the archived BN(9,0) geometry",
+  "transverse_convention": "Periodic supercell; no isolated-wire image correction"
+}

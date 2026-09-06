@@ -1,0 +1,61 @@
+{
+  "case": "MoS2",
+  "modes": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "basis": "Direct-control eigenvectors",
+  "absolute_tensor_relative_L2": 0.0005360164934547725,
+  "absolute_activity_relative_L2": 0.0007764666010237221,
+  "activity_sum_ratio": 1.0008082600382435,
+  "maximum_tensor_component_difference": 0.0031793273311544468,
+  "per_mode": [
+    {
+      "mode": 4,
+      "frequency_cm1": 270.1231124400068,
+      "unified_activity": 123.07358492079517,
+      "direct_activity": 123.01492412575463,
+      "tensor_abs_L2": 0.0010928212570403355
+    },
+    {
+      "mode": 5,
+      "frequency_cm1": 270.1231124400068,
+      "unified_activity": 123.07358492092851,
+      "direct_activity": 123.01328716353548,
+      "tensor_abs_L2": 0.0011025166224199975
+    },
+    {
+      "mode": 6,
+      "frequency_cm1": 361.82254597945894,
+      "unified_activity": 470.5181545667077,
+      "direct_activity": 469.88972622427923,
+      "tensor_abs_L2": 0.004495239013622519
+    },
+    {
+      "mode": 7,
+      "frequency_cm1": 361.82254597945894,
+      "unified_activity": 470.5181545669624,
+      "direct_activity": 469.89052041200637,
+      "tensor_abs_L2": 0.004466679850962125
+    },
+    {
+      "mode": 8,
+      "frequency_cm1": 391.63697269195484,
+      "unified_activity": 1109.928894132237,
+      "direct_activity": 1109.4486279175928,
+      "tensor_abs_L2": 0.002332440208675546
+    },
+    {
+      "mode": 9,
+      "frequency_cm1": 438.4285008997792,
+      "unified_activity": 0.0,
+      "direct_activity": 0.00012258539956033895,
+      "tensor_abs_L2": 0.00292029391862973
+    }
+  ],
+  "limitation": null
+}

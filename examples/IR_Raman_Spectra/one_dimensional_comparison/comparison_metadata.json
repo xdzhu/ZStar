@@ -1,0 +1,68 @@
+{
+  "purpose": "Inspect agreement and discrepancies, not assume validation.",
+  "frequency_shifts_cm1": 0,
+  "normalization": "Each full-grid curve independently peak-normalized.",
+  "zstar_fwhm_cm1": 8,
+  "zstar_raman_temperature_K": 298,
+  "zstar_raman_laser_nm": 532,
+  "reference_1": "Erba et al., 10.1063/1.4788831, Table I; frequencies only.",
+  "reference_2": {
+    "doi": "10.1103/PhysRevB.71.241402",
+    "figure": "3, BN(9,0), positive branch",
+    "source_sha256": "3b79ea76d0cef8de0252e4602d2719208ee5ccbb11b445a438eab0b90cb9f0cc",
+    "calibration": {
+      "x0": 69,
+      "x1600": 850,
+      "y0": 92
+    },
+    "masking": "Manual source-image background masks exclude labels; peak windows verified against source, not against ZStar.",
+    "uncertainty": "Approximately 2-4 cm^-1 horizontally; weak intensities pixel-limited. Label-contaminated intervals omitted.",
+    "xc": "LDA",
+    "processing": "Pixel trace, independent peak normalization, no shifts or smoothing"
+  },
+  "reference_3": "Ulian, 10.17632/6tntvw37tr.1, CC BY 4.0, original sampled curves.",
+  "missing": [
+    "BN(6,0) Raman reference curve",
+    "BN(9,0) IR reference curve"
+  ],
+  "caveats": [
+    "Different XC and response treatments; no absolute-intensity validation.",
+    "Sb2S3 reference retains its 31.5762 cm^-1 rotation-like mode.",
+    "BN9 digitized weak intensities are pixel limited; see audit image.",
+    "Reference indices are local to this comparison, not manuscript numbers."
+  ],
+  "sources": [
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanotube_BN_6_0\\results\\IR\\ir_spectrum.dat",
+      "sha256": "28d9f4d9aa22ba1eecd1628e9abb3aa2174347a7fcc10f68e0952a28cc37c9a9"
+    },
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanotube_BN_6_0\\results\\Raman\\raman_spectrum.dat",
+      "sha256": "0efd6739a98923ed4248f23ebeae2b83cd67e7f0bbd318abaa908c112289068f"
+    },
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanotube_BN_9_0\\results\\IR\\ir_spectrum.dat",
+      "sha256": "4a17c29ad58bbea30bab05dd995a1451f8c2675329dde38caffe5aff8d6b2f8b"
+    },
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanotube_BN_9_0\\results\\Raman\\raman_spectrum.dat",
+      "sha256": "4323669a26203724200b664711f045dc96f9deeda5f48be800c4237d7c737990"
+    },
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanowire_Sb2S3\\results\\IR\\ir_spectrum.dat",
+      "sha256": "e8e9609cde7cebcdb6b1419002aed334eafff8582119cae6dff9c0d905c0f4e7"
+    },
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanowire_Sb2S3\\results\\reference\\B3LYP-D3\\gamma-point\\sb2s3_fc_b3lyp-d3_freq.irspec.dat",
+      "sha256": "c0dde1745862a27750f62ae021e6541ed45a7ca070fc605364342a78d4ee386e"
+    },
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanowire_Sb2S3\\results\\Raman\\raman_spectrum.dat",
+      "sha256": "cacaf06ef7c4a25396d42e263f02573dcdb3660ec8cc48c6b5b91fa6d4290d39"
+    },
+    {
+      "path": "examples\\IR_Raman_Spectra\\Nanowire_Sb2S3\\results\\reference\\B3LYP-D3\\gamma-point\\sb2s3_fc_b3lyp-d3_freq.ramspec.dat",
+      "sha256": "9d34986a164f08b5a17600c769d01dfe26c1eb47fd27843bb0836cebc004c953"
+    }
+  ]
+}

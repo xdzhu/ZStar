@@ -1,0 +1,17 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022",
+  "source_input_sha256": "f397e507a5e6fbdb29baa47743ae56647afab26204741ba5a1e1e72110de1bf5",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/pyatb/STRU": "b766b2aa761ae7205f343af30a70250700f3224c782e623a812f7af1869bb6db",
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/pyatb/S_ONCV_PBE-1.0.upf": "b11d51bb7fd40027ffa0b3886e33d0ec9ba622a7291036011070affa766789a4",
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/pyatb/Sb_ONCV_PBE-1.0.upf": "d50f209980736c643c855ff13616e68d2867096911e2d48a86796aa6ab755eb2",
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/pyatb/S_gga_9au_100Ry_2s2p1d.orb": "14dcb95037fe2d02368eb074fb5a5f80cc62fa1cdb347e07fcbf950639880d7e",
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/pyatb/Sb_gga_9au_100Ry_2s2p2d1f.orb": "aedf05921182e0971810c765d1f2482b2e97073a18dcec7593caae77b7b1d724",
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/OUT.Sb2S3/data-HR-sparse_SPIN0.csr": "0e8381743ceccc72987a46f6533927421953ca74083bd00117160a4b44c80b2a",
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/OUT.Sb2S3/data-SR-sparse_SPIN0.csr": "5d3ce4de881058a92bca7f315fd46211e8d19da005b84b3798f099eecba3d989",
+    "/home/zhuxd/abacus/agent-runs/20260906-one-dimensional-benchmark/Sb2S3/cartesian/disp-022/OUT.Sb2S3/data-rR-sparse.csr": "d65bf3665ead133cf7e9d036eae46fff8d987a58386d24b97e5a80562d0f52c8"
+  },
+  "dimension": 1,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   48\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       1 1 33\n    static_dielectric_only      1\n}"
+}

@@ -1,0 +1,38 @@
+{
+  "dimensionality": 2,
+  "response_kind": "total 2D sheet polarizability (Angstrom)",
+  "response_unit": "angstrom",
+  "response_convention": "cell_height*(epsilon_source-I), SI alpha_2D/epsilon_0 normalization; field convention inherited from the source; no perpendicular screening or local-field correction is added",
+  "electronic_response_included": true,
+  "static_response": [
+    [
+      85.81345982605927,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      85.81345982605927,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      40.2354090423652
+    ]
+  ],
+  "modes": 6,
+  "files": {
+    "modes": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\ir_modes.csv",
+    "spectrum": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\ir_spectrum.dat",
+    "response_real": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\ir_response_real.dat",
+    "response_imag": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\ir_response_imag.dat",
+    "static_response": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\static_response.json",
+    "plot": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\ir_spectrum.png",
+    "plot_pdf": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\ir_spectrum.pdf",
+    "plot_svg": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\ir_spectrum.svg",
+    "response_plot": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\dielectric_response.png",
+    "response_plot_pdf": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\dielectric_response.pdf",
+    "response_plot_svg": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\2D_MoS2\\results\\Unified\\ir\\dielectric_response.svg"
+  }
+}

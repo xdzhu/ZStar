@@ -1,0 +1,30 @@
+{
+  "system": "monolayer 2H-MoS2",
+  "method": {
+    "calculator": "ABACUS 3.10.0 LTS",
+    "exchange_correlation": "PBE+D3(BJ)",
+    "basis": "LCAO",
+    "ecutwfc_Ry": 100,
+    "k_mesh": [33, 33, 1],
+    "scf_threshold": 1e-8,
+    "reference_path_gap_eV": 1.819952,
+    "phonon_supercell": [3, 3, 1],
+    "phonon_k_mesh": [11, 11, 1],
+    "normal_coordinate_step_A_sqrt_amu": 0.02,
+    "finite_difference": "central",
+    "raman_dimensionality": "2D sheet susceptibility derivative"
+  },
+  "electronic_response": {
+    "program": "PYATB",
+    "version": "1.1.2.dev0+2ad34bc",
+    "interface": "static_dielectric_only",
+    "output": "static_dielectric_function.dat"
+  },
+  "validation": {
+    "completed_bec_stages": 7,
+    "completed_raman_stages": 12,
+    "raman_forbidden_A2pp_activity_normalized": 3.022142860689492e-14,
+    "born_acoustic_sum_residual_e": 0.0
+  },
+  "provenance": "Original BEC inputs, polarization observations, and tensors are retained under results/bec with source hashes. Matching PP/ORB files are included under run/assets. The BEC archive uses forward displacements; central differences above refer to Raman mode derivatives. Large cubes and Hamiltonian scratch files are not distributed."
+}

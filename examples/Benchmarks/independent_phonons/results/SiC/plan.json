@@ -1,0 +1,56 @@
+{
+  "case": "SiC",
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/sic/shared",
+  "stages": [
+    {
+      "name": "disp-001",
+      "atom": 0,
+      "displacement_A": [
+        0.010583544218059996,
+        0.0,
+        0.0
+      ],
+      "distance_A": 0.010583544218059996
+    },
+    {
+      "name": "disp-002",
+      "atom": 1,
+      "displacement_A": [
+        0.010583544218059977,
+        0.0,
+        0.0
+      ],
+      "distance_A": 0.010583544218059977
+    }
+  ],
+  "input_changes": {
+    "calculation": "scf",
+    "cal_force": "1",
+    "cal_stress": "0",
+    "init_chg": "auto",
+    "out_chg": "0",
+    "out_mat_hs2": "0",
+    "out_mat_r": "0",
+    "pseudo_dir": ".",
+    "orbital_dir": "."
+  },
+  "input_sha256": {
+    "disp-001/STRU": "43e51a5146edccdf802b521c7d51d6ac1c37c0f8a00bc81e12ae82b6301c7e1e",
+    "disp-001/KPT": "3dc6b094e8bfe5b276239cc404a436fa48c661e0337c5252bc6e11ff96914d5a",
+    "disp-001/INPUT": "cc557900cf9813d5b4d0351520ad71d55fbd54c78398fc6192f786a4881a816e",
+    "disp-002/STRU": "127a9a0d9213214b42adae1cc132f294d2c632dbe1b6ea77d4f1b0e7d38025d9",
+    "disp-002/KPT": "3dc6b094e8bfe5b276239cc404a436fa48c661e0337c5252bc6e11ff96914d5a",
+    "disp-002/INPUT": "cc557900cf9813d5b4d0351520ad71d55fbd54c78398fc6192f786a4881a816e",
+    "disp-001/Si_ONCV_PBE-1.0.upf": "481a5fae1167fd712d4e8e2e4df33f8bfc1e7d2abbc0565290d39fbba9dccb41",
+    "disp-001/C_ONCV_PBE-1.0.upf": "e95d682a8b918557fb57e2e0ec11b2f48cf693cb72a11d078cf07ec489a8fa99",
+    "disp-001/Si_gga_7au_100Ry_2s2p1d.orb": "193aa6c3d6dadf80f0466559f44498a2a56b1dd27291f64e0688b0786248639b",
+    "disp-001/C_gga_7au_100Ry_2s2p1d.orb": "08f13bc74ae5bd7ccc1857ff9f958867bd6421572d7c5ad3edc6dfacbe42d5ab",
+    "disp-002/Si_ONCV_PBE-1.0.upf": "481a5fae1167fd712d4e8e2e4df33f8bfc1e7d2abbc0565290d39fbba9dccb41",
+    "disp-002/C_ONCV_PBE-1.0.upf": "e95d682a8b918557fb57e2e0ec11b2f48cf693cb72a11d078cf07ec489a8fa99",
+    "disp-002/Si_gga_7au_100Ry_2s2p1d.orb": "193aa6c3d6dadf80f0466559f44498a2a56b1dd27291f64e0688b0786248639b",
+    "disp-002/C_gga_7au_100Ry_2s2p1d.orb": "08f13bc74ae5bd7ccc1857ff9f958867bd6421572d7c5ad3edc6dfacbe42d5ab"
+  },
+  "reference": "Retained Cartesian reference; no additional reference SCF is counted.",
+  "scope": "Independent force-only SCFs from atomic charge; no PYATB or matrix export.",
+  "cost_combination": "Add measured force cost to retained Cartesian BEC route. That BEC route already requested forces; its cost is not adjusted."
+}

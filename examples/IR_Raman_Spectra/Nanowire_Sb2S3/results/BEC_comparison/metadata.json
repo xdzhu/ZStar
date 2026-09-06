@@ -1,0 +1,145 @@
+{
+  "response_sha256": "8734980188ec6a3cf5bbe8d68db64999edfc54d72522015d41e0caddb7271d56",
+  "exported_tensor_axes": [
+    "atom",
+    "polarization",
+    "displacement"
+  ],
+  "exported_unit": "e",
+  "raw_source": "../BEC.raw.dat",
+  "projected_source": "../response.json",
+  "max_projected_ASR_e": 8.881784197001252e-16,
+  "reference_atom_1based": [
+    1,
+    3,
+    4,
+    7,
+    8,
+    10,
+    2,
+    5,
+    6,
+    9
+  ],
+  "matching_residual_A": [
+    0.059936811125399905,
+    0.016728443375065974,
+    0.014009602154218358,
+    0.014009602159218646,
+    0.01672844338006958,
+    0.05993681113039857,
+    0.06283122390075381,
+    0.027207359707269556,
+    0.027207359712269844,
+    0.0628312239057539
+  ],
+  "reference_source_sha256": "f6ef2973b4ed22acb88add0d2a1d9d213cdd09fd38a561baa7e676b3ac1cefba",
+  "reference_geometry_sha256": "557a74065fbdc460a8ab1ed643cfc623413cc7df92350bf20e9ab66fb0026377",
+  "diagonal_comparison": [
+    {
+      "atom": 7,
+      "species": "Sb",
+      "component": "xx",
+      "zstar_PBE_D3BJ_e": 1.1001512667146551,
+      "reference_B3LYP_D3BJ_e": 1.14267857
+    },
+    {
+      "atom": 7,
+      "species": "Sb",
+      "component": "yy",
+      "zstar_PBE_D3BJ_e": 0.31341703393991766,
+      "reference_B3LYP_D3BJ_e": 0.36704621
+    },
+    {
+      "atom": 7,
+      "species": "Sb",
+      "component": "zz",
+      "zstar_PBE_D3BJ_e": 4.641837578813197,
+      "reference_B3LYP_D3BJ_e": 4.34097421
+    },
+    {
+      "atom": 8,
+      "species": "Sb",
+      "component": "xx",
+      "zstar_PBE_D3BJ_e": 0.867151254211792,
+      "reference_B3LYP_D3BJ_e": 0.99866242
+    },
+    {
+      "atom": 8,
+      "species": "Sb",
+      "component": "yy",
+      "zstar_PBE_D3BJ_e": 0.5878095948082911,
+      "reference_B3LYP_D3BJ_e": 0.67003841
+    },
+    {
+      "atom": 8,
+      "species": "Sb",
+      "component": "zz",
+      "zstar_PBE_D3BJ_e": 5.972245984948326,
+      "reference_B3LYP_D3BJ_e": 6.1349116
+    },
+    {
+      "atom": 1,
+      "species": "S",
+      "component": "xx",
+      "zstar_PBE_D3BJ_e": -0.5301302787940937,
+      "reference_B3LYP_D3BJ_e": -0.51433403
+    },
+    {
+      "atom": 1,
+      "species": "S",
+      "component": "yy",
+      "zstar_PBE_D3BJ_e": -0.16403929785384494,
+      "reference_B3LYP_D3BJ_e": -0.19918802
+    },
+    {
+      "atom": 1,
+      "species": "S",
+      "component": "zz",
+      "zstar_PBE_D3BJ_e": -4.10132662619696,
+      "reference_B3LYP_D3BJ_e": -3.78606136
+    },
+    {
+      "atom": 2,
+      "species": "S",
+      "component": "xx",
+      "zstar_PBE_D3BJ_e": -0.7558394224591194,
+      "reference_B3LYP_D3BJ_e": -0.8594872
+    },
+    {
+      "atom": 2,
+      "species": "S",
+      "component": "yy",
+      "zstar_PBE_D3BJ_e": -0.24409463499297654,
+      "reference_B3LYP_D3BJ_e": -0.27641609
+    },
+    {
+      "atom": 2,
+      "species": "S",
+      "component": "zz",
+      "zstar_PBE_D3BJ_e": -3.353454073478986,
+      "reference_B3LYP_D3BJ_e": -3.43005056
+    },
+    {
+      "atom": 3,
+      "species": "S",
+      "component": "xx",
+      "zstar_PBE_D3BJ_e": -0.6813328196732339,
+      "reference_B3LYP_D3BJ_e": -0.76751978
+    },
+    {
+      "atom": 3,
+      "species": "S",
+      "component": "yy",
+      "zstar_PBE_D3BJ_e": -0.4930926959013872,
+      "reference_B3LYP_D3BJ_e": -0.56148044
+    },
+    {
+      "atom": 3,
+      "species": "S",
+      "component": "zz",
+      "zstar_PBE_D3BJ_e": -3.1593028640855754,
+      "reference_B3LYP_D3BJ_e": -3.2597733
+    }
+  ]
+}

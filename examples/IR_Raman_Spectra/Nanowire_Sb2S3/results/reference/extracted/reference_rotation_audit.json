@@ -1,0 +1,158 @@
+{
+  "modes": [
+    {
+      "mode": 1,
+      "frequency_printed_cm1": 0.0,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 2,
+      "frequency_printed_cm1": 0.0,
+      "axial_rotation_overlap": 3.0814879110195774e-33
+    },
+    {
+      "mode": 3,
+      "frequency_printed_cm1": 0.0,
+      "axial_rotation_overlap": 9.215875710446734e-36
+    },
+    {
+      "mode": 4,
+      "frequency_printed_cm1": 31.58,
+      "axial_rotation_overlap": 0.9829623140603131
+    },
+    {
+      "mode": 5,
+      "frequency_printed_cm1": 39.31,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 6,
+      "frequency_printed_cm1": 40.01,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 7,
+      "frequency_printed_cm1": 47.84,
+      "axial_rotation_overlap": 0.0007314822581716272
+    },
+    {
+      "mode": 8,
+      "frequency_printed_cm1": 49.86,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 9,
+      "frequency_printed_cm1": 52.79,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 10,
+      "frequency_printed_cm1": 99.79,
+      "axial_rotation_overlap": 0.0037528195200844383
+    },
+    {
+      "mode": 11,
+      "frequency_printed_cm1": 101.71,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 12,
+      "frequency_printed_cm1": 105.16,
+      "axial_rotation_overlap": 1.0386943435786948e-05
+    },
+    {
+      "mode": 13,
+      "frequency_printed_cm1": 111.19,
+      "axial_rotation_overlap": 7.703719777548943e-34
+    },
+    {
+      "mode": 14,
+      "frequency_printed_cm1": 117.54,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 15,
+      "frequency_printed_cm1": 122.41,
+      "axial_rotation_overlap": 0.0008442439622767222
+    },
+    {
+      "mode": 16,
+      "frequency_printed_cm1": 186.77,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 17,
+      "frequency_printed_cm1": 191.34,
+      "axial_rotation_overlap": 0.0014269366485020973
+    },
+    {
+      "mode": 18,
+      "frequency_printed_cm1": 202.47,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 19,
+      "frequency_printed_cm1": 209.21,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 20,
+      "frequency_printed_cm1": 234.63,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 21,
+      "frequency_printed_cm1": 243.27,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 22,
+      "frequency_printed_cm1": 243.39,
+      "axial_rotation_overlap": 0.0
+    },
+    {
+      "mode": 23,
+      "frequency_printed_cm1": 267.16,
+      "axial_rotation_overlap": 0.00589264359708266
+    },
+    {
+      "mode": 24,
+      "frequency_printed_cm1": 270.15,
+      "axial_rotation_overlap": 4.81482486096809e-35
+    },
+    {
+      "mode": 25,
+      "frequency_printed_cm1": 311.71,
+      "axial_rotation_overlap": 1.2037062152420224e-35
+    },
+    {
+      "mode": 26,
+      "frequency_printed_cm1": 316.91,
+      "axial_rotation_overlap": 0.00023014774492754268
+    },
+    {
+      "mode": 27,
+      "frequency_printed_cm1": 333.39,
+      "axial_rotation_overlap": 0.0001665030469584745
+    },
+    {
+      "mode": 28,
+      "frequency_printed_cm1": 341.94,
+      "axial_rotation_overlap": 1.925929944387236e-34
+    },
+    {
+      "mode": 29,
+      "frequency_printed_cm1": 342.97,
+      "axial_rotation_overlap": 0.0038158662096912867
+    },
+    {
+      "mode": 30,
+      "frequency_printed_cm1": 365.36,
+      "axial_rotation_overlap": 0.0
+    }
+  ],
+  "method": "mass-weighted normalized overlap with rigid x-axis rotation",
+  "precision": "Displacements printed to four decimal places; overlaps approximate.",
+  "source_structure_sha256": "557a74065fbdc460a8ab1ed643cfc623413cc7df92350bf20e9ab66fb0026377",
+  "filtering_applied": false
+}

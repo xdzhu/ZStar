@@ -1,0 +1,127 @@
+{
+  "definition": "Measured Separate BEC/APT and independent force SCFs versus Unified.",
+  "caveat": "Non-cubic-BaTiO3 retained BEC routes already requested forces. That output cost was not subtracted; independent force tasks supply the Separate phonons.",
+  "original_joint_control_record": "eight_system_efficiency.json",
+  "one_dimensional_sources": {
+    "BN_9_0": {
+      "path": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/benchmark/benchmark_summary.json",
+      "sha256": "36c925b70a44f4e2bc5b640d3ddf5a2a2c05f6a928f30b72607b2f3ad3f850a2"
+    },
+    "Sb2S3": {
+      "path": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/benchmark/benchmark_summary.json",
+      "sha256": "195978927fdf8e09c372da8ebb985bfc9d4337d54cfcdcfa82944f8d8f2b1e85"
+    }
+  },
+  "cases": {
+    "cubic_BaTiO3": {
+      "BEC_Separate": 9,
+      "BEC_Unified": 3,
+      "SCF_Separate": 13,
+      "SCF_Unified": 4,
+      "core_h_Separate": 6.0791520131819805,
+      "core_h_Unified": 2.5598515689166055,
+      "speedup": 2.374806448545309,
+      "independent_force_core_h_added": 0.0,
+      "static_response_relative_difference": null
+    },
+    "SiC": {
+      "BEC_Separate": 12,
+      "BEC_Unified": 2,
+      "SCF_Separate": 15,
+      "SCF_Unified": 3,
+      "core_h_Separate": 13.156192610666361,
+      "core_h_Unified": 3.7807256981678723,
+      "speedup": 3.4798061697630724,
+      "independent_force_core_h_added": 0.23384421112326284,
+      "static_response_relative_difference": 1.4335437765743586e-05
+    },
+    "t_HfO2": {
+      "BEC_Separate": 12,
+      "BEC_Unified": 4,
+      "SCF_Separate": 17,
+      "SCF_Unified": 5,
+      "core_h_Separate": 29.976658615050837,
+      "core_h_Unified": 10.87362902115306,
+      "speedup": 2.7568218997296685,
+      "independent_force_core_h_added": 5.842413025173462,
+      "static_response_relative_difference": 0.0002585573244381054
+    },
+    "alpha_In2Se3": {
+      "BEC_Separate": 30,
+      "BEC_Unified": 10,
+      "SCF_Separate": 41,
+      "SCF_Unified": 11,
+      "core_h_Separate": 22.107794126248013,
+      "core_h_Unified": 7.397423743704955,
+      "speedup": 2.9885801992972567,
+      "independent_force_core_h_added": 3.95403913012253,
+      "static_response_relative_difference": 0.0005192298502124702
+    },
+    "hBN": {
+      "BEC_Separate": 12,
+      "BEC_Unified": 2,
+      "SCF_Separate": 15,
+      "SCF_Unified": 3,
+      "core_h_Separate": 2.2458565197610167,
+      "core_h_Unified": 0.567259513888146,
+      "speedup": 3.9591341613070976,
+      "independent_force_core_h_added": 0.278086407115269,
+      "static_response_relative_difference": 0.00043423028637940486
+    },
+    "MoS2": {
+      "BEC_Separate": 12,
+      "BEC_Unified": 3,
+      "SCF_Separate": 16,
+      "SCF_Unified": 4,
+      "core_h_Separate": 7.22440886033906,
+      "core_h_Unified": 3.0131735380428535,
+      "speedup": 2.39760796022108,
+      "independent_force_core_h_added": 2.254919289942417,
+      "static_response_relative_difference": 0.014591421580089158
+    },
+    "H2O": {
+      "BEC_Separate": 12,
+      "BEC_Unified": 6,
+      "SCF_Separate": 19,
+      "SCF_Unified": 7,
+      "core_h_Separate": 21.667002159419162,
+      "core_h_Unified": 8.908031079643925,
+      "speedup": 2.432299793938892,
+      "independent_force_core_h_added": 7.398200623318553,
+      "static_response_relative_difference": 0.00015321022086263428
+    },
+    "CH4": {
+      "BEC_Separate": 12,
+      "BEC_Unified": 3,
+      "SCF_Separate": 16,
+      "SCF_Unified": 4,
+      "core_h_Separate": 12.978126084297482,
+      "core_h_Unified": 3.2605297272093594,
+      "speedup": 3.9803734883918,
+      "independent_force_core_h_added": 2.477258344118794,
+      "static_response_relative_difference": 1.8757866023296082e-05
+    },
+    "BN_9_0": {
+      "BEC_Separate": 60,
+      "BEC_Unified": 56,
+      "SCF_Separate": 117,
+      "SCF_Unified": 57,
+      "core_h_Separate": 270.4139237705383,
+      "core_h_Unified": 125.03524300151814,
+      "speedup": 2.1627016293898436,
+      "independent_force_core_h_added": 130.36238450568092,
+      "static_response_relative_difference": null
+    },
+    "Sb2S3": {
+      "BEC_Separate": 30,
+      "BEC_Unified": 20,
+      "SCF_Separate": 51,
+      "SCF_Unified": 21,
+      "core_h_Separate": 41.669086078264655,
+      "core_h_Unified": 18.94506395142008,
+      "speedup": 2.199469275222015,
+      "independent_force_core_h_added": 17.926560676925718,
+      "static_response_relative_difference": null
+    }
+  }
+}

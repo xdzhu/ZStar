@@ -1,0 +1,26 @@
+{
+  "case": "CH4",
+  "dimension": 0,
+  "IR_SCF_old": 16,
+  "IR_SCF_unified": 4,
+  "IR_core_h_old": 12.978126084297482,
+  "IR_core_h_unified": 3.2605297272093594,
+  "IR_speedup": 3.9803734883918,
+  "Raman_mode_SCF_old": 18,
+  "Raman_extra_SCF_unified": 0,
+  "full_SCF_old": 34,
+  "full_SCF_unified": 4,
+  "old_mode_Raman_core_h": 14.906413354900563,
+  "new_static_postprocessing_core_h": 0.07756975207270847,
+  "full_core_h_old": 27.884539439198043,
+  "full_core_h_unified": 3.338099479282068,
+  "assembled_speedup": 8.353417749310225,
+  "parallelism_matched": true,
+  "Raman_atomic_Cartesian_tensor_error": 2.3374472827178356e-08,
+  "Raman_direct_tensor_error": 7.653238681722386e-05,
+  "Raman_direct_activity_error": 0.00016126130911381235,
+  "IR_validation": {
+    "mode_charge_relative_L2_common_basis": 1.1225693187045653e-05,
+    "maximum_sorted_frequency_difference_cm1": 4.8667002374713775e-06
+  }
+}

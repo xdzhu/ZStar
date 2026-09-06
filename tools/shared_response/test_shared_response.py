@@ -4,11 +4,11 @@ import numpy as np
 import pytest
 import spglib
 
-from analyze_archive import (
+from tools.shared_response.analyze_archive import (
     expand_charges, fit_charge, fit_force_constants, frequencies, operations,
     orbit_matrix, project_hessian, select_stages, static_response,
 )
-from collect_archive import read_electronic_dielectric
+from tools.shared_response.collect_archive import read_electronic_dielectric
 
 
 def crystal_groups():

@@ -1,9 +1,44 @@
 # ZStar Validation Record
 
+## Current Release: 0.3.0
+
+The September 7 wheel passes 383 runtime tests and 66 subtests in each of two
+independent Python 3.10 environments with Phonopy 2.36.0 and 4.4.0. Including
+repository validation tools, the latter passes 476 tests and 66 subtests.
+All 50 imported ZStar modules originate from the installed wheel, not the
+checkout. Thirty installed CLI checks and `pip check` also pass. This round
+does not add new DFT results; numerical evidence from the previous acceptance
+is retained. See the [current acceptance record](research/RELEASE_ACCEPTANCE_20260907.md).
+
+## Previous Snapshot: 0.3.0rc6
+
+Independent wheel installations on Python 3.10 pass 383 tests and 66 subtests
+with each of Phonopy 2.36.0 and 4.4.0. Neither environment inherits system
+site packages. Thirty installed CLI checks and all 40 indexed Linux dry runs
+pass. Four Unified spectra examples reproduce their retained arrays within
+1.4e-15 absolute difference. A fresh methane calculation on cu23 completes
+the reference plus three displaced SCFs, polarization, Gamma modes and static
+nonresonant Raman; its repeat run skips completed solver stages.
+See the [release acceptance record](research/RELEASE_ACCEPTANCE_20260906.md)
+for scope, fixes, evidence and remaining author actions.
+
+## Previous Snapshot: 0.3.0rc4
+
+The 2026-09-06 source passes 410 tests and 66 subtests (Python 3.10,
+Phonopy 4.4). Linux checks additionally exercise case-sensitive BEC aliases
+and molecular/periodic shell execution chains with a recording CLI, not DFT.
+BN(9,0) and Sb2S3 native evidence, tensor reconstruction, spectra and timing
+totals pass offline verification. GeS adds one converged fixed-ion nonpolar
+SCF. See the [revision record](research/ANNOTATED_REVISION_20260906.md) and
+[output-name compatibility](bec_output_compatibility.md).
+
+The counts and environments below are historical release records, not a claim
+that every old dependency matrix was rerun for this snapshot.
+
 The historical material checks below are supplemented by the 0.3.0rc2
-[eight-system Unified benchmark](../examples/Shared_Response/README.md)
+[eight-system Unified benchmark](../examples/Benchmarks/README.md)
 and the [publication-revision audit](research/PUBLICATION_REVISION_20260904.md).
-The final candidate passes 319 tests with each of Phonopy 2.36.0 and 4.4.0.
+That earlier candidate passed 319 tests with each of Phonopy 2.36.0 and 4.4.0.
 An isolated wheel installation with NumPy 2.2.6 and each Phonopy version also passes
 319 tests (47 additional subtests) and `pip check`; it does not inherit the
 workstation's installed ZStar or optional pymatgen.
@@ -46,7 +81,7 @@ The source test suite covers:
 - local two-sided slab vacuum plateaus in the presence of a
   dipole-correction reset.
 
-The current source tree passes all 205 source tests. The public cubic BaTiO3
+The earlier source tree passed all 205 source tests. The public cubic BaTiO3
 example also completes `zstar bec post` and reproduces the archived
 representative charges:
 

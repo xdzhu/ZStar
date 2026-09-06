@@ -7,6 +7,12 @@
 
 ![二维材料静电势代表性结果](paper_figures/potential_examples_2d.png)
 
+下方四个子图比较极性 GeS 与单独完成 SCF 的固定离子、反演对称参考态。
+仅绘图平铺 3x3，采用共同色标和纵轴范围，不进行超胞重算。
+`examples/Electrostatic_Potential/GeS_nonpolar/` 附原始压缩 cube、输入和 PP/ORB；
+`bash run.sh` 离线重绘，`--calculate` 才会启动新 SCF。该参考态不被称作
+经过验证的翻转路径鞍点，势极值也不等同于电子电荷中心。
+
 ## 薄膜法向势与双侧真空平台
 
 ```bash

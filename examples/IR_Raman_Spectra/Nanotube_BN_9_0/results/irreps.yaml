@@ -1,0 +1,436 @@
+q-position: [    0.0000000,    0.0000000,    0.0000000 ]
+point_group: mm2
+transformation_matrix:
+- [  0.0000000, -1.0000000,  0.0000000 ]
+- [  1.0000000,  0.0000000,  0.0000000 ]
+- [  0.0000000,  0.0000000,  1.0000000 ]
+rotations:
+- matrix:
+  - [  1,  0,  0 ]
+  - [  0,  1,  0 ]
+  - [  0,  0,  1 ]
+  symbol: E
+- matrix:
+  - [ -1,  0,  0 ]
+  - [  0, -1,  0 ]
+  - [  0,  0,  1 ]
+  symbol: C2
+- matrix:
+  - [ -1,  0,  0 ]
+  - [  0,  1,  0 ]
+  - [  0,  0,  1 ]
+  symbol: sgvyz
+- matrix:
+  - [  1,  0,  0 ]
+  - [  0, -1,  0 ]
+  - [  0,  0,  1 ]
+  symbol: sgvxz
+normal_modes:
+- band_indices: [ 1, 2, 3 ]
+  frequency: 0.0000001527   
+  ir_label: None
+  characters: [ [  3,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 4 ]
+  frequency: 0.0617523568   
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 5 ]
+  frequency: 1.4365863565   
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 6 ]
+  frequency: 1.4483046099   
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 7 ]
+  frequency: 3.7936947501   
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 8 ]
+  frequency: 3.7947850716   
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 9 ]
+  frequency: 5.4067988952   
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 10 ]
+  frequency: 5.4076379261   
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 11 ]
+  frequency: 6.3916127273   
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 12 ]
+  frequency: 6.3920961221   
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 13 ]
+  frequency: 8.4612668959   
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 14 ]
+  frequency: 8.5445086113   
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 15 ]
+  frequency: 8.5450863712   
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 16 ]
+  frequency: 9.7116976444   
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 17 ]
+  frequency: 9.7126074079   
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 18, 19 ]
+  frequency: 10.3678898651  
+  ir_label: None
+  characters: [ [  2,   0.0 ], [  2, 180.0 ], [  0, 180.0 ], [  0,   0.0 ] ]
+- band_indices: [ 20 ]
+  frequency: 10.6726912820  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 21 ]
+  frequency: 10.6730104563  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 22 ]
+  frequency: 11.3980879659  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 23 ]
+  frequency: 11.3984288040  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 24 ]
+  frequency: 11.5114644237  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 25 ]
+  frequency: 11.5116040223  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 26 ]
+  frequency: 12.3630803370  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 27 ]
+  frequency: 15.6365922844  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 28 ]
+  frequency: 15.6367856049  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 29 ]
+  frequency: 16.6360777567  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 30 ]
+  frequency: 17.2020431134  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 31 ]
+  frequency: 17.2035099837  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 32 ]
+  frequency: 17.4545338902  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 33 ]
+  frequency: 17.4552416448  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 34 ]
+  frequency: 17.8887025063  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 35 ]
+  frequency: 17.8898441990  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 36 ]
+  frequency: 18.0921555092  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 37 ]
+  frequency: 18.0926798553  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 38 ]
+  frequency: 18.1003191158  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 39 ]
+  frequency: 18.1008781968  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 40 ]
+  frequency: 19.5305916005  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 41 ]
+  frequency: 19.6660193476  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 42 ]
+  frequency: 19.6664343330  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 43 ]
+  frequency: 20.1626708927  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 44 ]
+  frequency: 20.1630468899  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 45, 46 ]
+  frequency: 20.2135693562  
+  ir_label: None
+  characters: [ [  2,   0.0 ], [  2,   0.0 ], [  0,   0.0 ], [  0,   0.0 ] ]
+- band_indices: [ 47 ]
+  frequency: 21.4826092496  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 48 ]
+  frequency: 21.4833414511  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 49 ]
+  frequency: 22.6814827453  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 50 ]
+  frequency: 22.6816007789  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 51 ]
+  frequency: 22.9321996546  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 52 ]
+  frequency: 22.9434401146  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 53 ]
+  frequency: 23.8477076282  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 54 ]
+  frequency: 23.8478985731  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 55 ]
+  frequency: 23.9076587084  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 56 ]
+  frequency: 23.9077745022  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 57 ]
+  frequency: 23.9106295548  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 58 ]
+  frequency: 23.9115454462  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 59 ]
+  frequency: 24.5324856236  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 60 ]
+  frequency: 26.0073012007  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 61 ]
+  frequency: 26.0075169136  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 62 ]
+  frequency: 27.0408888516  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 63 ]
+  frequency: 27.0411528620  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 64 ]
+  frequency: 30.0886199207  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 65 ]
+  frequency: 30.0889189667  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 66 ]
+  frequency: 31.2101820556  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 67 ]
+  frequency: 31.2103903006  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 68 ]
+  frequency: 32.0184203092  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 69 ]
+  frequency: 32.0185502117  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 70 ]
+  frequency: 33.4763311072  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 71 ]
+  frequency: 33.4767924007  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 72 ]
+  frequency: 34.1972904950  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 73 ]
+  frequency: 35.2185579975  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 74 ]
+  frequency: 35.2191067242  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 75 ]
+  frequency: 36.0293829953  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 76 ]
+  frequency: 36.2682082900  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 77 ]
+  frequency: 36.2692583006  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 78 ]
+  frequency: 36.3357472901  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 79 ]
+  frequency: 36.3366401491  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 80 ]
+  frequency: 36.7811688529  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 81 ]
+  frequency: 36.7819181360  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 82 ]
+  frequency: 37.1677828241  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 83 ]
+  frequency: 37.1681858701  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 84 ]
+  frequency: 37.2191827111  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 85 ]
+  frequency: 37.2195894497  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 86 ]
+  frequency: 37.4190837689  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 87 ]
+  frequency: 37.4193526224  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 88 ]
+  frequency: 37.5457567783  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 89 ]
+  frequency: 37.5459738586  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 90 ]
+  frequency: 38.0834927070  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 91 ]
+  frequency: 38.0836172474  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 92, 93 ]
+  frequency: 38.2706995057  
+  ir_label: None
+  characters: [ [  2,   0.0 ], [  2,   0.0 ], [  0,   0.0 ], [  0,   0.0 ] ]
+- band_indices: [ 94 ]
+  frequency: 38.9388332778  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 95 ]
+  frequency: 39.0177638770  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 96 ]
+  frequency: 39.0178919133  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 97 ]
+  frequency: 39.1928223748  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 98, 99 ]
+  frequency: 39.8439086552  
+  ir_label: None
+  characters: [ [  2,   0.0 ], [  2, 180.0 ], [  0, 180.0 ], [  0,   0.0 ] ]
+- band_indices: [ 100 ]
+  frequency: 40.1767212351  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 101 ]
+  frequency: 40.3046462439  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 102 ]
+  frequency: 40.3055383507  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]
+- band_indices: [ 103 ]
+  frequency: 42.8193637351  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 104 ]
+  frequency: 42.8200606073  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 105 ]
+  frequency: 44.1070647697  
+  ir_label: B1
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ], [  1,   0.0 ] ]
+- band_indices: [ 106 ]
+  frequency: 44.1079787768  
+  ir_label: B2
+  characters: [ [  1,   0.0 ], [  1, 180.0 ], [  1,   0.0 ], [  1, 180.0 ] ]
+- band_indices: [ 107 ]
+  frequency: 44.2638574979  
+  ir_label: A2
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1, 180.0 ], [  1, 180.0 ] ]
+- band_indices: [ 108 ]
+  frequency: 44.2820963803  
+  ir_label: A1
+  characters: [ [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ], [  1,   0.0 ] ]

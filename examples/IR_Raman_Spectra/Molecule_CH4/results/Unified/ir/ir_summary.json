@@ -1,0 +1,15 @@
+{
+  "dimensionality": 0,
+  "response_kind": "molecular dipole derivative",
+  "modes": 9,
+  "dipole_derivative_unit": "Debye per Angstrom sqrt(amu)",
+  "activity_unit": "Debye^2 per Angstrom^2 amu",
+  "normalization": "maximum activity equals one",
+  "files": {
+    "modes": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Molecule_CH4\\results\\Unified\\ir\\ir_modes.csv",
+    "spectrum": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Molecule_CH4\\results\\Unified\\ir\\ir_spectrum.dat",
+    "plot": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Molecule_CH4\\results\\Unified\\ir\\ir_spectrum.png",
+    "plot_pdf": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Molecule_CH4\\results\\Unified\\ir\\ir_spectrum.pdf",
+    "plot_svg": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Molecule_CH4\\results\\Unified\\ir\\ir_spectrum.svg"
+  }
+}

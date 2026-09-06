@@ -8,18 +8,35 @@ scratch 目录不放入仓库。
 
 | 目录 | 范围 | 案例 |
 |---|---|---|
-| `1d_wires/` | 周期性一维响应 | GaAs 纳米线 |
-| `2d_materials/` | 薄层及与真空无关的面响应 | MoS2、hBN、alpha-In2Se3 |
-| `3d_bulk/` | 体材料 BEC 与介电响应 | 四方及立方 BaTiO3、HfO2 |
-| `molecules/` | 分子 APT、IR 与 Raman | H2O、CH4、CO2 |
+| `3D_Bulk/` | 体材料 BEC 与介电响应 | 四方及立方 BaTiO3、HfO2、3C-SiC |
+| `2D_Slab/` | 薄层及与真空无关的面响应 | MoS2、hBN、alpha-In2Se3 |
+| `1D_Nanowire/` | 周期性一维响应 | BN(9,0)、Sb2S3；早期 GaAs 示例 |
+| `0D_Molecules/` | 分子 APT、IR 与 Raman | H2O、CH4、CO2 |
 | `backend_examples/` | 计算器后端验证 | CP2K BEC/IR/Raman、ABACUS/VASP 的 SiC 与 HfO2 基准 |
-| `IR_Raman_Spectra/` | 一键 IR 与 Raman 工作流 | HfO2、MoS2、CH4、GaAs 纳米线 |
+| `IR_Raman_Spectra/` | 一键 IR 与 Raman 工作流 | HfO2、MoS2、Sb2S3、CH4、BN 管；早期 GaAs 示例 |
 | `Electrostatic_Potential/` | 基于 cube 的静电势分析 | MoS2、alpha-In2Se3、GeS、SnS、SnSe、SnTe |
 
-机器可读索引为 `manifest.json`。每个案例都包含干净的 `run/` 输入目录、
+机器可读索引为 `manifest.json`；旧目录到新目录的映射见 `path_migration.json`。
+`Benchmarks/` 保留效率对照的统一索引，材料输入归入四个维度目录。原始结果
+记录中的历史路径作为来源证据保留，不改写计算历史。
+每个案例都包含干净的 `run/` 输入目录、
 保存已有计算结果的 `results/` 目录、中英文 README，以及案例根目录的
 `run.sh`。参考结果用于复现和接口检查，不能替代用户在新机器上的收敛性
 测试。
+
+## 复现层级
+
+完整的目录不等于每个案例都包含上游 DFT 原始数据，运行前请先区分：
+
+- **重新计算电子结构**：配置外部计算器后，用提供的输入和资源文件运行。
+  VASP 的授权输入仍须由用户提供。
+- **离线重建**：利用保留的响应观测或 cube 重新生成数值结果，不运行 DFT。
+  四个 Unified 谱学案例均支持 `bash run.sh --post-only`，并核对输入哈希。
+- **已有结果分析**：查看保留的表格和图片，或提供同类计算输出后重新处理。
+  SnS、SnSe、SnTe 静电势案例使用 `bash run.sh --cube /path/to/ElecStaticPot.cube`。
+
+MoS2、In2Se3、GeS 的静电势脚本同样需要已有 cube，不会自动启动上游 SCF。
+`GeS_nonpolar` 提供独立脚本和压缩 cube。具体以各案例 README 为准。
 
 ## 快速开始
 
@@ -31,16 +48,16 @@ bash run.sh
 ```
 
 脚本会在案例旁边创建 `work/`，保留已有阶段，并支持中断后续算。使用
-`bash run.sh --stage all` 可以继续生成声子并完成声子力计算。ABACUS + PYATB
+`bash run.sh --stage all` 可以继续完成声子后处理；默认 Gamma 点直接复用
+Unified 位移的力，仅非平凡超胞需要额外声子力计算。ABACUS + PYATB
 案例也可以使用以下等价的显式命令：
 
 ```bash
-cd examples/3d_bulk/HfO2
+cd examples/3D_Bulk/HfO2
 cp -r run work
 cd work
-zstar bec pre --stru STRU --pp assets --orb assets \
-  --dim 3 --method central --displacement 0.01 --force
-zstar bec job --root . --system shell --tasks 1 --cpus-per-task 20
+zstar bec pre --stru STRU --pp assets --orb assets
+zstar bec job --system shell
 zstar bec run --root . --abacus-command "mpirun -np 20 abacus"
 zstar bec stat --root .
 zstar bec post --root .

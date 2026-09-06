@@ -145,10 +145,8 @@ def _run_bec(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             legacy(["cp2k-bec", "prepare", *clean])
             manifest_root = root if root != "." else "cp2k_bec"
         elif calculator == "vasp":
-            clean = _drop_options(clean, "--dim", "--dimensionality")
             legacy(["vasp-bec", "prepare", *clean])
             manifest_root = root if root != "." else "vasp_bec"
-            dimensionality = 3
         elif calculator == "qe":
             legacy(["qe-bec", "prepare", *clean])
             manifest_root = root if root != "." else "qe_response"
@@ -164,7 +162,7 @@ def _run_bec(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             root=manifest_root,
             calculator=calculator,
             dimensionality=dimensionality,
-            options={"method": method or ("central" if calculator == "cp2k" else "forward"), **shared_options},
+            options={"method": method or {"cp2k": "central", "vasp": "dfpt"}.get(calculator, "forward"), **shared_options},
         )
         print(f"[MANIFEST] {manifest_path(manifest_root, 'bec')}")
         return

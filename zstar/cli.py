@@ -330,9 +330,9 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     )
     parser_borns.add_argument('--stru', default='STRU',
                               help='Path to STRU used for symmetry (default: STRU)')
-    parser_borns.add_argument('--reduced', default='Z-BORN-reduced.out',
+    parser_borns.add_argument('--reduced', default='BEC.rep.raw.dat',
                               help='Reduced Born file with starred atoms '
-                                   '(default: Z-BORN-reduced.out)')
+                                   '(default: BEC.rep.raw.dat)')
     parser_borns.add_argument('--symmprec', '--tol', type=float, default=1e-3,
                               help='Symmetry precision (default: 1e-3)')
     parser_borns.add_argument('--out', default='born_generation_from_symm.log',
@@ -492,9 +492,9 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         'collect', help='Construct molecular APT or periodic BEC tensors from CP2K dipoles.'
     )
     parser_cp2k_collect.add_argument('--root', default='cp2k_bec')
-    parser_cp2k_collect.add_argument('--output', default='Z-BORN-all.out')
+    parser_cp2k_collect.add_argument('--output', default='BEC.raw.dat')
     parser_cp2k_collect.add_argument('--json-output', default='cp2k_bec.json')
-    parser_cp2k_collect.add_argument('--response-output', default='zstar_response.json')
+    parser_cp2k_collect.add_argument('--response-output', default='response.json')
 
     parser_cp2k_native = cp2k_actions.add_parser(
         'native', help='Run the CP2K 2025.2+ native finite-field APT reference.'
@@ -527,6 +527,10 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     )
     parser_vasp_bec_prepare.add_argument('--input-dir', default='.')
     parser_vasp_bec_prepare.add_argument('--root', default='vasp_bec')
+    parser_vasp_bec_prepare.add_argument('--dim', '--dimensionality', type=int,
+                                         choices=[0, 1, 2, 3], default=3)
+    parser_vasp_bec_prepare.add_argument('--periodic-axes', default=None,
+        help='Physical periodic axes; low-dimensional dielectric output remains a supercell response.')
     parser_vasp_bec_prepare.add_argument(
         '--method', choices=['dfpt', 'finite-field'], default='dfpt'
     )
@@ -549,10 +553,10 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         'collect', help='Normalize OUTCAR BEC tensors and write ZStar/Phonopy files.'
     )
     parser_vasp_bec_collect.add_argument('--root', default='vasp_bec')
-    parser_vasp_bec_collect.add_argument('--output', default='Z-BORN-all.out')
+    parser_vasp_bec_collect.add_argument('--output', default='BEC.raw.dat')
     parser_vasp_bec_collect.add_argument('--born-output', default='BORN')
     parser_vasp_bec_collect.add_argument('--json-output', default='vasp_bec.json')
-    parser_vasp_bec_collect.add_argument('--response-output', default='zstar_response.json')
+    parser_vasp_bec_collect.add_argument('--response-output', default='response.json')
     parser_vasp_bec_script = vasp_bec_actions.add_parser(
         'script', help='Generate a shell, Slurm, or Torque serial driver.'
     )
@@ -772,7 +776,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         'import-bec', help='Convert an existing ZStar VASP/CP2K BEC JSON result.'
     )
     parser_response_import.add_argument('--input', required=True)
-    parser_response_import.add_argument('--output', default='zstar_response.json')
+    parser_response_import.add_argument('--output', default='response.json')
     parser_response_import.add_argument(
         '--dim', type=int, choices=[0, 1, 2, 3], default=3
     )
@@ -785,7 +789,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     )
     parser_response_abacus.add_argument('--zborn', required=True)
     parser_response_abacus.add_argument('--born', default=None)
-    parser_response_abacus.add_argument('--output', default='zstar_response.json')
+    parser_response_abacus.add_argument('--output', default='response.json')
     parser_response_abacus.add_argument(
         '--dim', type=int, choices=[0, 1, 2, 3], default=3
     )
@@ -795,7 +799,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     )
     parser_response_phonopy.add_argument('--qpoints', default='qpoints.yaml')
     parser_response_phonopy.add_argument('--born', default=None)
-    parser_response_phonopy.add_argument('--output', default='zstar_response.json')
+    parser_response_phonopy.add_argument('--output', default='response.json')
     parser_response_phonopy.add_argument(
         '--dim', type=int, choices=[0, 1, 2, 3], default=3
     )
@@ -943,24 +947,24 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     # ---------------- symcheck ----------------
     parser_symcheck = subparsers.add_parser(
         'symcheck',
-        help='Verify Born tensors vs symmetry using a FULL reference (Z-BORN-all.out).'
+        help='Verify Born tensors vs symmetry using a FULL reference (BEC.raw.dat).'
     )
     parser_symcheck.add_argument('--stru', default='STRU',
                                  help='Path to STRU used for symmetry (default: STRU)')
-    parser_symcheck.add_argument('--reduced', default='Z-BORN-reduced.out',
+    parser_symcheck.add_argument('--reduced', default='BEC.rep.raw.dat',
                                  help='Reduced Born file with starred atoms '
-                                      '(default: Z-BORN-reduced.out)')
-    parser_symcheck.add_argument('--allfile', default='Z-BORN-all.out', required=False,
+                                      '(default: BEC.rep.raw.dat)')
+    parser_symcheck.add_argument('--allfile', default='BEC.raw.dat', required=False,
                                  help='Full reference Born tensor file '
-                                      '(e.g., Z-BORN-all.out)')
+                                      '(e.g., BEC.raw.dat)')
     parser_symcheck.add_argument('--symmprec', '--tol', type=float, default=1e-3,
                                  help='Symmetry precision (default: 1e-3)')
-    parser_symcheck.add_argument('--out', default='born_symmetry_report.txt',
+    parser_symcheck.add_argument('--out', default='BEC_symmetry.txt',
                                  help='Text report output '
-                                      '(default: born_symmetry_report.txt)')
-    parser_symcheck.add_argument('--json', dest='json_path', default='born_symmetry_report.json',
+                                      '(default: BEC_symmetry.txt)')
+    parser_symcheck.add_argument('--json', dest='json_path', default='BEC_symmetry.json',
                                  help='JSON report output '
-                                      '(default: born_symmetry_report.json)')
+                                      '(default: BEC_symmetry.json)')
     parser_symcheck.add_argument('--csv', dest='csv_path', default=None,
                                  help='Optional CSV dump path')
 
@@ -988,8 +992,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     )
     parser_ir.add_argument('--qpoints', default='qpoints.yaml')
     parser_ir.add_argument(
-        '--born', default='Z-BORN-symm.out',
-        help='Z-BORN-symm.out or a Phonopy-style BORN file.'
+        '--born', default=None,
+        help='BEC.dat (default) or a Phonopy-style BORN file.'
     )
     parser_ir.add_argument(
         '--dielectric', default=None,
@@ -1614,6 +1618,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 args.root,
                 method=args.method,
                 field_strength=args.field_strength,
+                dimensionality=args.dim,
+                periodic_axes=args.periodic_axes,
                 force=args.force,
             )
             print(f"[OUT] {root}")
@@ -2094,8 +2100,10 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 args.outdir, result, plot=not args.no_plot
             )
         else:
+            from .artifacts import resolve_artifact
+
             born = read_born_data(
-                args.born,
+                resolve_artifact(args.born or 'BEC.dat', explicit=args.born is not None),
                 natoms=len(modes.masses_amu),
                 dielectric_path=args.dielectric,
             )
@@ -2686,7 +2694,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         if not os.path.isfile(args.allfile):
             print(
                 f"[ERROR] --allfile not found: {args.allfile}. "
-                f"Please provide a full-atom Born file (e.g., Z-BORN-all.out).",
+                f"Please provide a full-atom Born file (e.g., BEC.raw.dat).",
                 file=sys.stderr
             )
             sys.exit(2)

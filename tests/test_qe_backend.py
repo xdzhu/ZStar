@@ -153,8 +153,8 @@ class QeBackendTests(unittest.TestCase):
                 encoding="utf-8",
             )
             result = collect_qe_response(root, plot=False, points=101)
-            self.assertTrue((root / "zstar_response.json").is_file())
-            response = json.loads((root / "zstar_response.json").read_text())
+            self.assertTrue((root / "response.json").is_file())
+            response = json.loads((root / "response.json").read_text())
             names = [quantity["name"] for quantity in response["quantities"]]
             self.assertIn("born_effective_charge", names)
             self.assertIn("raman_activity", names)
@@ -180,7 +180,7 @@ class QeBackendTests(unittest.TestCase):
                 encoding="utf-8",
             )
             collect_qe_response(root, plot=False, points=101)
-            response = json.loads((root / "zstar_response.json").read_text())
+            response = json.loads((root / "response.json").read_text())
             names = [quantity["name"] for quantity in response["quantities"]]
             self.assertIn("atomic_polar_tensor", names)
             self.assertNotIn("born_effective_charge", names)

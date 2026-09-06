@@ -1,0 +1,59 @@
+{
+  "case": "t_HfO2",
+  "force_source": "/home/zhuxd/abacus/agent-runs/20260904-independent-force-benchmark/t_HfO2",
+  "bec_source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/cartesian",
+  "separate": {
+    "status": "computed",
+    "unit": "dimensionless epsilon_ph",
+    "tensor": [
+      [
+        70.18371087294875,
+        5.3256729176217536e-52,
+        0.0
+      ],
+      [
+        6.803223973700423e-52,
+        70.18371087294885,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        13.308536343950044
+      ]
+    ]
+  },
+  "unified": {
+    "status": "computed",
+    "unit": "dimensionless epsilon_ph",
+    "tensor": [
+      [
+        70.20201640202703,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        70.20201640202691,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        13.309033996316709
+      ]
+    ]
+  },
+  "max_projected_frequency_difference_cm1": 0.011822628732971907,
+  "force_initialization": "atomic charge, independent SCFs",
+  "reference_force_source": "retained Cartesian reference",
+  "timing": {
+    "case": "t_HfO2",
+    "host": "cu23",
+    "SCFs": 4,
+    "independent_force_core_hours": 5.842413025173462,
+    "max_force_difference_from_unified_eV_A": 6.416199999997874e-06,
+    "status": "completed"
+  },
+  "static_response_relative_difference": 0.0002585573244381054
+}

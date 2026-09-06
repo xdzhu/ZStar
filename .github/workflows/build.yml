@@ -56,8 +56,24 @@ jobs:
           print(f"verified {wheels[0]}")
           PY
 
-      - name: Upload build artifacts
+      - name: Verify independently installed wheel
+        shell: bash
+        run: |
+          python -m venv "$RUNNER_TEMP/zstar-review"
+          "$RUNNER_TEMP/zstar-review/bin/python" -m pip install dist/*.whl pytest pytest-subtests
+          "$RUNNER_TEMP/zstar-review/bin/python" -I tools/release_acceptance.py smoke --output "$RUNNER_TEMP/zstar-smoke"
+          "$RUNNER_TEMP/zstar-review/bin/python" -I tools/release_acceptance.py tests --repo "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/zstar-tests"
+
+      - name: Upload accepted build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: zstar-distributions-${{ github.sha }}
           path: dist/*
+
+      - name: Upload acceptance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: zstar-acceptance-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/zstar-smoke/*
+            ${{ runner.temp }}/zstar-tests/*

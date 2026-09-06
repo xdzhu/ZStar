@@ -1,0 +1,3 @@
+{"host": "cu23", "stage": "disp-001", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 69.78020045720041, "core_hours": 0.7753355606355601}
+{"host": "cu23", "stage": "disp-002", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 63.28596557304263, "core_hours": 0.7031773952560292}
+{"host": "cu23", "stage": "disp-003", "mpi": 1, "omp": 40, "allocated_cores": 40, "kind": "independent_force_scf", "success": true, "wall_seconds": 69.87657006457448, "core_hours": 0.7764063340508276}

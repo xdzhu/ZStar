@@ -11,6 +11,7 @@ import re
 from typing import Any, Iterable
 
 import numpy as np
+from .artifacts import resolve_artifact
 
 
 SCHEMA_VERSION = "1.0"
@@ -55,7 +56,7 @@ def _numeric_rows(path: Path) -> list[list[float]]:
 def read_born(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
     """Read a Phonopy-style BORN file as epsilon infinity and atom tensors."""
 
-    source = Path(path)
+    source = resolve_artifact(path)
     rows = _numeric_rows(source)
     if len(rows) < 2:
         raise ValueError(f"BORN must contain a dielectric row and at least one tensor: {source}")
@@ -66,14 +67,14 @@ def read_born(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
 
 def read_zborn(path: str | Path) -> np.ndarray:
     rows: list[list[float]] = []
-    for raw in Path(path).read_text(encoding="utf-8", errors="ignore").splitlines():
+    for raw in resolve_artifact(path).read_text(encoding="utf-8", errors="ignore").splitlines():
         values: list[float] = []
         for field in raw.split():
             try:
                 values.append(float(field.replace("D", "E").replace("d", "e")))
             except ValueError:
                 continue
-        # Z-BORN-symm.out prefixes each tensor with an atom index and symbol.
+        # BEC.dat prefixes each tensor with an atom index and symbol.
         if len(values) >= 10:
             rows.append(values[-9:])
     if not rows:
@@ -82,6 +83,7 @@ def read_zborn(path: str | Path) -> np.ndarray:
 
 
 def _read_json(path: Path) -> dict[str, Any] | None:
+    path = resolve_artifact(path)
     if not path.is_file():
         return None
     try:
@@ -93,7 +95,7 @@ def _read_json(path: Path) -> dict[str, Any] | None:
 
 def _find_first(root: Path, candidates: Iterable[str]) -> Path | None:
     for relative in candidates:
-        path = root / relative
+        path = resolve_artifact(root / relative, explicit=False)
         if path.is_file():
             return path
     return None
@@ -155,7 +157,8 @@ def _read_intrinsic_response(
     }.get(int(dimensionality))
     if expected is None:
         return None, None
-    candidates = [root / "zstar_response.json"]
+    candidates = [root / "response.json"]
+    candidates.extend(sorted(root.glob("**/response.json")))
     candidates.extend(sorted(root.glob("**/zstar_response.json")))
     for path in candidates:
         data = _read_json(path)
@@ -245,7 +248,7 @@ def write_manifest_template(path: str | Path) -> Path:
     with target.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(MANIFEST_COLUMNS)
-        writer.writerow(["bto-001", "BaTiO3", 3, "cases/3d_bulk/BaTiO3/work", "abacus-pyatb", "doi-or-database-id", "candidate"])
+        writer.writerow(["bto-001", "BaTiO3", 3, "cases/3D_Bulk/BaTiO3/work", "abacus-pyatb", "doi-or-database-id", "candidate"])
     return target
 
 
@@ -270,7 +273,7 @@ def collect_entry(entry: ManifestEntry) -> tuple[dict[str, Any], list[dict[str, 
     tensors: np.ndarray | None = None
     epsilon_inf: np.ndarray | None = None
     born_path = _find_first(root, ["BORN", "BORN-for-phonopy.out"])
-    zborn_path = _find_first(root, ["Z-BORN-symm.out", "Z-BORN-all.out"])
+    zborn_path = _find_first(root, ["BEC.dat", "BEC.raw.dat"])
     tensor_path: Path | None = zborn_path or born_path
     if born_path:
         epsilon_inf, born_tensors = read_born(born_path)

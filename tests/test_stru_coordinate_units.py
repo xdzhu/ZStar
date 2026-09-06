@@ -33,7 +33,7 @@ def test_explicit_stru_units(tmp_path, mode):
 
 
 def test_packaged_methane_angstrom_coordinates():
-    source = Path(__file__).parents[1] / 'examples/molecules/CH4/run/STRU'
+    source = Path(__file__).parents[1] / 'examples/0D_Molecules/CH4/run/STRU'
     result = stru_analyzer(str(source))
     assert result[4] == 'Cartesian'
     np.testing.assert_allclose(

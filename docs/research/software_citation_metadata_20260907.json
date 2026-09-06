@@ -1,0 +1,1019 @@
+{
+  "access_date": "2026-09-07",
+  "metadata_source": "Crossref works API",
+  "doi_landing_attempts": "All five DOI URLs were visited. Publisher pages returned access challenges or redirects; official project citation pages independently confirm the titles and authors.",
+  "official_sources": [
+    "https://www.cp2k.org/quickstep",
+    "https://numpy.org/citing-numpy/",
+    "https://scipy.org/citing-scipy/",
+    "https://matplotlib.org/stable/project/citing.html",
+    "https://pymatgen.org/"
+  ],
+  "records": [
+    {
+      "key": "Kuhne2020CP2K",
+      "doi": "10.1063/5.0007045",
+      "title": "CP2K: An electronic structure and molecular dynamics software package - Quickstep: Efficient and accurate electronic structure calculations",
+      "authors": [
+        {
+          "given": "Thomas D.",
+          "family": "Kühne",
+          "name": null
+        },
+        {
+          "given": "Marcella",
+          "family": "Iannuzzi",
+          "name": null
+        },
+        {
+          "given": "Mauro",
+          "family": "Del Ben",
+          "name": null
+        },
+        {
+          "given": "Vladimir V.",
+          "family": "Rybkin",
+          "name": null
+        },
+        {
+          "given": "Patrick",
+          "family": "Seewald",
+          "name": null
+        },
+        {
+          "given": "Frederick",
+          "family": "Stein",
+          "name": null
+        },
+        {
+          "given": "Teodoro",
+          "family": "Laino",
+          "name": null
+        },
+        {
+          "given": "Rustam Z.",
+          "family": "Khaliullin",
+          "name": null
+        },
+        {
+          "given": "Ole",
+          "family": "Schütt",
+          "name": null
+        },
+        {
+          "given": "Florian",
+          "family": "Schiffmann",
+          "name": null
+        },
+        {
+          "given": "Dorothea",
+          "family": "Golze",
+          "name": null
+        },
+        {
+          "given": "Jan",
+          "family": "Wilhelm",
+          "name": null
+        },
+        {
+          "given": "Sergey",
+          "family": "Chulkov",
+          "name": null
+        },
+        {
+          "given": "Mohammad Hossein",
+          "family": "Bani-Hashemian",
+          "name": null
+        },
+        {
+          "given": "Valéry",
+          "family": "Weber",
+          "name": null
+        },
+        {
+          "given": "Urban",
+          "family": "Borštnik",
+          "name": null
+        },
+        {
+          "given": "Mathieu",
+          "family": "Taillefumier",
+          "name": null
+        },
+        {
+          "given": "Alice Shoshana",
+          "family": "Jakobovits",
+          "name": null
+        },
+        {
+          "given": "Alfio",
+          "family": "Lazzaro",
+          "name": null
+        },
+        {
+          "given": "Hans",
+          "family": "Pabst",
+          "name": null
+        },
+        {
+          "given": "Tiziano",
+          "family": "Müller",
+          "name": null
+        },
+        {
+          "given": "Robert",
+          "family": "Schade",
+          "name": null
+        },
+        {
+          "given": "Manuel",
+          "family": "Guidon",
+          "name": null
+        },
+        {
+          "given": "Samuel",
+          "family": "Andermatt",
+          "name": null
+        },
+        {
+          "given": "Nico",
+          "family": "Holmberg",
+          "name": null
+        },
+        {
+          "given": "Gregory K.",
+          "family": "Schenter",
+          "name": null
+        },
+        {
+          "given": "Anna",
+          "family": "Hehn",
+          "name": null
+        },
+        {
+          "given": "Augustin",
+          "family": "Bussy",
+          "name": null
+        },
+        {
+          "given": "Fabian",
+          "family": "Belleflamme",
+          "name": null
+        },
+        {
+          "given": "Gloria",
+          "family": "Tabacchi",
+          "name": null
+        },
+        {
+          "given": "Andreas",
+          "family": "Glöß",
+          "name": null
+        },
+        {
+          "given": "Michael",
+          "family": "Lass",
+          "name": null
+        },
+        {
+          "given": "Iain",
+          "family": "Bethune",
+          "name": null
+        },
+        {
+          "given": "Christopher J.",
+          "family": "Mundy",
+          "name": null
+        },
+        {
+          "given": "Christian",
+          "family": "Plessl",
+          "name": null
+        },
+        {
+          "given": "Matt",
+          "family": "Watkins",
+          "name": null
+        },
+        {
+          "given": "Joost",
+          "family": "VandeVondele",
+          "name": null
+        },
+        {
+          "given": "Matthias",
+          "family": "Krack",
+          "name": null
+        },
+        {
+          "given": "Jürg",
+          "family": "Hutter",
+          "name": null
+        }
+      ],
+      "journal": "The Journal of Chemical Physics",
+      "volume": "152",
+      "issue": "19",
+      "page": null,
+      "number": "194103",
+      "year": 2020
+    },
+    {
+      "key": "Harris2020NumPy",
+      "doi": "10.1038/s41586-020-2649-2",
+      "title": "Array programming with NumPy",
+      "authors": [
+        {
+          "given": "Charles R.",
+          "family": "Harris",
+          "name": null
+        },
+        {
+          "given": "K. Jarrod",
+          "family": "Millman",
+          "name": null
+        },
+        {
+          "given": "Stéfan J.",
+          "family": "van der Walt",
+          "name": null
+        },
+        {
+          "given": "Ralf",
+          "family": "Gommers",
+          "name": null
+        },
+        {
+          "given": "Pauli",
+          "family": "Virtanen",
+          "name": null
+        },
+        {
+          "given": "David",
+          "family": "Cournapeau",
+          "name": null
+        },
+        {
+          "given": "Eric",
+          "family": "Wieser",
+          "name": null
+        },
+        {
+          "given": "Julian",
+          "family": "Taylor",
+          "name": null
+        },
+        {
+          "given": "Sebastian",
+          "family": "Berg",
+          "name": null
+        },
+        {
+          "given": "Nathaniel J.",
+          "family": "Smith",
+          "name": null
+        },
+        {
+          "given": "Robert",
+          "family": "Kern",
+          "name": null
+        },
+        {
+          "given": "Matti",
+          "family": "Picus",
+          "name": null
+        },
+        {
+          "given": "Stephan",
+          "family": "Hoyer",
+          "name": null
+        },
+        {
+          "given": "Marten H.",
+          "family": "van Kerkwijk",
+          "name": null
+        },
+        {
+          "given": "Matthew",
+          "family": "Brett",
+          "name": null
+        },
+        {
+          "given": "Allan",
+          "family": "Haldane",
+          "name": null
+        },
+        {
+          "given": "Jaime Fernández",
+          "family": "del Río",
+          "name": null
+        },
+        {
+          "given": "Mark",
+          "family": "Wiebe",
+          "name": null
+        },
+        {
+          "given": "Pearu",
+          "family": "Peterson",
+          "name": null
+        },
+        {
+          "given": "Pierre",
+          "family": "Gérard-Marchant",
+          "name": null
+        },
+        {
+          "given": "Kevin",
+          "family": "Sheppard",
+          "name": null
+        },
+        {
+          "given": "Tyler",
+          "family": "Reddy",
+          "name": null
+        },
+        {
+          "given": "Warren",
+          "family": "Weckesser",
+          "name": null
+        },
+        {
+          "given": "Hameer",
+          "family": "Abbasi",
+          "name": null
+        },
+        {
+          "given": "Christoph",
+          "family": "Gohlke",
+          "name": null
+        },
+        {
+          "given": "Travis E.",
+          "family": "Oliphant",
+          "name": null
+        }
+      ],
+      "journal": "Nature",
+      "volume": "585",
+      "issue": "7825",
+      "page": "357-362",
+      "number": null,
+      "year": 2020
+    },
+    {
+      "key": "Virtanen2020SciPy",
+      "doi": "10.1038/s41592-019-0686-2",
+      "title": "SciPy 1.0: fundamental algorithms for scientific computing in Python",
+      "authors": [
+        {
+          "given": "Pauli",
+          "family": "Virtanen",
+          "name": null
+        },
+        {
+          "given": "Ralf",
+          "family": "Gommers",
+          "name": null
+        },
+        {
+          "given": "Travis E.",
+          "family": "Oliphant",
+          "name": null
+        },
+        {
+          "given": "Matt",
+          "family": "Haberland",
+          "name": null
+        },
+        {
+          "given": "Tyler",
+          "family": "Reddy",
+          "name": null
+        },
+        {
+          "given": "David",
+          "family": "Cournapeau",
+          "name": null
+        },
+        {
+          "given": "Evgeni",
+          "family": "Burovski",
+          "name": null
+        },
+        {
+          "given": "Pearu",
+          "family": "Peterson",
+          "name": null
+        },
+        {
+          "given": "Warren",
+          "family": "Weckesser",
+          "name": null
+        },
+        {
+          "given": "Jonathan",
+          "family": "Bright",
+          "name": null
+        },
+        {
+          "given": "Stéfan J.",
+          "family": "van der Walt",
+          "name": null
+        },
+        {
+          "given": "Matthew",
+          "family": "Brett",
+          "name": null
+        },
+        {
+          "given": "Joshua",
+          "family": "Wilson",
+          "name": null
+        },
+        {
+          "given": "K. Jarrod",
+          "family": "Millman",
+          "name": null
+        },
+        {
+          "given": "Nikolay",
+          "family": "Mayorov",
+          "name": null
+        },
+        {
+          "given": "Andrew R. J.",
+          "family": "Nelson",
+          "name": null
+        },
+        {
+          "given": "Eric",
+          "family": "Jones",
+          "name": null
+        },
+        {
+          "given": "Robert",
+          "family": "Kern",
+          "name": null
+        },
+        {
+          "given": "Eric",
+          "family": "Larson",
+          "name": null
+        },
+        {
+          "given": "C J",
+          "family": "Carey",
+          "name": null
+        },
+        {
+          "given": "İlhan",
+          "family": "Polat",
+          "name": null
+        },
+        {
+          "given": "Yu",
+          "family": "Feng",
+          "name": null
+        },
+        {
+          "given": "Eric W.",
+          "family": "Moore",
+          "name": null
+        },
+        {
+          "given": "Jake",
+          "family": "VanderPlas",
+          "name": null
+        },
+        {
+          "given": "Denis",
+          "family": "Laxalde",
+          "name": null
+        },
+        {
+          "given": "Josef",
+          "family": "Perktold",
+          "name": null
+        },
+        {
+          "given": "Robert",
+          "family": "Cimrman",
+          "name": null
+        },
+        {
+          "given": "Ian",
+          "family": "Henriksen",
+          "name": null
+        },
+        {
+          "given": "E. A.",
+          "family": "Quintero",
+          "name": null
+        },
+        {
+          "given": "Charles R.",
+          "family": "Harris",
+          "name": null
+        },
+        {
+          "given": "Anne M.",
+          "family": "Archibald",
+          "name": null
+        },
+        {
+          "given": "Antônio H.",
+          "family": "Ribeiro",
+          "name": null
+        },
+        {
+          "given": "Fabian",
+          "family": "Pedregosa",
+          "name": null
+        },
+        {
+          "given": "Paul",
+          "family": "van Mulbregt",
+          "name": null
+        },
+        {
+          "given": null,
+          "family": null,
+          "name": "SciPy 1.0 Contributors"
+        },
+        {
+          "given": "Aditya",
+          "family": "Vijaykumar",
+          "name": null
+        },
+        {
+          "given": "Alessandro Pietro",
+          "family": "Bardelli",
+          "name": null
+        },
+        {
+          "given": "Alex",
+          "family": "Rothberg",
+          "name": null
+        },
+        {
+          "given": "Andreas",
+          "family": "Hilboll",
+          "name": null
+        },
+        {
+          "given": "Andreas",
+          "family": "Kloeckner",
+          "name": null
+        },
+        {
+          "given": "Anthony",
+          "family": "Scopatz",
+          "name": null
+        },
+        {
+          "given": "Antony",
+          "family": "Lee",
+          "name": null
+        },
+        {
+          "given": "Ariel",
+          "family": "Rokem",
+          "name": null
+        },
+        {
+          "given": "C. Nathan",
+          "family": "Woods",
+          "name": null
+        },
+        {
+          "given": "Chad",
+          "family": "Fulton",
+          "name": null
+        },
+        {
+          "given": "Charles",
+          "family": "Masson",
+          "name": null
+        },
+        {
+          "given": "Christian",
+          "family": "Häggström",
+          "name": null
+        },
+        {
+          "given": "Clark",
+          "family": "Fitzgerald",
+          "name": null
+        },
+        {
+          "given": "David A.",
+          "family": "Nicholson",
+          "name": null
+        },
+        {
+          "given": "David R.",
+          "family": "Hagen",
+          "name": null
+        },
+        {
+          "given": "Dmitrii V.",
+          "family": "Pasechnik",
+          "name": null
+        },
+        {
+          "given": "Emanuele",
+          "family": "Olivetti",
+          "name": null
+        },
+        {
+          "given": "Eric",
+          "family": "Martin",
+          "name": null
+        },
+        {
+          "given": "Eric",
+          "family": "Wieser",
+          "name": null
+        },
+        {
+          "given": "Fabrice",
+          "family": "Silva",
+          "name": null
+        },
+        {
+          "given": "Felix",
+          "family": "Lenders",
+          "name": null
+        },
+        {
+          "given": "Florian",
+          "family": "Wilhelm",
+          "name": null
+        },
+        {
+          "given": "G.",
+          "family": "Young",
+          "name": null
+        },
+        {
+          "given": "Gavin A.",
+          "family": "Price",
+          "name": null
+        },
+        {
+          "given": "Gert-Ludwig",
+          "family": "Ingold",
+          "name": null
+        },
+        {
+          "given": "Gregory E.",
+          "family": "Allen",
+          "name": null
+        },
+        {
+          "given": "Gregory R.",
+          "family": "Lee",
+          "name": null
+        },
+        {
+          "given": "Hervé",
+          "family": "Audren",
+          "name": null
+        },
+        {
+          "given": "Irvin",
+          "family": "Probst",
+          "name": null
+        },
+        {
+          "given": "Jörg P.",
+          "family": "Dietrich",
+          "name": null
+        },
+        {
+          "given": "Jacob",
+          "family": "Silterra",
+          "name": null
+        },
+        {
+          "given": "James T",
+          "family": "Webber",
+          "name": null
+        },
+        {
+          "given": "Janko",
+          "family": "Slavič",
+          "name": null
+        },
+        {
+          "given": "Joel",
+          "family": "Nothman",
+          "name": null
+        },
+        {
+          "given": "Johannes",
+          "family": "Buchner",
+          "name": null
+        },
+        {
+          "given": "Johannes",
+          "family": "Kulick",
+          "name": null
+        },
+        {
+          "given": "Johannes L.",
+          "family": "Schönberger",
+          "name": null
+        },
+        {
+          "given": "José Vinícius",
+          "family": "de Miranda Cardoso",
+          "name": null
+        },
+        {
+          "given": "Joscha",
+          "family": "Reimer",
+          "name": null
+        },
+        {
+          "given": "Joseph",
+          "family": "Harrington",
+          "name": null
+        },
+        {
+          "given": "Juan Luis Cano",
+          "family": "Rodríguez",
+          "name": null
+        },
+        {
+          "given": "Juan",
+          "family": "Nunez-Iglesias",
+          "name": null
+        },
+        {
+          "given": "Justin",
+          "family": "Kuczynski",
+          "name": null
+        },
+        {
+          "given": "Kevin",
+          "family": "Tritz",
+          "name": null
+        },
+        {
+          "given": "Martin",
+          "family": "Thoma",
+          "name": null
+        },
+        {
+          "given": "Matthew",
+          "family": "Newville",
+          "name": null
+        },
+        {
+          "given": "Matthias",
+          "family": "Kümmerer",
+          "name": null
+        },
+        {
+          "given": "Maximilian",
+          "family": "Bolingbroke",
+          "name": null
+        },
+        {
+          "given": "Michael",
+          "family": "Tartre",
+          "name": null
+        },
+        {
+          "given": "Mikhail",
+          "family": "Pak",
+          "name": null
+        },
+        {
+          "given": "Nathaniel J.",
+          "family": "Smith",
+          "name": null
+        },
+        {
+          "given": "Nikolai",
+          "family": "Nowaczyk",
+          "name": null
+        },
+        {
+          "given": "Nikolay",
+          "family": "Shebanov",
+          "name": null
+        },
+        {
+          "given": "Oleksandr",
+          "family": "Pavlyk",
+          "name": null
+        },
+        {
+          "given": "Per A.",
+          "family": "Brodtkorb",
+          "name": null
+        },
+        {
+          "given": "Perry",
+          "family": "Lee",
+          "name": null
+        },
+        {
+          "given": "Robert T.",
+          "family": "McGibbon",
+          "name": null
+        },
+        {
+          "given": "Roman",
+          "family": "Feldbauer",
+          "name": null
+        },
+        {
+          "given": "Sam",
+          "family": "Lewis",
+          "name": null
+        },
+        {
+          "given": "Sam",
+          "family": "Tygier",
+          "name": null
+        },
+        {
+          "given": "Scott",
+          "family": "Sievert",
+          "name": null
+        },
+        {
+          "given": "Sebastiano",
+          "family": "Vigna",
+          "name": null
+        },
+        {
+          "given": "Stefan",
+          "family": "Peterson",
+          "name": null
+        },
+        {
+          "given": "Surhud",
+          "family": "More",
+          "name": null
+        },
+        {
+          "given": "Tadeusz",
+          "family": "Pudlik",
+          "name": null
+        },
+        {
+          "given": "Takuya",
+          "family": "Oshima",
+          "name": null
+        },
+        {
+          "given": "Thomas J.",
+          "family": "Pingel",
+          "name": null
+        },
+        {
+          "given": "Thomas P.",
+          "family": "Robitaille",
+          "name": null
+        },
+        {
+          "given": "Thomas",
+          "family": "Spura",
+          "name": null
+        },
+        {
+          "given": "Thouis R.",
+          "family": "Jones",
+          "name": null
+        },
+        {
+          "given": "Tim",
+          "family": "Cera",
+          "name": null
+        },
+        {
+          "given": "Tim",
+          "family": "Leslie",
+          "name": null
+        },
+        {
+          "given": "Tiziano",
+          "family": "Zito",
+          "name": null
+        },
+        {
+          "given": "Tom",
+          "family": "Krauss",
+          "name": null
+        },
+        {
+          "given": "Utkarsh",
+          "family": "Upadhyay",
+          "name": null
+        },
+        {
+          "given": "Yaroslav O.",
+          "family": "Halchenko",
+          "name": null
+        },
+        {
+          "given": "Yoshiki",
+          "family": "Vázquez-Baeza",
+          "name": null
+        }
+      ],
+      "journal": "Nature Methods",
+      "volume": "17",
+      "issue": "3",
+      "page": "261-272",
+      "number": null,
+      "year": 2020
+    },
+    {
+      "key": "Hunter2007Matplotlib",
+      "doi": "10.1109/mcse.2007.55",
+      "title": "Matplotlib: A 2D Graphics Environment",
+      "authors": [
+        {
+          "given": "John D.",
+          "family": "Hunter",
+          "name": null
+        }
+      ],
+      "journal": "Computing in Science &amp; Engineering",
+      "volume": "9",
+      "issue": "3",
+      "page": "90-95",
+      "number": null,
+      "year": 2007
+    },
+    {
+      "key": "Ong2013Pymatgen",
+      "doi": "10.1016/j.commatsci.2012.10.028",
+      "title": "Python Materials Genomics (pymatgen): A robust, open-source python library for materials analysis",
+      "authors": [
+        {
+          "given": "Shyue Ping",
+          "family": "Ong",
+          "name": null
+        },
+        {
+          "given": "William Davidson",
+          "family": "Richards",
+          "name": null
+        },
+        {
+          "given": "Anubhav",
+          "family": "Jain",
+          "name": null
+        },
+        {
+          "given": "Geoffroy",
+          "family": "Hautier",
+          "name": null
+        },
+        {
+          "given": "Michael",
+          "family": "Kocher",
+          "name": null
+        },
+        {
+          "given": "Shreyas",
+          "family": "Cholia",
+          "name": null
+        },
+        {
+          "given": "Dan",
+          "family": "Gunter",
+          "name": null
+        },
+        {
+          "given": "Vincent L.",
+          "family": "Chevrier",
+          "name": null
+        },
+        {
+          "given": "Kristin A.",
+          "family": "Persson",
+          "name": null
+        },
+        {
+          "given": "Gerbrand",
+          "family": "Ceder",
+          "name": null
+        }
+      ],
+      "journal": "Computational Materials Science",
+      "volume": "68",
+      "issue": null,
+      "page": "314-319",
+      "number": null,
+      "year": 2013
+    }
+  ]
+}

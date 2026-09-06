@@ -76,14 +76,14 @@ fi
   --omp-threads "$threads")
 (cd "$phonon" && zstar phonon stat --root .)
 (cd "$phonon" && zstar phonon post --root .)
-cp "$bec/BORN" "$bec/Z-BORN-symm.out" "$phonon/"
+cp "$bec/BORN" "$bec/bec.dat" "$phonon/"
 
 if [[ ! -f "$phonon/raman/.zstar/spectra.json" ]]; then
   copy_args=()
   for file in "${assets[@]}"; do copy_args+=(--copy "$file"); done
   (cd "$phonon" && zstar spectra pre --calculator abacus --kind all \
     --root raman --stru STRU --qpoints qpoints.yaml \
-    --born Z-BORN-symm.out --dielectric BORN --modes "4-6" \
+    --born bec.dat --dielectric BORN --modes "4-6" \
     --amplitude 0.02 --copy INPUT-scf --copy KPT "${copy_args[@]}")
 fi
 (cd "$phonon" && zstar spectra run --root raman \

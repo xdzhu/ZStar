@@ -1,8 +1,0 @@
-{
-  "case": "GaAs_nanowire",
-  "dimensionality": 1,
-  "role": "validated quickstart and reference",
-  "input": "run",
-  "results": "results",
-  "method": "central finite displacement recommended for production"
-}

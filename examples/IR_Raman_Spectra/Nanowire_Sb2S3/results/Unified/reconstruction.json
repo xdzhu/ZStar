@@ -1,0 +1,114 @@
+{
+  "source_manifest": {
+    "schema": "zstar-example-unified-observations",
+    "version": 1,
+    "case": "Sb2S3",
+    "dimension": 1,
+    "symprec_A": 1e-05,
+    "source_ensemble_sha256": "c8818c04747f427d57dae97a0daa06035ef5d2cb0614b1161e49002c296365a8",
+    "source": "docs/research/unified_spectroscopy_20260906/evidence/Sb2S3/unified",
+    "sha256": {
+      "BEC.dat": "4f490d7958370bb489dd190cb11049839d2b8d646e73d12c00c4d3acca336f21",
+      "BORN": "b442962a3f80b04da3805164e1811455a13762c75b4023d3df4219b75935c14e",
+      "observations.json": "b66638501df8fb514a0a489b47f2e22d10bd86af7630d212821c766f45e91b70",
+      "phonopy.yaml": "e548c7070d19708497bad5fcac35e3f227911139479680dab85d938f2b57a31d",
+      "qpoints.yaml": "ab7e241d9e3b82ddbb9b589758db69296e6e06307116f2e2e88ae229252a160b",
+      "STRU": "b0897b8928f879926dbd32393fe8cac1e3b7f65fab2de07f921687035656b00c"
+    }
+  },
+  "diagnostics": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 8.10799143821567,
+        "max_epsilon_residual": 4.1270473708943426e-05
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 8.10799143821469,
+        "max_epsilon_residual": 6.366890330201458e-05
+      },
+      {
+        "atom": 2,
+        "rank": 3,
+        "condition": 8.107991438216196,
+        "max_epsilon_residual": 4.71052289617406e-05
+      },
+      {
+        "atom": 6,
+        "rank": 3,
+        "condition": 8.10799143821469,
+        "max_epsilon_residual": 9.573230321484002e-05
+      },
+      {
+        "atom": 7,
+        "rank": 3,
+        "condition": 8.107991438215667,
+        "max_epsilon_residual": 4.8386594569059765e-05
+      }
+    ],
+    "translation_sum_max_per_A": 8.326672684688674e-17,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false
+  },
+  "mode_selection": {
+    "rigid_mode_numbers": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "rigid_frequencies_cm1": [
+      -2.118132004508266e-06,
+      1.0707407455860683e-06,
+      3.122159931054704e-06,
+      1.5152783529997944
+    ],
+    "rigid_overlaps": [
+      0.9999999999999876,
+      1.0000000000000093,
+      0.9999999999999989,
+      0.9997191541881246,
+      3.494996125340366e-27,
+      1.4947958045340522e-34,
+      0.00025031457615426185,
+      4.6824811176602926e-29,
+      4.202604038402739e-30,
+      2.321664861410342e-05,
+      8.303096395684716e-30,
+      7.177149529121426e-06,
+      2.854810272172876e-29,
+      4.160828712683646e-10,
+      1.738948994156679e-30,
+      3.4935205753156895e-35,
+      3.359565875576785e-08,
+      1.016978711553887e-34,
+      1.466143343290686e-29,
+      2.3864065976099352e-29,
+      4.636657188874035e-31,
+      5.426875364609609e-30,
+      6.728195856142591e-09,
+      1.7975161363935723e-29,
+      5.860894653305999e-29,
+      1.0208958565234053e-08,
+      1.2686906771256278e-09,
+      1.0194468992296448e-29,
+      8.521998575726274e-08,
+      2.1867066504248495e-29
+    ]
+  },
+  "raman_convention": {
+    "response_definition": "A_perp*(epsilon_r-I)/(4*pi)",
+    "response_unit": "angstrom^2",
+    "response_convention": "Gaussian line polarizability",
+    "normal_coordinate": "q",
+    "normal_coordinate_unit": "angstrom*sqrt(amu)",
+    "tensor_unit": "angstrom^2/(angstrom*sqrt(amu))",
+    "field_convention": "inherited from the electronic-response source",
+    "local_field_correction_added": false
+  },
+  "additional_DFT_calls": 0
+}

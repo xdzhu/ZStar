@@ -1,5 +1,9 @@
 # 分子 IR 与 Raman 光谱
 
+ABACUS 推荐使用 [Unified 位移工作流](unified_spectroscopy.zh-CN.md)，复用同一套
+SCF 完成 APT、Gamma 模式、IR 与 Raman。下述显式模式差分仍通过
+`zstar spectra pre --method mode` 保留，便于独立对照。
+
 本文档说明孤立分子在周期真空超胞中的正式 `--dim 0` 工作流，包括物理约定、
 计算步骤、输出文件、收敛要求和 benchmark 验收标准。
 

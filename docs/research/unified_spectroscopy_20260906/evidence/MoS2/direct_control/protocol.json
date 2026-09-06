@@ -1,0 +1,39 @@
+{
+  "case": "MoS2",
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified",
+  "gap": {
+    "gap_eV": 1.6084629000000001,
+    "vbm_eV": -2.80210062,
+    "cbm_eV": -1.19363772,
+    "insulating": true,
+    "threshold_eV": 0.01,
+    "source": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/pyatb-band/Out/Band_Structure/band.dat"
+  },
+  "source_hashes": {
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/STRU": "09b4e204b35f3b2da8e2ed53937b82715ed90c1d22be94602724c2ef4c5e9910",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/qpoints.yaml": "1105cbaea7bf03e4bc3776b4c644a0f94c7c8f72c056fba099141c3083a5f215",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/INPUT-scf": "fff4d4ba8aa99f8d6ae5c85e9095ef40493caf79e98aa4f074cc8c60ccb536e2",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/KPT": "152c4570c7e5149c88ff387d3f26c4b02293ca3eaa28295626c9fcfaabd10652",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/Mo.upf": "b5a929dee3378934d30b33a8f510c8a715450d22b4f1a3469276569ac47ab29d",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/S.upf": "47dc390784fa31acb520275f817fbe0bb42219399f641ecbcfb97ca9a1f947fa",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/Mo_gga_7au_100Ry_4s2p2d1f.orb": "40815a5d260af9590f9ec749eeff4aaa1ac4462ffcb8786c7041be0bbcf61fd6",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/S_gga_6au_100Ry_2s2p1d.orb": "5e2628093932604fe3e7857c021ef3fd29b5bbc376a8e9d5dc7dc97764fdbd22",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/OUT.POLAR/POLAR-CHARGE-DENSITY.restart": "7952a80434013b9342d0503877219288b6f56c0e2d57da2458280591b54c11ba",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/OUT.POLAR/SPIN1_CHG.cube": "eba730337bc074137ed0d2a18aaa4a902a6a6f3b39edf56b74c7eed4fd6ccd39"
+  },
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   13\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       45 45 1\n    static_dielectric_only      1\n}",
+  "mode_numbers": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "role": "Missing matched conventional control, not the Unified production route",
+  "expected_new_SCF_calls": 12,
+  "mpi_ABACUS": 1,
+  "omp_ABACUS": 40,
+  "mpi_PYATB": 40,
+  "omp_PYATB": 1
+}

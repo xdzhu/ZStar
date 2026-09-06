@@ -1,0 +1,76 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260903-zstar-ges-potential",
+  "source_stru_sha256": "31cd07b82b18509e410fbda692f85b0525673e9d619d143ea4a9bededbc9ee45",
+  "construction": "Remove relative armchair Ge/S offset at fixed cell; restore equal-species inversion pairs.",
+  "inversion_center_fractional": [
+    0.6834104893345,
+    0.25,
+    0.5
+  ],
+  "inversion_permutation_zero_based": [
+    1,
+    0,
+    3,
+    2
+  ],
+  "maximum_inversion_residual_fractional": 0.0,
+  "polar_symmetry": {
+    "international": "Pmn2_1",
+    "number": 31,
+    "pointgroup": "mm2",
+    "operations": 4
+  },
+  "reference_symmetry": {
+    "international": "Pmmn",
+    "number": 59,
+    "pointgroup": "mmm",
+    "operations": 8
+  },
+  "polar_fractional_positions": [
+    [
+      0.364014013208,
+      0.499999780694,
+      0.557455228823
+    ],
+    [
+      0.864013467392,
+      2.19098013029e-07,
+      0.442544742195
+    ],
+    [
+      0.502806965461,
+      0.500000174214,
+      0.453502425366
+    ],
+    [
+      0.00280755393824,
+      0.999999825994,
+      0.546497603616
+    ]
+  ],
+  "reference_fractional_positions": [
+    [
+      0.4334104893345,
+      0.5,
+      0.557455243314
+    ],
+    [
+      0.9334104893345,
+      0.0,
+      0.442544756686
+    ],
+    [
+      0.4334104893345,
+      0.5,
+      0.453502410875
+    ],
+    [
+      0.9334104893345,
+      0.0,
+      0.546497589125
+    ]
+  ],
+  "reference_status": "Fixed-ion nonpolar reference; not an optimized saddle point.",
+  "primary_reference": "https://doi.org/10.1103/PhysRevLett.117.097601",
+  "primary_location": "Fig. 1(b), zero tilting and inversion-symmetric phase A"
+}

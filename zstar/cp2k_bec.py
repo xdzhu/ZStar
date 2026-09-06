@@ -713,9 +713,9 @@ def generate_cp2k_backend_script(
 def collect_cp2k_bec(
     root: str | Path,
     *,
-    output: str | Path = "Z-BORN-all.out",
+    output: str | Path = "BEC.raw.dat",
     json_output: str | Path = "cp2k_bec.json",
-    response_output: str | Path | None = "zstar_response.json",
+    response_output: str | Path | None = "response.json",
 ) -> dict:
     """Collect molecular APT or periodic BEC dipole derivatives."""
 

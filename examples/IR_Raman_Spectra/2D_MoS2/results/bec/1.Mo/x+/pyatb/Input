@@ -1,0 +1,34 @@
+INPUT_PARAMETERS
+{
+    nspin                           1
+    package                         ABACUS
+    fermi_energy                    0.73108108475
+    fermi_energy_unit               eV
+    HR_route                        /home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/1.Mo/x+/OUT.POLAR/data-HR-sparse_SPIN0.csr
+    SR_route                        /home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/1.Mo/x+/OUT.POLAR/data-SR-sparse_SPIN0.csr
+    rR_route                        /home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/1.Mo/x+/OUT.POLAR/data-rR-sparse.csr
+    HR_unit                         Ry
+    rR_unit                         Bohr
+    max_kpoint_num                  800
+}
+
+LATTICE
+{
+    lattice_constant                1.0000000000000
+    lattice_constant_unit           Angstrom
+    lattice_vector
+        3.1489999994385    0.0000000000000    0.0000000000000
+       -1.5744999997193    2.7271139960138    0.0000000000000
+        0.0000000000000    0.0000000000000   19.9999999964341
+}
+
+POLARIZATION
+{
+    occ_band       13
+    nk1                         28
+    nk2                         28
+    nk3                         2
+    atom_type      2
+    stru_file      STRU
+    valence_e      14 6
+}

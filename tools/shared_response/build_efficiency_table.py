@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from report_eight_systems import solver_cost
+from example_paths import case_path
 
 
 CASES = [('cubic_BaTiO3', r'cubic BaTiO$_3$'), ('SiC', '3C-SiC'),
@@ -14,7 +15,7 @@ CASES = [('cubic_BaTiO3', r'cubic BaTiO$_3$'), ('SiC', '3C-SiC'),
 
 
 def entry(root, case):
-    base = root / case / 'results'
+    base = case_path(root, case) / 'results'
     if case in ('H2O', 'CH4') and not (base / 'relaxation.json').is_file():
         return {'status': 'pending_relaxed_production_pair'}
     if case == 'cubic_BaTiO3':
@@ -41,12 +42,12 @@ def entry(root, case):
         protocol = 'central Cartesian joint-response control'
     return {'status': 'complete', 'protocol': protocol, 'counts': counts, 'solver_core_hours': costs,
             'speedup': costs['Cartesian']/costs['Unified'],
-            'timing_sha256': {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}}
+            'timing_sha256': {p.relative_to(root.parent).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in files}}
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--root', type=Path, default=Path('examples/Shared_Response'))
+    parser.add_argument('--root', type=Path, default=Path('examples/Benchmarks'))
     parser.add_argument('--output', type=Path, default=Path('docs/research/eight_system_efficiency.json'))
     parser.add_argument('--require-complete', action='store_true')
     args = parser.parse_args()

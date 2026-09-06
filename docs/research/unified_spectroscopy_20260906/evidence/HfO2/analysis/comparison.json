@@ -1,0 +1,79 @@
+{
+  "case": "HfO2",
+  "dimension": 3,
+  "tensor_Frobenius_relative_difference": 0.0001406675651447781,
+  "derivative_max_abs_difference_per_A": 0.0001249238441884959,
+  "unified": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 2.0418277672767844,
+        "max_epsilon_residual": 0.00022053310571745757
+      },
+      {
+        "atom": 2,
+        "rank": 3,
+        "condition": 1.4437902602563566,
+        "max_epsilon_residual": 0.00011808062363827341
+      }
+    ],
+    "translation_sum_max_per_A": 0.0,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false,
+    "reference_symmetry_max": 3.7687768974408245e-08,
+    "optical_increment_core_h": 3.691743419133127,
+    "precision_reference_core_h": 0.9115610496451457
+  },
+  "cartesian": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 1.0000000000000002,
+        "max_epsilon_residual": 0.0002911312960840462
+      },
+      {
+        "atom": 2,
+        "rank": 3,
+        "condition": 1.000000000000011,
+        "max_epsilon_residual": 0.0001782002465323708
+      }
+    ],
+    "translation_sum_max_per_A": 0.0,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false,
+    "reference_symmetry_max": 3.7687768974408245e-08,
+    "optical_increment_core_h": 11.515299239506325,
+    "precision_reference_core_h": 0.9301905877577762
+  },
+  "raw_tensors_used": true,
+  "additional_DFT_calls": 0,
+  "raman_comparison_basis": "Both derivatives contracted with the same Unified eigenvectors; isolates response-fit error.",
+  "normalization_factor": 1,
+  "optical_mode_numbers": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "excluded_rigid_frequencies_cm1": [
+    -1.184486102048638e-05,
+    -1.096758745011524e-05,
+    6.9548113848814704e-06
+  ],
+  "optical_mode_tensor_relative_difference": 0.00012091507428172684
+}

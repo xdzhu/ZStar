@@ -67,7 +67,7 @@ if __name__ == '__main__':
     parser.add_argument('--new-results', type=Path)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
-    data = json.loads((args.root/'examples/Shared_Response/benchmark_summary.json').read_text())
+    data = json.loads((args.root/'examples/Benchmarks/benchmark_summary.json').read_text())
     result = {'In2Se3': {'baseline': decompose(data['cases']['in2se3']),
                         'refined': decompose(data['cases']['in2se3']['dense_mesh'])},
               'HfO2': hfo2(args.root)}

@@ -2,6 +2,9 @@ dist/
 build/
 tmp/
 # The curated examples/ tree is public and tracked. Large scratch data stay in tmp/.
+examples/**/work/
+examples/**/work-vasp/
+examples/**/POTCAR
 __pycache__/
 *.py[cod]
 *.egg-info/

@@ -1,7 +1,7 @@
 """Do not hide an unresolved optical zero mode in a pseudoinverse."""
 
 import numpy as np
-from analyze_archive import static_response
+from tools.shared_response.analyze_archive import static_response
 
 
 def model():

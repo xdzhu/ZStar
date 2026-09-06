@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "backend": "vasp",
+  "created_at": "2026-09-06T07:08:51.612870+00:00",
+  "source_directory": "/home/zhuxd/vasp/agent-runs/20260906-bn9-bec-validation/input",
+  "method": "dfpt",
+  "field_strength_eV_per_angstrom": null,
+  "occupation_override": null,
+  "convergence_override": null,
+  "natoms_total": 36,
+  "labels": [
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "B",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N",
+    "N"
+  ],
+  "stages": [
+    {
+      "name": "reference",
+      "path": "reference"
+    },
+    {
+      "name": "response",
+      "path": "response"
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "case": "H2O",
+  "force_source": "/home/zhuxd/abacus/agent-runs/20260904-independent-force-benchmark/H2O",
+  "bec_source": "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/H2O/cartesian",
+  "separate": {
+    "status": "computed",
+    "unit": "Angstrom^3 Gaussian vibrational polarizability",
+    "rigid_motion_rank": 6,
+    "internal_mode_count": 3,
+    "frequencies_cm1": [
+      1604.6943661462562,
+      3708.7743959263835,
+      3830.4894135623153
+    ],
+    "raw_rigid_coupling_relative": 0.000178879384019561,
+    "coordinate_convention": "fixed orientation, mass-weighted COM Eckart subspace",
+    "raw_Hessian_modified": false,
+    "reference_max_force_eV_A": 0.0003358204,
+    "tensor": [
+      [
+        8.286220003512205e-34,
+        -5.14186516529732e-19,
+        -8.452910359897842e-18
+      ],
+      [
+        -5.141865165297325e-19,
+        0.01342049487490394,
+        -8.501355784229742e-18
+      ],
+      [
+        -8.452910359897843e-18,
+        -9.466899883779779e-18,
+        0.09271659692391332
+      ]
+    ],
+    "mode_charges_e_sqrt_amu": [
+      [
+        -2.2747128683803048e-17,
+        -2.3474509993576165e-17,
+        0.24657495141515917
+      ],
+      [
+        -8.80941208036744e-18,
+        -7.305911915360487e-16,
+        -0.030377819193112384
+      ],
+      [
+        8.591810877772235e-18,
+        -0.22425005352044888,
+        1.0118919882704227e-16
+      ]
+    ],
+    "mode_sum_closure_relative": 2.9874163839364244e-16
+  },
+  "unified": {
+    "status": "computed",
+    "unit": "Angstrom^3 Gaussian vibrational polarizability",
+    "rigid_motion_rank": 6,
+    "internal_mode_count": 3,
+    "frequencies_cm1": [
+      1604.6945184293313,
+      3708.774381459676,
+      3830.4893089317466
+    ],
+    "raw_rigid_coupling_relative": 0.00017886983248777203,
+    "coordinate_convention": "fixed orientation, mass-weighted COM Eckart subspace",
+    "raw_Hessian_modified": false,
+    "reference_max_force_eV_A": 0.0003358204,
+    "tensor": [
+      [
+        8.287736311402802e-34,
+        -5.142752610420145e-19,
+        -8.453009628539819e-18
+      ],
+      [
+        -5.142752610420148e-19,
+        0.013422668524115866,
+        6.1259230089940915e-19
+      ],
+      [
+        -8.453009628539817e-18,
+        -1.5532997555904837e-18,
+        0.09270240929700575
+      ]
+    ],
+    "mode_charges_e_sqrt_amu": [
+      [
+        -2.274921190583494e-17,
+        -1.5572569000145232e-17,
+        0.246555918446504
+      ],
+      [
+        -8.810218618344914e-18,
+        2.8478724917207958e-16,
+        -0.030383732422026924
+      ],
+      [
+        8.592597699946876e-18,
+        -0.22426820697883995,
+        -6.666654729767117e-17
+      ]
+    ],
+    "mode_sum_closure_relative": 1.0403365424116335e-15
+  },
+  "max_projected_frequency_difference_cm1": 0.004005992095670763,
+  "force_initialization": "atomic charge, independent SCFs",
+  "reference_force_source": "retained Cartesian reference",
+  "timing": {
+    "case": "H2O",
+    "host": "cu24",
+    "SCFs": 6,
+    "independent_force_core_hours": 7.398200623318553,
+    "max_force_difference_from_unified_eV_A": 1.4849999996346952e-07,
+    "status": "completed"
+  },
+  "static_response_relative_difference": 0.00015321022086263428,
+  "max_internal_frequency_difference_cm1": 0.00015228307506731653
+}

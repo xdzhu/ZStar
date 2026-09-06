@@ -1,0 +1,8 @@
+{
+  "case": "alpha_In2Se3",
+  "host": "cu20",
+  "SCFs": 10,
+  "independent_force_core_hours": 3.95403913012253,
+  "max_force_difference_from_unified_eV_A": 6.078600000000061e-06,
+  "status": "completed"
+}

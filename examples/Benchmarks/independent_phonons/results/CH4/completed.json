@@ -1,0 +1,8 @@
+{
+  "case": "CH4",
+  "host": "cu25",
+  "SCFs": 3,
+  "independent_force_core_hours": 2.477258344118794,
+  "max_force_difference_from_unified_eV_A": 2.4999999986841104e-08,
+  "status": "completed"
+}

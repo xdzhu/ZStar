@@ -1,0 +1,33 @@
+{
+  "cube_sha256": "37e6d5a18f2b5f3a45a1c8f082c6715d640cad8a727b4f980d9659e5eeef0366",
+  "source": "235:/home/zhuxd/abacus/agent-runs/20260906-zstar-ges-nonpolar",
+  "node": "cu23",
+  "mpi": 40,
+  "omp": 1,
+  "solver_wall_seconds": 39,
+  "core_hours": 0.43333333333333335,
+  "scf_converged": true,
+  "files": {
+    "run/INPUT": "5d89fb144ddadfebc04133e13d786d79cf4cb159c5ae6abf053f8077ab4d4746",
+    "run/KPT": "feea9e139cefa96b88c3bdeb138000b4fdbe6defc42f7dd706b53355d86811ef",
+    "run/STRU": "1d862b8b5983a800e84f6f9d70a7e4b9858f25fb991d62f12a1cf6892782b535",
+    "run/assets/Ge.upf": "094b01fc6f32067a70f3bd4045dcdf8410fff84e3ae503da5dd9ef39f1906a3e",
+    "run/assets/Ge_gga_10au_100Ry_2s2p2d1f.orb": "aa9977aa5188677c065f8348d199350592539c267fd945234fffee0dd2045858",
+    "run/assets/S.upf": "47dc390784fa31acb520275f817fbe0bb42219399f641ecbcfb97ca9a1f947fa",
+    "run/assets/S_gga_10au_100Ry_2s2p1d.orb": "65134cba11f10f8ca0999475f41c30038746bbd98aab0959e1c9bc7167015464",
+    "results/abacus.out": "bee91645bfc2e1227ca12a13cc2ae53690819b0e442386b73a9c939a504c6266",
+    "results/ElecStaticPot-DIR-a-linear-smooth0p15-mirror.dat": "ab2e88459d975ca908d9e5317547c25109c61bc4c196a21503d60dc8628e27ef",
+    "results/ElecStaticPot-DIR-a-linear-smooth0p15.dat": "8243a68b53f92ba73bf29b179dadbdfbb48b17938a1b540759a09fbed18f57cc",
+    "results/ElecStaticPot-DIR-b-linear-smooth0p15-mirror.dat": "f1145a0839d9df0a575f36d702993915a808d9850b01f35cb880d624024f9837",
+    "results/ElecStaticPot-DIR-b-linear-smooth0p15.dat": "2fd439b162f027e436b6091496a52945ba39a1d9db8929e84288ec0fa659bcd1",
+    "results/ElecStaticPot-potential-summary.json": "e76923c5ac15c2a67e269c81550dc3f7c0e8763efdc69ce3e6c2b5662081cd17",
+    "results/ElecStaticPot-XY-avg-cart.dat": "0b210b80f9bfd55460dfc49d60fc536b5f3f043e63b8ad4f9ad436107ab12052",
+    "results/ElecStaticPot-Z.dat": "06a0e64e7c13d04826c4cc4c5b6e799158c30fbc735c6815dbcbad8c9ceea01a",
+    "results/ElecStaticPot.cube.gz": "3f771226acfea55358391d732026ef8da88b1d16aa1f066c0dee760db3c2249c",
+    "results/reference_construction.json": "26a61ab7bc798825ac975cf95f101fe65ce4ac906be13e41bedf03d59c97ea8e",
+    "results/running_scf.log": "e5cb8fc1252673089f142a3a7d850d97fb60fb76ea7acec57638aa0769f79912",
+    "results/run_metadata.txt": "a1d981840b20b480a75ceeace3e07e117018d3cb50bdb34d7c36fb98719ff0bc",
+    "results/STRU.native": "a682d6b8e587ca53a11edc67afaf4c2ab32f192f785b6f4ce58996db487ed20a",
+    "results/time.json": "4ae83dddd57d532bd09da0e531535219119b3acb96913b1fb6d800a1d9dcf9a7"
+  }
+}

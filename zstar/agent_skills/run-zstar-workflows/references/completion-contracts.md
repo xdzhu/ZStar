@@ -8,11 +8,11 @@ code zero is necessary but not sufficient for a physical result.
 - `.zstar/stages/*.json` has no failed stage.
 - `.zstar/workflow.jsonl` retains the event history.
 - The reference band gap exceeds the configured threshold.
-- `Z-BORN-symm.out` contains the full-cell, symmetry-reconstructed tensors.
-- `BORN` or `BORN-for-phonopy.out` exists for Phonopy coupling.
+- `BEC.dat` contains the full-cell, symmetry-reconstructed tensors.
+- `BORN` or `BORN` exists for Phonopy coupling.
 - The symmetry report records the acoustic-sum correction and atom mapping.
 - For `dim=1`, per-atom `zstar_1d_bec.json` reports identify the transverse
-  cube and periodic Berry sources, and `zstar_response.json` contains the
+  cube and periodic Berry sources, and `response.json` contains the
   intrinsic line polarizability.
 
 ## Phonons and dielectric response

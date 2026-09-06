@@ -140,13 +140,13 @@ class Cp2kBecTests(unittest.TestCase):
             self.assertEqual(result["sum_scope"], "selected_atoms")
             actual = np.asarray(result["atoms"][0]["tensor"])
             self.assertTrue(np.allclose(actual, expected, atol=1e-9))
-            self.assertTrue((root / "Z-BORN-all.out").is_file())
+            self.assertTrue((root / "BEC.raw.dat").is_file())
             self.assertIn(
                 "2.10000000",
-                (root / "Z-BORN-all.out").read_text(encoding="utf-8"),
+                (root / "BEC.raw.dat").read_text(encoding="utf-8"),
             )
-            self.assertTrue((root / "zstar_response.json").is_file())
-            response = json.loads((root / "zstar_response.json").read_text())
+            self.assertTrue((root / "response.json").is_file())
+            response = json.loads((root / "response.json").read_text())
             self.assertEqual(response["schema"], "zstar-response")
             self.assertEqual(response["backend"], "cp2k")
             self.assertEqual(response["quantities"][0]["shape"], [1, 3, 3])
@@ -192,7 +192,7 @@ class Cp2kBecTests(unittest.TestCase):
             self.assertTrue(
                 np.allclose(np.asarray(result["atoms"][0]["tensor"]), expected)
             )
-            response = json.loads((root / "zstar_response.json").read_text())
+            response = json.loads((root / "response.json").read_text())
             self.assertEqual(response["dimensionality"]["value"], 0)
             self.assertEqual(response["quantities"][0]["name"], "atomic_polar_tensor")
 

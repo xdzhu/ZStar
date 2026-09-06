@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "source_stru": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/STRU",
+  "qpoints_atoms": 3,
+  "amplitude_A_sqrt_amu": 0.02,
+  "modes": [
+    {
+      "mode": 4,
+      "frequency_cm-1": 270.1231124400068,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0004/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0004/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0004/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0004/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 5,
+      "frequency_cm-1": 270.1231124400068,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0005/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0005/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0005/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0005/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 6,
+      "frequency_cm-1": 361.82254597945894,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0006/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0006/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0006/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0006/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 7,
+      "frequency_cm-1": 361.82254597945894,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0007/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0007/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0007/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0007/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 8,
+      "frequency_cm-1": 391.63697269195484,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0008/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0008/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0008/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0008/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 9,
+      "frequency_cm-1": 438.4285008997792,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0009/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0009/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0009/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/MoS2/direct_control/raman/mode-0009/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    }
+  ],
+  "reference_dir": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move"
+}

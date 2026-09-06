@@ -55,7 +55,7 @@ zstar db collect --manifest candidates.csv --output database
 程序会报告声学和最大残差、BEC 最大分量、最大奇异值、能隙门控和缺失项。即使施加
 声学和修正，也必须保留修正前残差，不能从科研记录中抹掉。
 
-逐原子表优先读取 `Z-BORN-symm.out` 的全晶胞张量，同时从 Phonopy 风格 `BORN`
+逐原子表优先读取 `BEC.dat` 的全晶胞张量，同时从 Phonopy 风格 `BORN`
 读取 `epsilon_infinity`。`tensor_scope=full_cell` 时才计算声学和残差；如果输入只有
 对称性不等价原子的代表张量，则标记为 `symmetry_representatives` 和
 `representative_tensors_only`，不会用不完整张量做全晶胞求和或进入排名。

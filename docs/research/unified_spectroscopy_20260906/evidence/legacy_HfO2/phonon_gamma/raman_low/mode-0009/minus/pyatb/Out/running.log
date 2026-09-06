@@ -1,0 +1,85 @@
+program start at Tue Sep  1 11:43:33 2026
+processor number is 20
+
+ABACUS CSR matrices were converted to pyatb atom-pair HDF5 files:
+ >> HR : /home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0009/minus/pyatb/data-HR-sparse_SPIN0_atom_pairs.h5
+ >> SR : /home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0009/minus/pyatb/data-SR-sparse_SPIN0_atom_pairs.h5
+ >> rR : /home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0009/minus/pyatb/data-rR-sparse_atom_pairs.h5
+
+
+------------------------------------------------------
+|                                                    |
+|                     Structure                      |
+|                                                    |
+------------------------------------------------------
+
+Lattice Constant : 1.000000 Angstrom
+Symmetry Standardization : disabled
+Lattice Vector   : 
+       3.556519        0.000000        0.000000 
+       0.000000        3.556519        0.000000 
+       0.000000        0.000000        5.134867 
+
+
+------------------------------------------------------
+|                                                    |
+|               Optical Conductivity                 |
+|                                                    |
+------------------------------------------------------
+
+
+Parameter setting : 
+ >> occ_band                      : 24
+ >> static_dielectric_only        : 1
+
+Enter the optical_conductivity calculation module ==> 
+ >> Calculated        800 k points, took 2.848974e+00 s
+ >> Calculated        800 k points, took 2.808008e+00 s
+ >> Calculated        800 k points, took 2.800473e+00 s
+ >> Calculated        800 k points, took 2.806231e+00 s
+ >> Calculated        800 k points, took 2.807917e+00 s
+ >> Calculated        800 k points, took 2.846136e+00 s
+ >> Calculated        800 k points, took 2.839924e+00 s
+ >> Calculated        800 k points, took 2.850744e+00 s
+ >> Calculated        800 k points, took 2.848760e+00 s
+ >> Calculated        800 k points, took 2.846455e+00 s
+ >> Calculated        800 k points, took 2.855731e+00 s
+ >> Calculated        800 k points, took 2.849472e+00 s
+ >> Calculated        800 k points, took 2.854418e+00 s
+ >> Calculated        800 k points, took 2.852520e+00 s
+ >> Calculated        800 k points, took 2.855458e+00 s
+ >> Calculated        800 k points, took 2.856049e+00 s
+ >> Calculated        800 k points, took 2.855402e+00 s
+ >> Calculated        800 k points, took 2.848223e+00 s
+ >> Calculated        800 k points, took 2.851379e+00 s
+ >> Calculated        800 k points, took 2.845149e+00 s
+ >> Calculated        800 k points, took 2.852874e+00 s
+ >> Calculated        800 k points, took 2.851826e+00 s
+ >> Calculated        800 k points, took 2.860457e+00 s
+ >> Calculated        800 k points, took 2.857729e+00 s
+ >> Calculated        800 k points, took 2.855274e+00 s
+ >> Calculated        800 k points, took 2.855368e+00 s
+ >> Calculated        800 k points, took 2.859170e+00 s
+ >> Calculated        800 k points, took 2.854770e+00 s
+ >> Calculated        800 k points, took 2.856587e+00 s
+ >> Calculated        800 k points, took 2.857116e+00 s
+ >> Calculated        800 k points, took 2.860940e+00 s
+ >> Calculated        800 k points, took 2.862306e+00 s
+ >> Calculated        800 k points, took 2.852793e+00 s
+ >> Calculated        800 k points, took 2.850316e+00 s
+ >> Calculated        800 k points, took 2.856573e+00 s
+ >> Calculated        800 k points, took 2.856823e+00 s
+ >> Calculated        600 k points, took 2.146978e+00 s
+
+
+------------------------------------------------------
+|                                                    |
+|                   Time Statistics                  |
+|                                                    |
+------------------------------------------------------
+
+read_input : 
+ >> Read Input File                :    2.210617e-03 s
+optical_conductivity : 
+ >> calculate optical conductivity :    1.049144e+02 s
+Total time : 0 h 1 m 50 s

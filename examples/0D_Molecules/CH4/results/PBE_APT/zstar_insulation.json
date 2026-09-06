@@ -1,0 +1,11 @@
+{
+  "gap_eV": 9.53522028,
+  "vbm_eV": -9.44004962,
+  "cbm_eV": 0.09517066,
+  "insulating": true,
+  "threshold_eV": 0.01,
+  "source": "/home/zhuxd/abacus/agent-runs/20260826-zstar-molecular-apt/ch4/0.no-move/pyatb-band/Out/Band_Structure/band.dat",
+  "sampling": "path",
+  "dimensionality": 0,
+  "scope": "0.no-move reference gate"
+}

@@ -1,0 +1,20 @@
+{
+  ".zstar/vasp_bec_state.json": "df243cd41043c37b9337f878ae680910f080dfad9f3500ee9dad109ac17743b4",
+  "BEC.raw.dat": "afa40cadaf86f915bfd69d798dd448c41b57424cde339dc2e82e6ba3983b6388",
+  "BORN": "757d48dd1723e828d952b613130b4e5b5c7826a9323b8fa6f5354fbf2dead001",
+  "comparison.json": "49c70c916944a42da5c3717afc95a8708a2528f45e596fb2c5d1ed1c46aabfb9",
+  "input_provenance.json": "451ac1dce1fb194d0f3b9b3bb5512548d20ee18900c3cf8e47d0f64d9647282e",
+  "README.md": "9938611d615d6a5cae483cda55ae09db4c755a4a6fe2aaf76a039f31b66a9979",
+  "reference/INCAR": "a27c9294074d45d2c8e02abb024b870e1a10d07e542bf724407ecab2ace435da",
+  "reference/KPOINTS": "257e98f0b5cf0d0db249b2a58ffb623e4d77513e998747578c2e66f88fe79c6a",
+  "reference/OUTCAR": "649eaed841031f6821cee67608a065c2a22ee9048938c09d670657de632e2792",
+  "reference/POSCAR": "e86751fd2dfe1b47eaa9e590f7b69f7c80ac89b8b06649e3f35e6ceb10548bc2",
+  "reference/vasp.log": "6970edc4f84e3731118e3afadebc63983af1c681e0df8eecf357ea419b1007e7",
+  "response/INCAR": "66b954d5edd5890a8b7c43a848932a442824efd5d398fcce3e89fcecee6e8645",
+  "response/KPOINTS": "257e98f0b5cf0d0db249b2a58ffb623e4d77513e998747578c2e66f88fe79c6a",
+  "response/OUTCAR": "5e238bb6d306cca80286a5f22c5bcc6c43f1e27cf2ee756266a5ccb5964fb062",
+  "response/POSCAR": "e86751fd2dfe1b47eaa9e590f7b69f7c80ac89b8b06649e3f35e6ceb10548bc2",
+  "response/vasp.log": "86af2099f67c00d7108edaac550cc3449a2bbe65ab9645bb020750ac5971cd7a",
+  "vasp_bec.json": "18fcb67f10d67cf8caf009eb52d6d6430fc8eb427160d3b0a23aba6322642127",
+  "vasp_bec_manifest.json": "720dbe0fbccaea8863dc237c7fad8f80bf2010d8eb0aac772d261264835c3490"
+}

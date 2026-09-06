@@ -614,7 +614,7 @@ def collect_qe_response(
         },
         metadata={"prefix": manifest["prefix"], "raman_requested": manifest["raman_requested"]},
     )
-    response_path = record.write(root_path / "zstar_response.json")
+    response_path = record.write(root_path / "response.json")
     common = {
         "mode_numbers": modes["mode_numbers"],
         "broadening_cm1": broadening_cm1,

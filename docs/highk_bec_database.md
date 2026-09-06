@@ -65,7 +65,7 @@ acoustic-sum correction does not erase the raw residual from the scientific
 record.
 
 Atom-resolved records preferentially use full-cell tensors from
-`Z-BORN-symm.out`, while the Phonopy-style `BORN` supplies `epsilon_infinity`.
+`BEC.dat`, while the Phonopy-style `BORN` supplies `epsilon_infinity`.
 Acoustic-sum diagnostics are evaluated only for `tensor_scope=full_cell`.
 Representative-only tensors are explicitly marked and cannot enter the ranking.
 Validated molecular spectra use `status=complete_auxiliary`: they remain

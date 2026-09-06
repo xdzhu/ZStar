@@ -12,7 +12,7 @@ ZStar 的职责是给已有 NEP 数据集拼接 BEC，并审计这一对应关�
 ```bash
 zstar qnep augment \
   --input train.xyz \
-  --bec Z-BORN-all.out \
+  --bec BEC.raw.dat \
   --frame 0 \
   --output train_qnep.xyz
 
@@ -21,7 +21,7 @@ zstar qnep init --input train_qnep.xyz --output nep.in \
   --charge-mode 2 --lambda-z 0.5
 ```
 
-`--bec` 可读取 `Z-BORN-all.out`、Phonopy `BORN`、CP2K 的
+`--bec` 可读取 `BEC.raw.dat`、Phonopy `BORN`、CP2K 的
 `cp2k_bec.json` 或 VASP 的 `vasp_bec.json`。
 
 ## 多构型或部分构型带标签
@@ -31,7 +31,7 @@ GPUMD 官方允许仅为部分构型提供 BEC。可使用从零开始编号的 
 ```csv
 frame,bec
 0,labels/frame-0000/vasp_bec.json
-25,labels/frame-0025/Z-BORN-all.out
+25,labels/frame-0025/BEC.raw.dat
 80,labels/frame-0080/cp2k_bec.json
 ```
 

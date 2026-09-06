@@ -1,6 +1,35 @@
 # ZStar 数值验证记录
 
-下列历史材料验证由 0.3.0rc2 的[八体系 Unified 基准](../examples/Shared_Response/README.zh-CN.md)
+## 当前版本：0.3.0
+
+9 月 7 日构建的 wheel 在两个独立 Python 3.10 环境中分别配合 Phonopy
+2.36.0 和 4.4.0，通过 383 项运行时测试及 66 项子测试。后者加入仓库验证
+工具后，共通过 476 项测试及 66 项子测试。检查确认加载的 50 个 ZStar 模块
+全部来自安装包，而非源码目录。30 个已安装 CLI 检查及 `pip check` 也通过。
+本轮没有新增 DFT 结果，保留上一轮验收的数值证据。
+详见[当前验收记录](research/RELEASE_ACCEPTANCE_20260907.md)。
+
+## 历史快照：0.3.0rc6
+
+两个不继承系统 site-packages 的 Python 3.10 环境独立安装 wheel，分别使用
+Phonopy 2.36.0 和 4.4.0，均通过 383 项测试和 66 项子测试。30 个已安装 CLI
+检查、40 个索引案例的 Linux dry-run 均通过。四个 Unified 谱学案例重建
+数组的最大绝对差低于 1.4e-15。cu23 上重新计算甲烷的参考态和三个位移，
+完成极化、Gamma 模式及静态非共振 Raman；重复运行跳过已完成的计算阶段。
+范围、修复、证据与作者待确认事项见
+[发布候选版验收记录](research/RELEASE_ACCEPTANCE_20260906.md)。
+
+## 历史快照：0.3.0rc4
+
+2026-09-06 源码在 Python 3.10、Phonopy 4.4 下通过 410 项测试和 66 项子测试。
+Linux 另行验证了大小写敏感的 BEC 文件兼容、分子/周期体系的 shell 执行链
+（记录命令的测试替身，不是 DFT）。BN(9,0)、Sb2S3 的原始档案、张量、
+谱线和机时离线复算通过。GeS 新增一次已收敛的固定离子非极性参考 SCF。
+详见[修订记录](research/ANNOTATED_REVISION_20260906.md)和
+[输出名兼容说明](bec_output_compatibility.md)。下文保留历史版本验证记录，
+不表示当前快照重新运行了所有旧依赖版本组合。
+
+下列历史材料验证由 0.3.0rc2 的[八体系 Unified 基准](../examples/Benchmarks/README.zh-CN.md)
 和[投稿修订审计](research/PUBLICATION_REVISION_20260904.md)补充。
 候选版本在 Phonopy 2.36.0 与 4.4.0 下均通过 319 项测试。
 另外在不继承工作站 ZStar/pymatgen 的全新 wheel 环境中，NumPy 2.2.6 与

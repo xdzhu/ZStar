@@ -162,6 +162,12 @@ def test_joint_post_roundtrip_and_asymmetric_born_convention(tmp_path, monkeypat
     monkeypatch.setattr('zstar.shared_abacus.read_forces', lambda path: forces[Path(path).name])
     monkeypatch.setattr('zstar.pyatb_compat.read_static_dielectric', lambda *a: (np.eye(3)*2, 'synthetic'))
     result = collect_shared_abacus(output)
+    for filename in ('BORN', 'BEC.dat', 'BEC.raw.dat', 'BEC.rep.dat',
+                     'BEC.rep.raw.dat', 'response.json', 'response_fit.json'):
+        assert (output / filename).is_file()
+    for filename in ('BORN-for-phonopy.out', 'Z-BORN-symm.out',
+                     'Z-BORN-all.out', 'zstar_response.json', 'shared_response_result.json'):
+        assert not (output / filename).exists()
     np.testing.assert_allclose(result['born_raw_e'], born, atol=1e-12)
     modes = load_gamma_modes(output / 'qpoints.yaml')
     assert modes.eigenvectors.shape == (6, 2, 3)
@@ -174,7 +180,7 @@ def test_joint_post_roundtrip_and_asymmetric_born_convention(tmp_path, monkeypat
     # sign, not its oscillator tensor.
     np.testing.assert_allclose(np.einsum('mi,mj->mij', actual, actual),
                                np.einsum('mi,mj->mij', expected, expected), atol=1e-8)
-    record = ResponseRecord.read(output / 'zstar_response.json')
+    record = ResponseRecord.read(output / 'response.json')
     assert record.quantity('born_effective_charge').axes == ('atom', 'displacement', 'polarization')
     # The output pair is a valid all-Angstrom Phonopy restart.
     import phonopy
@@ -296,5 +302,8 @@ def test_raw_force_jacobian_matches_phonopy_with_index_conversion():
         rows.append({'atom': item['number'], 'displacement_A': item['displacement'],
                      'dipole_change_e_A': [0,0,0], 'forces_eV_A': f})
     raw = reconstruct_responses(2, rows, symmetry_operations(phonon))
-    phonon.produce_force_constants(fc_calculator='traditional')
+    from phonopy.interface.fc_calculator import fc_calculator_names
+    # Older Phonopy selects its traditional solver through the default None.
+    calculator = 'traditional' if 'traditional' in fc_calculator_names else None
+    phonon.produce_force_constants(fc_calculator=calculator)
     np.testing.assert_allclose(phonon.force_constants.transpose(1,0,3,2), raw.force_constants, atol=1e-10)

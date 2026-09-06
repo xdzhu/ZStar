@@ -1,0 +1,11 @@
+{
+  "host": "cu20",
+  "stage": "disp-005",
+  "mpi": 1,
+  "omp": 40,
+  "allocated_cores": 40,
+  "kind": "independent_force_scf",
+  "success": true,
+  "wall_seconds": 32.60336304301745,
+  "core_hours": 0.3622595893668606
+}

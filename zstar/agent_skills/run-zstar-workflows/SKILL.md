@@ -7,7 +7,8 @@ short-description: Run ZStar response workflows
 
 # Run ZStar Workflows
 
-Use ZStar as a transparent workflow layer. Preserve the physical convention,
+Prefer the Unified symmetry-adapted response ensemble for ABACUS + PYATB
+BEC/APT, Gamma phonons and static nonresonant IR/Raman workflows. Preserve the physical convention,
 input files, stage logs, and machine-readable outputs needed to audit the result.
 
 ## Route the request
@@ -51,18 +52,20 @@ Gamma-point IR/Raman response, but it does not implement a finite-wavevector
 - Reject bulk/Gonze non-analytic corrections for `dim=1`; Gamma-point spectra
   are supported without NAC, while finite-wavevector polar dispersion requires
   a genuine `1d-cutoff` implementation from the calculator.
-- Use central differences for Raman tensors. Do not interpret broadened or
-  normalized spectra as absolute experimental intensities.
+- Use the symmetry-complete Unified displacement ensemble for Raman derivatives.
+  Explicit normal-mode controls use central differences. Do not interpret
+  broadened or normalized spectra as absolute experimental intensities.
 - Route VASP or CP2K spectroscopy through `zstar spectra`; inspect
   `spectra_manifest.json` and keep its reference-first stage order. VASP needs
   a completed vibrational `vasprun.xml`; CP2K molecular inputs must remain
   centered in a nonperiodic cell.
 - Do not use native VASP/CP2K `--dim 2` spectroscopy for a slab. Keep the
   real-space out-of-plane polarization requirement.
-- For molecules, pass `--dim 0` to the spectroscopy commands even though the
-  user-facing category is "Molecule".
+- For molecules, set `--dim 0` at BEC preparation; Unified spectroscopy infers
+  it from that ensemble. Native or explicit mode routes need their documented
+  dimension option. The user-facing category is "Molecule".
 - For molecular charge response, call the result an atomic polar tensor (APT),
-  use central differences, and compare orientation-independent GAPT traces
+  use the Unified ensemble or explicit central-difference controls, and compare orientation-independent GAPT traces
   before comparing individual Cartesian components.
 - Keep atom ordering consistent among structures, BEC tensors, Phonopy data,
   and trajectory frames.

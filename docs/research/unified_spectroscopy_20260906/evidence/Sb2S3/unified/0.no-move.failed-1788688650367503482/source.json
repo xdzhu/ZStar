@@ -1,0 +1,12 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move",
+  "source_input_sha256": "543ee5f930094fc07e04a608c77fd58c7f5451776ae75ede43fbd0cb5ca14e61",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/OUT.Sb2S3/data-HR-sparse_SPIN0.csr": "0712711d43e7b5b033290247ec37fdd6204d3a581b058c83712d971a48844ac3",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/OUT.Sb2S3/data-SR-sparse_SPIN0.csr": "745d63c41ab5a5bf19572a1eed8d5a38032eca00f69c70ac7092cf8d89fee51b",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/OUT.Sb2S3/data-rR-sparse.csr": "fc8de8afa5a66b448bffb6a7ef76d7c9867cb7ad8ad86df72aab0ae44c4cf277"
+  },
+  "dimension": 1,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   48\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       1 1 33\n    static_dielectric_only      1\n}"
+}

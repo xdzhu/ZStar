@@ -1,0 +1,56 @@
+{
+  "response_sha256": "8f9d26c3a38570b46fc9e6d62a7da38bbcff5e530f57dab8f8dab17997d4d14a",
+  "exported_tensor_axes": [
+    "atom",
+    "polarization",
+    "displacement"
+  ],
+  "exported_unit": "e",
+  "raw_source": "../BEC.raw.dat",
+  "projected_source": "../response.json",
+  "max_projected_ASR_e": 7.993605777301127e-15,
+  "local_frame_summary": [
+    {
+      "species": "B",
+      "component": "rr",
+      "mean_e": 0.3967415706523542,
+      "min_e": 0.3949361800119657,
+      "max_e": 0.39861741995673894
+    },
+    {
+      "species": "B",
+      "component": "tt",
+      "mean_e": 1.2558982345826726,
+      "min_e": 1.2530934188476515,
+      "max_e": 1.258614075015598
+    },
+    {
+      "species": "B",
+      "component": "zz",
+      "mean_e": 2.745462261066136,
+      "min_e": 2.745441839075826,
+      "max_e": 2.7454791957358227
+    },
+    {
+      "species": "N",
+      "component": "rr",
+      "mean_e": -0.4744156996347798,
+      "min_e": -0.47638869346870183,
+      "max_e": -0.4724841638865618
+    },
+    {
+      "species": "N",
+      "component": "tt",
+      "mean_e": -1.178224105600247,
+      "min_e": -1.1798377420649557,
+      "max_e": -1.1764838418821943
+    },
+    {
+      "species": "N",
+      "component": "zz",
+      "mean_e": -2.7454622610661366,
+      "min_e": -2.7454638359975276,
+      "max_e": -2.7454596486826497
+    }
+  ]
+}

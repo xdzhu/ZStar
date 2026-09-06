@@ -1,0 +1,40 @@
+{
+  "case": "CH4",
+  "scheme": "cartesian",
+  "stage": "disp-002",
+  "host": "cu26",
+  "command": [
+    "mpirun",
+    "-np",
+    "40",
+    "/home/zhuxd/Software/anaconda3/envs/icu_copy/bin/python",
+    "-m",
+    "tools.spectroscopy_benchmark.precision_static"
+  ],
+  "mpi": 40,
+  "omp": 1,
+  "additional_DFT_calls": 0,
+  "success": true,
+  "epsilon": [
+    [
+      1.0057155192796965,
+      -4.7161825867564845e-11,
+      -4.696146398453051e-11
+    ],
+    [
+      -4.7161825867564845e-11,
+      1.0057140352292178,
+      4.5410254817067045e-05
+    ],
+    [
+      -4.696146398453051e-11,
+      4.5410254817067045e-05,
+      1.0057140352287466
+    ]
+  ],
+  "output_hashes": {
+    "Out/Optical_Conductivity/static_dielectric_function.dat": "91030518d9d3e26a3a3c2c6d31be6bdbcb1b7d69b91d45d3cf4260e03eb824b0"
+  },
+  "wall_seconds": 1.6899522105231881,
+  "core_hours": 0.018777246783590978
+}

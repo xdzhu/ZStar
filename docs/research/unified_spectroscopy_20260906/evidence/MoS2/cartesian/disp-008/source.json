@@ -1,0 +1,17 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008",
+  "source_input_sha256": "365f9936076b35fd52b240b583151bdcebf59b205356bfc89ec4f968feae0b97",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/pyatb/STRU": "a09690880bfab4ba691987b6abb43350216490e5754735eeb64fe4e23a5bf9c2",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/pyatb/Mo.upf": "b5a929dee3378934d30b33a8f510c8a715450d22b4f1a3469276569ac47ab29d",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/pyatb/S.upf": "47dc390784fa31acb520275f817fbe0bb42219399f641ecbcfb97ca9a1f947fa",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/pyatb/Mo_gga_7au_100Ry_4s2p2d1f.orb": "40815a5d260af9590f9ec749eeff4aaa1ac4462ffcb8786c7041be0bbcf61fd6",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/pyatb/S_gga_6au_100Ry_2s2p1d.orb": "5e2628093932604fe3e7857c021ef3fd29b5bbc376a8e9d5dc7dc97764fdbd22",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/OUT.POLAR/data-HR-sparse_SPIN0.csr": "dfc62ff2439022cc4826700726b85405c895637cbdfcd2d8a28091cafb1724b9",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/OUT.POLAR/data-SR-sparse_SPIN0.csr": "d7d6f0cd45f7146c21f5016a736051ca82bb1ff293e24df057524cab3607d49d",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian/disp-008/OUT.POLAR/data-rR-sparse.csr": "e464c1e22371cd091d05deaee498e7800c95e0a34e6d266f7d1b6e28caf29ea3"
+  },
+  "dimension": 2,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   13\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       45 45 1\n    static_dielectric_only      1\n}"
+}

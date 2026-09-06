@@ -2,12 +2,32 @@
 
 ## ABACUS/PYATB IR and Raman
 
+Prefer the Unified ensemble when `shared_response.json` exists:
+
+```bash
+zstar spectra pre
+zstar spectra run --dry-run
+zstar spectra stat
+```
+
+Use `--response PATH` to select another BEC ensemble. Geometry and dimension
+are inherited; do not pass competing `--stru` or mode-preparation options.
+After authorization, run without `--dry-run`, then `zstar spectra post`.
+Reference/displaced SCFs are resumed, never deliberately repeated for Raman.
+Additional PYATB static responses use private matrix copies and full-precision
+output. Never symlink cubes or edit source matrices. Missing matrices, changed
+source hashes, unstable internal modes and ambiguous rigid-motion overlaps
+are blockers, not reasons to fabricate or silently normalize results.
+This route covers Gamma IR and static nonresonant Placzek Raman in dim 0/1/2/3.
+
+### Explicit mode-difference control
+
 Prepare one manifest-aware workflow. `--kind` may be `ir`, `raman`, or `all`:
 
 ```bash
-zstar spectra pre --calculator abacus --kind all --root raman \
+zstar spectra pre --method mode --kind all --root raman \
   --stru STRU --qpoints qpoints.yaml \
-  --born Z-BORN-symm.out --dielectric BORN \
+  --born BEC.dat --dielectric BORN \
   --modes "4-12" --copy INPUT-scf --copy KPT
 zstar spectra job --root raman --system shell --dry-run
 zstar spectra stat --root raman
@@ -23,7 +43,7 @@ zstar spectra post --root raman
 Use `--dim 2` for sheet response and `--dim 0` for an isolated molecule.
 Molecular IR and Raman share the same positive/negative normal-mode tree.
 
-All spectroscopy routes reject substantive Gamma-point imaginary modes below
+The legacy mode-difference and native backend routes reject substantive Gamma-point imaginary modes below
 -20 cm-1 by default. Relax or verify the structure first. Override with
 `--allow-imaginary` only when analysis of stable branches of an unstable phase
 is intentional.

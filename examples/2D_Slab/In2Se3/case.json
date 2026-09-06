@@ -1,0 +1,8 @@
+{
+  "case": "In2Se3",
+  "dimensionality": 2,
+  "role": "validated quickstart and reference",
+  "input": "run",
+  "results": "results",
+  "method": "central finite displacement recommended for production"
+}

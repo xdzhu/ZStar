@@ -1,0 +1,17 @@
+{
+  "schema": "zstar-example-unified-observations",
+  "version": 1,
+  "case": "Sb2S3",
+  "dimension": 1,
+  "symprec_A": 1e-05,
+  "source_ensemble_sha256": "c8818c04747f427d57dae97a0daa06035ef5d2cb0614b1161e49002c296365a8",
+  "source": "docs/research/unified_spectroscopy_20260906/evidence/Sb2S3/unified",
+  "sha256": {
+    "BEC.dat": "4f490d7958370bb489dd190cb11049839d2b8d646e73d12c00c4d3acca336f21",
+    "BORN": "b442962a3f80b04da3805164e1811455a13762c75b4023d3df4219b75935c14e",
+    "observations.json": "b66638501df8fb514a0a489b47f2e22d10bd86af7630d212821c766f45e91b70",
+    "phonopy.yaml": "e548c7070d19708497bad5fcac35e3f227911139479680dab85d938f2b57a31d",
+    "qpoints.yaml": "ab7e241d9e3b82ddbb9b589758db69296e6e06307116f2e2e88ae229252a160b",
+    "STRU": "b0897b8928f879926dbd32393fe8cac1e3b7f65fab2de07f921687035656b00c"
+  }
+}

@@ -50,12 +50,12 @@ Phonopy 负责与力计算器无关的力常数和模式。第三方适配器可
 归一化方式、张量约定、数据来源和计算溯源。
 
 ```bash
-zstar response import-abacus --zborn Z-BORN-symm.out --born BORN \
-  --dim 3 --output zstar_response.json
-zstar response import-bec --input vasp_bec.json --output zstar_response.json
+zstar response import-abacus --zborn BEC.dat --born BORN \
+  --dim 3 --output response.json
+zstar response import-bec --input vasp_bec.json --output response.json
 zstar response import-phonopy --qpoints qpoints.yaml --born BORN \
   --dim 3 --output phonon_response.json
-zstar response validate zstar_response.json
+zstar response validate response.json
 ```
 
 将含真空超胞的介电张量转换为有限或低维体系的本征响应：

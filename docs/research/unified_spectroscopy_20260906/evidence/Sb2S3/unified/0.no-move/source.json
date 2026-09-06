@@ -1,0 +1,17 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move",
+  "source_input_sha256": "543ee5f930094fc07e04a608c77fd58c7f5451776ae75ede43fbd0cb5ca14e61",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/pyatb/STRU": "ac7dfd8854aa8350fc14a94b91ee33c715999979d562427649e7e174da321c99",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/pyatb/S_ONCV_PBE-1.0.upf": "b11d51bb7fd40027ffa0b3886e33d0ec9ba622a7291036011070affa766789a4",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/pyatb/Sb_ONCV_PBE-1.0.upf": "d50f209980736c643c855ff13616e68d2867096911e2d48a86796aa6ab755eb2",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/pyatb/S_gga_9au_100Ry_2s2p1d.orb": "14dcb95037fe2d02368eb074fb5a5f80cc62fa1cdb347e07fcbf950639880d7e",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/pyatb/Sb_gga_9au_100Ry_2s2p2d1f.orb": "aedf05921182e0971810c765d1f2482b2e97073a18dcec7593caae77b7b1d724",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/OUT.Sb2S3/data-HR-sparse_SPIN0.csr": "0712711d43e7b5b033290247ec37fdd6204d3a581b058c83712d971a48844ac3",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/OUT.Sb2S3/data-SR-sparse_SPIN0.csr": "745d63c41ab5a5bf19572a1eed8d5a38032eca00f69c70ac7092cf8d89fee51b",
+    "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/unified/0.no-move/OUT.Sb2S3/data-rR-sparse.csr": "fc8de8afa5a66b448bffb6a7ef76d7c9867cb7ad8ad86df72aab0ae44c4cf277"
+  },
+  "dimension": 1,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   48\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       1 1 33\n    static_dielectric_only      1\n}"
+}

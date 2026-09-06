@@ -1,0 +1,548 @@
+{
+  "In2Se3_PBE": {
+    "source": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/Z-BORN-symm.out",
+    "layer_order_original_indices_zero_based": [
+      4,
+      1,
+      3,
+      0,
+      2
+    ],
+    "parallel": [
+      -2.5409867,
+      2.76669439,
+      -1.69843094,
+      4.0156652,
+      -2.54294195
+    ],
+    "normal": [
+      -0.17768852,
+      0.3063717,
+      -0.272109,
+      0.27787978,
+      -0.13445395
+    ]
+  },
+  "hBN": {
+    "source": "examples/2d_materials/hBN/results/Z-BORN-symm.out",
+    "diagonals_N_B": [
+      [
+        -2.702,
+        -2.702,
+        -0.343
+      ],
+      [
+        2.702,
+        2.702,
+        0.343
+      ]
+    ]
+  },
+  "In2Se3_PBEsol": {
+    "source": "examples/2d_materials/In2Se3_PBEsol/results/Z-BORN-symm.out",
+    "diagonals_file_order": [
+      [
+        3.86358714,
+        3.86358715,
+        0.34801295
+      ],
+      [
+        2.63852614,
+        2.63852614,
+        0.38116348
+      ],
+      [
+        -2.42812347,
+        -2.42812348,
+        -0.1687524
+      ],
+      [
+        -1.64799224,
+        -1.64799224,
+        -0.3411844
+      ],
+      [
+        -2.42599757,
+        -2.42599757,
+        -0.21923964
+      ]
+    ]
+  },
+  "H2O_PBE": {
+    "source": "examples/molecules/H2O/results/PBE_APT/molecular_apt.json",
+    "tensor_convention": "rows dipole; columns displacement; units e",
+    "tensors": [
+      [
+        [
+          -0.6375155266666667,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.4763047,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.32775092666666666
+        ]
+      ],
+      [
+        [
+          0.31875776333333333,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.23815235,
+          0.0639514
+        ],
+        [
+          0.0,
+          0.08693394,
+          0.16387546333333333
+        ]
+      ],
+      [
+        [
+          0.31875776333333333,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.23815235,
+          -0.0639514
+        ],
+        [
+          0.0,
+          -0.08693394,
+          0.16387546333333333
+        ]
+      ]
+    ],
+    "gapt": [
+      -0.48052371777777786,
+      0.24026185888888893,
+      0.24026185888888893
+    ]
+  },
+  "H2O_HSE": {
+    "source": "examples/molecules/H2O/results/HSE/molecular_apt.json",
+    "tensor_convention": "rows dipole; columns displacement; units e",
+    "tensors": [
+      [
+        [
+          -0.6682822266666667,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.49631206,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.35451596
+        ]
+      ],
+      [
+        [
+          0.33414111333333335,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.24815603,
+          0.06630629
+        ],
+        [
+          0.0,
+          0.08357876,
+          0.17725798
+        ]
+      ],
+      [
+        [
+          0.33414111333333335,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.24815603,
+          -0.06630629
+        ],
+        [
+          0.0,
+          -0.08357876,
+          0.17725798
+        ]
+      ]
+    ],
+    "gapt": [
+      -0.5063700822222222,
+      0.2531850411111111,
+      0.2531850411111111
+    ]
+  },
+  "CH4_PBE": {
+    "source": "examples/molecules/CH4/results/PBE_APT/molecular_apt.json",
+    "tensor_convention": "rows dipole; columns displacement; units e",
+    "tensors": [
+      [
+        [
+          -0.020784199999999992,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.020784199999999992,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.020784199999999992
+        ]
+      ],
+      [
+        [
+          0.005196049999999998,
+          -0.06694911999999999,
+          -0.06694911999999999
+        ],
+        [
+          -0.06694911999999999,
+          0.005196049999999998,
+          -0.06694911999999999
+        ],
+        [
+          -0.06694911999999999,
+          -0.06694911999999999,
+          0.005196049999999998
+        ]
+      ],
+      [
+        [
+          0.005196049999999998,
+          -0.06694911999999999,
+          0.06694911999999999
+        ],
+        [
+          -0.06694911999999999,
+          0.005196049999999998,
+          0.06694911999999999
+        ],
+        [
+          0.06694911999999999,
+          0.06694911999999999,
+          0.005196049999999998
+        ]
+      ],
+      [
+        [
+          0.005196049999999998,
+          0.06694911999999999,
+          -0.06694911999999999
+        ],
+        [
+          0.06694911999999999,
+          0.005196049999999998,
+          0.06694911999999999
+        ],
+        [
+          -0.06694911999999999,
+          0.06694911999999999,
+          0.005196049999999998
+        ]
+      ],
+      [
+        [
+          0.005196049999999998,
+          0.06694911999999999,
+          0.06694911999999999
+        ],
+        [
+          0.06694911999999999,
+          0.005196049999999998,
+          -0.06694911999999999
+        ],
+        [
+          0.06694911999999999,
+          -0.06694911999999999,
+          0.005196049999999998
+        ]
+      ]
+    ],
+    "gapt": [
+      -0.020784199999999992,
+      0.005196049999999998,
+      0.005196049999999998,
+      0.005196049999999998,
+      0.005196049999999998
+    ]
+  },
+  "CH4_HSE": {
+    "source": "examples/molecules/CH4/results/HSE/molecular_apt.json",
+    "tensor_convention": "rows dipole; columns displacement; units e",
+    "tensors": [
+      [
+        [
+          -0.014825523999999993,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -0.014825523999999993,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.014825523999999993
+        ]
+      ],
+      [
+        [
+          0.003706380999999998,
+          -0.06564304,
+          -0.06564304
+        ],
+        [
+          -0.06564304,
+          0.003706380999999998,
+          -0.06564304
+        ],
+        [
+          -0.06564304,
+          -0.06564304,
+          0.003706380999999998
+        ]
+      ],
+      [
+        [
+          0.003706380999999998,
+          -0.06564304,
+          0.06564304
+        ],
+        [
+          -0.06564304,
+          0.003706380999999998,
+          0.06564304
+        ],
+        [
+          0.06564304,
+          0.06564304,
+          0.003706380999999998
+        ]
+      ],
+      [
+        [
+          0.003706380999999998,
+          0.06564304,
+          -0.06564304
+        ],
+        [
+          0.06564304,
+          0.003706380999999998,
+          0.06564304
+        ],
+        [
+          -0.06564304,
+          0.06564304,
+          0.003706380999999998
+        ]
+      ],
+      [
+        [
+          0.003706380999999998,
+          0.06564304,
+          0.06564304
+        ],
+        [
+          0.06564304,
+          0.003706380999999998,
+          -0.06564304
+        ],
+        [
+          0.06564304,
+          -0.06564304,
+          0.003706380999999998
+        ]
+      ]
+    ],
+    "gapt": [
+      -0.014825523999999993,
+      0.003706380999999998,
+      0.003706380999999998,
+      0.003706380999999998,
+      0.003706380999999998
+    ]
+  },
+  "MoS2_static_archive": {
+    "frequency_cm-1": 0.0,
+    "tensor": [
+      [
+        0.7104572279901943,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.7104572279901943,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        5.676720975284875e-06
+      ]
+    ],
+    "response_kind": "lattice 2D sheet polarizability (Angstrom)",
+    "response_unit": "angstrom",
+    "response_convention": "alpha_2D/epsilon_0 = cell_height*(epsilon_supercell-I)",
+    "electronic_response_included": false
+  },
+  "MoS2_static_recalculated": {
+    "frequency_cm-1": 0.0,
+    "tensor": [
+      [
+        0.7104572279901943,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.7104572279901943,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        5.676720975284875e-06
+      ]
+    ],
+    "response_kind": "lattice 2D sheet polarizability (Angstrom)",
+    "response_unit": "angstrom",
+    "response_convention": "cell_height*(epsilon_source-I), SI alpha_2D/epsilon_0 normalization; field convention inherited from the source; no perpendicular screening or local-field correction is added",
+    "electronic_response_included": false,
+    "mode_effective_charge_unit": "e/sqrt(amu)",
+    "oscillator_strength_unit": "e^2/amu"
+  },
+  "Separate_efficiency": {
+    "definition": "Measured Separate BEC/APT and independent force SCFs versus Unified.",
+    "caveat": "Seven retained BEC routes already requested forces. That output cost was not subtracted; independent force tasks supply the Separate phonons.",
+    "original_joint_control_record": "eight_system_efficiency.json",
+    "cases": {
+      "cubic_BaTiO3": {
+        "BEC_Separate": 9,
+        "BEC_Unified": 3,
+        "SCF_Separate": 13,
+        "SCF_Unified": 4,
+        "core_h_Separate": 6.0791520131819805,
+        "core_h_Unified": 2.5598515689166055,
+        "speedup": 2.374806448545309,
+        "independent_force_core_h_added": 0.0,
+        "static_response_relative_difference": null
+      },
+      "SiC": {
+        "BEC_Separate": 12,
+        "BEC_Unified": 2,
+        "SCF_Separate": 15,
+        "SCF_Unified": 3,
+        "core_h_Separate": 13.156192610666361,
+        "core_h_Unified": 3.7807256981678723,
+        "speedup": 3.4798061697630724,
+        "independent_force_core_h_added": 0.23384421112326284,
+        "static_response_relative_difference": 1.4335437765743586e-05
+      },
+      "t_HfO2": {
+        "BEC_Separate": 12,
+        "BEC_Unified": 4,
+        "SCF_Separate": 17,
+        "SCF_Unified": 5,
+        "core_h_Separate": 29.976658615050837,
+        "core_h_Unified": 10.87362902115306,
+        "speedup": 2.7568218997296685,
+        "independent_force_core_h_added": 5.842413025173462,
+        "static_response_relative_difference": 0.0002585573244381054
+      },
+      "alpha_In2Se3": {
+        "BEC_Separate": 30,
+        "BEC_Unified": 10,
+        "SCF_Separate": 41,
+        "SCF_Unified": 11,
+        "core_h_Separate": 22.107794126248013,
+        "core_h_Unified": 7.397423743704955,
+        "speedup": 2.9885801992972567,
+        "independent_force_core_h_added": 3.95403913012253,
+        "static_response_relative_difference": 0.0005192298502124702
+      },
+      "hBN": {
+        "BEC_Separate": 12,
+        "BEC_Unified": 2,
+        "SCF_Separate": 15,
+        "SCF_Unified": 3,
+        "core_h_Separate": 2.2458565197610167,
+        "core_h_Unified": 0.567259513888146,
+        "speedup": 3.9591341613070976,
+        "independent_force_core_h_added": 0.278086407115269,
+        "static_response_relative_difference": 0.00043423028637940486
+      },
+      "MoS2": {
+        "BEC_Separate": 12,
+        "BEC_Unified": 3,
+        "SCF_Separate": 16,
+        "SCF_Unified": 4,
+        "core_h_Separate": 7.22440886033906,
+        "core_h_Unified": 3.0131735380428535,
+        "speedup": 2.39760796022108,
+        "independent_force_core_h_added": 2.254919289942417,
+        "static_response_relative_difference": 0.014591421580089158
+      },
+      "H2O": {
+        "BEC_Separate": 12,
+        "BEC_Unified": 6,
+        "SCF_Separate": 19,
+        "SCF_Unified": 7,
+        "core_h_Separate": 21.667002159419162,
+        "core_h_Unified": 8.908031079643925,
+        "speedup": 2.432299793938892,
+        "independent_force_core_h_added": 7.398200623318553,
+        "static_response_relative_difference": 0.00015321022086263428
+      },
+      "CH4": {
+        "BEC_Separate": 12,
+        "BEC_Unified": 3,
+        "SCF_Separate": 16,
+        "SCF_Unified": 4,
+        "core_h_Separate": 12.978126084297482,
+        "core_h_Unified": 3.2605297272093594,
+        "speedup": 3.9803734883918,
+        "independent_force_core_h_added": 2.477258344118794,
+        "static_response_relative_difference": 1.8757866023296082e-05
+      }
+    }
+  },
+  "files_sha256": {
+    "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/Z-BORN-symm.out": "d116cdcffa7a76221ffb30757d093dd4192d89991511e794e35b1cda7d715953",
+    "examples/Shared_Response/alpha_In2Se3/results/shared/STRU": "5f8dea473afafba431cefe15804cbb9ca90890db6746ab642f1822a38d4dce15",
+    "examples/2d_materials/hBN/results/Z-BORN-symm.out": "37af8feed35babf8b23970820bb0618465389ba19d841b165dbda55f5e66df87",
+    "examples/2d_materials/In2Se3_PBEsol/results/Z-BORN-symm.out": "ab8858e9f363e8a3251bfdd8d63babb8360f5af5bea9714584d1fd660b1d8438",
+    "examples/molecules/H2O/results/PBE_APT/molecular_apt.json": "749eb545252032acbb23096347c6c475856a495373f69382c9e4b735b739769d",
+    "examples/molecules/H2O/results/HSE/molecular_apt.json": "fb9f8e7e5ceecc8093973ef298fec259d0fd0ac16722600d6c54ce56e632807d",
+    "examples/molecules/CH4/results/PBE_APT/molecular_apt.json": "be7a3856b62620b4f403a9ae17de9585ccdd14eaec119f236e28988940722afe",
+    "examples/molecules/CH4/results/HSE/molecular_apt.json": "9dcc6d3eaf52dfaecbad929ea5a2ca45d74853577a8b8a54ffdf4102cff85f54",
+    "examples/IR_Raman_Spectra/2D_MoS2/results/dielectric_response/static_response.json": "f81bbe682a850adcda0462e5a10d488a4f942af5303f0693292dfd058a686874",
+    "docs/research/separate_unified_efficiency.json": "212c25bbd776c89af82a87ab4f98b1348b50d0a1e07803573c30708c3ed4425f"
+  }
+}

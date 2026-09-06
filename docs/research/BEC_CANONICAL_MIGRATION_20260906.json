@@ -1,0 +1,682 @@
+{
+  "copies": [
+    {
+      "source": "examples/1d_wires/GaAs_nanowire/results/Z-BORN-symm.out",
+      "canonical": "examples/1d_wires/GaAs_nanowire/results/BEC.dat",
+      "sha256": "78f9643d052034853a9077db5ca25d661f07efd818d22a444a6de9de82edb1c9"
+    },
+    {
+      "source": "examples/2d_materials/hBN/results/born_symmetry_report.json",
+      "canonical": "examples/2d_materials/hBN/results/BEC_symmetry.json",
+      "sha256": "463aead10b0f536f9ce01e9df1a73e0d9e085141fb8ba4e083da40aa4909a329"
+    },
+    {
+      "source": "examples/2d_materials/hBN/results/Z-BORN-symm.out",
+      "canonical": "examples/2d_materials/hBN/results/BEC.dat",
+      "sha256": "37af8feed35babf8b23970820bb0618465389ba19d841b165dbda55f5e66df87"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3/results/born_symmetry_report.json",
+      "canonical": "examples/2d_materials/In2Se3/results/BEC_symmetry.json",
+      "sha256": "015a3f17d0a2e2c54ddc0ed2a0496ca61ea82f44bc08edf9039523a244b1941b"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3/results/Z-BORN-symm.out",
+      "canonical": "examples/2d_materials/In2Se3/results/BEC.dat",
+      "sha256": "1251f1bf5ee0f1c5006f8e0a357ea3042291b364de1bc2832fc175848f414cec"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3_PBEsol/results/born_symmetry_report.json",
+      "canonical": "examples/2d_materials/In2Se3_PBEsol/results/BEC_symmetry.json",
+      "sha256": "2ac728c46f4b45cd6ca03ccf1b94836fbfcf9651d2ff9fd7bf1ac93d74753ae7"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3_PBEsol/results/born_symmetry_report.txt",
+      "canonical": "examples/2d_materials/In2Se3_PBEsol/results/BEC_symmetry.txt",
+      "sha256": "f87e349e56324cecd067bc9729c436a509f49653a77fc31f58bc05cc8f1b6cdc"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3_PBEsol/results/Z-BORN-all.out",
+      "canonical": "examples/2d_materials/In2Se3_PBEsol/results/BEC.raw.dat",
+      "sha256": "70c9c23406538ea6ec6586f71d2094c4ebbe3be9211bc7fc8ae3896e999d06ac"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3_PBEsol/results/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/2d_materials/In2Se3_PBEsol/results/BEC.rep.dat",
+      "sha256": "ec91728ca0ca6e001fa1fdac3f070b4997c2ec7ceb029cb21cfc5f8299b379ae"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3_PBEsol/results/Z-BORN-reduced.out",
+      "canonical": "examples/2d_materials/In2Se3_PBEsol/results/BEC.rep.raw.dat",
+      "sha256": "70c9c23406538ea6ec6586f71d2094c4ebbe3be9211bc7fc8ae3896e999d06ac"
+    },
+    {
+      "source": "examples/2d_materials/In2Se3_PBEsol/results/Z-BORN-symm.out",
+      "canonical": "examples/2d_materials/In2Se3_PBEsol/results/BEC.dat",
+      "sha256": "ab8858e9f363e8a3251bfdd8d63babb8360f5af5bea9714584d1fd660b1d8438"
+    },
+    {
+      "source": "examples/2d_materials/MoS2/results/born_symmetry_report.json",
+      "canonical": "examples/2d_materials/MoS2/results/BEC_symmetry.json",
+      "sha256": "9da336ad558b5f38beec61a43bd193e84848cd86ce74a82aa85f5b25d5f35db7"
+    },
+    {
+      "source": "examples/2d_materials/MoS2/results/Z-BORN-symm.out",
+      "canonical": "examples/2d_materials/MoS2/results/BEC.dat",
+      "sha256": "896ee26fe8dce2bf1f5a0522a0f4751a7355c96671d1113f98a4b0f38aa19e6d"
+    },
+    {
+      "source": "examples/3d_bulk/BaTiO3/results/born_symmetry_report.json",
+      "canonical": "examples/3d_bulk/BaTiO3/results/BEC_symmetry.json",
+      "sha256": "d16a1ea6cb0fa9bdff7bdbb37a1ad77552d52debb7d7fd552bb83b565232cc46"
+    },
+    {
+      "source": "examples/3d_bulk/BaTiO3/results/Z-BORN-symm.out",
+      "canonical": "examples/3d_bulk/BaTiO3/results/BEC.dat",
+      "sha256": "84a3f93fd1b5854e34aec749757ccb69d33dd264c43d3fcde8bed2036ce1e079"
+    },
+    {
+      "source": "examples/3d_bulk/BaTiO3_cubic/results/born_symmetry_report.json",
+      "canonical": "examples/3d_bulk/BaTiO3_cubic/results/BEC_symmetry.json",
+      "sha256": "994da8d59dd9a83024e05c09b8040b658dacf7c3855b5358b90150237d20133c"
+    },
+    {
+      "source": "examples/3d_bulk/BaTiO3_cubic/results/Z-BORN-reduced.out",
+      "canonical": "examples/3d_bulk/BaTiO3_cubic/results/BEC.rep.raw.dat",
+      "sha256": "92082130239ab5f12f207745dc73c31b35e34bade7aaffb7505ee120c60039ca"
+    },
+    {
+      "source": "examples/3d_bulk/BaTiO3_cubic/results/Z-BORN-symm.out",
+      "canonical": "examples/3d_bulk/BaTiO3_cubic/results/BEC.dat",
+      "sha256": "d290491e82a0705ed2e7ccb53bd5ae22fc8c7183f700de7a2a72b70d37598dc5"
+    },
+    {
+      "source": "examples/3d_bulk/HfO2/results/born_symmetry_report.json",
+      "canonical": "examples/3d_bulk/HfO2/results/BEC_symmetry.json",
+      "sha256": "81b89f792db6307a777e484d2f554fa977457c8adbf54b60cc2dfde9f033d5a3"
+    },
+    {
+      "source": "examples/3d_bulk/HfO2/results/Z-BORN-symm.out",
+      "canonical": "examples/3d_bulk/HfO2/results/BEC.dat",
+      "sha256": "4b4d8cd41bb04ccf0416343d6c48cf42b1a8107de72c6ee51d5a3cedd2764101"
+    },
+    {
+      "source": "examples/backend_examples/calculator_spectroscopy/abacus_sic/results/Z-BORN-symm.out",
+      "canonical": "examples/backend_examples/calculator_spectroscopy/abacus_sic/results/BEC.dat",
+      "sha256": "adc92f48abf68f3bb82db1afc1e0074c22cc50a7fc5d6e14810065bd05e60c49"
+    },
+    {
+      "source": "examples/backend_examples/cp2k_bec/H2O/results/Z-BORN-all.out",
+      "canonical": "examples/backend_examples/cp2k_bec/H2O/results/BEC.raw.dat",
+      "sha256": "c252a95f80b0d60c64f1a7d5ddd76eb27eef13fc27e3fa026a4ce3ae9a9b5162"
+    },
+    {
+      "source": "examples/backend_examples/cp2k_bec/MgO/results/Z-BORN-all.out",
+      "canonical": "examples/backend_examples/cp2k_bec/MgO/results/BEC.raw.dat",
+      "sha256": "ad4fd4eff04d3fe1d15340e1a3494b0cfffb3c615f43030172738fe5021585e2"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/born_symmetry_report.json",
+      "canonical": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/BEC_symmetry.json",
+      "sha256": "a11f36c066cd8f415683fb29e4d923be63ff72c70ac4622faee5a0b19a6fe4cc"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/born_symmetry_report.txt",
+      "canonical": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/BEC_symmetry.txt",
+      "sha256": "4aa9594cdf827c491e0914f49f49fe3744b0e74ef6613c5f2f39eb63b97403da"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/BEC.rep.dat",
+      "sha256": "29987e90903f47f6ebe8aa1b6f31b82b4a773e6976ec6182c599e2af4903ee68"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/Z-BORN-reduced.out",
+      "canonical": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/BEC.rep.raw.dat",
+      "sha256": "b5900092816ab57b1380def258e1d471c3ab36fa5a154755d5a75d3997ac6855"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/Z-BORN-symm.out",
+      "canonical": "examples/IR_Raman_Spectra/2D_MoS2/results/bec/BEC.dat",
+      "sha256": "d981bd35b136410d52404d8a94e66fadfbfdf81ffbcf1710ee147b1f1491867a"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Bulk_HfO2/results/born_symmetry_report.json",
+      "canonical": "examples/IR_Raman_Spectra/Bulk_HfO2/results/BEC_symmetry.json",
+      "sha256": "81b89f792db6307a777e484d2f554fa977457c8adbf54b60cc2dfde9f033d5a3"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Bulk_HfO2/results/Z-BORN-symm.out",
+      "canonical": "examples/IR_Raman_Spectra/Bulk_HfO2/results/BEC.dat",
+      "sha256": "4b4d8cd41bb04ccf0416343d6c48cf42b1a8107de72c6ee51d5a3cedd2764101"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Nanotube_BN_6_0/results/bec.dat",
+      "canonical": "examples/IR_Raman_Spectra/Nanotube_BN_6_0/results/BEC.dat",
+      "sha256": "6d023bbe33fa033c47cb7e9fc64ccd7210880e22ab198befb84daaf03117ed0b"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Nanotube_BN_6_0/results/bec.raw.dat",
+      "canonical": "examples/IR_Raman_Spectra/Nanotube_BN_6_0/results/BEC.raw.dat",
+      "sha256": "9c73586c2a3228fe98abca985e86f0f5b76096ecd0d080f6c22803aa900941b7"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/bec.dat",
+      "canonical": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/BEC.dat",
+      "sha256": "b0590444800c47878408b2885132f49e528e4c00e7f2e27402508ae03f78efce"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/bec.raw.dat",
+      "canonical": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/BEC.raw.dat",
+      "sha256": "35683ba790c9ad7010460eceaff07d2893e37356bf232a4cf58e5725ad2c1e98"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/bec.dat",
+      "canonical": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/BEC.dat",
+      "sha256": "4f490d7958370bb489dd190cb11049839d2b8d646e73d12c00c4d3acca336f21"
+    },
+    {
+      "source": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/bec.raw.dat",
+      "canonical": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/BEC.raw.dat",
+      "sha256": "a374552fb39e943ac665caab42bcbd2f54fb14e4ee5c727632c8a0d69d6f120c"
+    },
+    {
+      "source": "examples/molecules/CH4/results/HSE/Z-BORN-all.out",
+      "canonical": "examples/molecules/CH4/results/HSE/BEC.raw.dat",
+      "sha256": "f3038a4a6e2f957a89d3bfc8a8deb1151bf2741f7e6486c91f65f693c0f2c697"
+    },
+    {
+      "source": "examples/molecules/CH4/results/HSE/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/molecules/CH4/results/HSE/BEC.rep.dat",
+      "sha256": "570c6865c413e2c634317b01633d48316ee186cb05cc40b8bd0604c6399543bc"
+    },
+    {
+      "source": "examples/molecules/CH4/results/HSE/Z-BORN-reduced.out",
+      "canonical": "examples/molecules/CH4/results/HSE/BEC.rep.raw.dat",
+      "sha256": "f3038a4a6e2f957a89d3bfc8a8deb1151bf2741f7e6486c91f65f693c0f2c697"
+    },
+    {
+      "source": "examples/molecules/CH4/results/HSE/Z-BORN-symm.out",
+      "canonical": "examples/molecules/CH4/results/HSE/BEC.dat",
+      "sha256": "570c6865c413e2c634317b01633d48316ee186cb05cc40b8bd0604c6399543bc"
+    },
+    {
+      "source": "examples/molecules/CH4/results/PBE_APT/Z-BORN-symm.out",
+      "canonical": "examples/molecules/CH4/results/PBE_APT/BEC.dat",
+      "sha256": "b893345b276be2d5d8cd061c34c52329eeab51f0955b6809b0ce04e39208662f"
+    },
+    {
+      "source": "examples/molecules/H2O/results/HSE/Z-BORN-all.out",
+      "canonical": "examples/molecules/H2O/results/HSE/BEC.raw.dat",
+      "sha256": "5f56d1e74a6c7da3b997ef9b2d5e98a56284f4ac78b5002df562ae4abf84ab13"
+    },
+    {
+      "source": "examples/molecules/H2O/results/HSE/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/molecules/H2O/results/HSE/BEC.rep.dat",
+      "sha256": "725ce94596e9c4cd52e00901a1442613614f85531acd878e9648150e5099a5ba"
+    },
+    {
+      "source": "examples/molecules/H2O/results/HSE/Z-BORN-reduced.out",
+      "canonical": "examples/molecules/H2O/results/HSE/BEC.rep.raw.dat",
+      "sha256": "5f56d1e74a6c7da3b997ef9b2d5e98a56284f4ac78b5002df562ae4abf84ab13"
+    },
+    {
+      "source": "examples/molecules/H2O/results/HSE/Z-BORN-symm.out",
+      "canonical": "examples/molecules/H2O/results/HSE/BEC.dat",
+      "sha256": "725ce94596e9c4cd52e00901a1442613614f85531acd878e9648150e5099a5ba"
+    },
+    {
+      "source": "examples/molecules/H2O/results/PBE_APT/Z-BORN-symm.out",
+      "canonical": "examples/molecules/H2O/results/PBE_APT/BEC.dat",
+      "sha256": "a000c5fee8c3763cfc2ac721d7f13774e77b8ea54b578f0d3719ee792326006f"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/BEC.raw.dat",
+      "sha256": "d6f69163cae92ab43eb78fe01c9eb2c22e839039ff8cb81082170246cb6a43ec"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/BEC.rep.dat",
+      "sha256": "1e228b7311d77f3da5739c2203f697cc8ff8c043cc1d98c138ae9f20e2e12396"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/BEC.rep.raw.dat",
+      "sha256": "d6f69163cae92ab43eb78fe01c9eb2c22e839039ff8cb81082170246cb6a43ec"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian/BEC.dat",
+      "sha256": "1e228b7311d77f3da5739c2203f697cc8ff8c043cc1d98c138ae9f20e2e12396"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/BEC.raw.dat",
+      "sha256": "dc283c1627e70ea34645bf1836a2ae3b7ed4dc74f9aa9d4c69fe479b4e9f759f"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/BEC.rep.dat",
+      "sha256": "33a4eb60234d3bc7b3424c9fb270822839aea5159ec9ba1f4941887bc8681639"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/BEC.rep.raw.dat",
+      "sha256": "dc283c1627e70ea34645bf1836a2ae3b7ed4dc74f9aa9d4c69fe479b4e9f759f"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-half/BEC.dat",
+      "sha256": "33a4eb60234d3bc7b3424c9fb270822839aea5159ec9ba1f4941887bc8681639"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/BEC.raw.dat",
+      "sha256": "4e2476d46924bd7363b78c993bbff13752653849bbae9e34e501f2580803ea3a"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/BEC.rep.dat",
+      "sha256": "53b446f87f5ccf27e9e238c83a0d6461e39bf126fb93b28ed646a19429f0a968"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/BEC.rep.raw.dat",
+      "sha256": "4e2476d46924bd7363b78c993bbff13752653849bbae9e34e501f2580803ea3a"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/cartesian-mesh88/BEC.dat",
+      "sha256": "53b446f87f5ccf27e9e238c83a0d6461e39bf126fb93b28ed646a19429f0a968"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/BEC.raw.dat",
+      "sha256": "cfa8bb44169877a25474bc06fcb5f49d5d1831a7367c3a6816c8a1e644dfd280"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/BEC.rep.dat",
+      "sha256": "a2167590769a0045bab9c9524cbc9ca086a4d3d65b6f833ffd9b2780ea372785"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/BEC.rep.raw.dat",
+      "sha256": "cfa8bb44169877a25474bc06fcb5f49d5d1831a7367c3a6816c8a1e644dfd280"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/controls/shared-half/BEC.dat",
+      "sha256": "a2167590769a0045bab9c9524cbc9ca086a4d3d65b6f833ffd9b2780ea372785"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared/BEC.raw.dat",
+      "sha256": "e8a2d93d156f00aeadec55be172bb278316765298c27b115a9cf0ef1d72f21c4"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared/BEC.rep.dat",
+      "sha256": "df0641e28fafcd14a8ca71f81721d9ac66394b846ce1642eb6bb4b8d9fb26133"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared/BEC.rep.raw.dat",
+      "sha256": "e8a2d93d156f00aeadec55be172bb278316765298c27b115a9cf0ef1d72f21c4"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared/BEC.dat",
+      "sha256": "df0641e28fafcd14a8ca71f81721d9ac66394b846ce1642eb6bb4b8d9fb26133"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/BEC.raw.dat",
+      "sha256": "1a46a380edbc52d86084608c24cd6a79f8ab3bfbdf5131018652ce4973a1633e"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/BEC.rep.dat",
+      "sha256": "d116cdcffa7a76221ffb30757d093dd4192d89991511e794e35b1cda7d715953"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/BEC.rep.raw.dat",
+      "sha256": "1a46a380edbc52d86084608c24cd6a79f8ab3bfbdf5131018652ce4973a1633e"
+    },
+    {
+      "source": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/alpha_In2Se3/results/shared-mesh88/BEC.dat",
+      "sha256": "d116cdcffa7a76221ffb30757d093dd4192d89991511e794e35b1cda7d715953"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/cartesian/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/CH4/results/cartesian/BEC.raw.dat",
+      "sha256": "513d7dd1a8d12d4ad53c370b6cdf97f5a48564e91bcee2f05db4af53702f702c"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/cartesian/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/CH4/results/cartesian/BEC.rep.dat",
+      "sha256": "da64a423700be057880df1f1dee53acc85cf5128439982f30458c7b7c7fb9cd6"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/cartesian/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/CH4/results/cartesian/BEC.rep.raw.dat",
+      "sha256": "c50da212ea7df3e2781b4627d856b3b66057272aafecec4b17f69812241466fc"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/cartesian/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/CH4/results/cartesian/BEC.dat",
+      "sha256": "82e232a3a14fb8a177f7f979734c778c442a8c6bb078a160e6659e6c789dfda1"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/unified/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/CH4/results/unified/BEC.raw.dat",
+      "sha256": "6a0def980dc09b941ce7e9b5d6f9a8c863ef6042e8644915d28e4a5099dc8c80"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/unified/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/CH4/results/unified/BEC.rep.dat",
+      "sha256": "8d20cb4b333b03c78d062d1ebbbd2839174922e9d18730d76f06ac8691b7196c"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/unified/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/CH4/results/unified/BEC.rep.raw.dat",
+      "sha256": "56c591203e027ba476ee9e0fab164e2fae73efd210c0dedc6dbc26fd60c6ff27"
+    },
+    {
+      "source": "examples/Shared_Response/CH4/results/unified/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/CH4/results/unified/BEC.dat",
+      "sha256": "a2413d67c566601651adcaaabfdbdf79ae24feb383693b29c2a1988d5f2d5ee1"
+    },
+    {
+      "source": "examples/Shared_Response/cubic_BaTiO3/results/unified/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/cubic_BaTiO3/results/unified/BEC.raw.dat",
+      "sha256": "e6e3fb5df263cd7a6e37c6161da83cdd9c305c2890934b93e90456cf48837cc8"
+    },
+    {
+      "source": "examples/Shared_Response/cubic_BaTiO3/results/unified/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/cubic_BaTiO3/results/unified/BEC.rep.dat",
+      "sha256": "6af9f332a763d9a4ebc8023a2f8ca7ee9f91edcd6f60b92c8aab58019bfab577"
+    },
+    {
+      "source": "examples/Shared_Response/cubic_BaTiO3/results/unified/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/cubic_BaTiO3/results/unified/BEC.rep.raw.dat",
+      "sha256": "cecff34010d22f5ec4587af03d8af99d9593bce88b5c83ac657e87bc5a3766d2"
+    },
+    {
+      "source": "examples/Shared_Response/cubic_BaTiO3/results/unified/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/cubic_BaTiO3/results/unified/BEC.dat",
+      "sha256": "a9055e7c0c180061b21b096d7cefab6fc74397ae05716c172b686519edda3595"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/cartesian/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/H2O/results/cartesian/BEC.raw.dat",
+      "sha256": "d95f504ad71b1c7a7d88edf0590fa7b55c2cd63c431a22b0291bd25aee4abf72"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/cartesian/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/H2O/results/cartesian/BEC.rep.dat",
+      "sha256": "e3c809315a761474c8bde5dcc8df50f424b4399e4f2ce06647139398a0a4ba1e"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/cartesian/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/H2O/results/cartesian/BEC.rep.raw.dat",
+      "sha256": "42d2e3c497db5fe0cebe9a9c2ccc22bcdf303ebabef66287c1472dd7c240b3f8"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/cartesian/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/H2O/results/cartesian/BEC.dat",
+      "sha256": "4a726a8a4ad511609a5c909446047a73f70d41cb63f450545d2c8341cb0aed96"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/unified/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/H2O/results/unified/BEC.raw.dat",
+      "sha256": "542673fe04fc9866399e95fefe65be72a41e73ed14a664df204d444924fe0b4c"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/unified/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/H2O/results/unified/BEC.rep.dat",
+      "sha256": "2f84336ef783c9d4afbecb5c792d818dff09e4283d1f634968f9ba93acd7cefe"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/unified/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/H2O/results/unified/BEC.rep.raw.dat",
+      "sha256": "a4cfa73cb69ed4aa14def44414c375ae008fc3a87672dbcccfbd6ce8a4a6e2e0"
+    },
+    {
+      "source": "examples/Shared_Response/H2O/results/unified/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/H2O/results/unified/BEC.dat",
+      "sha256": "9795db0b835757bf0ba806662b3a57144f5d1320cba151cf79df023b2be74724"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/cartesian/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/hBN/results/cartesian/BEC.raw.dat",
+      "sha256": "6ffcd50a235cfe4d999c599d80bf1064d00d17cf152ca8ebf9267cb797a21cca"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/cartesian/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/hBN/results/cartesian/BEC.rep.dat",
+      "sha256": "61f8a1b264630828d8a4fb37a93bcd2911a87c42a5f194d728dcb19b271a7331"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/cartesian/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/hBN/results/cartesian/BEC.rep.raw.dat",
+      "sha256": "6ffcd50a235cfe4d999c599d80bf1064d00d17cf152ca8ebf9267cb797a21cca"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/cartesian/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/hBN/results/cartesian/BEC.dat",
+      "sha256": "61f8a1b264630828d8a4fb37a93bcd2911a87c42a5f194d728dcb19b271a7331"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/unified/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/hBN/results/unified/BEC.raw.dat",
+      "sha256": "0967cb0a56fb2221e9774802cde39f9178f18e2536e332590f55ff280912cd78"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/unified/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/hBN/results/unified/BEC.rep.dat",
+      "sha256": "bb45a50a18035bd4f62e8e611412f85a97bacfe16d699941357a53245869c993"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/unified/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/hBN/results/unified/BEC.rep.raw.dat",
+      "sha256": "0967cb0a56fb2221e9774802cde39f9178f18e2536e332590f55ff280912cd78"
+    },
+    {
+      "source": "examples/Shared_Response/hBN/results/unified/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/hBN/results/unified/BEC.dat",
+      "sha256": "bb45a50a18035bd4f62e8e611412f85a97bacfe16d699941357a53245869c993"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian/BEC.raw.dat",
+      "sha256": "082707ac75549dbf7fbb37176f53255027abfa70933a16e636e41ecc16b340bf"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian/BEC.rep.dat",
+      "sha256": "a5a6340a7891d2b909e145ad6e30f03d15634e7a2efa46d251feeec041ba0607"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian/BEC.rep.raw.dat",
+      "sha256": "987626b5ec2e88bbb42694d2dcc0a240ec1e20f484d31af2622f8502e98cae36"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian/BEC.dat",
+      "sha256": "a9c5bd7729da0e126fd758021736543dfb68319b7b93f8ee008f2f106fecfff1"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian-mesh112/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian-mesh112/BEC.raw.dat",
+      "sha256": "982040ebfdeefd3f1760aa18f937fa187c2b9e154e885ad3eb64374f8ea77cef"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian-mesh112/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian-mesh112/BEC.rep.dat",
+      "sha256": "cb59b73030afb07d38cfdb454404341abf26e8dbeb1b7a1902b024a7c836f7ea"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian-mesh112/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian-mesh112/BEC.rep.raw.dat",
+      "sha256": "23604489e4ba4af648bd68949aa5e2e002289e3b9144be846ddc09de8379a962"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/cartesian-mesh112/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/MoS2/results/cartesian-mesh112/BEC.dat",
+      "sha256": "0e2212c7cd5792d6ac81a7af83f92cf23e29a507992df0c24472a1957686cc51"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified/BEC.raw.dat",
+      "sha256": "72088ba77426078f766785a706472148a55e73ca2e2705871f40be102c0dd52a"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified/BEC.rep.dat",
+      "sha256": "33adf11e915355e78b8ec2cec6ed490d450dbb8fdf9b06a1b77e7171a471fbbd"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified/BEC.rep.raw.dat",
+      "sha256": "459f080db9bf462948390345ad8009d41cf46e5a47d341c43b6fa26ec7f8b6ad"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified/BEC.dat",
+      "sha256": "b546293457e7481e570eecc4b9e9e41b236bdff90575fdba6a6a3ab2aa5d6a82"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified-mesh112/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified-mesh112/BEC.raw.dat",
+      "sha256": "8d441434d3e7b834d3b17644b7af10000f3cad967bf79a823690f12e71461453"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified-mesh112/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified-mesh112/BEC.rep.dat",
+      "sha256": "c64be226a693f0055587cbde9b96e30ff067cacf2b92b85edddf62a9cca2b36f"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified-mesh112/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified-mesh112/BEC.rep.raw.dat",
+      "sha256": "d125ed10075737dcd34bbb4cef2483ceb268deb1a1c4cafcb376ef27c9b69c0c"
+    },
+    {
+      "source": "examples/Shared_Response/MoS2/results/unified-mesh112/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/MoS2/results/unified-mesh112/BEC.dat",
+      "sha256": "833bab73cd9c6190fc7a4b81a2d666935f7dbcd3cb9378fc5aab7f58385be3e3"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/controls/cartesian/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/SiC/results/controls/cartesian/BEC.raw.dat",
+      "sha256": "77d662fb528c56e2d450c39257b997ebdd12f5b081f58df57a39f12817ad916c"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/controls/cartesian/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/SiC/results/controls/cartesian/BEC.rep.dat",
+      "sha256": "8245b72ebcf7f46ee7cf6e009b4ce967354ed3aa65b8be2f8e4669b8e11e1f6f"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/controls/cartesian/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/SiC/results/controls/cartesian/BEC.rep.raw.dat",
+      "sha256": "77d662fb528c56e2d450c39257b997ebdd12f5b081f58df57a39f12817ad916c"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/controls/cartesian/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/SiC/results/controls/cartesian/BEC.dat",
+      "sha256": "8245b72ebcf7f46ee7cf6e009b4ce967354ed3aa65b8be2f8e4669b8e11e1f6f"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/shared/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/SiC/results/shared/BEC.raw.dat",
+      "sha256": "b3dfd61eb3597991e71789448f0ade442ab9be4d2b470c1f3d3b292ded3038ce"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/shared/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/SiC/results/shared/BEC.rep.dat",
+      "sha256": "57eab2ef8ded005ffc7e31673a0346ffc706af405a222244b20641af95a45887"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/shared/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/SiC/results/shared/BEC.rep.raw.dat",
+      "sha256": "b3dfd61eb3597991e71789448f0ade442ab9be4d2b470c1f3d3b292ded3038ce"
+    },
+    {
+      "source": "examples/Shared_Response/SiC/results/shared/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/SiC/results/shared/BEC.dat",
+      "sha256": "57eab2ef8ded005ffc7e31673a0346ffc706af405a222244b20641af95a45887"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/controls/cartesian/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/controls/cartesian/BEC.raw.dat",
+      "sha256": "45ce4ec46c12851ba016e8f3a13b991fe9b05be6c4a857e6085432ef60e7e753"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/controls/cartesian/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/controls/cartesian/BEC.rep.dat",
+      "sha256": "600f64eed4c6ef5b15c6386caba3b7cc604ede3897e09951de45e92c33e871f6"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/controls/cartesian/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/controls/cartesian/BEC.rep.raw.dat",
+      "sha256": "abed1dc6e40d79a6467ca057f44d99b62ea82932ff2a5dae12ac8d1d99449afb"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/controls/cartesian/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/controls/cartesian/BEC.dat",
+      "sha256": "682087dcce966990a58bc51e3e9c12c5e28c47b41265409d9b86836b950344a8"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/shared/Z-BORN-all.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/shared/BEC.raw.dat",
+      "sha256": "4d19517fadd73168245d25d2c7ae7e72e611c02e17fb168060e5b15931b8bd89"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/shared/Z-BORN-reduced-neutral.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/shared/BEC.rep.dat",
+      "sha256": "c650da7a7faa411cb7399e41facfe6bf91eedb5f5df17e2ff686b402c73327f8"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/shared/Z-BORN-reduced.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/shared/BEC.rep.raw.dat",
+      "sha256": "21a225698091a29d9afb6435e2f10af306f8cd25523db8bc189b8cce6521cd99"
+    },
+    {
+      "source": "examples/Shared_Response/t_HfO2/results/shared/Z-BORN-symm.out",
+      "canonical": "examples/Shared_Response/t_HfO2/results/shared/BEC.dat",
+      "sha256": "c09cd0c42d6bc7e1f108c893b580ab22e3eaea5902071fdc1d639c9aaacf8e06"
+    }
+  ],
+  "documentation": [
+    "README.md",
+    "README.zh-CN.md",
+    "README_PYPI.md",
+    "docs/calculator_independent_backends.md",
+    "docs/calculator_independent_backends.zh-CN.md",
+    "docs/cp2k_bec.md",
+    "docs/cp2k_bec.zh-CN.md",
+    "docs/dielectric_response.md",
+    "docs/dielectric_response.zh-CN.md",
+    "docs/highk_bec_database.md",
+    "docs/highk_bec_database.zh-CN.md",
+    "docs/one_dimensional_workflow.md",
+    "docs/one_dimensional_workflow.zh-CN.md",
+    "docs/qnep_dataset.md",
+    "docs/qnep_dataset_zh.md",
+    "docs/vasp_bec.md",
+    "docs/vasp_bec_zh.md",
+    "examples/IR_Raman_Spectra/Nanotube_BN_6_0/README.md",
+    "examples/IR_Raman_Spectra/Nanotube_BN_9_0/README.md",
+    "examples/IR_Raman_Spectra/Nanotube_BN_9_0/README.zh-CN.md",
+    "examples/IR_Raman_Spectra/Nanowire_Sb2S3/README.md",
+    "examples/IR_Raman_Spectra/Nanowire_Sb2S3/README.zh-CN.md",
+    "zstar/agent_skills/run-zstar-workflows/references/bec-and-phonons.md",
+    "zstar/agent_skills/run-zstar-workflows/references/completion-contracts.md",
+    "zstar/agent_skills/run-zstar-workflows/references/spectroscopy.md"
+  ],
+  "note": "Original native archives, original logs and their internal manifests are unchanged."
+}

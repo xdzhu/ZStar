@@ -1,0 +1,4 @@
+# Optional structure-generation tools, not dependencies of the ZStar wheel.
+ase>=3.23
+pytest>=8
+pytest-subtests

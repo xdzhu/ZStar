@@ -21,6 +21,26 @@ from zstar.symmetry_reduction import reduce_abacus_atoms, write_reduction_report
 
 
 class GenPolarTests(unittest.TestCase):
+    def test_pyatb_matrix_export_disables_gamma_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root/'source-input'
+            original = 'INPUT_PARAMETERS\ncalculation scf\n  gamma_only 1\nout_mat_r 0\n'
+            source.write_text(original)
+            before = Path.cwd()
+            try:
+                os.chdir(root)
+                gen_input_in_folder(0.1, nscf_calculator='pyatb', input_mode='pyatb',
+                                    dimension=0, scf_input=source)
+            finally:
+                os.chdir(before)
+            fields = {p[0]: p[1:] for line in (root/'INPUT-scf').read_text().splitlines()
+                      if len(p := line.split()) > 1}
+            self.assertEqual(fields['gamma_only'], ['0'])
+            self.assertEqual(fields['out_mat_hs2'], ['1'])
+            self.assertEqual(fields['out_mat_r'], ['1'])
+            self.assertEqual(source.read_text(), original)
+
     def test_gen_polar_uses_spglib_representatives_for_task_directories(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

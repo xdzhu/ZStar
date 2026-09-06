@@ -1,0 +1,26 @@
+{
+  "frequency_cm-1": 0.0,
+  "tensor": [
+    [
+      85.81345982605927,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      85.81345982605927,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      40.2354090423652
+    ]
+  ],
+  "response_kind": "total 2D sheet polarizability (Angstrom)",
+  "response_unit": "angstrom",
+  "response_convention": "cell_height*(epsilon_source-I), SI alpha_2D/epsilon_0 normalization; field convention inherited from the source; no perpendicular screening or local-field correction is added",
+  "electronic_response_included": true,
+  "mode_effective_charge_unit": "e/sqrt(amu)",
+  "oscillator_strength_unit": "e^2/amu"
+}

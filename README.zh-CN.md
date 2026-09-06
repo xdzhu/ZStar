@@ -22,21 +22,40 @@
 
 ---
 
+## Unified 谱学
+
+同一套对称性约化 SCF 现在同时支持 BEC/APT、Gamma 声子、IR 与静态非共振 Raman。
+Raman 复用已有电子矩阵，新增 PYATB 后处理而不新增 SCF。
+
+```bash
+zstar bec pre --stru STRU --input INPUT --dim 3
+zstar spectra pre
+zstar spectra run
+zstar spectra post
+```
+
+二维、一维、分子在 BEC 准备时分别使用 `--dim 2/1/0`。
+[完整教程](docs/unified_spectroscopy.zh-CN.md) · [四维效率与精度对照](docs/research/unified_spectroscopy_20260906/README.md)
+
 ## 项目简介
 
-ZStar 是连接 ABACUS + PYATB、VASP、CP2K、Quantum ESPRESSO 与 Phonopy
-的 Python 响应性质工作流工具。其核心任务是把不同计算器的原子响应数据整理为
-满足晶体对称性与声学求和规则的 Born 有效电荷（BEC）张量，并进一步完成声子、
-红外（IR）、介电与拉曼分析。
+ZStar 面向高效、精确的响应性质自动化计算。其 Unified ABACUS + PYATB
+框架从同一组对称性适配位移中重建 Born 有效电荷（BEC）、Gamma 点力常数和
+Raman 导数，通过极化、力与电子介电响应得到 IR、Raman 和介电结果，并保留
+明确的精度诊断。VASP、CP2K 和 Quantum ESPRESSO 接口提供各自文档说明的
+补充计算路线。
 
 ZStar 不会隐藏中间步骤。结构、输入文件、绝缘性门控、极化值、电荷密度、张量重构报告、光谱和任务状态都会保留下来，便于检查、复现与断点续算。
 
 当前版本的数值验证与运行环境汇总见 [docs/validation.zh-CN.md](docs/validation.zh-CN.md)。
 
-开发中的 ABACUS + PYATB 流程已改为由 Phonopy 生成共用位移，同时获取 BEC
+Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 与 Gamma 点声子响应。推导、真实位移处理、极化输出精度及验证状态见
 [共用位移教程](docs/research/shared_response/USAGE.zh-CN.md) 和
-[配对案例](examples/Shared_Response/README.md)。已发布版本与历史案例仍保留其原有版本记录。
+[配对案例](examples/Benchmarks/README.md)。已发布版本与历史案例仍保留其原有版本记录。
+
+`0.3.0` 包含 Unified 框架、短输出文件名与 Separate/Unified 实测基准。
+复现论文时请使用匹配的发布版本；历史案例保留原始版本与来源记录。
 
 混合位移不仅需要检查 SCF 与位移步长，也要检查 PYATB 的 Berry 积分网格。
 [直接验证报告](docs/research/shared_response/DIRECT_VALIDATION.md) 保留了 SiC、
@@ -45,7 +64,8 @@ ZStar 不会隐藏中间步骤。结构、输入文件、绝缘性门控、极�
 
 ### 主要功能
 
-- 前向差分与中心差分 BEC。
+- Unified BEC/APT、Gamma 力常数与静态非共振 Raman 导数，保留独立的
+  Cartesian 和模式位移对照。
 - 对称性约化、全原子张量重构和声学求和规则修正。
 - `0.no-move -> 位移结构` 的单任务串行、可恢复工作流。
 - 所有位移任务复用 `0.no-move` 的收敛电荷密度。
@@ -84,6 +104,14 @@ Z*(kappa, alpha, beta) = Omega/e * dP_alpha / du_(kappa,beta)
 因为有限波矢极性声子需要真正的 1D Coulomb cutoff。详见
 [一维工作流中文手册](docs/one_dimensional_workflow.zh-CN.md)。
 
+[BN(9,0) 纳米管](examples/IR_Raman_Spectra/Nanotube_BN_9_0)与
+[Sb2S3 单链](examples/IR_Raman_Spectra/Nanowire_Sb2S3)提供完整 unified BEC/Gamma
+计算、全张量、IR/Raman 结果、赝势轨道及可续算的 `run.sh`。BEC 与力常数来自
+同一套 SCF。Sb2S3 图中的参考为公开计算数据集，尚未核实对应期刊论文；保留
+原始参考曲线及实际存在的 Raman 相对强度差异，不作峰位平移或强度拟合。
+
+![Sb2S3 一维 IR 与 Raman 对照](examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.png)
+
 ### 二维材料
 
 二维薄膜的面内与面外响应采用不同处理：
@@ -113,9 +141,9 @@ PNG/PDF/SVG 图片。
 
 ZStar 要求 Python 3.9 或更高版本。
 
-统一框架的投稿候选版本为 **0.3.0rc2**。八体系基准与新 header 功能需要
-对应源码，旧 PyPI 0.2.1 不包含这些新增内容。在下方源码安装前执行
-`git checkout v0.3.0rc2`；参见[可复现基准](examples/Shared_Response/README.zh-CN.md)
+本次修订稿对应 **0.3.0**，精确复现可使用 `pip install zstar==0.3.0`，
+并从匹配的 GitHub 标签获取案例。PyPI 安装包不包含案例目录。
+参见[可复现基准](examples/Benchmarks/README.zh-CN.md)
 及[本轮验证记录](docs/research/PUBLICATION_REVISION_20260904.md)。
 
 从 PyPI 安装：
@@ -351,9 +379,9 @@ zstar bec post --root .
 ```
 
 Unified 收集器同时重构分子 APT 与力常数，将原始及投影后张量保存在
-`shared_response_result.json`，并写出统一格式的 `zstar_response.json`。
+`response_fit.json`，并写出统一格式的 `response.json`。
 PYATB 输出适配器保留完整精度的极化数值，不修改已安装的 PYATB 内核。
-旧 Cartesian 分子流程仍写出 `molecular_apt.json`；对于旧的舍入输出，
+旧 Cartesian 分子流程仍写出 `apt.json`；对于旧的舍入输出，
 它也可以从分别打印的离子相位与电子相位中恢复微小的极化信号。
 
 三维：
@@ -381,17 +409,24 @@ zstar bec post --root .
 
 | 文件 | 含义 |
 | --- | --- |
-| `Z-BORN-reduced.out` | 显式计算的对称性代表原子的原始张量。 |
-| `Z-BORN-symm.out` | 经对称性展开并满足声学求和规则的全原子张量。 |
-| `Z-BORN-reduced-neutral.out` | 对称展开与电中性修正后的约化张量。 |
+| `BEC.rep.raw.dat` | 显式计算的对称性代表原子的原始张量。 |
+| `BEC.raw.dat` | 电中性投影前的全原子原始张量。 |
+| `BEC.dat` | 经对称性展开并满足声学求和规则的全原子张量。 |
+| `BEC.rep.dat` | 对称展开与电中性修正后的约化张量。 |
 | `BORN` | 电子介电张量和 Phonopy 原子顺序的 BEC。 |
-| `BORN-for-phonopy.out` | 与 `BORN` 内容一致、名称更明确的输出。 |
-| `shared_response_result.json` | Unified 原始及投影后的 BEC/APT、力常数、单位与诊断。 |
-| `zstar_response.json` | 统一响应记录，包括维度和数据来源。 |
-| `born_symmetry_report.json` | 旧 Cartesian 流程的对称重构与残差报告。 |
+| `force_fit.json` | 力响应拟合诊断，与统一响应交换记录分开保存。 |
+| `response_fit.json` | Unified 原始及投影后的 BEC/APT、力常数、单位与诊断。 |
+| `response.json` | 统一响应记录，包括维度和数据来源。 |
+| `BEC_symmetry.json` | 旧 Cartesian 流程的对称重构与残差报告。 |
 | `zstar_2d_bec.json` | 旧 Cartesian 二维混合 BEC 诊断。 |
 | `zstar_1d_bec.json` | 旧 Cartesian 一维混合 BEC 诊断。 |
-| `molecular_apt.json` | 旧 Cartesian/cube 分子 APT 及平移求和诊断。 |
+| `apt.json` | 旧 Cartesian/cube 分子 APT 及平移求和诊断。 |
+
+新计算使用上述短文件名。历史档案保留 `Z-BORN-symm.out`、
+`zstar_response.json`、`molecular_apt.json` 等原名和原始哈希。
+读取时，仅当指定的标准文件不存在，才回退到对应旧名；已存在的明确路径优先。
+更名不改变张量方向或单位。`BORN` 只输出一份，不再重复生成
+`BORN-for-phonopy.out`。
 
 ## CP2K BEC 后端
 
@@ -467,20 +502,20 @@ zstar phonon post --root . --nac
 
 ```bash
 cp ../polar/BORN .
-cp ../polar/Z-BORN-symm.out .
+cp ../polar/BEC.dat .
 ```
 
 静态介电响应：
 
 ```bash
-zstar dielectric static --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3
 ```
 
 频率相关介电响应：
 
 ```bash
-zstar dielectric freq --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric freq --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3
 ```
 
@@ -491,7 +526,7 @@ zstar dielectric freq --qpoints qpoints.yaml --born Z-BORN-symm.out \
 二维体系不指定 `--thickness` 时，输出与真空层无关、单位为埃的片层极化率：
 
 ```bash
-zstar dielectric static --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 2
 ```
 
@@ -605,9 +640,10 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 [后端基准](docs/spectroscopy_backend_benchmark.zh-CN.md)。
 
 分子 APT 案例还包含紧凑的 HSE 参考记录：
-`examples/molecules/{H2O,CH4}/reference/hse_apt_summary.json`。完整求解器
+`examples/0D_Molecules/{H2O,CH4}/results/hse_apt_summary.json`。完整求解器
 临时目录和 cube 文件有意不纳入仓库；JSON 保留泛函、收敛阈值、位移、张量约定
 和对称性修正后的结果，足以追溯该基准。
+两套 HSE 案例均采用 ABACUS 电荷密度 cube 积分，不经过 PYATB。
 
 ## 代表性验证图
 
@@ -615,11 +651,11 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 [docs/paper_figures](docs/paper_figures/README.md)。
 
 <p align="center">
-  <img src="docs/paper_figures/spectroscopy_across_dimensions.png" alt="体材料、二维片层与分子的 IR 和 Raman 验证谱" width="820">
+  <img src="docs/paper_figures/spectroscopy_across_dimensions.png" alt="体材料、二维片层、一维纳米线与分子的 IR 和 Raman 谱" width="820">
 </p>
 
-三行对比图按论文顺序展示四方 HfO2（`Bulk`）、单层 MoS2
-（`2D`）和 CH4（`Molecule`）。PBEsol HfO2 行包含全部 15 个
+四行对比图按论文顺序展示四方 HfO2（`3D, bulk`）、单层 MoS2
+（`2D, slab`）、Sb2S3（`1D, nanowire`）和 CH4（`0D, molecule`）。PBEsol HfO2 行包含全部 15 个
 稳定光学模式和 30 个已完成的 Raman 响应阶段；更新后的
 ABACUS/PBE-D3(BJ) MoS2 行则将全部 6 个光学模式与生产级 BEC 导出的
 IR 强度及 12 个已完成的中心差分 Raman 响应阶段结合起来。

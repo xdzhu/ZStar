@@ -66,7 +66,7 @@ def test_legacy_case_layout_is_not_reintroduced():
 
 
 def test_run_directories_contain_inputs_only():
-    allowed_asset_dirs = {"assets", "pp", "orb"}
+    allowed_asset_dirs = {"assets", "pp", "orb", "relaxation", "vasp"}
     for record in _manifest_cases():
         run_dir = EXAMPLES / record["path"] / "run"
         unexpected = [
@@ -76,3 +76,18 @@ def test_run_directories_contain_inputs_only():
         assert not unexpected, (record["id"], unexpected)
         assert not (run_dir / "work").exists(), record["id"]
         assert not (run_dir / "native").exists(), record["id"]
+        vasp = run_dir / "vasp"
+        if vasp.is_dir():
+            assert {p.name for p in vasp.iterdir()} == {
+                "INCAR", "KPOINTS", "POSCAR", "input_provenance.json"}, record["id"]
+            assert all(p.is_file() for p in vasp.iterdir()), record["id"]
+            provenance = json.loads((vasp / "input_provenance.json").read_text(encoding="utf-8"))
+            assert provenance["potential_redistribution"] is False, record["id"]
+            assert len(provenance["potential_sha256"]) == 2, record["id"]
+        relaxation = run_dir / "relaxation"
+        if relaxation.is_dir():
+            assert {p.name for p in relaxation.iterdir()} <= {
+                "INPUT", "KPT", "STRU", "structure.vasp", "assets"}, record["id"]
+            assert all(p.is_file() or p.name == "assets" for p in relaxation.iterdir()), record["id"]
+            assert all(p.is_file() and p.suffix.lower() in {".upf", ".orb"}
+                       for p in (relaxation / "assets").glob("*")), record["id"]

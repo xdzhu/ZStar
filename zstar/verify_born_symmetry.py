@@ -4,18 +4,18 @@
 verify_born_symmetry.py
 
 双模：
-1) 验证模式（Z-BORN-all.out 存在）：
+1) 验证模式（BEC.raw.dat 存在）：
    - 对每个 reduced 原子，找出映射到其等价原子的空间群操作 (R|t)
    - 计算笛卡尔旋转 R_cart = L * R * L^{-1}
    - 预测 Z_pred = R_cart @ Z_reduced @ R_cart.T 与 Z_ref 对比
    - 屏幕并排小表格（3位小数），写 txt/json（可选 csv）
-   - 汇总全原子对称均值 + 电中性修正，写 Z-BORN-symm.out
-   - 写 Z-BORN-reduced-neutral.out（仅 reduced 原子）
+   - 汇总全原子对称均值 + 电中性修正，写 BEC.dat
+   - 写 BEC.rep.dat（仅 reduced 原子）
 
-2) 生成模式（Z-BORN-all.out 缺失）：
+2) 生成模式（BEC.raw.dat 缺失）：
    - 仅用 reduced 集合 + 对称操作生成全原子 Born
-   - 做整体电中性修正，写 Z-BORN-symm.out
-   - 写 Z-BORN-reduced-neutral.out
+   - 做整体电中性修正，写 BEC.dat
+   - 写 BEC.rep.dat
    - 输出 born_generation_from_symm.log：每个 reduced 原子并排表格 | Z_reduce | Z_gen |
 
 依赖：
@@ -121,7 +121,7 @@ def read_abacus_stru(path: str) -> Tuple[np.ndarray, np.ndarray, List[str]]:
 
 def load_born_all(path: Optional[str]) -> Tuple[Dict[int, np.ndarray], Dict[int, str], Set[int]]:
     """
-    解析 Z-BORN-all.out：
+    解析 BEC.raw.dat：
       行形如： "*   1 Zr  5.822 ... 4.985"
     返回：
       tensors: idx -> 3x3
@@ -137,6 +137,8 @@ def load_born_all(path: Optional[str]) -> Tuple[Dict[int, np.ndarray], Dict[int,
     # 关键修复：path 为 None/空/非法时直接返回空
     if not path:
         return tensors, species, starred
+    from .artifacts import resolve_artifact
+    path = resolve_artifact(path)
     try:
         if not os.path.isfile(path):
             return tensors, species, starred
@@ -166,13 +168,15 @@ def load_born_all(path: Optional[str]) -> Tuple[Dict[int, np.ndarray], Dict[int,
 
 def load_born_reduced(path: str) -> Tuple[set, Dict[int, np.ndarray]]:
     """
-    解析 Z-BORN-reduced.out：只包含 reduced 原子
+    解析 BEC.rep.raw.dat：只包含 reduced 原子
     返回：
       reduced: {*idx*}
       reduced_tensors: idx -> 3x3
     """
     reduced: set = set()
     tensors: Dict[int, np.ndarray] = {}
+    from .artifacts import resolve_artifact
+    path = resolve_artifact(path)
     with open(path, "r") as f:
         for line in f:
             line = line.rstrip()
@@ -265,13 +269,13 @@ def _format_two_mats_side_by_side(Z_left, Z_right, title_left="Z_left", title_ri
 # ========================== 主流程 ==========================
 
 def run_symcheck(stru: str = "STRU",
-                 reduced: str = "Z-BORN-reduced.out",
-                 all: Optional[str] = "Z-BORN-all.out",
+                 reduced: str = "BEC.rep.raw.dat",
+                 all: Optional[str] = "BEC.raw.dat",
                  symprec: float = 1e-3,
-                 out: Optional[str] = "born_symmetry_report.txt",
-                 json_path: Optional[str] = "born_symmetry_report.json",
+                 out: Optional[str] = "BEC_symmetry.txt",
+                 json_path: Optional[str] = "BEC_symmetry.json",
                  csv_path: Optional[str] = None,
-                 symm_out: str = "Z-BORN-symm.out"):
+                 symm_out: str = "BEC.dat"):
     """
     当 all 存在 => 验证模式；否则 => 生成模式（只用 reduced + 对称生成）
     """
@@ -461,7 +465,7 @@ def run_symcheck(stru: str = "STRU",
             report["details"].append(block)
             lines.append("=" * 80 + "\n")
 
-    # ====== 汇总每个原子的对称预测（均值），并做电中性修正 => Z-BORN-symm.out ======
+    # ====== 汇总每个原子的对称预测（均值），并做电中性修正 => BEC.dat ======
     Z_symm_mean = {}
     for j in all_indices:
         plist = pred_lists.get(j, [])
@@ -487,7 +491,7 @@ def run_symcheck(stru: str = "STRU",
     print("[symm] Acoustic sum rule correction (added to each atom):")
     print(np.array2string(C, precision=BORN_OUTPUT_PRECISION))
 
-    # 写出 Z-BORN-symm.out（格式与 Z-BORN-all.out 类似，*标记 reduced 原子）
+    # 写出 BEC.dat（格式与 BEC.raw.dat 类似，*标记 reduced 原子）
     def _fmt_row(
         matrix: np.ndarray,
         w=BORN_OUTPUT_WIDTH,
@@ -507,20 +511,20 @@ def run_symcheck(stru: str = "STRU",
             f.write(f"{mark}{j:>5} {sym:<3} {row}\n")
     print(f"[OK] Wrote symmetry-reconstructed Born with neutrality: {symm_out}")
 
-    # 写出 Z-BORN-reduced-neutral.out（仅 reduced）
-    with open("Z-BORN-reduced-neutral.out", "w") as fz:
+    # 写出 BEC.rep.dat（仅 reduced）
+    with open("BEC.rep.dat", "w") as fz:
         fz.write(header)
         for ridx in sorted(reduced_indices):
             sym = symbols[ridx - 1] if 1 <= ridx <= len(symbols) else species_by_idx.get(ridx, "?")
             row = _fmt_row(Z_corr[ridx])
             fz.write(f"*{ridx:>5} {sym:<3} {row}\n")
-    print("[OK] Wrote Z-BORN-reduced-neutral.out")
+    print("[OK] Wrote BEC.rep.dat")
 
     # —— 生成模式：额外写并排对比日志 born_generation_from_symm.log
     if not has_all:
         gen_lines: List[str] = []
         gen_lines += [
-            "Born tensors generated from symmetry (no Z-BORN-all.out)\n",
+            "Born tensors generated from symmetry (no BEC.raw.dat)\n",
             f"Structure : {stru}\n",
             f"Symprec   : {symprec}\n",
             f"Natoms    : {len(fracs)}\n",
@@ -584,12 +588,12 @@ def run_symcheck(stru: str = "STRU",
 def _build_cli():
     ap = argparse.ArgumentParser(description="Verify or generate Born effective charges from symmetry.")
     ap.add_argument("--stru", default="STRU", help="Path to ABACUS STRU file")
-    ap.add_argument("--reduced", default="Z-BORN-reduced.out", help="Path to reduced Born file")
-    ap.add_argument("--all", dest="allfile", default="Z-BORN-all.out",
+    ap.add_argument("--reduced", default="BEC.rep.raw.dat", help="Path to reduced Born file")
+    ap.add_argument("--all", dest="allfile", default="BEC.raw.dat",
                     help="Path to full Born file; if missing, run in generation-only mode")
     ap.add_argument("--symprec", type=float, default=1e-3, help="Symmetry tolerance (spglib)")
-    ap.add_argument("--out", default="born_symmetry_report.txt", help="Text report output (verify mode only)")
-    ap.add_argument("--json", dest="json_path", default="born_symmetry_report.json", help="JSON output")
+    ap.add_argument("--out", default="BEC_symmetry.txt", help="Text report output (verify mode only)")
+    ap.add_argument("--json", dest="json_path", default="BEC_symmetry.json", help="JSON output")
     ap.add_argument("--csv", dest="csv_path", default=None, help="Optional CSV output (verify mode only)")
     return ap
 

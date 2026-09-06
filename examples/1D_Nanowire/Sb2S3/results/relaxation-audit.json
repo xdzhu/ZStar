@@ -1,0 +1,31 @@
+{
+  "maximum_force_eV_A": 0.003410794637729673,
+  "final_stress_kbar": [
+    [
+      -0.0365632718,
+      -0.0099113772,
+      0.0
+    ],
+    [
+      -0.0099113772,
+      -0.0010936903,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0009220018
+    ]
+  ],
+  "axial_period_A": 3.785715323148374,
+  "source_final_structure": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/Sb2S3/relaxation/OUT.Sb2S3/STRU_ION_D",
+  "relaxation_core_hours": 36.0525316655791,
+  "status": "accepted",
+  "response_dispersion": {
+    "method": "PBE-D3(BJ)",
+    "pair_cutoff_A": 18,
+    "coordination_cutoff_A": 15,
+    "note": "Final reference forces require rechecking after cutoff change"
+  },
+  "displacement_stages": 20
+}

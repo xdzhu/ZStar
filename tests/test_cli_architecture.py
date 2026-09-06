@@ -15,6 +15,18 @@ from zstar.project_manifest import write_manifest
 
 
 class CanonicalCliArchitectureTests(unittest.TestCase):
+    def test_vasp_pre_retains_physical_dimension(self):
+        calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)/'wire'
+            handle_canonical_cli(['bec', 'pre', '--calculator', 'vasp', '--dim', '1',
+                                  '--periodic-axes', 'z', '--root', str(root)],
+                                 lambda argv: calls.append(list(argv)))
+            self.assertIn('--dim', calls[0])
+            manifest = json.loads((root/'.zstar/bec.json').read_text())
+            self.assertEqual(manifest['dimensionality'], 1)
+            self.assertEqual(manifest['options']['method'], 'dfpt')
+
     def test_package_module_entry_point_is_importable(self):
         module = importlib.import_module("zstar.__main__")
         self.assertIs(module.zstar_cli, zstar_cli)

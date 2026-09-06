@@ -67,7 +67,7 @@ class BecDatabaseTests(unittest.TestCase):
                 "5 0 0 0 5 0 0 0 5\n2 0 0 0 2 0 0 0 2\n-1 0 0 0 -1 0 0 0 -1\n",
                 encoding="utf-8",
             )
-            (case / "Z-BORN-symm.out").write_text(
+            (case / "BEC.dat").write_text(
                 "No. Atom xx xy xz yx yy yz zx zy zz\n"
                 "* 1 A 2 0 0 0 2 0 0 0 2\n"
                 "* 2 B -1 0 0 0 -1 0 0 0 -1\n"
@@ -84,7 +84,7 @@ class BecDatabaseTests(unittest.TestCase):
             self.assertEqual(summary["atom_tensors"], 3)
             self.assertEqual(record["tensor_scope"], "full_cell")
             self.assertEqual(record["acoustic_sum_max_abs_e"], 0.0)
-            self.assertEqual(read_zborn(case / "Z-BORN-symm.out").shape, (3, 3, 3))
+            self.assertEqual(read_zborn(case / "BEC.dat").shape, (3, 3, 3))
 
     def test_molecular_spectra_are_complete_auxiliary(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -118,7 +118,7 @@ class BecDatabaseTests(unittest.TestCase):
                 json.dumps({"gap_eV": 2.1, "insulating": True}),
                 encoding="utf-8",
             )
-            (case / "zstar_response.json").write_text(
+            (case / "response.json").write_text(
                 json.dumps(
                     {
                         "quantities": [

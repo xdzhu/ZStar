@@ -98,7 +98,7 @@ def add_case(category: str, name: str, source: Path, dimensionality: int) -> Non
 
 
 def add_molecule(name: str, source: Path) -> None:
-    target = BUNDLE / "cases" / "molecules" / name
+    target = BUNDLE / "cases" / "0D_Molecules" / name
     run_dir = target / "run"
     results_dir = target / "results"
     source_run = source / "run" if (source / "run").is_dir() else source
@@ -190,10 +190,10 @@ python scripts/smoke_reference_database.py
 ## 内容
 
 - `wheel/`：当前 ZStar wheel，可离线安装。
-- `cases/1d_wires/`：GaAs 纳米线，展示纵向 Berry 极化、横向 cube 偶极及线响应。
-- `cases/3d_bulk/`：BaTiO3、HfO2，面向 BEC、声子与 High-K。
-- `cases/2d_materials/`：MoS2、alpha-In2Se3，展示面内 Berry 相位与面外 cube 积分。
-- `cases/molecules/`：H2O、CH4、CO2，展示 `--dim 0` IR/Raman 工作流。
+- `cases/1D_Nanowire/`：GaAs 纳米线，展示纵向 Berry 极化、横向 cube 偶极及线响应。
+- `cases/3D_Bulk/`：BaTiO3、HfO2，面向 BEC、声子与 High-K。
+- `cases/2D_Slab/`：MoS2、alpha-In2Se3，展示面内 Berry 相位与面外 cube 积分。
+- `cases/0D_Molecules/`：H2O、CH4、CO2，展示 `--dim 0` IR/Raman 工作流。
 - `cases/IR_Raman_Spectra/`：按材料整理的 HfO2、MoS2、CH4 和 GaAs 纳米线光谱案例。
 - `cases/Electrostatic_Potential/`：MoS2、alpha-In2Se3 以及 SnS/SnSe/SnTe 静电势后处理案例。
 - `project/`：候选清单、参考结果清单和数据库输出位置。
@@ -441,7 +441,7 @@ python scripts/smoke_reference_database.py
 
 ## 3. 跑一个 BTO 案例
 
-复制 `cases/3d_bulk/BaTiO3/run` 到自己的项目输入目录，在
+复制 `cases/3D_Bulk/BaTiO3/run` 到自己的项目输入目录，在
 `project/candidates.csv` 中保留 BTO 行，然后：
 
 ```bash
@@ -558,21 +558,21 @@ def write_manifests() -> None:
     with (project / "reference_manifest.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(["material_id", "formula", "dimensionality", "workspace", "backend", "structure_source", "notes"])
-        writer.writerow(["gaas-nanowire-reference", "GaAs", 1, "../cases/1d_wires/GaAs_nanowire/results", "abacus-pyatb-1d", "Materials Cloud 2023.148", "line response; no bulk NAC"])
-        writer.writerow(["bto-reference", "BaTiO3", 3, "../cases/3d_bulk/BaTiO3/results", "abacus-pyatb", "bundled validated case", "PBEsol"])
-        writer.writerow(["hfo2-reference", "HfO2", 3, "../cases/3d_bulk/HfO2/results", "abacus-pyatb", "bundled validated case", "PBEsol"])
-        writer.writerow(["mos2-reference", "MoS2", 2, "../cases/2d_materials/MoS2/results", "abacus-pyatb-2d", "bundled validated case", "sheet response"])
-        writer.writerow(["in2se3-reference", "In2Se3", 2, "../cases/2d_materials/In2Se3/results", "abacus-pyatb-2d", "bundled validated case", "hybrid out-of-plane BEC"])
-        writer.writerow(["ch4-reference", "CH4", 0, "../cases/molecules/CH4/results", "abacus-pyatb-molecule", "bundled validated case", "IR/Raman, no bulk K"])
-        writer.writerow(["co2-reference", "CO2", 0, "../cases/molecules/CO2/results", "abacus-pyatb-molecule", "bundled validated case", "IR/Raman, no bulk K"])
+        writer.writerow(["gaas-nanowire-reference", "GaAs", 1, "../cases/1D_Nanowire/GaAs_nanowire/results", "abacus-pyatb-1d", "Materials Cloud 2023.148", "line response; no bulk NAC"])
+        writer.writerow(["bto-reference", "BaTiO3", 3, "../cases/3D_Bulk/BaTiO3/results", "abacus-pyatb", "bundled validated case", "PBEsol"])
+        writer.writerow(["hfo2-reference", "HfO2", 3, "../cases/3D_Bulk/HfO2/results", "abacus-pyatb", "bundled validated case", "PBEsol"])
+        writer.writerow(["mos2-reference", "MoS2", 2, "../cases/2D_Slab/MoS2/results", "abacus-pyatb-2d", "bundled validated case", "sheet response"])
+        writer.writerow(["in2se3-reference", "In2Se3", 2, "../cases/2D_Slab/In2Se3/results", "abacus-pyatb-2d", "bundled validated case", "hybrid out-of-plane BEC"])
+        writer.writerow(["ch4-reference", "CH4", 0, "../cases/0D_Molecules/CH4/results", "abacus-pyatb-molecule", "bundled validated case", "IR/Raman, no bulk K"])
+        writer.writerow(["co2-reference", "CO2", 0, "../cases/0D_Molecules/CO2/results", "abacus-pyatb-molecule", "bundled validated case", "IR/Raman, no bulk K"])
     with (project / "candidates.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(["material_id", "formula", "dimensionality", "input_dir", "workdir", "scheduler", "structure_source", "active", "notes"])
-        writer.writerow(["bto-demo", "BaTiO3", 3, "../cases/3d_bulk/BaTiO3/run", "work/bto-demo", "shell", "replace-with-source-id", 1, "start here"])
-        writer.writerow(["hfo2-demo", "HfO2", 3, "../cases/3d_bulk/HfO2/run", "work/hfo2-demo", "slurm", "replace-with-source-id", 0, "enable after environment review"])
-        writer.writerow(["mos2-demo", "MoS2", 2, "../cases/2d_materials/MoS2/run", "work/mos2-demo", "slurm", "replace-with-source-id", 0, "2D method"])
-        writer.writerow(["in2se3-demo", "In2Se3", 2, "../cases/2d_materials/In2Se3/run", "work/in2se3-demo", "slurm", "replace-with-source-id", 0, "polar 2D method"])
-        writer.writerow(["gaas-nanowire-demo", "GaAs", 1, "../cases/1d_wires/GaAs_nanowire/run", "work/gaas-nanowire-demo", "shell", "Materials Cloud 2023.148", 0, "z-periodic 1D method"])
+        writer.writerow(["bto-demo", "BaTiO3", 3, "../cases/3D_Bulk/BaTiO3/run", "work/bto-demo", "shell", "replace-with-source-id", 1, "start here"])
+        writer.writerow(["hfo2-demo", "HfO2", 3, "../cases/3D_Bulk/HfO2/run", "work/hfo2-demo", "slurm", "replace-with-source-id", 0, "enable after environment review"])
+        writer.writerow(["mos2-demo", "MoS2", 2, "../cases/2D_Slab/MoS2/run", "work/mos2-demo", "slurm", "replace-with-source-id", 0, "2D method"])
+        writer.writerow(["in2se3-demo", "In2Se3", 2, "../cases/2D_Slab/In2Se3/run", "work/in2se3-demo", "slurm", "replace-with-source-id", 0, "polar 2D method"])
+        writer.writerow(["gaas-nanowire-demo", "GaAs", 1, "../cases/1D_Nanowire/GaAs_nanowire/run", "work/gaas-nanowire-demo", "shell", "Materials Cloud 2023.148", 0, "z-periodic 1D method"])
     copy_file(project / "reference_manifest.csv", project / "results_manifest.csv")
 
 
@@ -677,13 +677,13 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
             f"Build exactly one ZStar {PACKAGE_VERSION} wheel under {wheel_dir} first"
         )
     copy_file(wheel[0], BUNDLE / "wheel" / wheel[0].name)
-    add_case("3d_bulk", "BaTiO3", SOURCE / "3d" / "BaTiO3", 3)
-    add_case("3d_bulk", "HfO2", SOURCE / "3d" / "HfO2", 3)
-    add_case("2d_materials", "MoS2", SOURCE / "2d" / "MoS2", 2)
-    add_case("2d_materials", "In2Se3", SOURCE / "2d" / "In2Se3", 2)
-    add_case("1d_wires", "GaAs_nanowire", SOURCE / "1d" / "GaAs_nanowire", 1)
-    add_molecule("CH4", SOURCE / "molecules" / "CH4")
-    add_molecule("CO2", SOURCE / "molecules" / "CO2")
+    add_case("3D_Bulk", "BaTiO3", SOURCE / "3d" / "BaTiO3", 3)
+    add_case("3D_Bulk", "HfO2", SOURCE / "3d" / "HfO2", 3)
+    add_case("2D_Slab", "MoS2", SOURCE / "2d" / "MoS2", 2)
+    add_case("2D_Slab", "In2Se3", SOURCE / "2d" / "In2Se3", 2)
+    add_case("1D_Nanowire", "GaAs_nanowire", SOURCE / "1d" / "GaAs_nanowire", 1)
+    add_molecule("CH4", SOURCE / "0D_Molecules" / "CH4")
+    add_molecule("CO2", SOURCE / "0D_Molecules" / "CO2")
     overlay_curated_examples()
     article_env = os.environ.get("ZSTAR_ARTICLE_DIR")
     if article_env:

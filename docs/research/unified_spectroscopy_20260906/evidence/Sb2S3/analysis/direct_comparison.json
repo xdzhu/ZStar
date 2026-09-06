@@ -1,0 +1,221 @@
+{
+  "case": "Sb2S3",
+  "modes": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+  ],
+  "basis": "Direct-control eigenvectors",
+  "absolute_tensor_relative_L2": 0.00035748103994354407,
+  "absolute_activity_relative_L2": 0.00026494718108952296,
+  "activity_sum_ratio": 1.0001785435608344,
+  "maximum_tensor_component_difference": 0.0015004129542313127,
+  "per_mode": [
+    {
+      "mode": 5,
+      "frequency_cm1": 39.37966520491987,
+      "unified_activity": 1.3248839479225135e-26,
+      "direct_activity": 5.088296251675555e-12,
+      "tensor_abs_L2": 6.961319299293508e-07
+    },
+    {
+      "mode": 6,
+      "frequency_cm1": 41.1383996758184,
+      "unified_activity": 5.120020141520297,
+      "direct_activity": 5.106030148232583,
+      "tensor_abs_L2": 0.0009858529190460946
+    },
+    {
+      "mode": 7,
+      "frequency_cm1": 45.64720108469173,
+      "unified_activity": 9.774320971288759,
+      "direct_activity": 9.785965544366489,
+      "tensor_abs_L2": 0.001038150304203335
+    },
+    {
+      "mode": 8,
+      "frequency_cm1": 52.626044198216626,
+      "unified_activity": 9.49345050621893e-27,
+      "direct_activity": 5.087626974519324e-10,
+      "tensor_abs_L2": 6.9608613289540454e-06
+    },
+    {
+      "mode": 9,
+      "frequency_cm1": 58.1978347200449,
+      "unified_activity": 7.355468365305304,
+      "direct_activity": 7.366623345883029,
+      "tensor_abs_L2": 0.0016529368132997407
+    },
+    {
+      "mode": 10,
+      "frequency_cm1": 93.04882278926443,
+      "unified_activity": 25.836119029370195,
+      "direct_activity": 25.854713227153034,
+      "tensor_abs_L2": 0.0013398064002362368
+    },
+    {
+      "mode": 11,
+      "frequency_cm1": 93.69248649010378,
+      "unified_activity": 3.869178517122818e-26,
+      "direct_activity": 2.6324502754024124e-12,
+      "tensor_abs_L2": 5.00709047290268e-07
+    },
+    {
+      "mode": 12,
+      "frequency_cm1": 96.60540437278112,
+      "unified_activity": 7.768449876410921,
+      "direct_activity": 7.768528961980015,
+      "tensor_abs_L2": 0.0009631187006380528
+    },
+    {
+      "mode": 13,
+      "frequency_cm1": 103.1912724168665,
+      "unified_activity": 4.633098680073913e-27,
+      "direct_activity": 5.636579889965149e-12,
+      "tensor_abs_L2": 7.326780550675949e-07
+    },
+    {
+      "mode": 14,
+      "frequency_cm1": 119.4460224746548,
+      "unified_activity": 7.039859762444433,
+      "direct_activity": 7.0508920000995,
+      "tensor_abs_L2": 0.0009945492460890495
+    },
+    {
+      "mode": 15,
+      "frequency_cm1": 127.19605132961686,
+      "unified_activity": 7.113304840768845e-32,
+      "direct_activity": 4.4482967286221266e-10,
+      "tensor_abs_L2": 6.508819458862849e-06
+    },
+    {
+      "mode": 16,
+      "frequency_cm1": 185.53117997384712,
+      "unified_activity": 14.633674210235148,
+      "direct_activity": 14.629639155002941,
+      "tensor_abs_L2": 0.0007990800121872437
+    },
+    {
+      "mode": 17,
+      "frequency_cm1": 188.52559210812439,
+      "unified_activity": 148.97213944673996,
+      "direct_activity": 148.89141891596705,
+      "tensor_abs_L2": 0.0016100961983922123
+    },
+    {
+      "mode": 18,
+      "frequency_cm1": 196.04218557759717,
+      "unified_activity": 248.9626333799239,
+      "direct_activity": 248.90125452757442,
+      "tensor_abs_L2": 0.0006146510700853478
+    },
+    {
+      "mode": 19,
+      "frequency_cm1": 197.07947913419494,
+      "unified_activity": 3.0453836349541616e-32,
+      "direct_activity": 3.5618676294594185e-10,
+      "tensor_abs_L2": 5.824306727205266e-06
+    },
+    {
+      "mode": 20,
+      "frequency_cm1": 221.24840291679388,
+      "unified_activity": 9.601561971470761e-28,
+      "direct_activity": 2.3168766981264265e-12,
+      "tensor_abs_L2": 4.6973920810497423e-07
+    },
+    {
+      "mode": 21,
+      "frequency_cm1": 238.05870288104447,
+      "unified_activity": 1.4562205445298388e-25,
+      "direct_activity": 3.5742121782533333e-10,
+      "tensor_abs_L2": 5.83439090557744e-06
+    },
+    {
+      "mode": 22,
+      "frequency_cm1": 238.8806926123539,
+      "unified_activity": 214.54654055949672,
+      "direct_activity": 214.48591109108622,
+      "tensor_abs_L2": 0.0006389397704705352
+    },
+    {
+      "mode": 23,
+      "frequency_cm1": 259.00883783740824,
+      "unified_activity": 121.85166325154492,
+      "direct_activity": 121.82949114531255,
+      "tensor_abs_L2": 0.00044006206214171795
+    },
+    {
+      "mode": 24,
+      "frequency_cm1": 261.26462923560274,
+      "unified_activity": 9.129852619626178e-26,
+      "direct_activity": 1.602567242867714e-11,
+      "tensor_abs_L2": 1.235416738196823e-06
+    },
+    {
+      "mode": 25,
+      "frequency_cm1": 295.92792589198496,
+      "unified_activity": 5.8250365571581264e-27,
+      "direct_activity": 5.764101279944647e-12,
+      "tensor_abs_L2": 7.409197167449355e-07
+    },
+    {
+      "mode": 26,
+      "frequency_cm1": 301.09894774937936,
+      "unified_activity": 93.91725940092098,
+      "direct_activity": 93.89068671324932,
+      "tensor_abs_L2": 0.0010040364726492652
+    },
+    {
+      "mode": 27,
+      "frequency_cm1": 322.13533661677377,
+      "unified_activity": 379.0473491693759,
+      "direct_activity": 379.0806707293,
+      "tensor_abs_L2": 0.0006848999906694681
+    },
+    {
+      "mode": 28,
+      "frequency_cm1": 330.9469628718946,
+      "unified_activity": 4.0370687703474574e-26,
+      "direct_activity": 6.859876210433974e-12,
+      "tensor_abs_L2": 8.082830839816317e-07
+    },
+    {
+      "mode": 29,
+      "frequency_cm1": 333.8816250173979,
+      "unified_activity": 254.71054950748947,
+      "direct_activity": 254.61939638552155,
+      "tensor_abs_L2": 0.0013211559179202037
+    },
+    {
+      "mode": 30,
+      "frequency_cm1": 353.25382459754877,
+      "unified_activity": 1.2067213569161431e-32,
+      "direct_activity": 1.572255986466697e-11,
+      "tensor_abs_L2": 1.2236775121647888e-06
+    }
+  ],
+  "limitation": null
+}

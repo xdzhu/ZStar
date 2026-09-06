@@ -1,23 +1,46 @@
 {
-  "figure": "spectroscopy_across_dimensions",
+  "figure": "Figure_7_Spectroscopy_with_1D_layout_v2",
   "backend": "Python/matplotlib 3.10.9",
-  "core_conclusion": "ZStar reproduces mode-resolved IR and Raman selection rules and reference frequencies for representative bulk, slab, and molecular systems.",
+  "core_conclusion": "Compare mode-resolved IR and Raman spectra for bulk, slab, wire, and molecular systems; agreement with references is assessed, not assumed.",
   "normalization": "ZStar spectra are normalized independently in every panel; intensities are not compared across rows or response types.",
   "placeholder": false,
   "image_scaling": "Aspect-preserving uniform scaling, centered at the largest size that fits each structure panel.",
-  "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all three two-line labels use one common left edge across rows.",
-  "reference_overlay": "Light-gray continuous envelopes are reconstructed from published or archived mode frequencies using the documented relative weights and Gaussian broadening; they are normalized independently and are not absolute-intensity traces.",
+  "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all four two-line labels use one common left edge across rows.",
+  "reference_overlay": "HfO2, MoS2, and CH4 reference data unchanged; numeric citation labels follow the compiled bibliography. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled IR and Raman curves, DOI 10.17632/6tntvw37tr.1, independently normalized with no peak shifts. Raman relative-intensity agreement is not claimed.",
+  "row_geometry_inches": {
+    "height": 1.3961538461538459,
+    "pitch": 2.2059230769230767
+  },
+  "layout_revision": {
+    "HfO2_CH4_a_axis_scale": 0.8,
+    "Sb2S3_image_scale": 1.08,
+    "Sb2S3_image_center_down_points": 13.098156923076921,
+    "spectrum_panel_label_x": -0.2,
+    "intensity_labels": [
+      "IR intensity",
+      "Raman intensity"
+    ],
+    "reference_numbers_updated": true
+  },
+  "bibliography_labels": {
+    "Fan2022HfO2": 54,
+    "Ulian2023MoS2": 67,
+    "Ulian2026Sb2S3Data": 59,
+    "Shimanouchi1972": 68
+  },
   "systems": [
     "HfO2",
     "MoS2",
+    "Sb2S3",
     "CH4"
   ],
   "display_systems": [
     "HfO$_2$",
     "MoS$_2$",
+    "Sb$_2$S$_3$",
     "CH$_4$"
   ],
-  "layout": "3 rows by 3 columns",
+  "layout": "4 rows by 3 columns",
   "source_data": {
     "structure_images/HfO2_tetragonal.png": {
       "bytes": 449861,
@@ -67,6 +90,42 @@
       "bytes": 200088,
       "sha256": "36908dea511f79838f10565ae38a1d3c8be2f9e40ef62ab8f36df847e523c874"
     },
+    "structure_images/Sb2S3.png": {
+      "bytes": 222151,
+      "sha256": "c895fab75a84bc45d3443606a057bfd1e2bc6cacb03adc37a4845d83244d42a1"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/run/STRU": {
+      "bytes": 719,
+      "sha256": "b0897b8928f879926dbd32393fe8cac1e3b7f65fab2de07f921687035656b00c"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_modes.csv": {
+      "bytes": 3382,
+      "sha256": "98bd82bfcd1785a9d065debf31dc3a2718b695aac90a7186eb31771bfb894f17"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_spectrum.dat": {
+      "bytes": 375194,
+      "sha256": "e8e9609cde7cebcdb6b1419002aed334eafff8582119cae6dff9c0d905c0f4e7"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_modes.csv": {
+      "bytes": 5120,
+      "sha256": "56c9242dbf55ec40abd2b292d7873b531d56b91f9b9380e05d83c7d3f975a298"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_spectrum.dat": {
+      "bytes": 150088,
+      "sha256": "cacaf06ef7c4a25396d42e263f02573dcdb3660ec8cc48c6b5b91fa6d4290d39"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.irspec.dat": {
+      "bytes": 20040,
+      "sha256": "c0dde1745862a27750f62ae021e6541ed45a7ca070fc605364342a78d4ee386e"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.ramspec.dat": {
+      "bytes": 65631,
+      "sha256": "9d34986a164f08b5a17600c769d01dfe26c1eb47fd27843bb0836cebc004c953"
+    },
+    "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/irreps.yaml": {
+      "bytes": 4597,
+      "sha256": "3ba25236af44b778cec2e619ce3a187301e86b209d7aaf96be02f02cdd55fa94"
+    },
     "structure_images/CH4_molecule.png": {
       "bytes": 216411,
       "sha256": "965ef14cab91d43df5d4f55d8af01726208fa86b952d8e8728551e6a64ed04b9"
@@ -97,7 +156,7 @@
     },
     "hfo2/provenance.json": {
       "bytes": 2017,
-      "sha256": "443f7a29bf2490419fa0823f1c42901b87e48c449aec80f5d5b32a38abe698f7"
+      "sha256": "c9b605400fb543aaf16fdecbc6144567f7de0c58f624193b9eb0dbdaeb712904"
     },
     "hfo2/qpoints.yaml": {
       "bytes": 18786,
@@ -130,5 +189,6 @@
     "svg": "spectroscopy_across_dimensions.svg",
     "powerpoint_svg": "spectroscopy_across_dimensions_powerpoint.svg",
     "tiff": "spectroscopy_across_dimensions.tiff"
-  }
+  },
+  "source_script": "plot_spectroscopy_across_dimensions.py"
 }

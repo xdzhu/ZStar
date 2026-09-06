@@ -119,7 +119,7 @@ class ResponseArchitectureTests(unittest.TestCase):
     def test_abacus_legacy_products_can_be_normalized(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            zborn = root / "Z-BORN-all.out"
+            zborn = root / "BEC.raw.dat"
             zborn.write_text(
                 "No. Atom xx xy xz yx yy yz zx zy zz\n"
                 "1 Si 2 0 0 0 2 0 0 0 2\n",

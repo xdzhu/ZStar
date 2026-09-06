@@ -1,0 +1,26 @@
+{
+  "case": "Sb2S3",
+  "dimension": 1,
+  "IR_SCF_old": 51,
+  "IR_SCF_unified": 21,
+  "IR_core_h_old": 41.669086078264655,
+  "IR_core_h_unified": 18.94506395142008,
+  "IR_speedup": 2.199469275222015,
+  "Raman_mode_SCF_old": 52,
+  "Raman_extra_SCF_unified": 0,
+  "full_SCF_old": 103,
+  "full_SCF_unified": 21,
+  "old_mode_Raman_core_h": 30.091572300810373,
+  "new_static_postprocessing_core_h": 0.5660195539808937,
+  "full_core_h_old": 71.76065837907502,
+  "full_core_h_unified": 19.511083505400975,
+  "assembled_speedup": 3.677943275636668,
+  "parallelism_matched": true,
+  "Raman_atomic_Cartesian_tensor_error": 0.0002123858823942825,
+  "Raman_direct_tensor_error": 0.00035748103994354407,
+  "Raman_direct_activity_error": 0.00026494718108952296,
+  "IR_validation": {
+    "mode_charge_relative_L2_common_basis": 8.255698076204544e-05,
+    "maximum_sorted_frequency_difference_cm1": 3.578608461857975
+  }
+}

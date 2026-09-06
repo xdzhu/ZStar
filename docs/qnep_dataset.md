@@ -14,7 +14,7 @@ the join.
 ```bash
 zstar qnep augment \
   --input train.xyz \
-  --bec Z-BORN-all.out \
+  --bec BEC.raw.dat \
   --frame 0 \
   --output train_qnep.xyz
 
@@ -23,7 +23,7 @@ zstar qnep init --input train_qnep.xyz --output nep.in \
   --charge-mode 2 --lambda-z 0.5
 ```
 
-`--bec` accepts `Z-BORN-all.out`, Phonopy `BORN`, CP2K `cp2k_bec.json`, or VASP
+`--bec` accepts `BEC.raw.dat`, Phonopy `BORN`, CP2K `cp2k_bec.json`, or VASP
 `vasp_bec.json`.
 
 ## Multiple or partially labeled frames
@@ -34,7 +34,7 @@ CSV map:
 ```csv
 frame,bec
 0,labels/frame-0000/vasp_bec.json
-25,labels/frame-0025/Z-BORN-all.out
+25,labels/frame-0025/BEC.raw.dat
 80,labels/frame-0080/cp2k_bec.json
 ```
 

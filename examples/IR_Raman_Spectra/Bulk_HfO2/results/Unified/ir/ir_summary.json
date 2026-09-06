@@ -1,0 +1,38 @@
+{
+  "dimensionality": 3,
+  "response_kind": "total relative dielectric tensor",
+  "response_unit": "1",
+  "response_convention": "relative permittivity",
+  "electronic_response_included": true,
+  "static_response": [
+    [
+      75.36363793397861,
+      3.1452100258178466e-13,
+      -2e-08
+    ],
+    [
+      3.1452100258178466e-13,
+      75.36363793397855,
+      2e-08
+    ],
+    [
+      -2e-08,
+      2e-08,
+      18.089309332612647
+    ]
+  ],
+  "modes": 15,
+  "files": {
+    "modes": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\ir_modes.csv",
+    "spectrum": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\ir_spectrum.dat",
+    "response_real": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\ir_response_real.dat",
+    "response_imag": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\ir_response_imag.dat",
+    "static_response": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\static_response.json",
+    "plot": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\ir_spectrum.png",
+    "plot_pdf": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\ir_spectrum.pdf",
+    "plot_svg": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\ir_spectrum.svg",
+    "response_plot": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\dielectric_response.png",
+    "response_plot_pdf": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\dielectric_response.pdf",
+    "response_plot_svg": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\ir\\dielectric_response.svg"
+  }
+}

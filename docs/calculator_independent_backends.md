@@ -59,12 +59,12 @@ The `zstar-response` 1.0 JSON format records dimensionality, periodic axes,
 values, shape, unit, normalization, tensor convention, source, and provenance.
 
 ```bash
-zstar response import-abacus --zborn Z-BORN-symm.out --born BORN \
-  --dim 3 --output zstar_response.json
-zstar response import-bec --input vasp_bec.json --output zstar_response.json
+zstar response import-abacus --zborn BEC.dat --born BORN \
+  --dim 3 --output response.json
+zstar response import-bec --input vasp_bec.json --output response.json
 zstar response import-phonopy --qpoints qpoints.yaml --born BORN \
   --dim 3 --output phonon_response.json
-zstar response validate zstar_response.json
+zstar response validate response.json
 ```
 
 Convert a dilute supercell dielectric tensor to an intrinsic finite/low-

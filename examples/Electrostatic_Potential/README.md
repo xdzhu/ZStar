@@ -6,6 +6,12 @@ out-of-plane polar-slab analysis, and `GeS` provides the strong in-plane-polar
 comparison used in the paper. `SnS`, `SnSe`, and `SnTe` retain the broader
 directional-potential family.
 
+`GeS_nonpolar` supplies the matched fixed-ion, inversion-symmetric control,
+including its native compressed cube and SCF evidence. `bash run.sh` regenerates
+this reference offline; `bash run.sh --calculate` starts a fresh fixed-ion SCF.
+It is not a verified saddle point. The paper uses a shared color scale for the
+polar/nonpolar pair and tiles both maps 3x3 only when plotting.
+
 Every case has the same delivery layout:
 
 ```text

@@ -179,7 +179,8 @@ class ResponseRecord:
 
     @classmethod
     def read(cls, path: str | Path) -> "ResponseRecord":
-        source = Path(path)
+        from .artifacts import resolve_artifact
+        source = resolve_artifact(path)
         return cls.from_dict(json.loads(source.read_text(encoding="utf-8")))
 
 

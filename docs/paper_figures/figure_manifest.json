@@ -3,6 +3,24 @@
   "backend": "Python/matplotlib",
   "figures": [
     {
+      "figure": "Sb2S3_1D_spectroscopy",
+      "files": {
+        "png": "../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.png",
+        "pdf": "../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.pdf",
+        "svg": "../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.svg"
+      },
+      "source_script": "../../tools/shared_response/plot_sb2s3_comparison.py",
+      "reference_doi": "10.17632/6tntvw37tr.1",
+      "reference_type": "public computational dataset; associated journal article not verified",
+      "figure_contract": {
+        "conclusion": "Unified BEC and Gamma phonons support isolated-chain IR and, with additional polarizability derivatives, Raman spectra; substantial relative Raman-intensity differences remain against B3LYP-D3(BJ).",
+        "archetype": "structure and paired spectral curves",
+        "frequency_shifts": false,
+        "normalization": "independent panel maxima; no cross-panel absolute-intensity comparison",
+        "structural_replication": "visualization only, three axial repeats, equal spatial scale"
+      }
+    },
+    {
       "figure": "bto_mode_spectroscopy",
       "files": {
         "png": "bto_mode_spectroscopy.png",
@@ -42,54 +60,6 @@
       ]
     },
     {
-      "figure": "potential_examples_2d",
-      "files": {
-        "png": "potential_examples_2d.png",
-        "pdf": "potential_examples_2d.pdf",
-        "svg": "potential_examples_2d.svg",
-        "tiff": "potential_examples_2d.tiff"
-      },
-      "figure_contract": {
-        "conclusion": "ZStar resolves a negligible in-plane mirror-odd potential for nonpolar MoS2 and a pronounced polar-axis asymmetry for ferroelectric GeS while retaining slab-normal vacuum-step diagnostics.",
-        "archetype": "quantitative grid"
-      },
-      "vacuum_step_eV": {
-        "MoS2": -1.6509e-05,
-        "In2Se3": 1.22081212731
-      },
-      "mirror_asymmetry": {
-        "MoS2": {
-          "metric": 0.0005095516914105905,
-          "odd_rms_eV": 0.00031514545231076764,
-          "optimized_center_fraction": 0.9874962719966331,
-          "input_periods_folded": 1
-        },
-        "GeS": {
-          "metric": 0.09827549975095315,
-          "odd_rms_eV": 0.057623011607690476,
-          "optimized_center_fraction": 0.3876469669378192,
-          "input_periods_folded": 2
-        }
-      }
-    },
-    {
-      "figure": "spectroscopy_across_dimensions",
-      "files": {
-        "png": "spectroscopy_across_dimensions.png",
-        "pdf": "spectroscopy_across_dimensions.pdf",
-        "svg": "spectroscopy_across_dimensions.svg",
-        "powerpoint_svg": "spectroscopy_across_dimensions_powerpoint.svg",
-        "tiff": "spectroscopy_across_dimensions.tiff"
-      },
-      "layout": "3 rows by 3 columns",
-      "completed_systems": [
-        "HfO$_2$",
-        "MoS$_2$",
-        "CH$_4$"
-      ],
-      "placeholder": false
-    },
-    {
       "figure": "dielectric_response_examples",
       "files": {
         "pdf": "dielectric_response_examples.pdf",
@@ -105,9 +75,328 @@
         "MoS2"
       ],
       "placeholder": false
+    },
+    {
+      "figure": "spectroscopy_across_dimensions",
+      "backend": "Python/matplotlib 3.10.9",
+      "core_conclusion": "Compare mode-resolved IR and Raman spectra for bulk, slab, wire, and molecular systems; agreement with references is assessed, not assumed.",
+      "normalization": "ZStar spectra are normalized independently in every panel; intensities are not compared across rows or response types.",
+      "placeholder": false,
+      "image_scaling": "Aspect-preserving uniform scaling, centered at the largest size that fits each structure panel.",
+      "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all four two-line labels use one common left edge across rows.",
+      "reference_overlay": "HfO2, MoS2, and CH4 reference data unchanged; numeric citation labels follow the compiled bibliography. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled IR and Raman curves, DOI 10.17632/6tntvw37tr.1, independently normalized with no peak shifts. Raman relative-intensity agreement is not claimed.",
+      "row_geometry_inches": {
+        "height": 1.3961538461538459,
+        "pitch": 2.2059230769230767
+      },
+      "layout_revision": {
+        "HfO2_CH4_a_axis_scale": 0.8,
+        "Sb2S3_image_scale": 1.08,
+        "Sb2S3_image_center_down_points": 13.098156923076921,
+        "spectrum_panel_label_x": -0.2,
+        "intensity_labels": [
+          "IR intensity",
+          "Raman intensity"
+        ],
+        "reference_numbers_updated": true
+      },
+      "bibliography_labels": {
+        "Fan2022HfO2": 54,
+        "Ulian2023MoS2": 67,
+        "Ulian2026Sb2S3Data": 59,
+        "Shimanouchi1972": 68
+      },
+      "systems": [
+        "HfO2",
+        "MoS2",
+        "Sb2S3",
+        "CH4"
+      ],
+      "display_systems": [
+        "HfO$_2$",
+        "MoS$_2$",
+        "Sb$_2$S$_3$",
+        "CH$_4$"
+      ],
+      "layout": "4 rows by 3 columns",
+      "source_data": {
+        "structure_images/HfO2_tetragonal.png": {
+          "bytes": 449861,
+          "sha256": "a01fef0248b459d41882aa38493fc8fc2bc1ad0c2c7502759b550ddadd44f49d"
+        },
+        "hfo2/STRU": {
+          "bytes": 912,
+          "sha256": "7431541871b84a8c4ee298e3d04a5fd7f082b46db4aef24929f3aa3fc3190343"
+        },
+        "hfo2/ir/ir_modes.csv": {
+          "bytes": 1564,
+          "sha256": "3c0b9e5848894791f889fc649b11a961bba97a358470601e5a556cab3a81ca83"
+        },
+        "hfo2/ir/ir_spectrum.dat": {
+          "bytes": 625194,
+          "sha256": "d33c01dade46ccfbd6459692e520e4d9886391a34c8632648e265fbd0cabc604"
+        },
+        "hfo2/raman/raman_modes.csv": {
+          "bytes": 2912,
+          "sha256": "0230fed876cfc4eda815d377b1d9c7b578831b7d26dedee06ee505079b2b1afa"
+        },
+        "hfo2/raman/raman_spectrum.dat": {
+          "bytes": 250088,
+          "sha256": "4de237e40795b153dbfd20d08b48726d56fc86115a4eb62c5ef0e56338a38d2c"
+        },
+        "structure_images/MoS2_monolayer.png": {
+          "bytes": 130384,
+          "sha256": "03afc00aaca07641a88266e9e128d0df738238a8c74c5d5731ea1da265dddec9"
+        },
+        "mos2/STRU": {
+          "bytes": 499,
+          "sha256": "8ffcbed823b884d0c825f760251952b5796ae8bfbfe8fe374f0fa1073188484f"
+        },
+        "mos2/ir/ir_modes.csv": {
+          "bytes": 624,
+          "sha256": "6b57a49313b3476dc363638010bcd172768b74d84309597615ce76997d579721"
+        },
+        "mos2/ir/ir_spectrum.dat": {
+          "bytes": 250194,
+          "sha256": "aecf5b4fda804375d1be4387626bbea24a5ebf76574cba20631d90f4a2dd33ec"
+        },
+        "mos2/raman/raman_modes.csv": {
+          "bytes": 1383,
+          "sha256": "b8ae8777ea209b8aa1cf1873ae60aa9aa52b13305983ee0781c5c879636fe527"
+        },
+        "mos2/raman/raman_spectrum.dat": {
+          "bytes": 200088,
+          "sha256": "36908dea511f79838f10565ae38a1d3c8be2f9e40ef62ab8f36df847e523c874"
+        },
+        "structure_images/Sb2S3.png": {
+          "bytes": 222151,
+          "sha256": "c895fab75a84bc45d3443606a057bfd1e2bc6cacb03adc37a4845d83244d42a1"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/run/STRU": {
+          "bytes": 719,
+          "sha256": "b0897b8928f879926dbd32393fe8cac1e3b7f65fab2de07f921687035656b00c"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_modes.csv": {
+          "bytes": 3382,
+          "sha256": "98bd82bfcd1785a9d065debf31dc3a2718b695aac90a7186eb31771bfb894f17"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_spectrum.dat": {
+          "bytes": 375194,
+          "sha256": "e8e9609cde7cebcdb6b1419002aed334eafff8582119cae6dff9c0d905c0f4e7"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_modes.csv": {
+          "bytes": 5120,
+          "sha256": "56c9242dbf55ec40abd2b292d7873b531d56b91f9b9380e05d83c7d3f975a298"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_spectrum.dat": {
+          "bytes": 150088,
+          "sha256": "cacaf06ef7c4a25396d42e263f02573dcdb3660ec8cc48c6b5b91fa6d4290d39"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.irspec.dat": {
+          "bytes": 20040,
+          "sha256": "c0dde1745862a27750f62ae021e6541ed45a7ca070fc605364342a78d4ee386e"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.ramspec.dat": {
+          "bytes": 65631,
+          "sha256": "9d34986a164f08b5a17600c769d01dfe26c1eb47fd27843bb0836cebc004c953"
+        },
+        "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/irreps.yaml": {
+          "bytes": 4597,
+          "sha256": "3ba25236af44b778cec2e619ce3a187301e86b209d7aaf96be02f02cdd55fa94"
+        },
+        "structure_images/CH4_molecule.png": {
+          "bytes": 216411,
+          "sha256": "965ef14cab91d43df5d4f55d8af01726208fa86b952d8e8728551e6a64ed04b9"
+        },
+        "molecular/ch4/STRU": {
+          "bytes": 753,
+          "sha256": "c5dd84a835cfac86f5f641d582ab102442d7ef3e532506137f948198afe0c8f3"
+        },
+        "molecular/ch4/ir_modes.csv": {
+          "bytes": 791,
+          "sha256": "5c5de076b2a6fae74f664694a0202b6762d5595cabd99133aa3062331a4effce"
+        },
+        "molecular/ch4/ir_spectrum.dat": {
+          "bytes": 170088,
+          "sha256": "e6f12baf91af8c6bc9e0f47bd91387787b4ac4a92304f6aba90f942228250730"
+        },
+        "molecular/ch4/raman_modes.csv": {
+          "bytes": 1983,
+          "sha256": "6de6a5242ee3fa86e01434adb7847b3b9565d7ac58702d05fea457a30bd2bf81"
+        },
+        "molecular/ch4/raman_spectrum.dat": {
+          "bytes": 100088,
+          "sha256": "efe98b16e022c9547966e3e300b6df04b49fbafd8ae820e92314ecbbf5a1b03e"
+        },
+        "spectroscopy_literature_peaks.csv": {
+          "bytes": 8421,
+          "sha256": "f1c23de8eb08ece534e0285e05c08790cdabe59eec8aace9059f9b8f3f7c9bcb"
+        },
+        "hfo2/provenance.json": {
+          "bytes": 2017,
+          "sha256": "c9b605400fb543aaf16fdecbc6144567f7de0c58f624193b9eb0dbdaeb712904"
+        },
+        "hfo2/qpoints.yaml": {
+          "bytes": 18786,
+          "sha256": "4b26b1c4351327dbb86bba2f352b977d407bdafa4d1edc0202c6afe55e729851"
+        },
+        "hfo2/phonopy.yaml": {
+          "bytes": 4276,
+          "sha256": "f559ee9ca8f300f873db5f0807ef52dca7c369749d25fbcdd612447f1f99e568"
+        },
+        "hfo2/irreps.yaml": {
+          "bytes": 5416,
+          "sha256": "9ef502262aa0a490dd24e0a1d1e4150c01d0935deac6a5a5a7b6b22992af454d"
+        },
+        "hfo2/Z-BORN-symm.out": {
+          "bytes": 958,
+          "sha256": "4b4d8cd41bb04ccf0416343d6c48cf42b1a8107de72c6ee51d5a3cedd2764101"
+        },
+        "hfo2/raman/raman_tensors.npy": {
+          "bytes": 1208,
+          "sha256": "37c5e2d0d332ccf57676a2311ee9f1a9bf936d9b1463810e447bd64891b6d6fb"
+        },
+        "hfo2/raman/merge_provenance.json": {
+          "bytes": 635,
+          "sha256": "a91887c92b0c9dd30006275eb217d2c242761d7bc2e52222507722ad643eff70"
+        }
+      },
+      "outputs": {
+        "png": "spectroscopy_across_dimensions.png",
+        "pdf": "spectroscopy_across_dimensions.pdf",
+        "svg": "spectroscopy_across_dimensions.svg",
+        "powerpoint_svg": "spectroscopy_across_dimensions_powerpoint.svg",
+        "tiff": "spectroscopy_across_dimensions.tiff"
+      },
+      "source_script": "plot_spectroscopy_across_dimensions.py"
+    },
+    {
+      "figure": "potential_examples_2d",
+      "files": {
+        "png": "potential_examples_2d.png",
+        "pdf": "potential_examples_2d.pdf",
+        "svg": "potential_examples_2d.svg",
+        "tiff": "potential_examples_2d.tiff"
+      },
+      "figure_contract": {
+        "conclusion": "Slab-normal profiles resolve vacuum steps; matched polar/nonpolar GeS potentials isolate in-plane mirror asymmetry using common color and ordinate scales. Maps tile the same computed unit cell 3x3; only the nonpolar reference required a new fixed-ion SCF.",
+        "archetype": "quantitative grid",
+        "map_tile": [
+          3,
+          3
+        ],
+        "common_map_limit_eV": 7.160267632792593
+      },
+      "vacuum_step_eV": {
+        "MoS2": -0.000016509,
+        "In2Se3": 1.22081212731
+      },
+      "mirror_asymmetry": {
+        "MoS2": {
+          "metric": 0.0005095516914105906,
+          "odd_rms_eV": 0.00031514545231076764,
+          "optimized_center_fraction": 0.9874962719966331,
+          "input_periods_folded": 1
+        },
+        "GeS": {
+          "metric": 0.09827549975095316,
+          "odd_rms_eV": 0.057623011607690476,
+          "optimized_center_fraction": 0.3876469669378193,
+          "input_periods_folded": 2
+        },
+        "GeS_nonpolar": {
+          "metric": 9.214438464634246e-8,
+          "odd_rms_eV": 5.9110660453213406e-8,
+          "optimized_center_fraction": 0.35015434233907977,
+          "input_periods_folded": 2
+        }
+      }
+    },
+    {
+      "figure": "Figure_7_Spectroscopy_with_1D_layout_v2",
+      "files": {
+        "png": "Figure_7_Spectroscopy_with_1D_layout_v2.png",
+        "pdf": "Figure_7_Spectroscopy_with_1D_layout_v2.pdf",
+        "svg": "Figure_7_Spectroscopy_with_1D_layout_v2.svg",
+        "powerpoint_svg": "Figure_7_Spectroscopy_with_1D_layout_v2_powerpoint.svg",
+        "tiff": "Figure_7_Spectroscopy_with_1D_layout_v2.tiff"
+      },
+      "layout": "4 rows by 3 columns",
+      "completed_systems": [
+        "HfO$_2$",
+        "MoS$_2$",
+        "Sb$_2$S$_3$",
+        "CH$_4$"
+      ],
+      "placeholder": false
     }
   ],
   "source_data": [
+    {
+      "path": "potential/calculation_metadata.json",
+      "size": 4380,
+      "sha256": "0fb540732826e40d2f2f49e0f786012b9484f386f7f37f4d1f315c545282e97a"
+    },
+    {
+      "path": "potential/GeS/a.dat",
+      "size": 3151,
+      "sha256": "41bfb4067926080d16125772f0771716e4dadf4bbb6392a8454a39b6c3752bc5"
+    },
+    {
+      "path": "potential/GeS/xy_map.dat",
+      "size": 172991,
+      "sha256": "6ba76510dd5be4164fe71a2bffff5df4a9e1fb0ce9e9ee7ba58944b366de1ba7"
+    },
+    {
+      "path": "potential/GeS_nonpolar/a.dat",
+      "size": 3151,
+      "sha256": "8243a68b53f92ba73bf29b179dadbdfbb48b17938a1b540759a09fbed18f57cc"
+    },
+    {
+      "path": "potential/GeS_nonpolar/reference_construction.json",
+      "size": 1633,
+      "sha256": "26a61ab7bc798825ac975cf95f101fe65ce4ac906be13e41bedf03d59c97ea8e"
+    },
+    {
+      "path": "potential/GeS_nonpolar/xy_map.dat",
+      "size": 172991,
+      "sha256": "0b210b80f9bfd55460dfc49d60fc536b5f3f043e63b8ad4f9ad436107ab12052"
+    },
+    {
+      "path": "potential/In2Se3/E_vacuum_sides.out",
+      "size": 471,
+      "sha256": "44d28dd372b1b205a876b928add7edcc6d1d4c683052d3497ffe5ea1ea81cdb5"
+    },
+    {
+      "path": "potential/In2Se3/z_profile.dat",
+      "size": 19434,
+      "sha256": "0276b2574df417845e064c20e3923571adc659b8ab86e29644b8703a3d36259a"
+    },
+    {
+      "path": "potential/MoS2/a.dat",
+      "size": 2191,
+      "sha256": "ddabf9f325b932fc4fe4fd4aaaac4128ec702e08baf508258c37f114eff718df"
+    },
+    {
+      "path": "potential/MoS2/E_vacuum_sides.out",
+      "size": 471,
+      "sha256": "5ed702afc37b8cb8cee9d52546c68ae75acb4f360f3fccec643006b7505dee16"
+    },
+    {
+      "path": "potential/MoS2/xy_map.dat",
+      "size": 102591,
+      "sha256": "d8a24928ffe06669ebcc38006b6aa7ae19f305ae49bc52a21ad6510310ef8189"
+    },
+    {
+      "path": "potential/MoS2/z_profile.dat",
+      "size": 18660,
+      "sha256": "afdc8a70076f088b11a13006f56a0541ce1c4b8d912f0065efca7ac9ca197fa9"
+    },
+    {
+      "path": "potential/README.md",
+      "size": 1074,
+      "sha256": "05a4797e75a66ba58931788a6d39e6e023dd00786041679a6a24a58721946dc8"
+    },
     {
       "path": "bec_literature_benchmark.csv",
       "size": 6706,
@@ -177,56 +466,6 @@
       "path": "in2se3/Z-BORN-symm.out",
       "size": 821,
       "sha256": "ab8858e9f363e8a3251bfdd8d63babb8360f5af5bea9714584d1fd660b1d8438"
-    },
-    {
-      "path": "potential/calculation_metadata.json",
-      "size": 3233,
-      "sha256": "1e9c0c5d454ac4616da04bb14571fe1812477b72b24edf46ef61eec6192bcb1d"
-    },
-    {
-      "path": "potential/GeS/a.dat",
-      "size": 3151,
-      "sha256": "41bfb4067926080d16125772f0771716e4dadf4bbb6392a8454a39b6c3752bc5"
-    },
-    {
-      "path": "potential/GeS/xy_map.dat",
-      "size": 172991,
-      "sha256": "6ba76510dd5be4164fe71a2bffff5df4a9e1fb0ce9e9ee7ba58944b366de1ba7"
-    },
-    {
-      "path": "potential/In2Se3/E_vacuum_sides.out",
-      "size": 471,
-      "sha256": "44d28dd372b1b205a876b928add7edcc6d1d4c683052d3497ffe5ea1ea81cdb5"
-    },
-    {
-      "path": "potential/In2Se3/z_profile.dat",
-      "size": 19434,
-      "sha256": "0276b2574df417845e064c20e3923571adc659b8ab86e29644b8703a3d36259a"
-    },
-    {
-      "path": "potential/MoS2/a.dat",
-      "size": 2191,
-      "sha256": "ddabf9f325b932fc4fe4fd4aaaac4128ec702e08baf508258c37f114eff718df"
-    },
-    {
-      "path": "potential/MoS2/E_vacuum_sides.out",
-      "size": 471,
-      "sha256": "5ed702afc37b8cb8cee9d52546c68ae75acb4f360f3fccec643006b7505dee16"
-    },
-    {
-      "path": "potential/MoS2/xy_map.dat",
-      "size": 102591,
-      "sha256": "d8a24928ffe06669ebcc38006b6aa7ae19f305ae49bc52a21ad6510310ef8189"
-    },
-    {
-      "path": "potential/MoS2/z_profile.dat",
-      "size": 18660,
-      "sha256": "afdc8a70076f088b11a13006f56a0541ce1c4b8d912f0065efca7ac9ca197fa9"
-    },
-    {
-      "path": "potential/README.md",
-      "size": 1074,
-      "sha256": "05a4797e75a66ba58931788a6d39e6e023dd00786041679a6a24a58721946dc8"
     },
     {
       "path": "gaas_nanowire/STRU",
@@ -306,7 +545,7 @@
     {
       "path": "hfo2/provenance.json",
       "size": 2017,
-      "sha256": "443f7a29bf2490419fa0823f1c42901b87e48c449aec80f5d5b32a38abe698f7"
+      "sha256": "c9b605400fb543aaf16fdecbc6144567f7de0c58f624193b9eb0dbdaeb712904"
     },
     {
       "path": "hfo2/qpoints.yaml",
@@ -417,6 +656,51 @@
       "path": "structure_images/MoS2_monolayer.png",
       "size": 130384,
       "sha256": "03afc00aaca07641a88266e9e128d0df738238a8c74c5d5731ea1da265dddec9"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_modes.csv",
+      "size": 3382,
+      "sha256": "98bd82bfcd1785a9d065debf31dc3a2718b695aac90a7186eb31771bfb894f17"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_spectrum.dat",
+      "size": 375194,
+      "sha256": "e8e9609cde7cebcdb6b1419002aed334eafff8582119cae6dff9c0d905c0f4e7"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_modes.csv",
+      "size": 5120,
+      "sha256": "56c9242dbf55ec40abd2b292d7873b531d56b91f9b9380e05d83c7d3f975a298"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_spectrum.dat",
+      "size": 150088,
+      "sha256": "cacaf06ef7c4a25396d42e263f02573dcdb3660ec8cc48c6b5b91fa6d4290d39"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/irreps.yaml",
+      "size": 4597,
+      "sha256": "3ba25236af44b778cec2e619ce3a187301e86b209d7aaf96be02f02cdd55fa94"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.irspec.dat",
+      "size": 20040,
+      "sha256": "c0dde1745862a27750f62ae021e6541ed45a7ca070fc605364342a78d4ee386e"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.ramspec.dat",
+      "size": 65631,
+      "sha256": "9d34986a164f08b5a17600c769d01dfe26c1eb47fd27843bb0836cebc004c953"
+    },
+    {
+      "path": "../../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/run/STRU",
+      "size": 719,
+      "sha256": "b0897b8928f879926dbd32393fe8cac1e3b7f65fab2de07f921687035656b00c"
+    },
+    {
+      "path": "structure_images/Sb2S3.png",
+      "size": 222151,
+      "sha256": "c895fab75a84bc45d3443606a057bfd1e2bc6cacb03adc37a4845d83244d42a1"
     }
   ]
 }

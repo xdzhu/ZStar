@@ -8,6 +8,32 @@ now available in the public repository `examples/` tree.
 
 ## Figures
 
+### One-dimensional Sb2S3 spectroscopy
+
+![Sb2S3 chain, IR and Raman comparison](../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.png)
+
+This historical three-panel preview is retained for inspection; the manuscript
+now includes Sb2S3 as the third row of its four-row composite. It shows three repeats of
+the optimized isolated chain at equal geometric scale, total IR (red), and
+non-resonant Raman (blue). Gray curves retain the original sampled
+CRYSTAL/B3LYP-D3(BJ) data in
+[Ulian's dataset](https://doi.org/10.17632/6tntvw37tr.1); no associated journal
+article has been verified. ZStar uses ABACUS+PYATB/PBE-D3(BJ). Relative Raman
+intensities disagree; normalization does not constitute intensity validation.
+
+From the repository root:
+
+```bash
+python tools/shared_response/plot_sb2s3_comparison.py examples/IR_Raman_Spectra/Nanowire_Sb2S3 --packaged --with-structure
+```
+
+PDF and SVG are produced alongside the PNG. For manuscript use, obtain the
+number for `Ulian2026Sb2S3Data` from `reference_numbers.json`, pass it through
+`--reference-label`, and copy
+the resulting PDF to the TeX directory as `Figure_Sb2S3_1D_spectroscopy.pdf`.
+The standalone plot instead uses its local `Ref. [1]`. The numerical source,
+reference samples and tensor comparison metadata reside in the case's `results/`.
+
 ### BEC and molecular APT literature validation
 
 ![BEC and molecular APT validation](bec_validation_across_dimensions.png)
@@ -30,9 +56,10 @@ it is a direct comparison or contextual evidence.
 
 ![Validated IR/Raman spectroscopy across dimensionalities](spectroscopy_across_dimensions.png)
 
-The manuscript uses the nine-panel `spectroscopy_across_dimensions` figure.
+The manuscript uses the twelve-panel `spectroscopy_across_dimensions` figure.
 Its completed rows follow the manuscript order: tetragonal P42/nmc HfO2
-(`Bulk`), 2H-MoS2 (`2D`), and CH4 (`Molecule`). Each row contains
+(`3D, bulk`), 2H-MoS2 (`2D, slab`), Sb2S3 (`1D, nanowire`), and
+CH4 (`0D, molecule`). Each row contains
 an author-supplied VESTA view of the retained calculation structure, followed
 by calculated IR and Raman spectra. Every spectral panel shows total response
 only; IR is red and Raman is blue. Different panels are normalized
@@ -41,7 +68,7 @@ share an absolute intensity scale. The completed GaAs nanowire calculation is
 retained as a machine-readable one-dimensional coverage test but is not used
 in this main figure.
 
-The light-gray curves are Gaussian-broadened reference envelopes. Unit-weight
+The gray HfO2, MoS2, and CH4 curves are broadened reference envelopes. Unit-weight
 published modes are used when a source does not provide comparable intensity
 data; they therefore validate frequency rather than absolute intensity. The
 HfO2 row retains digitized relative bar heights from the VASP/PBEsol
@@ -50,9 +77,15 @@ lattice-dynamics analysis of Fan et al.
 All three tetragonal IR and six Raman entries visible in that source figure are
 included before broadening.
 
+Sb2S3 uses the original sampled CRYSTAL/B3LYP-D3(BJ) IR and Raman curves,
+not a frequency-only envelope. Relative Raman intensities differ substantially;
+the comparison is retained without adjusting peak positions or intensities.
+Bibliography numbers are exported from the compiled manuscript. The Unified
+examples retain offline-reproducible tensors and spectra in `results/Unified/`.
+
 The refreshed MoS2 row uses ABACUS/PBE-D3(BJ), `scf_thr = 1e-8`, a 33x33x1
 primitive-cell k mesh for electronic response, and the retained 3x3x1 phonon
-supercell. Its direct-path band gap is 1.819952 eV. Seven symmetry-reduced BEC
+supercell. Its band gap is 1.820 eV. Seven symmetry-reduced BEC
 stages give `Zxx = Zyy = -0.80585922` and `Zzz = 0.00273336` for Mo, with the
 two symmetry-equivalent S atoms carrying the compensating tensor. Contracting
 these BECs with all six optical modes makes the E' pair at 369.15 cm-1 the
@@ -66,7 +99,7 @@ The HfO2 row uses one PBEsol P42/nmc structure and the ONCV pseudopotentials
 and TZDP 9-au numerical atomic orbitals distributed together in the
 `ABACUS-orbitals/TZDP_9au` set. Four symmetry-reduced force
 displacements give a stable Gamma eigensystem with optical branches from
-96.13 to 670.45 cm-1. The complete Raman calculation covers all 15 optical
+96.13 to 670.45 cm-1. The archived Separate Raman calculation covers all 15 optical
 modes with 30 positive/negative direct-static electronic-response stages.
 The gerade A1g, B1g, and Eg branches are Raman active, whereas Eu and A2u are
 infrared active and B2u is silent. The strongest Raman line is A1g at
@@ -145,13 +178,19 @@ differ by only `-1.65e-5 eV`, with polar alpha-In2Se3, whose opposite-surface
 vacuum levels differ by `1.220812 eV`. The revised side-vacuum estimator uses
 0.75 Angstrom local windows adjacent to the two surface exclusion boundaries,
 so a dipole-correction reset elsewhere in the vacuum is not averaged into a
-surface plateau. The lower panels show a plotting-only 3x3 tiling of the SnS
-in-plane potential texture, with the central primitive cell outlined by a
-dashed box, and a one-period mirror test along `a+b`. The reflection center is
-optimized before comparing the profile with its mirrored copy; the normalized
-mismatch is `A_M = 0.033`, and the mirror-odd component is shown separately.
-This is a microscopic symmetry diagnostic, not a polarization magnitude or a
-substitute for a symmetry-restored reference calculation.
+surface plateau. The four lower panels compare polar GeS and its fixed-ion
+inversion-symmetric reference. Both maps tile the computed unit cell 3x3,
+mark the central cell, and share one color scale. Directional profiles and
+mirror-odd components use common ordinate limits. The optimized mirror
+residual is 0.0983 for the polar state and 2.36e-8 for the nonpolar reference.
+The latter is a separately converged SCF, not a proven transition state;
+potential extrema are not identified with electronic charge centers.
+
+Rebuild only this figure, preserving author-edited artwork in other figures:
+
+```bash
+python -m docs.paper_figures.make_validation_figures --potential-only
+```
 
 ### CO2 molecular IR/Raman benchmark
 
@@ -173,7 +212,10 @@ python -m pip install -e .
 python docs/paper_figures/make_validation_figures.py
 python docs/paper_figures/plot_co2_molecular_benchmark.py
 python docs/paper_figures/plot_molecular_validation_overview.py
-python docs/paper_figures/plot_spectroscopy_across_dimensions.py
+python docs/paper_figures/plot_spectroscopy_across_dimensions.py \
+  --reference-map docs/paper_figures/reference_numbers.json \
+  --sb2s3-case examples/IR_Raman_Spectra/Nanowire_Sb2S3 \
+  --sb2s3-image docs/paper_figures/source_data/structure_images/Sb2S3.png
 ```
 
 The main script writes PNG (400 dpi), vector PDF, editable SVG, and
@@ -202,7 +244,7 @@ source-data sizes, and SHA-256 hashes.
   hash-based ABACUS/PYATB--VASP comparison record.
 - `source_data/hbn/` contains the sanitized reference structure and compact IR
   and Raman outputs from the fresh two-dimensional validation workflow.
-- `source_data/mos2/` contains the PBE reference structure, Gamma-point modes
+- `source_data/mos2/` contains the PBE+D3(BJ) reference structure, Gamma-point modes
   and irreducible representations, complete IR/Raman tables and spectra,
   direct-static Raman tensors, and path-free calculation metadata.
 - `source_data/hfo2/` contains the exact PBEsol/TZDP 9-au P42/nmc structure,
@@ -215,10 +257,15 @@ source-data sizes, and SHA-256 hashes.
   validation.
 - `source_data/pto/` retains the earlier PBEsol P4mm validation closure as an
   archived regression record; it is no longer used by the main Bulk row.
-- `source_data/structure_images/` contains the eight author-supplied lossless
+- `source_data/structure_images/` contains the author-supplied lossless
   VESTA screenshots embedded in the cross-dimensional and BEC structure figures.
 - Raw ABACUS folders and charge-density cubes remain outside Git because they
   are large calculation artifacts. The compact profile records the values used
   in the figure, including a dipole closure error of
-  `6.47e-13 e Angstrom`.
-- No source file in this archive contains a private local or cluster path.
+  `5.1e-13 e Angstrom` for the manuscript In(2) profile-to-volume check.
+- Regenerate `reference_numbers.json` from the matching final `.bbl` using
+  `tools/shared_response/bibliography_labels.py` whenever citation order changes.
+  The four-row plot preserves the author's structure layout and uses these keys
+  rather than hard-coded citation numbers.
+- Historical provenance records may retain their original source paths; no
+  plotting input requires access to a private cluster directory.

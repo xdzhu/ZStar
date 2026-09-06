@@ -108,6 +108,8 @@ def prepare_vasp_bec(
     *,
     method: str = "dfpt",
     field_strength: float = 0.001,
+    dimensionality: int = 3,
+    periodic_axes: str | None = None,
     force: bool = False,
 ) -> Path:
     """Prepare a reference-first VASP BEC workflow.
@@ -116,6 +118,9 @@ def prepare_vasp_bec(
     orbital-dependent functionals for which VASP DFPT is unavailable.
     """
 
+    from .dimensions import dimension_spec
+
+    dim = dimension_spec(dimensionality, periodic_axes)
     source = Path(input_dir).resolve()
     method_key = method.lower().replace("_", "-")
     if method_key not in {"dfpt", "finite-field"}:
@@ -200,6 +205,8 @@ def prepare_vasp_bec(
         "schema_version": 1,
         "backend": "vasp",
         "created_at": _utc_now(),
+        "dimensionality": dim.value,
+        "periodic_axes": list(dim.periodic_axes),
         "source_directory": str(source),
         "method": method_key,
         "field_strength_eV_per_angstrom": field_strength if method_key == "finite-field" else None,
@@ -580,10 +587,10 @@ def parse_vasp_outcar(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
 def collect_vasp_bec(
     root: str | Path,
     *,
-    output: str | Path = "Z-BORN-all.out",
+    output: str | Path = "BEC.raw.dat",
     born_output: str | Path = "BORN",
     json_output: str | Path = "vasp_bec.json",
-    response_output: str | Path | None = "zstar_response.json",
+    response_output: str | Path | None = "response.json",
 ) -> dict:
     root_path, manifest = _load_manifest(root)
     epsilon, tensors = parse_vasp_outcar(root_path / "response" / "OUTCAR")
@@ -644,7 +651,8 @@ def collect_vasp_bec(
             response_path = root_path / response_path
         response_record_from_bec_result(
             result,
-            dimensionality=3,
+            dimensionality=manifest.get("dimensionality", 3),
+            periodic_axes=manifest.get("periodic_axes"),
             provenance={
                 "collector": "zstar.vasp_bec.collect_vasp_bec",
                 "source": str((root_path / "response" / "OUTCAR").resolve()),

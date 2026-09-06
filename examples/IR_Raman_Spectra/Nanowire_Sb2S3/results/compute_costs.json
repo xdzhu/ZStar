@@ -1,0 +1,14 @@
+{
+  "response": {
+    "ABACUS": 17.919839405816877,
+    "PYATB": 1.0252245456032043,
+    "preparation": 0.08681473949303228
+  },
+  "raman": {
+    "ABACUS": 28.393558629850553,
+    "PYATB": 1.6980136709598206,
+    "preparation": 0.1707342315879132
+  },
+  "relaxation_core_hours": 36.0525316655791,
+  "interruption_caveat": "No interrupted call recorded."
+}

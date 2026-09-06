@@ -1,0 +1,12 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move",
+  "source_input_sha256": "ce0f58d936bb3135461e80def8ca65153a04ea4a8493998da8f2388fb7b4c0e6",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/OUT.POLAR/data-HR-sparse_SPIN0.csr": "c76fec86c6799c5566147641bc8613d11d55d7d0ca76ff0b8f53c871d84690e7",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/OUT.POLAR/data-SR-sparse_SPIN0.csr": "43d69be1410f0777e4ba12f287aa30e5a370ad4e712c61f9d6045edae9a3a49f",
+    "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/unified/0.no-move/OUT.POLAR/data-rR-sparse.csr": "2b3997a45c79c86c1dc15e97cbe24f2c338a6cf3f88fba6339f3aa03fb9cfc56"
+  },
+  "dimension": 2,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   13\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       45 45 1\n    static_dielectric_only      1\n}"
+}

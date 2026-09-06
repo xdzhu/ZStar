@@ -1,0 +1,35 @@
+{
+  "files": {
+    "qpoints.yaml": {
+      "source": "docs/paper_figures/source_data/mos2/qpoints.yaml",
+      "sha256": "34346a2107104633ee08942cdfd0ba7b24315f2902eecc0125be46512fbd659f"
+    },
+    "phonopy.yaml": {
+      "source": "docs/paper_figures/source_data/mos2/phonopy.yaml",
+      "sha256": "91771d1c5b76fa9d5f7187f03fe343bf7ef795e31e74238e02bf8214d36f6b4e"
+    },
+    "irreps.yaml": {
+      "source": "docs/paper_figures/source_data/mos2/irreps.yaml",
+      "sha256": "23c95b1e2cf15d1911cf70ae64b18167287444096d3183601cb003ac045a25d8"
+    },
+    "STRU": {
+      "source": "docs/paper_figures/source_data/mos2/STRU",
+      "sha256": "8ffcbed823b884d0c825f760251952b5796ae8bfbfe8fe374f0fa1073188484f"
+    }
+  },
+  "parsed_solver_equality": {
+    "qpoints.yaml": true,
+    "irreps.yaml": true
+  },
+  "paper_masses_amu": [
+    95.95,
+    32.06,
+    32.06
+  ],
+  "solver_masses_amu": [
+    95.96,
+    32.065,
+    32.065
+  ],
+  "note": "Paper post-processing metadata is in angstrom and uses rounded masses. Frequencies and eigenvectors are unchanged. Original solver data remain in ../bec."
+}

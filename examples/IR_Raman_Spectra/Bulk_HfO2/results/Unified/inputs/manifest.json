@@ -1,0 +1,17 @@
+{
+  "schema": "zstar-example-unified-observations",
+  "version": 1,
+  "case": "HfO2",
+  "dimension": 3,
+  "symprec_A": 1e-05,
+  "source_ensemble_sha256": "e8cbfb7ac77a1d0436e7ae2e712d24d80e596f00d4c217a5a545df70b43a2064",
+  "source": "docs/research/unified_spectroscopy_20260906/evidence/HfO2/unified",
+  "sha256": {
+    "BEC.dat": "c09cd0c42d6bc7e1f108c893b580ab22e3eaea5902071fdc1d639c9aaacf8e06",
+    "BORN": "ca55c124d9c4c3735ac678eb21cfce0dd430873af5f4b88ee50b7d964f94da1f",
+    "observations.json": "760b9d21f2f556b2a353de17691a90e423a58d717556704eee72eef9c2db841d",
+    "phonopy.yaml": "8885404e2b42d2bd15b24724f73aaf212d28bc893aa576c17ece1317ad107091",
+    "qpoints.yaml": "25ab22399bd0aa9d00b2b4111a9d63c343f34b854a5dbc402c6cdfce8844c0c5",
+    "STRU": "e632447ad1d0d57133a0ef203d957a55df425935817b7e02bf0e8e44a828890c"
+  }
+}

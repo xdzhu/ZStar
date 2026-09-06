@@ -1,0 +1,15 @@
+[
+  ["3d_bulk", "3D_Bulk"],
+  ["2d_materials", "2D_Slab"],
+  ["1d_wires", "1D_Nanowire"],
+  ["molecules", "0D_Molecules"],
+  ["Shared_Response/cubic_BaTiO3", "3D_Bulk/cubic_BaTiO3"],
+  ["Shared_Response/SiC", "3D_Bulk/SiC"],
+  ["Shared_Response/t_HfO2", "3D_Bulk/t_HfO2"],
+  ["Shared_Response/alpha_In2Se3", "2D_Slab/alpha_In2Se3_PBE"],
+  ["Shared_Response/hBN", "2D_Slab/hBN_unified"],
+  ["Shared_Response/MoS2", "2D_Slab/MoS2_unified"],
+  ["Shared_Response/H2O", "0D_Molecules/H2O_unified"],
+  ["Shared_Response/CH4", "0D_Molecules/CH4_unified"],
+  ["Shared_Response", "Benchmarks"]
+]

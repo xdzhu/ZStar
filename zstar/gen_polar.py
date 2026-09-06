@@ -462,6 +462,16 @@ def gen_input_in_folder(
                 output_file.write("out_mat_hs2         1\n")
                 output_file.write("out_mat_r           1\n")
 
+        if input_mode == 'pyatb' or nscf_calculator == 'pyatb':
+            from .workflow import _set_abacus_parameter
+            generated = Path('INPUT-scf')
+            text = generated.read_text(encoding='utf-8')
+            # Real-space matrix export requires the general k-point solver,
+            # including for a molecule sampled at the Gamma point only.
+            for key, value in (('gamma_only', '0'), ('out_mat_hs2', '1'), ('out_mat_r', '1')):
+                text = _set_abacus_parameter(text, key, value)
+            generated.write_text(text, encoding='utf-8')
+
         if nscf_calculator == 'abacus':
             for gdir, suffix in zip(gdirs, file_suffix):
                 with open(f'INPUT-nscf-{suffix}', 'w') as output_file:

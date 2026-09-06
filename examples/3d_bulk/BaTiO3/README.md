@@ -14,14 +14,14 @@ Generated stages go to `work/`; `run/` contains only the reproducible inputs.
 cp -r run work
 cd work
 zstar bec pre --stru STRU --input INPUT --pp assets --orb assets --dim 3 \
-  --method central --displacement 0.01 --force
-zstar workflow script --backend shell --dim 3 --tasks 1 --cpus-per-task 20
-zstar workflow run --root . --dim 3 --abacus-command "mpirun -np 20 abacus"
-zstar workflow status --root .
+  --method central --displacement 0.01
+zstar bec job --system shell
+zstar bec run --root . --dim 3 --abacus-command "mpirun -np 20 abacus"
+zstar bec stat --root .
 zstar bec post --root .
 ```
 
-Then use `zstar ph`, `zstar postph`, and `zstar ir` for phonon-assisted IR, or
+Then use `zstar phonon pre`, `zstar phonon post`, and `zstar spectra ir` for phonon-assisted IR, or
 `zstar dielectric static/freq` for the electronic and lattice response. The
 reference input is a validation snapshot; relax the structure and reconverge
 the response before using it for production science.

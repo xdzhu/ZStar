@@ -3,11 +3,12 @@
 ZStar 将模式分析、谱线展宽、Placzek 因子、表格和绘图保持为计算器无关内核，
 电子响应层目前可以选择：
 
-- 原有 `zstar ir`、`zstar raman` 对应的 ABACUS + PYATB；
+- ABACUS + PYATB 的 [Unified 位移工作流](unified_spectroscopy.zh-CN.md)，并保留显式模式差分供对照；
 - 对模式进行中心正负位移后调用 VASP 原生 `LEPSILON` 或 `LCALCEPS`；
 - CP2K 原生 `VIBRATIONAL_ANALYSIS INTENSITIES`、偶极和 `LINRES/POLAR`。
 
-VASP 与 CP2K 统一使用新入口 `zstar spectra`。
+所有计算器统一使用规范入口 `zstar spectra`。同一套对称性约化 SCF 的复用目前由
+ABACUS 路线实现；其他后端保持下述各自原生的响应计算路线。
 
 ## VASP：晶体 SiC
 

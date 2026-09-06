@@ -22,27 +22,27 @@ ZStar 将 Born 有效电荷（BEC）张量与 Gamma 点声子本征矢收缩，�
 源数据中缺失的微观局域场屏蔽。
 
 分子固定取向振动响应应排除整体平移和转动，不能用普通低频截断代替此项
-检查。[分子 Unified 基准](../examples/Shared_Response/README.zh-CN.md)
+检查。[分子 Unified 基准](../examples/Benchmarks/README.zh-CN.md)
 提供独立的质量加权内部子空间核验。
 
 ## 所需文件
 
 - `qpoints.yaml`：Gamma 点频率、本征矢、原子质量和晶胞。
-- `Z-BORN-symm.out` 或 `BORN`：按 Phonopy 原子顺序排列的 BEC 张量。
+- `BEC.dat` 或 `BORN`：按 Phonopy 原子顺序排列的 BEC 张量。
 - `BORN`：可选的电子介电张量及其后的 BEC 张量。
 - `phonopy.yaml`：当 `qpoints.yaml` 不含原胞信息时使用的结构补充文件。
 
 静态命令计算零频极限：
 
 ```bash
-zstar dielectric static --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3
 ```
 
 频域命令在相同模式收缩基础上加入阻尼 Lorentz 振子：
 
 ```bash
-zstar dielectric freq --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric freq --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3 --broadening 8 \
   --max-frequency 800 --points 2501 --outdir dielectric_response
 ```

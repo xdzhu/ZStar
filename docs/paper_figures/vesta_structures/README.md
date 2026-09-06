@@ -9,16 +9,21 @@ Suggested VESTA display ranges:
 
 | Manuscript use | File | Suggested display |
 |---|---|---|
-| Figure 3, molecule | `CH4_molecule.vasp` | one molecule; hide the cell frame |
-| Figure 3, 1D | `GaAs_nanowire.vasp` | 1 x 1 x 3 cells; wire axis vertical or diagonal |
-| Figure 3, 2D | `MoS2_monolayer.vasp` | 4 x 4 x 1 cells; oblique view showing the S-Mo-S trilayer |
-| Figure 6, Bulk | `HfO2_tetragonal.vasp` | 2 x 2 x 2 cells; show the tetragonal cell and Hf-O coordination |
+| Spectroscopy, molecule | `CH4_molecule.vasp` | one molecule; hide the cell frame |
+| Historical GaAs validation | `GaAs_nanowire.vasp` | 1 x 1 x 3 cells; not used in the current manuscript composite |
+| Spectroscopy, slab | `MoS2_monolayer.vasp` | 4 x 4 x 1 cells; oblique view showing the S-Mo-S trilayer |
+| Spectroscopy, bulk | `HfO2_tetragonal.vasp` | 2 x 2 x 2 cells; show the tetragonal cell and Hf-O coordination |
 | Bulk BEC (a) | `BaTiO3_cubic.vasp` | 2 x 2 x 2 cells; show one central unit cell |
 | Bulk BEC (b) | `HfO2_tetragonal.vasp` | 2 x 2 x 2 cells; show one central unit cell |
 | 2D BEC (a) | `hBN_monolayer.vasp` | 5 x 5 x 1 cells; near-top oblique view |
 | 2D BEC (b) | `alpha-In2Se3_monolayer.vasp` | 4 x 4 x 1 cells; oblique view exposing the quintuple layer |
 | Molecular APT (a) | `H2O_molecule.vasp` | one molecule; hide the cell frame |
 | Molecular APT (b) | `CH4_molecule.vasp` | one molecule; hide the cell frame |
+
+The current one-dimensional BEC structures are also supplied in
+`examples/1D_Nanowire/BN_9_0/run/structure.vasp` and
+`examples/1D_Nanowire/Sb2S3/run/structure.vasp` (paths from the repository root).
+Sb2S3, not the historical GaAs wire, occupies the current spectroscopy row.
 
 For consistent manuscript panels, use a white background, orthographic
 projection, the same atom-radius convention within each two-panel figure,

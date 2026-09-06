@@ -1,0 +1,73 @@
+{
+  "source_manifest": {
+    "schema": "zstar-example-unified-observations",
+    "version": 1,
+    "case": "MoS2",
+    "dimension": 2,
+    "symprec_A": 1e-05,
+    "source_ensemble_sha256": "dbf718cb226caf778e17551c58c642300cee619b8533ca24af08bd1e39e12143",
+    "source": "docs/research/unified_spectroscopy_20260906/evidence/MoS2/unified",
+    "sha256": {
+      "BEC.dat": "b546293457e7481e570eecc4b9e9e41b236bdff90575fdba6a6a3ab2aa5d6a82",
+      "BORN": "9e0b92a01074f7b405000e7c3edeca47d72533b20f021c373fb582477e66a4e5",
+      "observations.json": "4c5f9127958a61c84014876843bcc40e76cca3661acd3ea0c78d267f9f0ab4a7",
+      "phonopy.yaml": "af3f51c7e513baa1819dac9c1299764e7322650f2c7b5c1d3d5c0f988fba68af",
+      "qpoints.yaml": "1105cbaea7bf03e4bc3776b4c644a0f94c7c8f72c056fba099141c3083a5f215",
+      "STRU": "09b4e204b35f3b2da8e2ed53937b82715ed90c1d22be94602724c2ef4c5e9910"
+    }
+  },
+  "diagnostics": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 15.246201046806663,
+        "max_epsilon_residual": 0.00053494948787704
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 15.246201046807526,
+        "max_epsilon_residual": 0.00028945998110637035
+      }
+    ],
+    "translation_sum_max_per_A": 0.0001317815721931237,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false
+  },
+  "mode_selection": {
+    "rigid_mode_numbers": [
+      1,
+      2,
+      3
+    ],
+    "rigid_frequencies_cm1": [
+      -2.805274040616459e-06,
+      2.7152117349129582e-06,
+      4.809994252757354e-06
+    ],
+    "rigid_overlaps": [
+      1.0000000000000044,
+      1.0000000000000029,
+      0.9999999999999934,
+      4.114593296646773e-36,
+      2.0250434925337008e-34,
+      3.0090510235596988e-30,
+      2.6964218842137184e-30,
+      1.3476995106460817e-34,
+      2.5568503670232524e-31
+    ]
+  },
+  "raman_convention": {
+    "response_definition": "L_perp*(epsilon_r-I)",
+    "response_unit": "angstrom",
+    "response_convention": "SI alpha_2D/epsilon_0, source-field normalized",
+    "normal_coordinate": "q",
+    "normal_coordinate_unit": "angstrom*sqrt(amu)",
+    "tensor_unit": "angstrom/(angstrom*sqrt(amu))",
+    "field_convention": "inherited from the electronic-response source",
+    "local_field_correction_added": false
+  },
+  "additional_DFT_calls": 0
+}

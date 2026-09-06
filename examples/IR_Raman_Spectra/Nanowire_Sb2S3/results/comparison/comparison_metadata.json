@@ -1,0 +1,36 @@
+{
+  "conclusion": "A cross-functional comparison of isolated Sb2S3-chain IR and Raman spectra; agreement is assessed, not assumed.",
+  "reference_doi": "10.17632/6tntvw37tr.1",
+  "reference_license": "CC BY 4.0",
+  "reference_xc": "B3LYP-D3(BJ)",
+  "calculation_xc": "PBE-D3(BJ)",
+  "reference_curves": "Original sampled IR column 3 and Raman column 2; not reconstructed from frequency markers.",
+  "reference_damping_cm1": 8,
+  "zstar_lorentzian_fwhm_cm1": 8,
+  "frequency_shift_cm1": 0,
+  "intensity_scaling": "Each curve divided by its own full-grid maximum.",
+  "displayed_range_cm1": [
+    0,
+    390
+  ],
+  "source_points_preserved": true,
+  "caveat": "Reference 31.5762 cm^-1 mode has ~98.3% axial-rotation overlap; retained in its original curve. Different XC and electronic-response approximations preclude claiming absolute-intensity validation.",
+  "sources": [
+    {
+      "path": "results\\IR\\ir_spectrum.dat",
+      "sha256": "e8e9609cde7cebcdb6b1419002aed334eafff8582119cae6dff9c0d905c0f4e7"
+    },
+    {
+      "path": "results\\Raman\\raman_spectrum.dat",
+      "sha256": "cacaf06ef7c4a25396d42e263f02573dcdb3660ec8cc48c6b5b91fa6d4290d39"
+    },
+    {
+      "path": "results\\reference\\B3LYP-D3\\gamma-point\\sb2s3_fc_b3lyp-d3_freq.irspec.dat",
+      "sha256": "c0dde1745862a27750f62ae021e6541ed45a7ca070fc605364342a78d4ee386e"
+    },
+    {
+      "path": "results\\reference\\B3LYP-D3\\gamma-point\\sb2s3_fc_b3lyp-d3_freq.ramspec.dat",
+      "sha256": "9d34986a164f08b5a17600c769d01dfe26c1eb47fd27843bb0836cebc004c953"
+    }
+  ]
+}

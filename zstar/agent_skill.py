@@ -95,9 +95,10 @@ def _state_summary(root: Path) -> dict[str, Any]:
 
 
 def _artifact_record(root: Path, relative: str) -> dict[str, Any]:
-    path = root / relative
+    from .artifacts import resolve_artifact
+    path = resolve_artifact(root / relative, explicit=False)
     return {
-        "path": relative,
+        "path": path.relative_to(root).as_posix(),
         "exists": path.exists(),
         "bytes": path.stat().st_size if path.is_file() else None,
     }
@@ -145,7 +146,7 @@ def preflight_report(
     artifacts = {
         relative: _artifact_record(root_path, relative)
         for relative in (
-            "STRU", "0.no-move", "BORN", "Z-BORN-symm.out",
+            "STRU", "0.no-move", "BORN", "BEC.dat",
             "phonopy_disp.yaml", "FORCE_SETS", "phonopy.yaml",
             "qpoints.yaml", "irreps.yaml",
             "ir_spectrum/ir_summary.json",
@@ -160,9 +161,9 @@ def preflight_report(
     if lane in {"ir", "raman", "dielectric"} and not artifacts["qpoints.yaml"]["exists"]:
         blockers.append("qpoints.yaml is required for the selected mode-resolved workflow.")
     if lane in {"ir", "dielectric"} and not (
-        artifacts["BORN"]["exists"] or artifacts["Z-BORN-symm.out"]["exists"]
+        artifacts["BORN"]["exists"] or artifacts["BEC.dat"]["exists"]
     ):
-        blockers.append("A BORN or Z-BORN-symm.out tensor file is required.")
+        blockers.append("A BORN or BEC.dat tensor file is required.")
     if lane == "raman" and not artifacts["0.no-move"]["exists"]:
         blockers.append("A completed or prepared 0.no-move reference directory is required.")
     if lane == "cp2k" and root_path.is_dir() and not any(root_path.glob("*.inp")):

@@ -1,0 +1,12 @@
+{
+  "tensor_kind": "1/(angstrom*sqrt(amu))",
+  "modes": 15,
+  "files": {
+    "modes": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\raman\\raman_modes.csv",
+    "tensors": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\raman\\raman_tensors.npy",
+    "spectrum": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\raman\\raman_spectrum.dat",
+    "plot": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\raman\\raman_spectrum.png",
+    "plot_pdf": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\raman\\raman_spectrum.pdf",
+    "plot_svg": "D:\\Work\\Code\\zstar\\examples\\IR_Raman_Spectra\\Bulk_HfO2\\results\\Unified\\raman\\raman_spectrum.svg"
+  }
+}

@@ -45,7 +45,7 @@ class BornPrecisionTests(unittest.TestCase):
                 "0.5 0.5 0.5\n",
                 encoding="utf-8",
             )
-            (root / "Z-BORN-reduced.out").write_text(
+            (root / "BEC.rep.raw.dat").write_text(
                 "No. Atom xx xy xz yx yy yz zx zy zz\n"
                 "* 1 Na 1.123456789 0.012345678 0 0 1.123456789 0 0 0 1.123456789\n"
                 "* 2 Cl -0.923456789 -0.002345678 0 0 -0.923456789 0 0 0 -0.923456789\n",
@@ -57,16 +57,16 @@ class BornPrecisionTests(unittest.TestCase):
                 os.chdir(root)
                 run_symcheck(
                     stru="STRU",
-                    reduced="Z-BORN-reduced.out",
+                    reduced="BEC.rep.raw.dat",
                     all=None,
-                    out="born_symmetry_report.txt",
-                    json_path="born_symmetry_report.json",
+                    out="BEC_symmetry.txt",
+                    json_path="BEC_symmetry.json",
                     csv_path=None,
                 )
             finally:
                 os.chdir(previous)
 
-            text = (root / "Z-BORN-symm.out").read_text(encoding="utf-8")
+            text = (root / "BEC.dat").read_text(encoding="utf-8")
             self.assertIn("1.02345679", text)
             # The cubic site group removes the deliberately injected xy terms;
             # retained diagonal digits still exercise the output precision.

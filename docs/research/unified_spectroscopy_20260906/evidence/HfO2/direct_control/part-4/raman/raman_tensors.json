@@ -1,0 +1,72 @@
+{
+  "mode_numbers": [
+    7,
+    11,
+    15
+  ],
+  "tensors": [
+    [
+      [
+        2.364058127035662e-06,
+        -1.2821088938783087e-08,
+        -0.03999603832389638
+      ],
+      [
+        -1.2821088938783087e-08,
+        6.617999037672462e-07,
+        2.9205090730499966e-07
+      ],
+      [
+        -0.03999603832389638,
+        2.9205090730499966e-07,
+        1.385480818960616e-06
+      ]
+    ],
+    [
+      [
+        2.5159518912687417e-08,
+        -2.3189429087903946e-08,
+        0.0004810874193015009
+      ],
+      [
+        -2.3189429087903946e-08,
+        -1.3243124374895388e-07,
+        -0.108504654664284
+      ],
+      [
+        0.0004810874193015009,
+        -0.108504654664284,
+        5.329070518200751e-13
+      ]
+    ],
+    [
+      [
+        -0.11632434873700692,
+        3.426078865054194e-15,
+        -4.919910642488213e-09
+      ],
+      [
+        3.426078865054194e-15,
+        0.11632434884860654,
+        -4.910316703482347e-09
+      ],
+      [
+        -4.919910642488213e-09,
+        -4.910316703482347e-09,
+        -5.577427408809399e-09
+      ]
+    ]
+  ],
+  "tensor_kind": "dielectric tensor derivative",
+  "response_definition": "epsilon_r",
+  "response_unit": "1",
+  "response_convention": "relative dielectric tensor",
+  "normal_coordinate": "q",
+  "normal_coordinate_unit": "angstrom*sqrt(amu)",
+  "tensor_unit": "1/(angstrom*sqrt(amu))",
+  "field_convention": "inherited from the electronic-response source",
+  "local_field_correction_added": false,
+  "cell_volume_A3": null,
+  "cell_cross_section_A2": null,
+  "conversion": null
+}

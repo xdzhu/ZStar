@@ -119,7 +119,7 @@ The collector writes:
 
 | File | Contents |
 | --- | --- |
-| `Z-BORN-all.out` | One flattened 3 x 3 APT/BEC tensor per selected atom. |
+| `BEC.raw.dat` | One flattened 3 x 3 APT/BEC tensor per selected atom. |
 | `cp2k_bec.json` | Settings, dipoles, branch shifts, tensors, and sum residual. |
 
 The text tensor file retains eight digits after the decimal point, and the JSON

@@ -3,11 +3,13 @@
 ZStar keeps the mode analysis, line broadening, Placzek factors, tables, and
 plots calculator-independent. The electronic-response layer can now use:
 
-- ABACUS + PYATB through the existing `zstar ir` and `zstar raman` commands;
+- ABACUS + PYATB through the [Unified displacement workflow](unified_spectroscopy.md), with explicit normal-mode differences retained for comparison;
 - VASP native `LEPSILON` or `LCALCEPS` responses on central mode displacements;
 - CP2K native `VIBRATIONAL_ANALYSIS INTENSITIES`, dipoles, and `LINRES/POLAR`.
 
-The unified entry point for the latter two calculators is `zstar spectra`.
+All calculators use the canonical entry point `zstar spectra`. The reusable
+symmetry-adapted SCF ensemble is currently the ABACUS implementation; the other
+backends retain their native response routes below.
 
 ## VASP: crystalline SiC
 

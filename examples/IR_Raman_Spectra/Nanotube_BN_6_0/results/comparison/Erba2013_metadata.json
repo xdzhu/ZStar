@@ -1,0 +1,21 @@
+{
+  "source_doi": "10.1063/1.4788831",
+  "title": "The vibration properties of the (n,0) boron nitride nanotubes from ab initio quantum chemical simulations",
+  "authors": [
+    "A. Erba",
+    "M. Ferrabone",
+    "R. Orlando",
+    "R. Dovesi",
+    "M. Rerat"
+  ],
+  "source_url": "https://iris.unito.it/bitstream/2318/130911/4/paperbntubivib.pdf",
+  "source_location": "Author manuscript Table I, n=6; Section III identifies C6/C7 as IR-inactive.",
+  "reference_software": "CRYSTAL",
+  "reference_xc": "B3LYP",
+  "reference_basis": "6-31G* with reoptimized diffuse sp exponents",
+  "assignment": "Candidate branch correspondence by frequency order within each band, multiplicity and IR polarization; RBM additionally checked by mass-weighted radial overlap.",
+  "caveat": "Not an eigenvector-to-eigenvector reference match or absolute-intensity validation. Reference A/B/C labels enumerate bands, not point-group irreducible representations.",
+  "rbm_radial_overlap": 0.9968425173308899,
+  "frequency_shift_cm1": 0,
+  "max_absolute_relative_difference_percent": 3.015217468359721
+}

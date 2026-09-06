@@ -1,0 +1,59 @@
+{
+  "case": "SiC",
+  "force_source": "/home/zhuxd/abacus/agent-runs/20260904-independent-force-benchmark/SiC",
+  "bec_source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/sic/cartesian",
+  "separate": {
+    "status": "computed",
+    "unit": "dimensionless epsilon_ph",
+    "tensor": [
+      [
+        3.3704796505248558,
+        6.263330186403269e-11,
+        4.4288421665108455e-11
+      ],
+      [
+        6.263330186403269e-11,
+        3.3704796505582557,
+        -4.428880451963656e-11
+      ],
+      [
+        4.428842166510846e-11,
+        -4.428880451963656e-11,
+        3.3704796505189303
+      ]
+    ]
+  },
+  "unified": {
+    "status": "computed",
+    "unit": "dimensionless epsilon_ph",
+    "tensor": [
+      [
+        3.3704313332235882,
+        6.263291132162371e-11,
+        4.4288152397795534e-11
+      ],
+      [
+        6.26329113216237e-11,
+        3.3704313332569837,
+        -4.428783773889634e-11
+      ],
+      [
+        4.428815239779554e-11,
+        -4.428783773889634e-11,
+        3.370431333217657
+      ]
+    ]
+  },
+  "max_projected_frequency_difference_cm1": 2.370121843491948e-05,
+  "force_initialization": "atomic charge, independent SCFs",
+  "reference_force_source": "retained Cartesian reference",
+  "timing": {
+    "case": "SiC",
+    "host": "cu25",
+    "SCFs": 2,
+    "independent_force_core_hours": 0.23384421112326284,
+    "max_force_difference_from_unified_eV_A": 6.269999999969703e-08,
+    "status": "completed"
+  },
+  "static_response_relative_difference": 1.4335437765743586e-05
+}

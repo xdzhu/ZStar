@@ -1,0 +1,25 @@
+{
+  "updated_at": "2026-09-06T09:26:04.296222+00:00",
+  "stages": [
+    {
+      "name": "reference",
+      "path": "/home/zhuxd/vasp/agent-runs/20260906-bn9-bec-validation/workflow/reference",
+      "status": "completed",
+      "started_at": "2026-09-06T07:08:51.614606+00:00",
+      "finished_at": "2026-09-06T07:26:15.282164+00:00",
+      "output": "/home/zhuxd/vasp/agent-runs/20260906-bn9-bec-validation/workflow/reference/vasp.log",
+      "error": null,
+      "gap_eV": 3.7619
+    },
+    {
+      "name": "response",
+      "path": "/home/zhuxd/vasp/agent-runs/20260906-bn9-bec-validation/workflow/response",
+      "status": "completed",
+      "started_at": "2026-09-06T07:26:20.467942+00:00",
+      "finished_at": "2026-09-06T09:26:04.295959+00:00",
+      "output": "/home/zhuxd/vasp/agent-runs/20260906-bn9-bec-validation/workflow/response/vasp.log",
+      "error": null,
+      "gap_eV": null
+    }
+  ]
+}

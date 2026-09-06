@@ -1,0 +1,22 @@
+{
+  "source_case": "IR_Raman_Spectra/Nanowire_Sb2S3",
+  "numerical_changes": false,
+  "results_sha256": {
+    "BEC.dat": "4f490d7958370bb489dd190cb11049839d2b8d646e73d12c00c4d3acca336f21",
+    "BEC.raw.dat": "a374552fb39e943ac665caab42bcbd2f54fb14e4ee5c727632c8a0d69d6f120c",
+    "BORN": "b442962a3f80b04da3805164e1811455a13762c75b4023d3df4219b75935c14e",
+    "compute_costs.json": "5b2afc8fb044997705fa1e5862ac65c96c557d3167f5e548daeaba538fa9e8e4",
+    "FORCE_CONSTANTS": "8db460e6d1f4978bc4b6dac56b2aa9bc03afbe91b926219946392c1965788e09",
+    "FORCE_CONSTANTS.raw": "ed4634f9bfffdb69923c364cf5f7dfeb9c5cff0a133daca88a041a76dda34712",
+    "irreps.yaml": "3ba25236af44b778cec2e619ce3a187301e86b209d7aaf96be02f02cdd55fa94",
+    "native_evidence.tar.gz": "c3c664c041b0c7d0c013fa149770b2571009eb2ea4aa2455763c547d89ea53bb",
+    "phonopy.yaml": "e548c7070d19708497bad5fcac35e3f227911139479680dab85d938f2b57a31d",
+    "qpoints.yaml": "ab7e241d9e3b82ddbb9b589758db69296e6e06307116f2e2e88ae229252a160b",
+    "relaxation-audit.json": "ee4c0b3d0084abb4b18555c7e628df1ce1113ceda287288a4a1a01f66fbd0a58",
+    "response.json": "8734980188ec6a3cf5bbe8d68db64999edfc54d72522015d41e0caddb7271d56",
+    "response_fit.json": "eefe9080a237857cc48292d551ff25f73ee21d987f486a0bc805139059d07c4c",
+    "rigid-mode-audit.json": "d2fed32a8395025782ffb76dd3b03765c8bac7f50a2fa0054ae2cc28e0a6f612",
+    "shared_response.json": "c8818c04747f427d57dae97a0daa06035ef5d2cb0614b1161e49002c296365a8",
+    "STRU": "b0897b8928f879926dbd32393fe8cac1e3b7f65fab2de07f921687035656b00c"
+  }
+}

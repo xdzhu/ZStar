@@ -16,6 +16,7 @@ import numpy as np
 import yaml
 
 from .pyatb_compat import read_static_dielectric
+from .artifacts import resolve_artifact
 from .stru_analyzer import stru_analyzer
 
 
@@ -249,7 +250,7 @@ def read_born_data(
 ) -> BornData:
     """Read labeled Z-BORN output or a Phonopy-style BORN file."""
 
-    born_path = Path(path)
+    born_path = resolve_artifact(path)
     rows = _numeric_lines(born_path)
     if not rows:
         raise ValueError(f"No 3x3 tensors found in {born_path}")
@@ -271,7 +272,7 @@ def read_born_data(
         ]
 
     if dielectric_path:
-        dielectric_file = Path(dielectric_path)
+        dielectric_file = resolve_artifact(dielectric_path)
         if dielectric_file.name.upper() == "BORN":
             dielectric_rows = _numeric_lines(dielectric_file)
             if dielectric_rows:
@@ -288,10 +289,10 @@ def read_born_data(
         # contractions retain the legacy displacement-first convention.
         tensors = [tensor.T for tensor in tensors]
     if natoms is not None and len(tensors) != natoms:
-        candidates = (("Z-BORN-symm.out", "Z-BORN-all.out") if shared_born
-                      else ("Z-BORN-all.out", "Z-BORN-symm.out"))
+        candidates = (("BEC.dat", "BEC.raw.dat") if shared_born
+                      else ("BEC.raw.dat", "BEC.dat"))
         for candidate_name in candidates:
-            candidate = born_path.parent / candidate_name
+            candidate = resolve_artifact(born_path.parent / candidate_name, explicit=False)
             if not candidate.is_file():
                 continue
             expanded_rows = _numeric_lines(candidate)
@@ -306,8 +307,8 @@ def read_born_data(
     if natoms is not None and len(tensors) != natoms:
         raise ValueError(
             f"Born tensor count ({len(tensors)}) does not match phonon atoms "
-            f"({natoms}). Provide a full per-atom Z-BORN-all.out or "
-            "Z-BORN-symm.out in the same directory."
+            f"({natoms}). Provide a full per-atom BEC.raw.dat or "
+            "BEC.dat in the same directory."
         )
     return BornData(
         tensors=np.asarray(tensors, dtype=float),
@@ -495,7 +496,7 @@ def write_native_line_spectrum_outputs(
     plot_files: dict[str, str] = {}
     if plot:
         import matplotlib as mpl
-        import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
 
         with mpl.rc_context(
             {
@@ -513,7 +514,8 @@ def write_native_line_spectrum_outputs(
                 "svg.fonttype": "none",
             }
         ):
-            fig, ax = plt.subplots(figsize=(7.2, 4.5))
+            fig = Figure(figsize=(7.2, 4.5))
+            ax = fig.subplots()
             scale = max(float(np.max(result.spectrum)), np.finfo(float).tiny)
             normalized = result.spectrum / scale
             color = "#b14b3c" if stem.lower().startswith("raman") else "#2f6b9a"
@@ -534,7 +536,7 @@ def write_native_line_spectrum_outputs(
             )
             fig.tight_layout()
             plot_files = _save_figure_bundle(fig, output, f"{stem}_spectrum")
-            plt.close(fig)
+            fig.clear()
 
     summary = {
         "activity_kind": result.activity_kind,
@@ -1071,7 +1073,7 @@ def write_ir_outputs(
     response_plot_files: dict[str, str] = {}
     if plot:
         import matplotlib as mpl
-        import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
 
         with mpl.rc_context(
             {
@@ -1090,7 +1092,8 @@ def write_ir_outputs(
                 "svg.fonttype": "none",
             }
         ):
-            fig, ax = plt.subplots(figsize=(7.2, 4.5))
+            fig = Figure(figsize=(7.2, 4.5))
+            ax = fig.subplots()
             total = np.sum(result.spectrum, axis=1)
             scale = max(float(np.max(total)), np.finfo(float).tiny)
             colors = ("#2f6b9a", "#5f9c76", "#c06b32")
@@ -1129,15 +1132,10 @@ def write_ir_outputs(
             ax.legend(ncol=4, loc="upper right")
             fig.tight_layout()
             plot_files = _save_figure_bundle(fig, output, "ir_spectrum")
-            plt.close(fig)
+            fig.clear()
 
-            fig, axes = plt.subplots(
-                2,
-                1,
-                figsize=(7.2, 5.6),
-                sharex=True,
-                layout="constrained",
-            )
+            fig = Figure(figsize=(7.2, 5.6), layout="constrained")
+            axes = fig.subplots(2, 1, sharex=True)
             diagonal = np.arange(3)
             labels = (r"$xx$", r"$yy$", r"$zz$")
             real_label, imag_label = _response_plot_labels(result)
@@ -1171,7 +1169,7 @@ def write_ir_outputs(
             response_plot_files = _save_figure_bundle(
                 fig, output, "dielectric_response"
             )
-            plt.close(fig)
+            fig.clear()
 
     summary = {
         "dimensionality": result.dimensionality,
@@ -1251,7 +1249,7 @@ def write_molecular_ir_outputs(
     plot_files: dict[str, str] = {}
     if plot:
         import matplotlib as mpl
-        import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
 
         with mpl.rc_context(
             {
@@ -1269,7 +1267,8 @@ def write_molecular_ir_outputs(
                 "svg.fonttype": "none",
             }
         ):
-            fig, ax = plt.subplots(figsize=(7.2, 4.5))
+            fig = Figure(figsize=(7.2, 4.5))
+            ax = fig.subplots()
             ax.plot(
                 result.frequency_grid_cm1,
                 result.spectrum,
@@ -1295,7 +1294,7 @@ def write_molecular_ir_outputs(
             ax.grid(axis="y", alpha=0.18, linewidth=0.6)
             fig.tight_layout()
             plot_files = _save_figure_bundle(fig, output, "ir_spectrum")
-            plt.close(fig)
+            fig.clear()
 
     summary = {
         "dimensionality": 0,
@@ -1741,7 +1740,7 @@ def write_raman_outputs(
     plot_files: dict[str, str] = {}
     if plot:
         import matplotlib as mpl
-        import matplotlib.pyplot as plt
+        from matplotlib.figure import Figure
 
         with mpl.rc_context(
             {
@@ -1760,7 +1759,8 @@ def write_raman_outputs(
                 "svg.fonttype": "none",
             }
         ):
-            fig, ax = plt.subplots(figsize=(7.2, 4.5))
+            fig = Figure(figsize=(7.2, 4.5))
+            ax = fig.subplots()
             ax.plot(
                 result.frequency_grid_cm1,
                 result.spectrum,
@@ -1783,7 +1783,7 @@ def write_raman_outputs(
             ax.grid(axis="y", alpha=0.18, linewidth=0.6)
             fig.tight_layout()
             plot_files = _save_figure_bundle(fig, output, "raman_spectrum")
-            plt.close(fig)
+            fig.clear()
 
     summary = {
         "tensor_kind": result.tensor_kind,

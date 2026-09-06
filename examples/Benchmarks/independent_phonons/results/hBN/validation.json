@@ -1,0 +1,59 @@
+{
+  "case": "hBN",
+  "force_source": "/home/zhuxd/abacus/agent-runs/20260904-independent-force-benchmark/hBN",
+  "bec_source": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/hBN/cartesian",
+  "separate": {
+    "status": "computed",
+    "unit": "Angstrom sheet phonon polarizability (Gaussian alpha_2D)",
+    "tensor": [
+      [
+        0.4677433261112467,
+        -1.0756308726729335e-11,
+        -2.016727198255318e-33
+      ],
+      [
+        -1.0756308726729335e-11,
+        0.46774332613992037,
+        -5.078048138741368e-34
+      ],
+      [
+        -2.016727198255318e-33,
+        -5.078048138741369e-34,
+        0.02010712284418742
+      ]
+    ]
+  },
+  "unified": {
+    "status": "computed",
+    "unit": "Angstrom sheet phonon polarizability (Gaussian alpha_2D)",
+    "tensor": [
+      [
+        0.4675401265354064,
+        -1.0751631455602593e-11,
+        -3.983517946451945e-33
+      ],
+      [
+        -1.0751631455602591e-11,
+        0.4675401265640677,
+        2.3470803731794057e-33
+      ],
+      [
+        -3.9835179464519445e-33,
+        2.3470803731794057e-33,
+        0.02010856343074667
+      ]
+    ]
+  },
+  "max_projected_frequency_difference_cm1": 0.0001108882449898374,
+  "force_initialization": "atomic charge, independent SCFs",
+  "reference_force_source": "retained Cartesian reference",
+  "timing": {
+    "case": "hBN",
+    "host": "cu25",
+    "SCFs": 2,
+    "independent_force_core_hours": 0.278086407115269,
+    "max_force_difference_from_unified_eV_A": 1.625000000116117e-07,
+    "status": "completed"
+  },
+  "static_response_relative_difference": 0.00043423028637940486
+}

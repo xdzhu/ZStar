@@ -1,0 +1,127 @@
+{
+  "case": "Sb2S3",
+  "dimension": 1,
+  "tensor_Frobenius_relative_difference": 0.00028169962005140177,
+  "derivative_max_abs_difference_per_A": 0.0001525087746132303,
+  "unified": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 8.10799143821567,
+        "max_epsilon_residual": 4.1270473708943426e-05
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 8.10799143821469,
+        "max_epsilon_residual": 6.366890330201458e-05
+      },
+      {
+        "atom": 2,
+        "rank": 3,
+        "condition": 8.107991438216196,
+        "max_epsilon_residual": 4.71052289617406e-05
+      },
+      {
+        "atom": 6,
+        "rank": 3,
+        "condition": 8.10799143821469,
+        "max_epsilon_residual": 9.573230321484002e-05
+      },
+      {
+        "atom": 7,
+        "rank": 3,
+        "condition": 8.107991438215667,
+        "max_epsilon_residual": 4.8386594569059765e-05
+      }
+    ],
+    "translation_sum_max_per_A": 8.326672684688674e-17,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false,
+    "reference_symmetry_max": 1.614748511332728e-06,
+    "optical_increment_core_h": 0.536717357279526,
+    "precision_reference_core_h": 0.029302196701367696
+  },
+  "cartesian": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 1.0000000000001008,
+        "max_epsilon_residual": 5.73930291223105e-05
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 1.000000000000101,
+        "max_epsilon_residual": 6.448095303834855e-05
+      },
+      {
+        "atom": 2,
+        "rank": 3,
+        "condition": 1.000000000000066,
+        "max_epsilon_residual": 4.7755461302756864e-05
+      },
+      {
+        "atom": 6,
+        "rank": 3,
+        "condition": 1.000000000000101,
+        "max_epsilon_residual": 9.636364426279841e-05
+      },
+      {
+        "atom": 7,
+        "rank": 3,
+        "condition": 1.0000000000000937,
+        "max_epsilon_residual": 5.856539664498581e-05
+      }
+    ],
+    "translation_sum_max_per_A": 2.7755575615628914e-17,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false,
+    "reference_symmetry_max": 1.6147537785016002e-06,
+    "optical_increment_core_h": 0.801517651276663,
+    "precision_reference_core_h": 0.02689979487719635
+  },
+  "raw_tensors_used": true,
+  "additional_DFT_calls": 0,
+  "raman_comparison_basis": "Both derivatives contracted with the same Unified eigenvectors; isolates response-fit error.",
+  "normalization_factor": 60.01651816086353,
+  "optical_mode_numbers": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+  ],
+  "excluded_rigid_frequencies_cm1": [
+    -2.118132004508266e-06,
+    1.0707407455860683e-06,
+    3.122159931054704e-06,
+    1.5152783529997944
+  ],
+  "optical_mode_tensor_relative_difference": 0.0002123858823942825
+}

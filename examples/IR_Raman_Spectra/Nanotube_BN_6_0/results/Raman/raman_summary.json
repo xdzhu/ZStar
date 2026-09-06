@@ -1,0 +1,12 @@
+{
+  "tensor_kind": "1D line polarizability derivative (Angstrom^2 per Angstrom sqrt(amu))",
+  "modes": 68,
+  "files": {
+    "modes": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_6_0/raman_spectrum/raman_modes.csv",
+    "tensors": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_6_0/raman_spectrum/raman_tensors.npy",
+    "spectrum": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_6_0/raman_spectrum/raman_spectrum.dat",
+    "plot": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_6_0/raman_spectrum/raman_spectrum.png",
+    "plot_pdf": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_6_0/raman_spectrum/raman_spectrum.pdf",
+    "plot_svg": "/home/zhuxd/abacus/agent-runs/20260905-one-dimensional/BN_6_0/raman_spectrum/raman_spectrum.svg"
+  }
+}

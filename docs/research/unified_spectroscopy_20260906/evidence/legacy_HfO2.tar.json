@@ -1,0 +1,278 @@
+{
+  "rows": [
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0011/plus",
+      "ABACUS_wall_s": 127.899,
+      "PYATB_wall_s": 116,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "1be9fad3c439e8edf691d8876d216f50060f9de35145e86789c65ccee34c9135",
+      "PYATB_log_sha256": "0a32c1f48ccd14187ffc1b8bcccef6b7cf10129a0689d01605776dea6610550c"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0012/plus",
+      "ABACUS_wall_s": 129.876,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "99221106b74bfe7c2f0054d4600fa82e259e63a0ee26bc6e08ed9840de50a1b8",
+      "PYATB_log_sha256": "203655a77dc06d2494552eed41bd9625779456478a2122cabb90bd8ee380da3e"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0013/plus",
+      "ABACUS_wall_s": 107.507,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "b6b90f91e4e7bb5ef3dd084499af435df0f6a70585cc57f0cb530da2771842b1",
+      "PYATB_log_sha256": "b79e6823e74ac60e136ee93d4c301150a3e01cf9515aea5849a45a1656833a14"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0014/plus",
+      "ABACUS_wall_s": 107.315,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "d20d4e6be28d32593c7c3275b7dae5b302cf00daf11c1140263ad52994d5c6c8",
+      "PYATB_log_sha256": "7c01673bc5c094e17d322c685b0f05bbcec1d209163bef2e1945ff1b11406493"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0015/plus",
+      "ABACUS_wall_s": 103.153,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "321cc503eccfb969f8d5cd69caf57599f042ea384e4488fad5c54d4f5c435e42",
+      "PYATB_log_sha256": "b6b4953660214d5905e5eb9dc26a01a8dc36ca29e65dfb555c8793fb8cf605f9"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0016/plus",
+      "ABACUS_wall_s": 95.9005,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "853502b76d14791c1330aea2d9cb4844f214b1645ea9861fff534c5f00f150ba",
+      "PYATB_log_sha256": "72a6fa04ab0cedca28484591dbe6eecaa0dd4b1288ebf2e6894846eff17d8797"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0017/plus",
+      "ABACUS_wall_s": 111.94,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "47a3501eab49aaf83db37039f3f93aa4bea7492cc6dffb86512fe25cd47d45eb",
+      "PYATB_log_sha256": "12ddc497c0d416a684d2e43ec112c0ba749ea3fc0547f4f5d11f5f60334f0ecf"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0018/plus",
+      "ABACUS_wall_s": 111.99,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "3e79524c157292198e026a34ce216b51a4fe6e2a1a434328ff58fe45dc418b97",
+      "PYATB_log_sha256": "41eb51b206fa0e3a35ba0c555f25d0ecc3c20ebb771cbf2e42560596e319fc1e"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0004/plus",
+      "ABACUS_wall_s": 106.656,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "d9705b5624208ba9198f6d662875bf834452b7357f3cc170311e94a392ab806e",
+      "PYATB_log_sha256": "b1010891a37b26c5705fa40f34d7f5809f1fa5a398c2c69497390f63556b50fb"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0005/plus",
+      "ABACUS_wall_s": 106.892,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "a44379ee25af046db20934f40b8c1fc6cc070fbb4cacef23b93cb9e9dc9e899d",
+      "PYATB_log_sha256": "a88a82a1065c3809e2a7357e4b6cf29378c3df2425f3ff9899f091278139af81"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0006/plus",
+      "ABACUS_wall_s": 122.313,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "27d6f1fcc8f562fc5c565dcc8953e277f5f679ebb6854ba1dcfb8be72560630b",
+      "PYATB_log_sha256": "45e2e51709d86ae63476c38d25973da83b3d0589152f2e2d063be02711056fe1"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0007/plus",
+      "ABACUS_wall_s": 122.73,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "73c70a183ece171222ec0e3ab1a92284c6c71f772154c8ecf73a0bd05129112e",
+      "PYATB_log_sha256": "47eb5661291b415ed1b7cd76adfee2d35c9305500b46290e4a343d6ff0d75ed4"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0008/plus",
+      "ABACUS_wall_s": 99.481,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "371151e89baab592a472946bef1615de3330ef65e2bddef40e352381193ce452",
+      "PYATB_log_sha256": "e56e97958d653803f4b17423b2637563a0b991116428dfea18da25a1b119df94"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0009/plus",
+      "ABACUS_wall_s": 90.7489,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "08cd086c7c3a0a79aae9355dd20d74d881a700c786685f8378d799b64dc4dbfa",
+      "PYATB_log_sha256": "c0524083bc2318596ef39022592fb9e4220f8e46a9e2d73099f07eeee7521052"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0010/plus",
+      "ABACUS_wall_s": 92.8193,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "d70727c62bc0526b491e31d890efa43033b79836db58db390a94f75eb7652b8f",
+      "PYATB_log_sha256": "963d573d84cb027eafc51033c4bf2511f8690e3dd6a89ed63f18c6770ff496f1"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0011/minus",
+      "ABACUS_wall_s": 128.746,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "f49ed15ace90cb691a5ecc19919161df67fca9dd2a2ca0fe0f91cc2250083cfa",
+      "PYATB_log_sha256": "00cfec0ddc21e0b5abe604d245eaff1cc4ceaed4683c7ef84e37af1c4b49b53b"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0012/minus",
+      "ABACUS_wall_s": 129.936,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "944a5123403e4965e8329207b7656652bdd982e81e2dba536c31920d33c414cd",
+      "PYATB_log_sha256": "3132f01e603281d9c48da663f58a32c5ce0794564c3b65dd0d5363f3fa9b361e"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0013/minus",
+      "ABACUS_wall_s": 109.664,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "017fc81cca6c8cb106bc931c2e7e4ccca83543dc869b2321d900830fbd7ae629",
+      "PYATB_log_sha256": "6c86b5dfcb6a571a9b7d3af6c9ff00bd7f160348769fd72534a08f87dbfd932c"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0014/minus",
+      "ABACUS_wall_s": 107.29,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "b9741af1b8853daec82745e994c47adb85b1c14615c24ca582e40a64451329c3",
+      "PYATB_log_sha256": "0adbe3013e01638060544ad6a25b415860dc0608b79a9731bb343d04a5fc9270"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0015/minus",
+      "ABACUS_wall_s": 103.303,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "5bf78660a1a492684e277a6c9811f24bd13aaca9f9cd3352417a294ae5e2302a",
+      "PYATB_log_sha256": "20e76d06f96877e407d582d219f477e689b5cb5baa5e4a8e220a2f6523631008"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0016/minus",
+      "ABACUS_wall_s": 95.8726,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "c4c8224df6c4d4f0247e4a3da4863246d2927f2c19cd4535e1c3cf9b3a71a931",
+      "PYATB_log_sha256": "7ef0096140e5e534e3f7706c60acb1f19cb381b6b661d324b360f2f527c32f7e"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0017/minus",
+      "ABACUS_wall_s": 111.943,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "872f6a2e195129a6ff9a67bb66655d2b0fd3681def20c2eda871d43cc0d87000",
+      "PYATB_log_sha256": "c9599300e3e5ce1af8dfbad49caa25c4a8982a302dd654a3b8eaa840bfab27c7"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_high/mode-0018/minus",
+      "ABACUS_wall_s": 112.292,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "f7c0f95c284d08ec54bc764732a4dd0fb8a942ff6280599dda8ff974080b3517",
+      "PYATB_log_sha256": "8279f48cc735545ba664602c29654ce9bc5cb5231196f0aba7c0004d583544d9"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0004/minus",
+      "ABACUS_wall_s": 106.636,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "bd0fa491770282edd9b74c455c092929c1a1ff54812046d9298e3414a31401f7",
+      "PYATB_log_sha256": "d732527ef0c0396e2625b59a461440b100437c2526fa026ec0b6e43a513227f3"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0005/minus",
+      "ABACUS_wall_s": 107.029,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "b78d71f1f1f4465b9b769dcc6f7815700e4e79385a1c9721293e9261f758685b",
+      "PYATB_log_sha256": "77e7a0958d6525093338a1daf8e65d296042c896bdba59c077d961d33ae2c1cc"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0006/minus",
+      "ABACUS_wall_s": 122.763,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "cfe90bfb4bb3dce7604fb8812abd84fae7b2fd7fae3a4de3f17b0c93f588a7ca",
+      "PYATB_log_sha256": "875db9f2ece1d77db29c024190161b3dec5b669c5ac58fb66f77ab6167d70af3"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0007/minus",
+      "ABACUS_wall_s": 122.368,
+      "PYATB_wall_s": 111,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "b16c1780cd7267a1444e2ca0796891a94fab281139e13c412eacd89a7320785a",
+      "PYATB_log_sha256": "b74bfc31459b08b00903c3a6d1ec0b33b2c09f85deac969de92a83959f907013"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0008/minus",
+      "ABACUS_wall_s": 99.4816,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "56a7db0da9897263110e0d41f80211215667e0f5def905d6b561be8697e94df9",
+      "PYATB_log_sha256": "eac5ffa3710ab9de6017ba96934827c240f95aaa7b1e5f0bf04d7a64782ecce3"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0009/minus",
+      "ABACUS_wall_s": 92.8758,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "6424fa174b8bfa108d7be80e16aa195ec61e880e802e0d83e1c786eed797ee94",
+      "PYATB_log_sha256": "c8ba245ffcd478d86ac83895cf299459b2aa33396d4f89da2bd00a03869deeab"
+    },
+    {
+      "stage": "/home/zhuxd/abacus/zstar_validation/hfo2_pbesol_tzdp9_20260901/phonon_gamma/raman_low/mode-0010/minus",
+      "ABACUS_wall_s": 92.8236,
+      "PYATB_wall_s": 110,
+      "mpi": 20,
+      "omp": 1,
+      "time_sha256": "d5630860660947d572ce2115fb464cec06227544593cc59a0e2de676c4597890",
+      "PYATB_log_sha256": "cc0969e24b0a6c65f7ac6ad02b1adeb9b2abadd8cc877e57717bf0806134d452"
+    }
+  ],
+  "SCF_calls": 30,
+  "ABACUS_core_h": 18.223579444444443,
+  "PYATB_core_h": 18.477777777777778,
+  "caveat": "Solver-internal timers, not wrapper wall times. PYATB rounded to seconds. Legacy parallelism 20 MPI x 1 OMP differs from new 40-core controls."
+}

@@ -106,7 +106,7 @@ zstar bec post --root cp2k_bec
 
 | 文件 | 内容 |
 | --- | --- |
-| `Z-BORN-all.out` | 每个选定原子的展平 3 x 3 APT/BEC 张量。 |
+| `BEC.raw.dat` | 每个选定原子的展平 3 x 3 APT/BEC 张量。 |
 | `cp2k_bec.json` | 参数、偶极、分支移动、张量和求和残差。 |
 
 常规任务推荐使用规范的 `zstar bec` 生命周期。专用的 `zstar cp2k-bec` 专家

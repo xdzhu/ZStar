@@ -1,0 +1,17 @@
+{
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move",
+  "source_input_sha256": "3082161df84a0e0cc88dca9cae475e711a97a8a6431de452172d2e8b29de8de1",
+  "matrices": {
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/pyatb/STRU": "3624c7dce8252873d204b9562da572d90adad04fd76387ad222ee14064f896ab",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/pyatb/C.upf": "a5b0fe8d6b63f703745b99d47e2dd47ed18efdb35a01ff410bc8e8d0af4e247f",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/pyatb/H.upf": "8272fc45fbee2b45a490830c61ef9b2f2b894591b2c9a310fe4af152b76502a6",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/pyatb/C_gga_9au_100Ry_3s3p2d.orb": "357472063c9f249d7cfa74ee68901bab80b738b6502db9a2f52fe4e7e67ea264",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/pyatb/H_gga_9au_100Ry_3s2p.orb": "7234ccdfeed67ab25561fec0d3bf48c0fbf1080f05b1ca6686fa029df49be9e9",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/OUT.CH4/data-HR-sparse_SPIN0.csr": "299b0b96d239110a7d14818c50f45f50693e9cfcff53ee6c3d39e38bb0f1d920",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/OUT.CH4/data-SR-sparse_SPIN0.csr": "0efa516304b8890a43426644acb3285575c82bf068a67d7bd3c15221b41deb5c",
+    "/home/zhuxd/abacus/agent-runs/20260904-molecular-relaxed-efficiency/CH4/cartesian/0.no-move/OUT.CH4/data-rR-sparse.csr": "0a3a40b37b3d4f00ad69ce34b26302ae0feb9ea568399e40ba1382d756414c81"
+  },
+  "dimension": 0,
+  "additional_DFT_calls": 0,
+  "optical_template": "OPTICAL_CONDUCTIVITY\n{\n    occ_band                   4\n    omega                       0.0 30\n    domega                      0.1\n    eta                         0.05\n    grid                       6 6 6\n    static_dielectric_only      1\n}"
+}

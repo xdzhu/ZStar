@@ -1,0 +1,12 @@
+{
+  "tensor_kind": "Benchmark derivative; source dimensional convention retained",
+  "modes": 9,
+  "files": {
+    "modes": "D:\\Work\\Code\\zstar\\docs\\research\\unified_spectroscopy_20260906\\evidence\\CH4\\analysis\\unified\\raman\\raman_modes.csv",
+    "tensors": "D:\\Work\\Code\\zstar\\docs\\research\\unified_spectroscopy_20260906\\evidence\\CH4\\analysis\\unified\\raman\\raman_tensors.npy",
+    "spectrum": "D:\\Work\\Code\\zstar\\docs\\research\\unified_spectroscopy_20260906\\evidence\\CH4\\analysis\\unified\\raman\\raman_spectrum.dat",
+    "plot": "D:\\Work\\Code\\zstar\\docs\\research\\unified_spectroscopy_20260906\\evidence\\CH4\\analysis\\unified\\raman\\raman_spectrum.png",
+    "plot_pdf": "D:\\Work\\Code\\zstar\\docs\\research\\unified_spectroscopy_20260906\\evidence\\CH4\\analysis\\unified\\raman\\raman_spectrum.pdf",
+    "plot_svg": "D:\\Work\\Code\\zstar\\docs\\research\\unified_spectroscopy_20260906\\evidence\\CH4\\analysis\\unified\\raman\\raman_spectrum.svg"
+  }
+}

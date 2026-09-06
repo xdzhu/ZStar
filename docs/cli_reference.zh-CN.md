@@ -1,10 +1,12 @@
 # ZStar 命令行参考
 
+BEC、声子、IR、Raman 的统一取样及续算见 [Unified 谱学教程](unified_spectroscopy.zh-CN.md)。
+
 ZStar 按科学对象组织公共命令。凡是需要实际计算的工作流，都尽量采用同一套生命
 周期：
 
 ```text
-pre -> run -> job -> stat -> post
+pre -> job (optional) -> run -> stat -> post
 ```
 
 - `pre` 生成输入，并写入 `.zstar/<family>.json` 工作流清单。
@@ -129,7 +131,7 @@ BEC/Gamma 声子共用位移，自动选择所需正负位移。计算器和 `--
 
 ```bash
 zstar phonon pre --stru STRU --dim "2 2 2"
-zstar phonon job --system slurm --tasks 28
+zstar phonon job --system slurm
 zstar phonon stat
 zstar phonon post
 zstar phonon irrep
@@ -138,11 +140,16 @@ zstar phonon irrep
 IR 与 Raman：
 
 ```bash
-zstar spectra pre --stru STRU
-zstar spectra job --system slurm --tasks 28
+zstar bec pre --stru STRU
+zstar spectra pre
+zstar spectra job --system slurm
 zstar spectra stat
 zstar spectra post
 ```
+
+检查 header 后提交生成的作业脚本；本地执行则使用 `zstar spectra run`。
+上述路线默认使用 Unified 位移集合。独立模式位移对照需显式指定
+`zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml`。
 
 静态与频率相关介电响应：
 
@@ -155,7 +162,7 @@ zstar dielectric freq
 超胞响应时，才使用 `--slab-boundary macroscopic` 与 `--thickness`，对总张量
 进行面内直接、面外逆响应转换。该选项不能给 PYATB 结果补上缺失的局域场物理。
 详见[响应定义与单位](response_conventions.md)及
-[八体系效率基准](../examples/Shared_Response/README.zh-CN.md)。
+[八体系效率基准](../examples/Benchmarks/README.zh-CN.md)。
 
 ## 静电势能力闭环
 

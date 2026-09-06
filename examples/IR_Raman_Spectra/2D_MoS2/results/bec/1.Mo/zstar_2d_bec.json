@@ -1,0 +1,144 @@
+{
+  "method": "forward",
+  "displacement_angstrom": 0.01,
+  "tensor_convention": "rows=atomic displacement/force; columns=polarization/electric field",
+  "tensor": [
+    [
+      -0.8061454279989765,
+      -0.005570285264293087,
+      -1.0975227442948102e-06
+    ],
+    [
+      2.1869514178940925e-12,
+      -0.800264316302667,
+      -1.0837490015512587e-06
+    ],
+    [
+      0.0,
+      0.0,
+      0.003487665068892668
+    ]
+  ],
+  "in_plane_tensor": [
+    [
+      -0.8061454279989765,
+      -0.005570285264293087
+    ],
+    [
+      2.1869514178940925e-12,
+      -0.800264316302667
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "out_of_plane_column": [
+    -1.0975227442948102e-06,
+    -1.0837490015512587e-06,
+    0.003487665068892668
+  ],
+  "diagnostics": {
+    "reference_dipole": {
+      "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/0.no-move/OUT.POLAR/SPIN1_CHG.cube",
+      "dipole_e_bohr": 4.416288157926829e-05,
+      "polarization_C_per_m": 4.360071724644799e-15,
+      "area_bohr2": 30.667122644800003,
+      "height_bohr": 37.79451899999996,
+      "electron_count_raw": 25.999958228142262,
+      "ionic_charge": 26.0,
+      "neutrality_scale": 1.0000016066124942,
+      "normal": [
+        0.0,
+        -0.0,
+        1.0
+      ]
+    },
+    "directions": {
+      "x": {
+        "plus": {
+          "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/1.Mo/x+/OUT.POLAR/SPIN1_CHG.cube",
+          "dipole_e_bohr": 4.414214140524564e-05,
+          "polarization_C_per_m": 4.358024108115111e-15,
+          "area_bohr2": 30.667122644800003,
+          "height_bohr": 37.79451899999996,
+          "electron_count_raw": 25.99995822815689,
+          "ionic_charge": 26.0,
+          "neutrality_scale": 1.0000016066119317,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ]
+        },
+        "minus": null,
+        "berry_delta_C_per_m2": [
+          -0.0007550000000000057,
+          -6.0000000000060005e-06,
+          0.0
+        ],
+        "in_plane_column": [
+          -0.8061454279989765,
+          -0.005570285264293087
+        ],
+        "out_of_plane_component": -1.0975227442948102e-06
+      },
+      "y": {
+        "plus": {
+          "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/1.Mo/y+/OUT.POLAR/SPIN1_CHG.cube",
+          "dipole_e_bohr": 4.41424016912606e-05,
+          "polarization_C_per_m": 4.35804980538969e-15,
+          "area_bohr2": 30.667122644800003,
+          "height_bohr": 37.79451899999996,
+          "electron_count_raw": 25.999958228150835,
+          "ionic_charge": 26.0,
+          "neutrality_scale": 1.0000016066121644,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ]
+        },
+        "minus": null,
+        "berry_delta_C_per_m2": [
+          -0.0004310000000000147,
+          -0.0008620000000000294,
+          0.0
+        ],
+        "in_plane_column": [
+          2.1869514178940925e-12,
+          -0.800264316302667
+        ],
+        "out_of_plane_component": -1.0837490015512587e-06
+      },
+      "z": {
+        "plus": {
+          "cube": "/home/zhuxd/abacus/agent-runs/zstar_mos2_pbed3bj_response_20260831/1.Mo/z+/OUT.POLAR/SPIN1_CHG.cube",
+          "dipole_e_bohr": 0.00011007019952558039,
+          "polarization_C_per_m": 1.0866907853738966e-14,
+          "area_bohr2": 30.667122644800003,
+          "height_bohr": 37.79451899999996,
+          "electron_count_raw": 25.999958228148948,
+          "ionic_charge": 26.0,
+          "neutrality_scale": 1.000001606612237,
+          "normal": [
+            0.0,
+            -0.0,
+            1.0
+          ]
+        },
+        "minus": null,
+        "berry_delta_C_per_m2": [
+          0.0,
+          0.0,
+          0.013050000000000006
+        ],
+        "in_plane_column": [
+          0.0,
+          0.0
+        ],
+        "out_of_plane_component": 0.003487665068892668
+      }
+    }
+  }
+}

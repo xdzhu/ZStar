@@ -1,28 +1,41 @@
-# Tetragonal HfO2
+# Tetragonal HfO2: BEC and dielectric response
 
-This PBEsol tetragonal bulk case is the high-k reference for BEC, phonons, IR,
-and frequency-dependent dielectric response. Its input records the TZDP-style
-ABACUS numerical-orbital setup used for the retained reference calculation.
+The current inputs match the manuscript reference: PBEsol, ONCV
+pseudopotentials, Hf 6s3p3d2f1g and O 2s2p1d **9-bohr** orbitals,
+100 Ry, a Gamma-centered 10x10x7 mesh, and SCF threshold 1e-8.
+The six-atom P42/nmc structure has a=3.55652 and c=5.13487 Angstrom.
 
-## One-command reproduction
+`run/` contains clean inputs and included PP/ORB assets. `results/` contains
+the paper-reference BEC, phonons, IR/Raman data and dielectric curves;
+`provenance.json` identifies their settings. Historical 10-au inputs
+and older tensors are preserved under `legacy/before_20260906/`.
+They must not be substituted for the current reference.
 
-Run `bash run.sh --dry-run` first, then
-`ABACUS_COMMAND="mpirun -np 20 abacus" PYATB_COMMAND="pyatb" bash run.sh`.
-Generated stages go to `work/`; `run/` contains the PBEsol inputs and included
-pseudopotentials and numerical orbitals.
+## Run
+
+Install the current ZStar package and PYATB, load your cluster environment,
+and inspect the commands before executing:
 
 ```bash
-cp -r run work
-cd work
-zstar bec pre --stru STRU --input INPUT --input_sets assets --dim 3 \
-  --method central --displacement 0.01 --force
-zstar workflow script --backend shell --dim 3 --tasks 1 --cpus-per-task 20
-zstar workflow run --root . --dim 3 --abacus-command "mpirun -np 20 abacus"
-zstar workflow status --root .
-zstar bec post --root .
+bash run.sh --dry-run
+ABACUS_COMMAND="mpirun -np 40 abacus" PYATB_COMMAND="pyatb" bash run.sh --stage all
 ```
 
-For lattice IR, run `zstar ph`, `zstar postph`, copy `BORN`, and then run
-`zstar ir`. Use `zstar dielectric static` or `zstar dielectric freq` for the
-electronic/lattice response records. The retained structure is tetragonal;
-do not mix its BEC values with monoclinic HfO2 references.
+Fresh output goes into `work/`, never `results/`. The default unified
+ensemble uses four symmetry-adapted displacements plus one reference SCF.
+The actual written displacement vectors determine the derivatives.
+
+After completion, from `work/`:
+
+```bash
+zstar dielectric static
+zstar dielectric freq --plot
+```
+
+The retained literature-comparison tensors use central 0.01-Angstrom
+displacements. The unified rerun uses the 0.02-bohr default; its matched
+accuracy and timing controls are in `3D_Bulk/t_HfO2/`. Small
+finite-step differences are expected. Raman requires additional
+polarizability derivatives: use `IR_Raman_Spectra/Bulk_HfO2/` for that
+workflow. These Gamma modes do not demonstrate finite-wavevector
+stability or LO-TO splitting.

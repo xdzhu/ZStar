@@ -1,0 +1,192 @@
+{
+  "case": "alpha_In2Se3",
+  "source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/in2se3/shared",
+  "stages": [
+    {
+      "name": "disp-001",
+      "atom": 0,
+      "displacement_A": [
+        0.0014344301204723758,
+        0.0,
+        0.010485886631325323
+      ],
+      "distance_A": 0.010583544218055005
+    },
+    {
+      "name": "disp-002",
+      "atom": 0,
+      "displacement_A": [
+        -0.0014344301204723758,
+        0.0,
+        -0.010485886631331985
+      ],
+      "distance_A": 0.010583544218061606
+    },
+    {
+      "name": "disp-003",
+      "atom": 1,
+      "displacement_A": [
+        0.0014344301204716869,
+        0.0,
+        0.010485886631328654
+      ],
+      "distance_A": 0.010583544218058212
+    },
+    {
+      "name": "disp-004",
+      "atom": 1,
+      "displacement_A": [
+        -0.001434430120472598,
+        0.0,
+        -0.010485886631331985
+      ],
+      "distance_A": 0.010583544218061635
+    },
+    {
+      "name": "disp-005",
+      "atom": 2,
+      "displacement_A": [
+        0.0014344301204723701,
+        0.0,
+        0.010485886631325323
+      ],
+      "distance_A": 0.010583544218055005
+    },
+    {
+      "name": "disp-006",
+      "atom": 2,
+      "displacement_A": [
+        -0.001434430120472598,
+        0.0,
+        -0.010485886631331985
+      ],
+      "distance_A": 0.010583544218061635
+    },
+    {
+      "name": "disp-007",
+      "atom": 3,
+      "displacement_A": [
+        0.0014344301204716869,
+        0.0,
+        0.010485886631331985
+      ],
+      "distance_A": 0.010583544218061512
+    },
+    {
+      "name": "disp-008",
+      "atom": 3,
+      "displacement_A": [
+        -0.001434430120472598,
+        0.0,
+        -0.010485886631331985
+      ],
+      "distance_A": 0.010583544218061635
+    },
+    {
+      "name": "disp-009",
+      "atom": 4,
+      "displacement_A": [
+        0.0014344301204723701,
+        0.0,
+        0.010485886631331985
+      ],
+      "distance_A": 0.010583544218061604
+    },
+    {
+      "name": "disp-010",
+      "atom": 4,
+      "displacement_A": [
+        -0.001434430120472598,
+        0.0,
+        -0.010485886631331985
+      ],
+      "distance_A": 0.010583544218061635
+    }
+  ],
+  "input_changes": {
+    "calculation": "scf",
+    "cal_force": "1",
+    "cal_stress": "0",
+    "init_chg": "auto",
+    "out_chg": "0",
+    "out_mat_hs2": "0",
+    "out_mat_r": "0",
+    "pseudo_dir": ".",
+    "orbital_dir": "."
+  },
+  "input_sha256": {
+    "disp-001/STRU": "e5c7a16bbd05c5cb6384bca3e1123f57e99268daced6ca6564eb8709ea9a3e65",
+    "disp-001/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-001/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-002/STRU": "8a6c3adb4587847e3daf8295cfe6d47bad0022117e553b82d81f170cb5c1a379",
+    "disp-002/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-002/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-003/STRU": "dda851267b224cfe41737d4b2705ea79240450019dd18629b1c4ab9c2ec51eba",
+    "disp-003/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-003/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-004/STRU": "83b59989d803bfabc415c2628c587924493185e5e26890b70afabd110e8ccd6e",
+    "disp-004/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-004/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-005/STRU": "62e38ab703f8c31b9dc1bce5b548de404616ed7ee508e27a159d9d53ee065ceb",
+    "disp-005/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-005/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-006/STRU": "5ad1cc571fde71c1041566d693cd747eb3c5dbb34121c87f84b8a1e573abea2b",
+    "disp-006/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-006/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-007/STRU": "6441ef80ccc798053e950dc1da4d866d3c6a36654bb7e9d6c6d7aa97e3b6a0ab",
+    "disp-007/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-007/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-008/STRU": "f66188e95cd01f3f7e4bf8a5295a5ad6fc5fe1fbcba43df1586d773d20b57a3f",
+    "disp-008/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-008/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-009/STRU": "b7cfe4b1072797ea7b43c515bd26ae820170913f2e5f4be957d4968c7a76c0e5",
+    "disp-009/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-009/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-010/STRU": "545a14053827bf493a4cb4174565876d32355e530859ff0086153ac378959ebe",
+    "disp-010/KPT": "05a733a9c1d13b4fe7c347c8db5c6d5b72ed5dbf37a24302e53d451562c01c1b",
+    "disp-010/INPUT": "baa4abaf3a3f644b09e35baf7a2f0bb081a947f225080d64e5a1fd5d848b8994",
+    "disp-001/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-001/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-001/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-001/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-002/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-002/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-002/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-002/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-003/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-003/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-003/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-003/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-004/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-004/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-004/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-004/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-005/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-005/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-005/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-005/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-006/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-006/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-006/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-006/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-007/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-007/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-007/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-007/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-008/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-008/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-008/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-008/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-009/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-009/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-009/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-009/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
+    "disp-010/In_ONCV_PBE_FR-1.0.upf": "cf25476a6ce8d5e642031e56bfd5df1c47d70cdb5ee4d14ab0c7303c39536723",
+    "disp-010/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
+    "disp-010/In_gga_10au_100Ry_2s2p2d1f.orb": "b5c5225034f3c24de8ae0a52f90c1759fb423650fced5483c15d4eb9c0c506cf",
+    "disp-010/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36"
+  },
+  "reference": "Retained Cartesian reference; no additional reference SCF is counted.",
+  "scope": "Independent force-only SCFs from atomic charge; no PYATB or matrix export.",
+  "cost_combination": "Add measured force cost to retained Cartesian BEC route. That BEC route already requested forces; its cost is not adjusted."
+}

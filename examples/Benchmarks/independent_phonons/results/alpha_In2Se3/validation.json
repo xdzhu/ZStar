@@ -1,0 +1,59 @@
+{
+  "case": "alpha_In2Se3",
+  "force_source": "/home/zhuxd/abacus/agent-runs/20260904-independent-force-benchmark/alpha_In2Se3",
+  "bec_source": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/in2se3/cartesian",
+  "separate": {
+    "status": "computed",
+    "unit": "Angstrom sheet phonon polarizability (Gaussian alpha_2D)",
+    "tensor": [
+      [
+        5.204533209941705,
+        7.321679310274356e-11,
+        -1.7125702253132433e-34
+      ],
+      [
+        7.321679310274353e-11,
+        5.204533209798161,
+        2.4871948465177323e-33
+      ],
+      [
+        -1.7125702253132264e-34,
+        2.487194846517728e-33,
+        0.01681460638446716
+      ]
+    ]
+  },
+  "unified": {
+    "status": "computed",
+    "unit": "Angstrom sheet phonon polarizability (Gaussian alpha_2D)",
+    "tensor": [
+      [
+        5.207235524040823,
+        7.325728826927287e-11,
+        -1.0713560748836184e-32
+      ],
+      [
+        7.325728826927285e-11,
+        5.207235523897203,
+        -4.262920255665241e-33
+      ],
+      [
+        -1.0713560748836194e-32,
+        -4.262920255665275e-33,
+        0.01679331158115497
+      ]
+    ]
+  },
+  "max_projected_frequency_difference_cm1": 0.0016843409445037594,
+  "force_initialization": "atomic charge, independent SCFs",
+  "reference_force_source": "retained Cartesian reference",
+  "timing": {
+    "case": "alpha_In2Se3",
+    "host": "cu20",
+    "SCFs": 10,
+    "independent_force_core_hours": 3.95403913012253,
+    "max_force_difference_from_unified_eV_A": 6.078600000000061e-06,
+    "status": "completed"
+  },
+  "static_response_relative_difference": 0.0005192298502124702
+}

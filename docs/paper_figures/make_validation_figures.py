@@ -726,6 +726,11 @@ def load_mirror_asymmetry(
         options={"xatol": 1.0e-12},
     )
     mirror_center = float(np.mod(optimum.x - origin, period) + origin)
+    # Centers separated by half a period define the same periodic reflection.
+    # Choose the peak-centered representative consistently for both structures.
+    alternate_center = float(np.mod(mirror_center + 0.5 * period - origin, period) + origin)
+    if periodic_values(alternate_center) > periodic_values(mirror_center):
+        mirror_center = alternate_center
 
     fractional_coordinate = np.linspace(
         0.0,
@@ -784,14 +789,17 @@ def _plot_tiled_planar_map(
     *,
     title: str,
     arrow_label: str,
+    tile: bool = True,
+    color_limit: float | None = None,
 ) -> None:
     x_coord, y_coord, values, vector_a, vector_b, origin = _load_planar_map(path)
-    limit = float(np.percentile(np.abs(values), 98.0))
+    limit = color_limit if color_limit is not None else float(np.percentile(np.abs(values), 98.0))
     image = None
     all_x = []
     all_y = []
-    for ia in (-1, 0, 1):
-        for ib in (-1, 0, 1):
+    repeats = (-1, 0, 1) if tile else (0,)
+    for ia in repeats:
+        for ib in repeats:
             shift = ia * vector_a + ib * vector_b
             shifted_x = x_coord + shift[0]
             shifted_y = y_coord + shift[1]
@@ -960,7 +968,7 @@ def _plot_mirror_profile(
     )
     odd_axis.axhline(0.0, color=COLORS["muted"], linewidth=0.5)
     odd_axis.set_xlim(0.0, 1.0)
-    odd_axis.set_xlabel("Fractional coordinate along $a$")
+    odd_axis.set_xlabel("Fractional profile coordinate")
     odd_axis.set_ylabel(r"$V_\mathrm{odd}$ (eV)")
     for axis in (profile_axis, odd_axis):
         axis.grid(axis="y", color=COLORS["grid"], linewidth=0.4)
@@ -977,28 +985,25 @@ def make_potential_examples(data_root: Path, output: Path) -> dict:
     """Compare slab-normal and in-plane potential signatures in 2D systems."""
 
     root = data_root / "potential"
-    fig = plt.figure(figsize=(7.2, 6.9), constrained_layout=True)
-    grid = fig.add_gridspec(3, 2, height_ratios=(0.88, 1.12, 1.25))
+    fig = plt.figure(figsize=(7.2, 8.1), constrained_layout=True)
+    fig.set_constrained_layout_pads(wspace=0.18, hspace=0.06)
+    grid = fig.add_gridspec(3, 2, height_ratios=(0.85, 1.14, 1.12))
     ax_mos2_z = fig.add_subplot(grid[0, 0])
     ax_in2se3_z = fig.add_subplot(grid[0, 1])
-    ax_mos2_map = fig.add_subplot(grid[1, 0])
-    ax_ges_map = fig.add_subplot(grid[1, 1])
-    mos2_profile_grid = grid[2, 0].subgridspec(
+    ax_ges_map = fig.add_subplot(grid[1, 0])
+    ax_reference_map = fig.add_subplot(grid[1, 1])
+    ges_profile_grid = grid[2, 0].subgridspec(
         2, 1, height_ratios=(2.2, 1.0), hspace=0.08
-    )
-    ges_profile_grid = grid[2, 1].subgridspec(
-        2, 1, height_ratios=(2.2, 1.0), hspace=0.08
-    )
-    ax_mos2_profile = fig.add_subplot(mos2_profile_grid[0, 0])
-    ax_mos2_odd = fig.add_subplot(
-        mos2_profile_grid[1, 0], sharex=ax_mos2_profile
     )
     ax_ges_profile = fig.add_subplot(ges_profile_grid[0, 0])
     ax_ges_odd = fig.add_subplot(ges_profile_grid[1, 0], sharex=ax_ges_profile)
+    reference_grid = grid[2, 1].subgridspec(2, 1, height_ratios=(2.2, 1.0), hspace=0.08)
+    ax_reference_profile = fig.add_subplot(reference_grid[0, 0])
+    ax_reference_odd = fig.add_subplot(reference_grid[1, 0], sharex=ax_reference_profile)
 
     slab_sources = {}
     for material, axis, color, title, upper_limit in (
-        ("MoS2", ax_mos2_z, COLORS["muted"], r"MoS$_2$", 5.8),
+        ("MoS2", ax_mos2_z, COLORS["muted"], r"MoS$_2$", 8.0),
         (
             "In2Se3",
             ax_in2se3_z,
@@ -1060,44 +1065,52 @@ def make_potential_examples(data_root: Path, output: Path) -> dict:
         style_data_axis(axis)
         slab_sources[material] = (profile_path, vacuum_path, vacuum)
 
-    _plot_tiled_planar_map(
-        fig,
-        ax_mos2_map,
-        root / "MoS2" / "xy_map.dat",
-        title=r"MoS$_2$ (3$\times$3)",
-        arrow_label=r"$a$",
-    )
+    map_limit = max(float(np.percentile(np.abs(_load_planar_map(root / name / "xy_map.dat")[2]), 98))
+                    for name in ("GeS", "GeS_nonpolar"))
     _plot_tiled_planar_map(
         fig,
         ax_ges_map,
         root / "GeS" / "xy_map.dat",
-        title=r"GeS (3$\times$3)",
+        title=r"GeS: polar ($3\times3$)",
         arrow_label=r"$a$",
+        tile=True,
+        color_limit=map_limit,
     )
-    mos2_mirror = _plot_mirror_profile(
-        ax_mos2_profile,
-        ax_mos2_odd,
-        root,
-        "MoS2",
-        title=r"MoS$_2$ along $a$",
-    )
+    _plot_tiled_planar_map(fig, ax_reference_map, root / "GeS_nonpolar" / "xy_map.dat",
+                          title=r"GeS: nonpolar reference ($3\times3$)", arrow_label=r"$a$",
+                          tile=True, color_limit=map_limit)
+    _, _, _, odd, metric, center, periods = load_mirror_asymmetry(root, "MoS2", "a.dat")
+    mos2_mirror = {"metric": metric, "odd_rms_eV": float(np.sqrt(np.mean(odd**2))),
+                   "optimized_center_fraction": center, "input_periods_folded": periods}
     ges_mirror = _plot_mirror_profile(
         ax_ges_profile,
         ax_ges_odd,
         root,
         "GeS",
-        title=r"GeS along $a$",
+        title=r"Polar GeS along $a$",
     )
+    reference_mirror = _plot_mirror_profile(
+        ax_reference_profile, ax_reference_odd, root, "GeS_nonpolar",
+        title=r"Nonpolar GeS along $a$",
+    )
+    low = min(ax.get_ylim()[0] for ax in (ax_ges_profile, ax_reference_profile))
+    high = max(ax.get_ylim()[1] for ax in (ax_ges_profile, ax_reference_profile))
+    for ax in (ax_ges_profile, ax_reference_profile):
+        ax.set_ylim(low, high + 0.35 * (high - low))
+        ax.texts[0].set_position((0.03, 0.84))
+    odd_limit = max(abs(v) for ax in (ax_ges_odd, ax_reference_odd) for v in ax.get_ylim())
+    for ax in (ax_ges_odd, ax_reference_odd):
+        ax.set_ylim(-odd_limit, odd_limit)
 
     for label, axis in zip(
         "abcdef",
         (
             ax_mos2_z,
             ax_in2se3_z,
-            ax_mos2_map,
             ax_ges_map,
-            ax_mos2_profile,
+            ax_reference_map,
             ax_ges_profile,
+            ax_reference_profile,
         ),
     ):
         panel_label(axis, label, x=-0.25, y=1.10)
@@ -1115,13 +1128,18 @@ def make_potential_examples(data_root: Path, output: Path) -> dict:
         root / "MoS2" / "a.dat",
         root / "GeS" / "xy_map.dat",
         root / "GeS" / "a.dat",
+        root / "GeS_nonpolar" / "xy_map.dat",
+        root / "GeS_nonpolar" / "a.dat",
+        root / "GeS_nonpolar" / "reference_construction.json",
     ]
     return {
         "figure": "potential_examples_2d",
         "files": files,
         "figure_contract": {
-            "conclusion": "ZStar resolves a negligible in-plane mirror-odd potential for nonpolar MoS2 and a pronounced polar-axis asymmetry for ferroelectric GeS while retaining slab-normal vacuum-step diagnostics.",
+            "conclusion": "Slab-normal profiles resolve vacuum steps; matched polar/nonpolar GeS potentials isolate in-plane mirror asymmetry using common color and ordinate scales. Maps tile the same computed unit cell 3x3; only the nonpolar reference required a new fixed-ion SCF.",
             "archetype": "quantitative grid",
+            "map_tile": [3, 3],
+            "common_map_limit_eV": map_limit,
         },
         "vacuum_step_eV": {
             material: slab_sources[material][2]["delta_eV"]
@@ -1130,6 +1148,7 @@ def make_potential_examples(data_root: Path, output: Path) -> dict:
         "mirror_asymmetry": {
             "MoS2": mos2_mirror,
             "GeS": ges_mirror,
+            "GeS_nonpolar": reference_mirror,
         },
         "source_files": source_files,
     }
@@ -1357,21 +1376,23 @@ def main() -> None:
         type=Path,
         default=Path(__file__).resolve().parent,
     )
+    parser.add_argument('--potential-only', action='store_true',
+                        help='Redraw only the potential figure, preserving other artwork.')
     args = parser.parse_args()
     configure_matplotlib()
 
-    bto = make_bto_spectroscopy(args.data_root, args.output)
-    in2se3 = make_in2se3_polarization(args.data_root, args.output)
-    bec = make_bec_validation(args.data_root, args.output)
     potential = make_potential_examples(args.data_root, args.output)
+    generated_items = (potential,) if args.potential_only else (
+        make_bto_spectroscopy(args.data_root, args.output),
+        make_in2se3_polarization(args.data_root, args.output),
+        make_bec_validation(args.data_root, args.output), potential)
     source_paths = sorted(
         {
             Path(path)
-            for item in (bto, in2se3, bec, potential)
+            for item in generated_items
             for path in item["source_files"]
         }
     )
-    generated_items = (bto, in2se3, bec, potential)
     generated_figures = [
         {key: value for key, value in item.items() if key != "source_files"}
         for item in generated_items

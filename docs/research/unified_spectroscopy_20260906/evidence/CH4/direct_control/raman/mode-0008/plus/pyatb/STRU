@@ -1,0 +1,31 @@
+ATOMIC_SPECIES
+C 12.011 /home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/CH4/direct_control/raman/mode-0008/plus/C.upf upf201
+H 1.008 /home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/CH4/direct_control/raman/mode-0008/plus/H.upf upf201
+
+NUMERICAL_ORBITAL
+/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/CH4/direct_control/raman/mode-0008/plus/C_gga_9au_100Ry_3s3p2d.orb
+/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/CH4/direct_control/raman/mode-0008/plus/H_gga_9au_100Ry_3s2p.orb
+
+LATTICE_CONSTANT
+1.88972612462577
+
+LATTICE_VECTORS
+20.00000000372726 0 0
+0 20.00000000372726 0
+0 0 20.00000000372726
+
+ATOMIC_POSITIONS
+Direct
+
+C
+0.0
+1
+0.499913795237  0.500021745902  0.499926672850 m 0 0 0
+
+H
+0.0
+4
+0.531760010653  0.531239040144  0.531697863223 m 1 1 1
+0.531950539417  0.468360541737  0.468819364816 m 1 1 1
+0.468482771468  0.531828309686  0.468420624038 m 1 1 1
+0.468833945802  0.468312975293  0.531935958431 m 1 1 1

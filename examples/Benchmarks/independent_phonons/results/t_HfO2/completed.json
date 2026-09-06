@@ -1,0 +1,8 @@
+{
+  "case": "t_HfO2",
+  "host": "cu23",
+  "SCFs": 4,
+  "independent_force_core_hours": 5.842413025173462,
+  "max_force_difference_from_unified_eV_A": 6.416199999997874e-06,
+  "status": "completed"
+}

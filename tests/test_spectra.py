@@ -68,6 +68,29 @@ def write_polarization(path: Path, values, quanta=(100.0, 100.0, 100.0)):
 
 
 class SpectraTests(unittest.TestCase):
+    def test_file_exports_do_not_create_gui_figures(self):
+        from unittest.mock import patch
+        modes = GammaModes(
+            frequencies_thz=np.asarray([10.0]),
+            eigenvectors=np.asarray([[[1.0, 0.0, 0.0]]]),
+            masses_amu=np.asarray([1.0]), lattice_angstrom=np.eye(3)*10,
+            symbols=("H",), positions_fractional=np.zeros((1, 3)),
+        )
+        born = BornData(tensors=np.eye(3)[None], electronic_dielectric=np.eye(3), source="test")
+        molecular = calculate_molecular_ir_spectrum(modes, [1], np.ones((1, 3)), points=101)
+        ir = calculate_ir_spectrum(modes, born, points=101)
+        raman = calculate_raman_spectrum(modes, [1], np.eye(3)[None], points=101)
+        with tempfile.TemporaryDirectory() as tmp, patch(
+            "matplotlib.pyplot.figure", side_effect=AssertionError("GUI figure requested")
+        ):
+            root = Path(tmp)
+            write_molecular_ir_outputs(root/'molecular', molecular)
+            write_ir_outputs(root/'ir', ir)
+            write_raman_outputs(root/'raman', raman)
+            for name in ('molecular/ir_spectrum', 'ir/ir_spectrum', 'raman/raman_spectrum'):
+                for suffix in ('.png', '.pdf', '.svg'):
+                    self.assertGreater((root/(name+suffix)).stat().st_size, 100)
+
     def test_spectra_reject_substantive_imaginary_modes_by_default(self):
         modes = GammaModes(
             frequencies_thz=np.asarray([-5.0, 0.0, 10.0]),
@@ -361,7 +384,7 @@ class SpectraTests(unittest.TestCase):
                 "1 0 0 0 1 0 0 0 1\n",
                 encoding="utf-8",
             )
-            (root / "Z-BORN-all.out").write_text(
+            (root / "BEC.raw.dat").write_text(
                 "1 X 1 0 0 0 1 0 0 0 1\n"
                 "2 X -1 0 0 0 -1 0 0 0 -1\n",
                 encoding="utf-8",
@@ -369,7 +392,7 @@ class SpectraTests(unittest.TestCase):
             born = read_born_data(root / "BORN", natoms=2)
             self.assertEqual(born.tensors.shape, (2, 3, 3))
             np.testing.assert_allclose(born.electronic_dielectric, np.eye(3) * 2)
-            self.assertIn("Z-BORN-all.out", born.source)
+            self.assertIn("BEC.raw.dat", born.source)
 
     def test_raman_placzek_isotropic_tensor(self):
         with tempfile.TemporaryDirectory() as tmp:

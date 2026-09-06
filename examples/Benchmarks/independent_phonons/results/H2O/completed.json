@@ -1,0 +1,8 @@
+{
+  "case": "H2O",
+  "host": "cu24",
+  "SCFs": 6,
+  "independent_force_core_hours": 7.398200623318553,
+  "max_force_difference_from_unified_eV_A": 1.4849999996346952e-07,
+  "status": "completed"
+}

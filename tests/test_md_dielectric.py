@@ -113,7 +113,7 @@ class MDDielectricTests(unittest.TestCase):
             )
             root = Path(tmp)
             write_outputs(root, result, [None, None])
-            self.assertTrue((root / "zstar_response.json").is_file())
+            self.assertTrue((root / "response.json").is_file())
 
 
 if __name__ == "__main__":

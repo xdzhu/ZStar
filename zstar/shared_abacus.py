@@ -368,7 +368,7 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             for path in (root/name).glob(pattern):
                 if path.is_file():
                     output['source_hashes'][path.relative_to(root).as_posix()] = _digest(path)
-    result_path = root / ("shared_forces_result.json" if forces_only else "shared_response_result.json")
+    result_path = root / ("force_fit.json" if forces_only else "response_fit.json")
     result_path.write_text(json.dumps(output, indent=2) + "\n", encoding="utf-8")
     if not forces_only:
         from .deal_polar import _write_born_for_phonopy
@@ -379,14 +379,13 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
         born_lines = (root / "BORN").read_text().splitlines()
         born_lines[0] = "# ZStar shared response: Z[polarization,displacement]; units e"
         (root / "BORN").write_text("\n".join(born_lines) + "\n", encoding="utf-8")
-        shutil.copy2(root / "BORN", root / "BORN-for-phonopy.out")
-        for name, values in (("Z-BORN-all.out", raw.born), ("Z-BORN-symm.out", projected.born)):
+        for name, values in (("BEC.raw.dat", raw.born), ("BEC.dat", projected.born)):
             lines = ["# atom species Z[displacement,polarization]; units e"]
             lines.extend(f"{i + 1} {s} " + " ".join(f"{v:.8f}" for v in z.T.ravel())
                          for i, (s, z) in enumerate(zip(atoms.symbols, values)))
             (root / name).write_text("\n".join(lines) + "\n", encoding="utf-8")
-        for name, values in (("Z-BORN-reduced.out", raw.born),
-                             ("Z-BORN-reduced-neutral.out", projected.born)):
+        for name, values in (("BEC.rep.raw.dat", raw.born),
+                             ("BEC.rep.dat", projected.born)):
             lines = ["# atom species Z[displacement,polarization]; units e"]
             lines.extend(f"{i + 1} {atoms.symbols[i]} " + " ".join(f"{v:.8f}" for v in values[i].T.ravel())
                          for i in independent)
@@ -403,6 +402,6 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             provenance={"ensemble_manifest": MANIFEST, "manifest_sha256": _digest(root / MANIFEST),
                         "result": result_path.name},
             structure={"symbols": atoms.symbols, "cell_angstrom": atoms.cell, "scaled_positions": atoms.scaled_positions},
-            metadata={"raw_diagnostics": raw.diagnostics, "scope": "Gamma", "asr_projected": True}).write(root / "zstar_response.json")
+            metadata={"raw_diagnostics": raw.diagnostics, "scope": "Gamma", "asr_projected": True}).write(root / "response.json")
     print(f"[SHARED] Collected {len(observations)} displacements; {result_path}")
     return output

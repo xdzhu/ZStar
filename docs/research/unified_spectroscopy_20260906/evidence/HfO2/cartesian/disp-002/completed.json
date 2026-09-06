@@ -1,0 +1,40 @@
+{
+  "case": "HfO2",
+  "scheme": "cartesian",
+  "stage": "disp-002",
+  "host": "cu23",
+  "command": [
+    "mpirun",
+    "-np",
+    "40",
+    "/home/zhuxd/Software/anaconda3/envs/icu_copy/bin/python",
+    "-m",
+    "tools.spectroscopy_benchmark.precision_static"
+  ],
+  "mpi": 40,
+  "omp": 1,
+  "additional_DFT_calls": 0,
+  "success": true,
+  "epsilon": [
+    [
+      5.161381319290246,
+      1.6224030452427485e-10,
+      0.006618818709445404
+    ],
+    [
+      1.6224030452427485e-10,
+      5.161330211499397,
+      2.0609657074867598e-08
+    ],
+    [
+      0.006618818709445404,
+      2.0609657074867598e-08,
+      4.780344865570818
+    ]
+  ],
+  "output_hashes": {
+    "Out/Optical_Conductivity/static_dielectric_function.dat": "50091c54d5b4ce1ddec29dbc4e27ec96e7e2fcbc7943d91e3225a8723b15b15f"
+  },
+  "wall_seconds": 85.15753468777984,
+  "core_hours": 0.9461948298642204
+}

@@ -1,0 +1,8 @@
+{
+  "case": "SiC",
+  "host": "cu25",
+  "SCFs": 2,
+  "independent_force_core_hours": 0.23384421112326284,
+  "max_force_difference_from_unified_eV_A": 6.269999999969703e-08,
+  "status": "completed"
+}

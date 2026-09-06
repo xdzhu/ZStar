@@ -30,7 +30,7 @@ class QnepDatasetTests(unittest.TestCase):
             root = Path(tmp)
             source = root / "train.xyz"
             source.write_text(FRAME, encoding="utf-8")
-            bec = root / "Z-BORN-all.out"
+            bec = root / "BEC.raw.dat"
             bec.write_text(ZBORN, encoding="utf-8")
             output = root / "train_qnep.xyz"
             summary = augment_qnep_dataset(source, output, bec=bec)
@@ -52,7 +52,7 @@ class QnepDatasetTests(unittest.TestCase):
             root = Path(tmp)
             source = root / "train.xyz"
             source.write_text(FRAME + FRAME, encoding="utf-8")
-            bec = root / "Z-BORN-all.out"
+            bec = root / "BEC.raw.dat"
             bec.write_text(ZBORN, encoding="utf-8")
             mapping = root / "map.csv"
             with mapping.open("w", newline="", encoding="utf-8") as handle:
@@ -88,7 +88,7 @@ class QnepDatasetTests(unittest.TestCase):
             root = Path(tmp)
             source = root / "train.xyz"
             source.write_text(FRAME, encoding="utf-8")
-            bec = root / "Z-BORN-all.out"
+            bec = root / "BEC.raw.dat"
             bec.write_text(ZBORN, encoding="utf-8")
             labeled = root / "qnep.xyz"
             augment_qnep_dataset(source, labeled, bec=bec)

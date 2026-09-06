@@ -3,6 +3,7 @@ import re
 import math
 import shutil
 import numpy as np
+from .artifacts import resolve_artifact
 from . import read_irrep
 from . import get_wyckoff
 import matplotlib.pyplot as plt
@@ -22,6 +23,7 @@ def filter_small_elements(Z, zero_tolerance):
 
 
 def read_and_extract_matrices(filename):
+    filename = resolve_artifact(filename)
     with open(filename, "r") as file:
         lines = file.readlines()
     
@@ -72,6 +74,7 @@ def read_born_file(born_file_path):
     """
     读取 BORN 文件并提取第 2 行数据填充到 3x3 的电介质张量矩阵中。
     """
+    born_file_path = resolve_artifact(born_file_path)
     # 检查文件是否存在
     if not os.path.exists(born_file_path):
         print(f"Error: {born_file_path} does not exist.")
@@ -186,11 +189,12 @@ def deal_q_vector(
         print(f"Sum of vector squared: {np.sum(vectors ** 2)}")
 
     # 使用函数读取文件并提取矩阵，之后修改为 rpolar 传递值过来
-    # born = read_and_extract_matrices("Z-BORN-all.out")
-    born_candidates = ["Z-BORN-all.out", "Z-BORN-symm.out"]
-    existing_files = [f for f in born_candidates if os.path.exists(f)]
+    # born = read_and_extract_matrices("BEC.raw.dat")
+    born_candidates = ["BEC.raw.dat", "BEC.dat"]
+    existing_files = [resolve_artifact(f, explicit=False) for f in born_candidates]
+    existing_files = [f for f in existing_files if f.is_file()]
     if not existing_files:
-        raise FileNotFoundError("当前目录下未找到 Z-BORN-all.out 或 Z-BORN-symm.out")
+        raise FileNotFoundError("当前目录下未找到 BEC.raw.dat 或 BEC.dat")
     latest_born_file = max(existing_files, key=os.path.getmtime)
 
     born = read_and_extract_matrices(latest_born_file)

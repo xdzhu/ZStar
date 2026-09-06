@@ -16,7 +16,11 @@
       "planar_map_abacus_version": "3.10.0 LTS",
       "basis_type": "lcao",
       "ecutwfc_ry": 100,
-      "kspacing": [0.1, 0.1, 1.0],
+      "kspacing": [
+        0.1,
+        0.1,
+        1.0
+      ],
       "planar_map_scf_threshold_ry": 1e-08,
       "smearing_method": "gauss",
       "smearing_sigma_ry": 0.01,
@@ -28,7 +32,11 @@
       "abacus_version": "3.8.3",
       "basis_type": "lcao",
       "ecutwfc_ry": 100,
-      "kspacing": [0.1, 0.1, 1.0],
+      "kspacing": [
+        0.1,
+        0.1,
+        1.0
+      ],
       "scf_threshold_ry": 1e-06,
       "smearing_method": "gauss",
       "smearing_sigma_ry": 0.005,
@@ -41,7 +49,11 @@
       "abacus_version": "3.6.5",
       "basis_type": "lcao",
       "ecutwfc_ry": 100,
-      "kspacing": [0.05, 0.05, 1.0],
+      "kspacing": [
+        0.05,
+        0.05,
+        1.0
+      ],
       "scf_threshold_ry": 1.2e-06,
       "smearing_method": "gauss",
       "smearing_sigma_ry": 0.001,
@@ -53,7 +65,11 @@
       "abacus_version": "3.6.5",
       "basis_type": "lcao",
       "ecutwfc_ry": 100,
-      "kspacing": [0.05, 0.05, 1.0],
+      "kspacing": [
+        0.05,
+        0.05,
+        1.0
+      ],
       "scf_threshold_ry": 1e-06,
       "smearing_method": "gauss",
       "smearing_sigma_ry": 0.001,
@@ -65,7 +81,11 @@
       "abacus_version": "3.6.5",
       "basis_type": "lcao",
       "ecutwfc_ry": 100,
-      "kspacing": [0.05, 0.05, 1.0],
+      "kspacing": [
+        0.05,
+        0.05,
+        1.0
+      ],
       "scf_threshold_ry": 1e-06,
       "smearing_method": "gauss",
       "smearing_sigma_ry": 0.001,
@@ -78,7 +98,11 @@
       "abacus_version": "3.10.0 LTS",
       "basis_type": "lcao",
       "ecutwfc_ry": 100,
-      "kspacing": [0.05, 0.05, 1.0],
+      "kspacing": [
+        0.05,
+        0.05,
+        1.0
+      ],
       "scf_threshold_ry": 1e-08,
       "smearing_method": "gauss",
       "smearing_sigma_ry": 0.001,
@@ -86,15 +110,47 @@
       "vdw_method": "d3_0",
       "calculation_node": "cu24",
       "wall_time_seconds": 43
+    },
+    "GeS_nonpolar": {
+      "role": "Fixed-ion inversion-symmetric reference",
+      "structure_source": "Equal-species inversion-pair projection at the polar cell",
+      "abacus_version": "3.10.0 LTS",
+      "basis_type": "lcao",
+      "ecutwfc_ry": 100,
+      "kspacing": [
+        0.05,
+        0.05,
+        1.0
+      ],
+      "scf_threshold_ry": 1e-08,
+      "smearing_method": "gauss",
+      "smearing_sigma_ry": 0.001,
+      "spin_orbit_coupling": false,
+      "vdw_method": "d3_0",
+      "calculation_node": "cu23",
+      "wall_time_seconds": 39,
+      "space_group": "Pmmn (59)",
+      "saddle_point_verified": false
     }
   },
   "directional_profiles": {
     "figure_direction": "a",
-    "legacy_directions": ["a+b", "a-b"],
+    "legacy_directions": [
+      "a+b",
+      "a-b"
+    ],
     "bins": "native grid count",
     "interpolation": "linear",
-    "samples": [64, 64],
+    "samples": [
+      64,
+      64
+    ],
     "periodic_gaussian_smoothing_sigma_angstrom": 0.15,
-    "interpretation": "The mean-centered difference is a directional potential diagnostic, not a polarization magnitude."
+    "interpretation": "The mean-centered difference is a directional potential diagnostic, not a polarization magnitude.",
+    "map_tiling": [
+      3,
+      3
+    ],
+    "comparison": "Matched polar/nonpolar GeS, common map scale and profile limits"
   }
 }

@@ -1,0 +1,1353 @@
+{
+  "scope": "DOI identity check via publisher-deposited Crossref metadata; not full-text validation.",
+  "date": "2026-09-07",
+  "records": [
+    {
+      "key": "Rabe2007Ferroelectrics",
+      "publisher_verified_url": "https://link.springer.com/book/10.1007/978-3-540-34591-6",
+      "publisher_subtitle": "A Modern Perspective",
+      "publisher_editors": ["Karin M. Rabe", "Charles H. Ahn", "Jean-Marc Triscone"],
+      "requested": "10.1007/978-3-540-34591-6",
+      "doi": "10.1007/978-3-540-34591-6",
+      "title": [
+        "Physics of Ferroelectrics"
+      ],
+      "author": [
+        null
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Spaldin2012",
+      "requested": "10.1016/j.jssc.2012.05.010",
+      "doi": "10.1016/j.jssc.2012.05.010",
+      "title": [
+        "A beginner's guide to the modern theory of polarization"
+      ],
+      "author": [
+        "Spaldin"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Cohen1992",
+      "requested": "10.1038/358136a0",
+      "doi": "10.1038/358136a0",
+      "title": [
+        "Origin of ferroelectricity in perovskite oxides"
+      ],
+      "author": [
+        "Cohen"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Ghosez1995",
+      "requested": "10.1103/PhysRevB.51.6765",
+      "doi": "10.1103/physrevb.51.6765",
+      "title": [
+        "Born effective charges of barium titanate: Band-by-band decomposition and sensitivity to structural features"
+      ],
+      "author": [
+        "Ghosez",
+        "Gonze",
+        "Lambin",
+        "Michenaud"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Zhong1994",
+      "requested": "10.1103/PhysRevLett.72.3618",
+      "doi": "10.1103/physrevlett.72.3618",
+      "title": [
+        "Giant LO-TO splittings in perovskite ferroelectrics"
+      ],
+      "author": [
+        "Zhong",
+        "King-Smith",
+        "Vanderbilt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Gonze1997",
+      "requested": "10.1103/PhysRevB.55.10355",
+      "doi": "10.1103/physrevb.55.10355",
+      "title": [
+        "Dynamical matrices, Born effective charges, dielectric permittivity tensors, and interatomic force constants from density-functional perturbation theory"
+      ],
+      "author": [
+        "Gonze",
+        "Lee"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "He2002",
+      "requested": "10.1103/PhysRevB.65.214112",
+      "doi": "10.1103/physrevb.65.214112",
+      "title": [
+        "First-principles study of the structure and lattice dielectric response of<mml:math xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\"><mml:mrow><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">CaCu</mml:mi></mml:mrow><mml:mrow><mml:mn>3</mml:mn></mml:mrow></mml:msub></mml:mrow><mml:mrow><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">Ti</mml:mi></mml:mrow><mml:mrow><mml:mn>4</mml:mn></mml:mrow></mml:msub></mml:mrow><mml:mrow><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">O</mml:mi></mml:mrow><mml:mrow><mml:mn>12</mml:mn></mml:mrow></mml:msub></mml:mrow></mml:math>"
+      ],
+      "author": [
+        "He",
+        "Neaton",
+        "Cohen",
+        "Vanderbilt",
+        "Homes"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "ZhaoVanderbilt2002",
+      "requested": "10.1103/PhysRevB.65.233106",
+      "doi": "10.1103/physrevb.65.233106",
+      "title": [
+        "First-principles study of structural, vibrational, and lattice dielectric properties of hafnium oxide"
+      ],
+      "author": [
+        "Zhao",
+        "Vanderbilt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Robertson2006",
+      "requested": "10.1088/0034-4885/69/2/R02",
+      "doi": "10.1088/0034-4885/69/2/r02",
+      "title": [
+        "High dielectric constant gate oxides for metal oxide Si transistors"
+      ],
+      "author": [
+        "Robertson"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Boescke2011",
+      "requested": "10.1063/1.3634052",
+      "doi": "10.1063/1.3634052",
+      "title": [
+        "Ferroelectricity in hafnium oxide thin films"
+      ],
+      "author": [
+        "Böscke",
+        "Müller",
+        "Bräuhaus",
+        "Schröder",
+        "Böttger"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "KingSmith1993",
+      "requested": "10.1103/PhysRevB.47.1651",
+      "doi": "10.1103/physrevb.47.1651",
+      "title": [
+        "Theory of polarization of crystalline solids"
+      ],
+      "author": [
+        "King-Smith",
+        "Vanderbilt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "VanderbiltKingSmith1993",
+      "requested": "10.1103/PhysRevB.48.4442",
+      "doi": "10.1103/physrevb.48.4442",
+      "title": [
+        "Electric polarization as a bulk quantity and its relation to surface charge"
+      ],
+      "author": [
+        "Vanderbilt",
+        "King-Smith"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Resta1994",
+      "requested": "10.1103/RevModPhys.66.899",
+      "doi": "10.1103/revmodphys.66.899",
+      "title": [
+        "Macroscopic polarization in crystalline dielectrics: the geometric phase approach"
+      ],
+      "author": [
+        "Resta"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Vanderbilt2000",
+      "requested": "10.1016/S0022-3697(99)00273-5",
+      "doi": "10.1016/s0022-3697(99)00273-5",
+      "title": [
+        "Berry-phase theory of proper piezoelectric response"
+      ],
+      "author": [
+        "Vanderbilt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Bonini2020",
+      "requested": "10.1103/PhysRevB.102.045141",
+      "doi": "10.1103/physrevb.102.045141",
+      "title": [
+        "Berry flux diagonalization: Application to electric polarization"
+      ],
+      "author": [
+        "Bonini",
+        "Vanderbilt",
+        "Rabe"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Souza2002",
+      "requested": "10.1103/PhysRevLett.89.117602",
+      "doi": "10.1103/physrevlett.89.117602",
+      "title": [
+        "First-Principles Approach to Insulators in Finite Electric Fields"
+      ],
+      "author": [
+        "Souza",
+        "Íñiguez",
+        "Vanderbilt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Wu2005",
+      "requested": "10.1103/PhysRevB.72.035105",
+      "doi": "10.1103/physrevb.72.035105",
+      "title": [
+        "Systematic treatment of displacements, strains, and electric fields in density-functional perturbation theory"
+      ],
+      "author": [
+        "Wu",
+        "Vanderbilt",
+        "Hamann"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "WangVanderbilt2007",
+      "requested": "10.1103/PhysRevB.75.115116",
+      "doi": "10.1103/physrevb.75.115116",
+      "title": [
+        "First-principles perturbative computation of dielectric and Born charge tensors in finite electric fields"
+      ],
+      "author": [
+        "Wang",
+        "Vanderbilt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Stengel2009",
+      "requested": "10.1038/nphys1185",
+      "doi": "10.1038/nphys1185",
+      "title": [
+        "Electric displacement as the fundamental variable in electronic-structure calculations"
+      ],
+      "author": [
+        "Stengel",
+        "Spaldin",
+        "Vanderbilt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Baroni2001",
+      "requested": "10.1103/RevModPhys.73.515",
+      "doi": "10.1103/revmodphys.73.515",
+      "title": [
+        "Phonons and related crystal properties from density-functional perturbation theory"
+      ],
+      "author": [
+        "Baroni",
+        "de Gironcoli",
+        "Dal Corso",
+        "Giannozzi"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Porezag1996",
+      "requested": "10.1103/PhysRevB.54.7830",
+      "doi": "10.1103/physrevb.54.7830",
+      "title": [
+        "Infrared intensities and Raman-scattering activities within density-functional theory"
+      ],
+      "author": [
+        "Porezag",
+        "Pederson"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Lazzeri2003",
+      "requested": "10.1103/PhysRevLett.90.036401",
+      "doi": "10.1103/physrevlett.90.036401",
+      "title": [
+        "First-Principles Calculation of Vibrational Raman Spectra in Large Systems: Signature of Small Rings in Crystalline<mml:math xmlns:mml=\"http://www.w3.org/1998/Math/MathML\" display=\"inline\"><mml:msub><mml:mrow><mml:mi mathvariant=\"normal\">S</mml:mi><mml:mi mathvariant=\"normal\">i</mml:mi><mml:mi mathvariant=\"normal\">O</mml:mi></mml:mrow><mml:mn>2</mml:mn></mml:msub></mml:math>"
+      ],
+      "author": [
+        "Lazzeri",
+        "Mauri"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Veithen2005",
+      "requested": "10.1103/PhysRevB.71.125107",
+      "doi": "10.1103/physrevb.71.125107",
+      "title": [
+        "Nonlinear optical susceptibilities, Raman efficiencies, and electro-optic tensors from first-principles density functional perturbation theory"
+      ],
+      "author": [
+        "Veithen",
+        "Gonze",
+        "Ghosez"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Li2016",
+      "requested": "10.1016/j.commatsci.2015.07.004",
+      "doi": "10.1016/j.commatsci.2015.07.004",
+      "title": [
+        "Large-scale ab initio simulations based on systematically improvable atomic basis"
+      ],
+      "author": [
+        "Li",
+        "Liu",
+        "Chen",
+        "Lin",
+        "Ren",
+        "Lin",
+        "Yang",
+        "He"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "ABACUS2025",
+      "requested": "10.1063/5.0297563",
+      "doi": "10.1063/5.0297563",
+      "title": [
+        "ABACUS: An electronic structure analysis package for the AI era"
+      ],
+      "author": [
+        "Zhou",
+        "Zheng",
+        "Liu",
+        "Lu",
+        "Liu",
+        "Lin",
+        "Huang",
+        "Peng",
+        "Bao",
+        "Cai",
+        "Jin",
+        "Wu",
+        "Zhang",
+        "Jin",
+        "Ji",
+        "Shen",
+        "Liu",
+        "Sun",
+        "Cao",
+        "Sun",
+        "Liu",
+        "Chen",
+        "Liu",
+        "Li",
+        "Han",
+        "Liang",
+        "Bao",
+        "Deng",
+        "Liu",
+        "Chen",
+        "Ren",
+        "Zhang",
+        "Liu",
+        "Fu",
+        "Liu",
+        "Li",
+        "Wen",
+        "Tang",
+        "Xu",
+        "Duan",
+        "Wang",
+        "Gu",
+        "Dai",
+        "Zheng",
+        "Zhong",
+        "Xiang",
+        "Gong",
+        "Zhao",
+        "Zhang",
+        "Ou",
+        "Jiang",
+        "Liu",
+        "Xu",
+        "Xu",
+        "Ren",
+        "He",
+        "Zhang",
+        "Chen"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Sohier2017",
+      "requested": "10.1021/acs.nanolett.7b01090",
+      "doi": "10.1021/acs.nanolett.7b01090",
+      "title": [
+        "Breakdown of Optical Phonons’ Splitting in Two-Dimensional Materials"
+      ],
+      "author": [
+        "Sohier",
+        "Gibertini",
+        "Calandra",
+        "Mauri",
+        "Marzari"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Rivano2023",
+      "requested": "10.1038/s41524-023-01140-2",
+      "doi": "10.1038/s41524-023-01140-2",
+      "title": [
+        "Infrared-active phonons in one-dimensional materials and their spectroscopic signatures"
+      ],
+      "author": [
+        "Rivano",
+        "Marzari",
+        "Sohier"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Rivano2024",
+      "requested": "10.1103/PhysRevB.109.245426",
+      "doi": "10.1103/physrevb.109.245426",
+      "title": [
+        "Density functional perturbation theory for one-dimensional systems: Implementation and relevance for phonons and electron-phonon interactions"
+      ],
+      "author": [
+        "Rivano",
+        "Marzari",
+        "Sohier"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Ding2017",
+      "requested": "10.1038/ncomms14956",
+      "doi": "10.1038/ncomms14956",
+      "title": [
+        "Prediction of intrinsic two-dimensional ferroelectrics in In2Se3 and other III2-VI3 van der Waals materials"
+      ],
+      "author": [
+        "Ding",
+        "Zhu",
+        "Wang",
+        "Gao",
+        "Xiao",
+        "Gu",
+        "Zhang",
+        "Zhu"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Zhou2017",
+      "requested": "10.1021/acs.nanolett.7b02198",
+      "doi": "10.1021/acs.nanolett.7b02198",
+      "title": [
+        "Out-of-Plane Piezoelectricity and Ferroelectricity in Layered α-In\n                    <sub>2</sub>\n                    Se\n                    <sub>3</sub>\n                    Nanoflakes"
+      ],
+      "author": [
+        "Zhou",
+        "Wu",
+        "Zhu",
+        "Cho",
+        "He",
+        "Yang",
+        "Herrera",
+        "Chu",
+        "Han",
+        "Downer",
+        "Peng",
+        "Lai"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Xiao2018",
+      "requested": "10.1103/PhysRevLett.120.227601",
+      "doi": "10.1103/physrevlett.120.227601",
+      "title": [
+        "Intrinsic Two-Dimensional Ferroelectricity with Dipole Locking"
+      ],
+      "author": [
+        "Xiao",
+        "Zhu",
+        "Wang",
+        "Feng",
+        "Hu",
+        "Dasgupta",
+        "Han",
+        "Wang",
+        "Muller",
+        "Martin",
+        "Hu",
+        "Zhang"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Jin2023",
+      "requested": "10.1016/j.cpc.2023.108844",
+      "doi": "10.1016/j.cpc.2023.108844",
+      "title": [
+        "PYATB: An efficient Python package for electronic structure calculations using ab initio tight-binding model"
+      ],
+      "author": [
+        "Jin",
+        "Pang",
+        "Ji",
+        "Dai",
+        "He"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Togo2015",
+      "requested": "10.1016/j.scriptamat.2015.07.021",
+      "doi": "10.1016/j.scriptamat.2015.07.021",
+      "title": [
+        "First principles phonon calculations in materials science"
+      ],
+      "author": [
+        "Togo",
+        "Tanaka"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Togo2023",
+      "requested": "10.1088/1361-648X/acd831",
+      "doi": "10.1088/1361-648x/acd831",
+      "title": [
+        "Implementation strategies in phonopy and phono3py"
+      ],
+      "author": [
+        "Togo",
+        "Chaput",
+        "Tadano",
+        "Tanaka"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Poteshman2026",
+      "requested": "10.1038/s41524-025-01955-1",
+      "doi": "10.1038/s41524-025-01955-1",
+      "title": [
+        "High-throughput computation of electric polarization in solids via Berry flux diagonalization"
+      ],
+      "author": [
+        "Poteshman",
+        "Ricci",
+        "Neaton"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Laturia2018",
+      "requested": "10.1038/s41699-018-0050-x",
+      "doi": "10.1038/s41699-018-0050-x",
+      "title": [
+        "Dielectric properties of hexagonal boron nitride and transition metal dichalcogenides: from monolayer to bulk"
+      ],
+      "author": [
+        "Laturia",
+        "Van de Put",
+        "Vandenberghe"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "MalenfantThuot2024",
+      "requested": "10.1088/1361-648X/ad64a2",
+      "doi": "10.1088/1361-648x/ad64a2",
+      "title": [
+        "Efficient determination of Born-effective charges, LO-TO splitting, and Raman tensors of solids with a real-space atom-centered deep learning approach"
+      ],
+      "author": [
+        "Malenfant-Thuot",
+        "Ryczko",
+        "Tamblyn",
+        "Côté"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Harris2020NumPy",
+      "requested": "10.1038/s41586-020-2649-2",
+      "doi": "10.1038/s41586-020-2649-2",
+      "title": [
+        "Array programming with NumPy"
+      ],
+      "author": [
+        "Harris",
+        "Millman",
+        "van der Walt",
+        "Gommers",
+        "Virtanen",
+        "Cournapeau",
+        "Wieser",
+        "Taylor",
+        "Berg",
+        "Smith",
+        "Kern",
+        "Picus",
+        "Hoyer",
+        "van Kerkwijk",
+        "Brett",
+        "Haldane",
+        "del Río",
+        "Wiebe",
+        "Peterson",
+        "Gérard-Marchant",
+        "Sheppard",
+        "Reddy",
+        "Weckesser",
+        "Abbasi",
+        "Gohlke",
+        "Oliphant"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Virtanen2020SciPy",
+      "requested": "10.1038/s41592-019-0686-2",
+      "doi": "10.1038/s41592-019-0686-2",
+      "title": [
+        "SciPy 1.0: fundamental algorithms for scientific computing in Python"
+      ],
+      "author": [
+        "Virtanen",
+        "Gommers",
+        "Oliphant",
+        "Haberland",
+        "Reddy",
+        "Cournapeau",
+        "Burovski",
+        "Peterson",
+        "Weckesser",
+        "Bright",
+        "van der Walt",
+        "Brett",
+        "Wilson",
+        "Millman",
+        "Mayorov",
+        "Nelson",
+        "Jones",
+        "Kern",
+        "Larson",
+        "Carey",
+        "Polat",
+        "Feng",
+        "Moore",
+        "VanderPlas",
+        "Laxalde",
+        "Perktold",
+        "Cimrman",
+        "Henriksen",
+        "Quintero",
+        "Harris",
+        "Archibald",
+        "Ribeiro",
+        "Pedregosa",
+        "van Mulbregt",
+        null,
+        "Vijaykumar",
+        "Bardelli",
+        "Rothberg",
+        "Hilboll",
+        "Kloeckner",
+        "Scopatz",
+        "Lee",
+        "Rokem",
+        "Woods",
+        "Fulton",
+        "Masson",
+        "Häggström",
+        "Fitzgerald",
+        "Nicholson",
+        "Hagen",
+        "Pasechnik",
+        "Olivetti",
+        "Martin",
+        "Wieser",
+        "Silva",
+        "Lenders",
+        "Wilhelm",
+        "Young",
+        "Price",
+        "Ingold",
+        "Allen",
+        "Lee",
+        "Audren",
+        "Probst",
+        "Dietrich",
+        "Silterra",
+        "Webber",
+        "Slavič",
+        "Nothman",
+        "Buchner",
+        "Kulick",
+        "Schönberger",
+        "de Miranda Cardoso",
+        "Reimer",
+        "Harrington",
+        "Rodríguez",
+        "Nunez-Iglesias",
+        "Kuczynski",
+        "Tritz",
+        "Thoma",
+        "Newville",
+        "Kümmerer",
+        "Bolingbroke",
+        "Tartre",
+        "Pak",
+        "Smith",
+        "Nowaczyk",
+        "Shebanov",
+        "Pavlyk",
+        "Brodtkorb",
+        "Lee",
+        "McGibbon",
+        "Feldbauer",
+        "Lewis",
+        "Tygier",
+        "Sievert",
+        "Vigna",
+        "Peterson",
+        "More",
+        "Pudlik",
+        "Oshima",
+        "Pingel",
+        "Robitaille",
+        "Spura",
+        "Jones",
+        "Cera",
+        "Leslie",
+        "Zito",
+        "Krauss",
+        "Upadhyay",
+        "Halchenko",
+        "Vázquez-Baeza"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Hunter2007Matplotlib",
+      "requested": "10.1109/mcse.2007.55",
+      "doi": "10.1109/mcse.2007.55",
+      "title": [
+        "Matplotlib: A 2D Graphics Environment"
+      ],
+      "author": [
+        "Hunter"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Togo2024Spglib",
+      "requested": "10.1080/27660400.2024.2384822",
+      "doi": "10.1080/27660400.2024.2384822",
+      "title": [
+        "Spglib: a software library for crystal symmetry search"
+      ],
+      "author": [
+        "Togo",
+        "Shinohara",
+        "Tanaka"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Ong2013Pymatgen",
+      "requested": "10.1016/j.commatsci.2012.10.028",
+      "doi": "10.1016/j.commatsci.2012.10.028",
+      "title": [
+        "Python Materials Genomics (pymatgen): A robust, open-source python library for materials analysis"
+      ],
+      "author": [
+        "Ong",
+        "Richards",
+        "Jain",
+        "Hautier",
+        "Kocher",
+        "Cholia",
+        "Gunter",
+        "Chevrier",
+        "Persson",
+        "Ceder"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Kresse1996VASP",
+      "requested": "10.1103/PhysRevB.54.11169",
+      "doi": "10.1103/physrevb.54.11169",
+      "title": [
+        "Efficient iterative schemes for\n                    <i>ab initio</i>\n                    total-energy calculations using a plane-wave basis set"
+      ],
+      "author": [
+        "Kresse",
+        "Furthmüller"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Kuhne2020CP2K",
+      "requested": "10.1063/5.0007045",
+      "doi": "10.1063/5.0007045",
+      "title": [
+        "CP2K: An electronic structure and molecular dynamics software package - Quickstep: Efficient and accurate electronic structure calculations"
+      ],
+      "author": [
+        "Kühne",
+        "Iannuzzi",
+        "Del Ben",
+        "Rybkin",
+        "Seewald",
+        "Stein",
+        "Laino",
+        "Khaliullin",
+        "Schütt",
+        "Schiffmann",
+        "Golze",
+        "Wilhelm",
+        "Chulkov",
+        "Bani-Hashemian",
+        "Weber",
+        "Borštnik",
+        "Taillefumier",
+        "Jakobovits",
+        "Lazzaro",
+        "Pabst",
+        "Müller",
+        "Schade",
+        "Guidon",
+        "Andermatt",
+        "Holmberg",
+        "Schenter",
+        "Hehn",
+        "Bussy",
+        "Belleflamme",
+        "Tabacchi",
+        "Glöß",
+        "Lass",
+        "Bethune",
+        "Mundy",
+        "Plessl",
+        "Watkins",
+        "VandeVondele",
+        "Krack",
+        "Hutter"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Giannozzi2009",
+      "requested": "10.1088/0953-8984/21/39/395502",
+      "doi": "10.1088/0953-8984/21/39/395502",
+      "title": [
+        "QUANTUM ESPRESSO: a modular and open-source software project for quantum simulations of materials"
+      ],
+      "author": [
+        "Giannozzi",
+        "Baroni",
+        "Bonini",
+        "Calandra",
+        "Car",
+        "Cavazzoni",
+        "Ceresoli",
+        "Chiarotti",
+        "Cococcioni",
+        "Dabo",
+        "Dal Corso",
+        "de Gironcoli",
+        "Fabris",
+        "Fratesi",
+        "Gebauer",
+        "Gerstmann",
+        "Gougoussis",
+        "Kokalj",
+        "Lazzeri",
+        "Martin-Samos",
+        "Marzari",
+        "Mauri",
+        "Mazzarello",
+        "Paolini",
+        "Pasquarello",
+        "Paulatto",
+        "Sbraccia",
+        "Scandolo",
+        "Sclauzero",
+        "Seitsonen",
+        "Smogunov",
+        "Umari",
+        "Wentzcovitch"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Giannozzi2017",
+      "requested": "10.1088/1361-648X/aa8f79",
+      "doi": "10.1088/1361-648x/aa8f79",
+      "title": [
+        "Advanced capabilities for materials modelling with Q\n                    <scp>uantum</scp>\n                    ESPRESSO"
+      ],
+      "author": [
+        "Giannozzi",
+        "Andreussi",
+        "Brumme",
+        "Bunau",
+        "Buongiorno Nardelli",
+        "Calandra",
+        "Car",
+        "Cavazzoni",
+        "Ceresoli",
+        "Cococcioni",
+        "Colonna",
+        "Carnimeo",
+        "Dal Corso",
+        "de Gironcoli",
+        "Delugas",
+        "DiStasio",
+        "Ferretti",
+        "Floris",
+        "Fratesi",
+        "Fugallo",
+        "Gebauer",
+        "Gerstmann",
+        "Giustino",
+        "Gorni",
+        "Jia",
+        "Kawamura",
+        "Ko",
+        "Kokalj",
+        "Küçükbenli",
+        "Lazzeri",
+        "Marsili",
+        "Marzari",
+        "Mauri",
+        "Nguyen",
+        "Nguyen",
+        "Otero-de-la-Roza",
+        "Paulatto",
+        "Poncé",
+        "Rocca",
+        "Sabatini",
+        "Santra",
+        "Schlipf",
+        "Seitsonen",
+        "Smogunov",
+        "Timrov",
+        "Thonhauser",
+        "Umari",
+        "Vast",
+        "Wu",
+        "Baroni"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Momma2011VESTA",
+      "requested": "10.1107/S0021889811038970",
+      "doi": "10.1107/s0021889811038970",
+      "title": [
+        "<i>VESTA 3</i>\n                    for three-dimensional visualization of crystal, volumetric and morphology data"
+      ],
+      "author": [
+        "Momma",
+        "Izumi"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Perdew1996PBE",
+      "requested": "10.1103/PhysRevLett.77.3865",
+      "doi": "10.1103/physrevlett.77.3865",
+      "title": [
+        "Generalized Gradient Approximation Made Simple"
+      ],
+      "author": [
+        "Perdew",
+        "Burke",
+        "Ernzerhof"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Perdew2008",
+      "requested": "10.1103/PhysRevLett.100.136406",
+      "doi": "10.1103/physrevlett.100.136406",
+      "title": [
+        "Restoring the Density-Gradient Expansion for Exchange in Solids and Surfaces"
+      ],
+      "author": [
+        "Perdew",
+        "Ruzsinszky",
+        "Csonka",
+        "Vydrov",
+        "Scuseria",
+        "Constantin",
+        "Zhou",
+        "Burke"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Grimme2010D3",
+      "requested": "10.1063/1.3382344",
+      "doi": "10.1063/1.3382344",
+      "title": [
+        "A consistent and accurate\n                    <i>ab initio</i>\n                    parametrization of density functional dispersion correction (DFT-D) for the 94 elements H-Pu"
+      ],
+      "author": [
+        "Grimme",
+        "Antony",
+        "Ehrlich",
+        "Krieg"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Grimme2011BJ",
+      "requested": "10.1002/jcc.21759",
+      "doi": "10.1002/jcc.21759",
+      "title": [
+        "Effect of the damping function in dispersion corrected density functional theory"
+      ],
+      "author": [
+        "Grimme",
+        "Ehrlich",
+        "Goerigk"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Bilc2008",
+      "requested": "10.1103/PhysRevB.77.165107",
+      "doi": "10.1103/physrevb.77.165107",
+      "title": [
+        "Hybrid exchange-correlation functional for accurate prediction of the electronic and structural properties of ferroelectric oxides"
+      ],
+      "author": [
+        "Bilc",
+        "Orlando",
+        "Shaltaf",
+        "Rignanese",
+        "Íñiguez",
+        "Ghosez"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Masuki2022",
+      "requested": "10.1103/PhysRevB.106.224104",
+      "doi": "10.1103/physrevb.106.224104",
+      "title": [
+        "<i>Ab initio</i>\n                    structural optimization at finite temperatures based on anharmonic phonon theory: Application to the structural phase transitions of\n                    <mml:math xmlns:mml=\"http://www.w3.org/1998/Math/MathML\">\n                      <mml:msub>\n                        <mml:mi>BaTiO</mml:mi>\n                        <mml:mn>3</mml:mn>\n                      </mml:msub>\n                    </mml:math>"
+      ],
+      "author": [
+        "Masuki",
+        "Nomoto",
+        "Arita",
+        "Tadano"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Fan2022HfO2",
+      "requested": "10.1038/s41535-022-00436-8",
+      "doi": "10.1038/s41535-022-00436-8",
+      "title": [
+        "Vibrational fingerprints of ferroelectric HfO2"
+      ],
+      "author": [
+        "Fan",
+        "Singh",
+        "Xu",
+        "Park",
+        "Qi",
+        "Cheong",
+        "Vanderbilt",
+        "Rabe",
+        "Musfeldt"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "SioGiustino2022",
+      "requested": "10.1103/PhysRevB.105.115414",
+      "doi": "10.1103/physrevb.105.115414",
+      "title": [
+        "Unified \n<i>ab initio</i>\n description of Fröhlich electron-phonon interactions in two-dimensional and three-dimensional materials"
+      ],
+      "author": [
+        "Sio",
+        "Giustino"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Hu2018hBN",
+      "requested": "10.1088/1674-1056/27/8/086301",
+      "doi": "10.1088/1674-1056/27/8/086301",
+      "title": [
+        "Unconventional lattice dynamics in few-layer h-BN and indium iodide crystals*"
+      ],
+      "author": [
+        "Hu",
+        "Huang",
+        "Wang",
+        "Yang",
+        "Dong",
+        "Wang",
+        "Zhao",
+        "Ali",
+        "Zhang"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Soleimani2020",
+      "requested": "10.1039/D0NR04096G",
+      "doi": "10.1039/d0nr04096g",
+      "title": [
+        "Ferroelectricity and phase transitions in In\n                    <sub>2</sub>\n                    Se\n                    <sub>3</sub>\n                    van der Waals material"
+      ],
+      "author": [
+        "Soleimani",
+        "Pourfath"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Guo2007BN",
+      "requested": "10.1103/PhysRevB.75.245403",
+      "doi": "10.1103/physrevb.75.245403",
+      "title": [
+        "Static dielectric response and Born effective charge of BN nanotubes from<i>ab initio</i>finite electric field calculations"
+      ],
+      "author": [
+        "Guo",
+        "Ishibashi",
+        "Tamura",
+        "Terakura"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Ulian2026Sb2S3Data",
+      "requested": "10.17632/6tntvw37tr.1",
+      "status": "Crossref 404: this is a DataCite record. Verified through https://api.datacite.org/dois/10.17632/6tntvw37tr.1",
+      "title": ["DFT dataset on bulk and 1D stibnite Sb2S3"],
+      "author": ["Ulian"],
+      "doi": "10.17632/6tntvw37tr.1",
+      "publisher": "Mendeley Data",
+      "publicationYear": 2026,
+      "url": "https://data.mendeley.com/datasets/6tntvw37tr/1"
+    },
+    {
+      "key": "Ferreira1990Water",
+      "requested": "10.1021/j100370a086",
+      "doi": "10.1021/j100370a086",
+      "title": [
+        "Partition of the dipole moment and atomic polar tensor:  the water molecule"
+      ],
+      "author": [
+        "Ferreira"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Astrand1998Water",
+      "requested": "10.1021/jp980574e",
+      "doi": "10.1021/jp980574e",
+      "title": [
+        "Atomic Charges of the Water Molecule and the Water Dimer"
+      ],
+      "author": [
+        "Åstrand",
+        "Ruud",
+        "Mikkelsen",
+        "Helgaker"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "FerreiraBassi1987Methane",
+      "requested": "10.1016/0584-8539(87)80014-4",
+      "doi": "10.1016/0584-8539(87)80014-4",
+      "title": [
+        "The polar tensors, effective charges and separation ratios of overlapped bands in methanes"
+      ],
+      "author": [
+        "Ferreira",
+        "Bassi"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Oliveira2000GAPT",
+      "requested": "10.1021/jp994405l",
+      "doi": "10.1021/jp994405l",
+      "title": [
+        "Atomic Mean Dipole Moment Derivatives and GAPT Charges"
+      ],
+      "author": [
+        "de Oliveira",
+        "Haiduke",
+        "Bruns"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Richter2021GAPT",
+      "requested": "10.1021/acs.jcim.1c00165",
+      "doi": "10.1021/acs.jcim.1c00165",
+      "title": [
+        "Are “GAPT Charges” Really Just Charges?"
+      ],
+      "author": [
+        "Richter",
+        "Duarte",
+        "Bruns"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Kersch2022HfO2",
+      "requested": "10.3389/fnano.2022.1026286",
+      "doi": "10.3389/fnano.2022.1026286",
+      "title": [
+        "Simulation of XRD, Raman and IR spectrum for phase identification in doped HfO2 and ZrO2"
+      ],
+      "author": [
+        "Kersch",
+        "Ganser",
+        "Trien"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Dai2019hBN",
+      "requested": "10.1002/adma.201806603",
+      "doi": "10.1002/adma.201806603",
+      "title": [
+        "Phonon Polaritons in Monolayers of Hexagonal Boron Nitride"
+      ],
+      "author": [
+        "Dai",
+        "Fang",
+        "Rivera",
+        "Stehle",
+        "Jiang",
+        "Shen",
+        "Tay",
+        "Ciccarino",
+        "Ma",
+        "Rodan‐Legrain",
+        "Jarillo‐Herrero",
+        "Teo",
+        "Fogler",
+        "Narang",
+        "Kong",
+        "Basov"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Ulian2023MoS2",
+      "requested": "10.1107/S1600576723002571",
+      "doi": "10.1107/s1600576723002571",
+      "title": [
+        "Structural, elastic, electronic, optical and vibrational properties of single-layered, bilayered and bulk molybdenite MoS\n                    <sub>2</sub>\n                    -2H"
+      ],
+      "author": [
+        "Ulian",
+        "Valdrè"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Shimanouchi1972",
+      "requested": "10.6028/NBS.NSRDS.39",
+      "doi": "10.6028/nbs.nsrds.39",
+      "title": [
+        "Tables of molecular vibrational frequencies, consolidated volume i"
+      ],
+      "author": [
+        "Shimanouchi"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Fei2016GeS",
+      "requested": "10.1103/PhysRevLett.117.097601",
+      "doi": "10.1103/physrevlett.117.097601",
+      "title": [
+        "Ferroelectricity and Phase Transitions in Monolayer Group-IV Monochalcogenides"
+      ],
+      "author": [
+        "Fei",
+        "Kang",
+        "Yang"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Sohier2016MoS2",
+      "requested": "10.1103/PhysRevB.94.085415",
+      "doi": "10.1103/physrevb.94.085415",
+      "title": [
+        "Two-dimensional Fröhlich interaction in transition-metal dichalcogenide monolayers: Theoretical modeling and first-principles calculations"
+      ],
+      "author": [
+        "Sohier",
+        "Calandra",
+        "Mauri"
+      ],
+      "status": "Crossref metadata retrieved"
+    },
+    {
+      "key": "Krukau2006HSE",
+      "requested": "10.1063/1.2404663",
+      "doi": "10.1063/1.2404663",
+      "title": [
+        "Influence of the exchange screening parameter on the performance of screened hybrid functionals"
+      ],
+      "author": [
+        "Krukau",
+        "Vydrov",
+        "Izmaylov",
+        "Scuseria"
+      ],
+      "status": "Crossref metadata retrieved"
+    }
+  ]
+}

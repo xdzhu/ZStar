@@ -1,0 +1,8 @@
+{
+  "case": "hBN",
+  "host": "cu25",
+  "SCFs": 2,
+  "independent_force_core_hours": 0.278086407115269,
+  "max_force_difference_from_unified_eV_A": 1.625000000116117e-07,
+  "status": "completed"
+}

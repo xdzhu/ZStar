@@ -212,7 +212,8 @@ def response_record_from_phonopy(
         "qpoints_sha256": _sha256(qpoints),
     }
     if born_path is not None:
-        born_source = Path(born_path).resolve()
+        from .artifacts import resolve_artifact
+        born_source = resolve_artifact(born_path).resolve()
         born = read_born_data(born_source, natoms=len(modes.masses_amu))
         quantities.append(
             ResponseQuantity(

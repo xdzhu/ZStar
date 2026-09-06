@@ -11,6 +11,7 @@ import numpy as np
 from analyze_archive import static_response
 from zstar.shared_response import make_phonopy, read_structure, reconstruct_responses, symmetry_operations
 from zstar.pyatb_compat import read_static_dielectric
+from zstar.artifacts import resolve_artifact
 
 ROOT = Path('/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark')
 
@@ -56,7 +57,7 @@ def result(root):
         group['calls'] += 1
     summary['timing_completed_components'] = groups
     summary['reserved_core_hours_completed_components'] = sum(g['reserved_core_hours'] for g in groups.values())
-    path = root / 'shared_response_result.json'
+    path = resolve_artifact(root / 'response_fit.json')
     if not path.is_file():
         return summary
     data = json.loads(path.read_text())

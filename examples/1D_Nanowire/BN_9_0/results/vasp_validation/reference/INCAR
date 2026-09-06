@@ -1,0 +1,19 @@
+SYSTEM = BN(9,0) fixed-geometry PBE BEC validation
+GGA = PE
+ENCUT = 500
+PREC = Accurate
+EDIFF = 1E-8
+NELM = 160
+ALGO = Normal
+ISMEAR = 0
+SIGMA = 0.03
+LREAL = .FALSE.
+LASPH = .TRUE.
+ISYM = 2
+NCORE = 1
+
+# ZStar VASP Born-charge workflow
+NSW = 0
+IBRION = -1
+LCHARG = .TRUE.
+LWAVE = .TRUE.

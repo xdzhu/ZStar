@@ -1,0 +1,70 @@
+{
+  "case": "MoS2",
+  "dimension": 2,
+  "tensor_Frobenius_relative_difference": 0.0007665811987889776,
+  "derivative_max_abs_difference_per_A": 0.0009640959003920369,
+  "unified": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 15.246201046806663,
+        "max_epsilon_residual": 0.00053494948787704
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 15.246201046807526,
+        "max_epsilon_residual": 0.00028945998110637035
+      }
+    ],
+    "translation_sum_max_per_A": 0.0001317815721931237,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false,
+    "reference_symmetry_max": 3.639754794734588e-09,
+    "optical_increment_core_h": 0.0714322731571479,
+    "precision_reference_core_h": 0.028098529644517437
+  },
+  "cartesian": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 1.0000000000002711,
+        "max_epsilon_residual": 0.0008660579233165447
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 1.0000000000002707,
+        "max_epsilon_residual": 0.00037759075528096767
+      }
+    ],
+    "translation_sum_max_per_A": 0.0003167128904788541,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false,
+    "reference_symmetry_max": 2.69139767719742e-09,
+    "optical_increment_core_h": 0.29501402761476736,
+    "precision_reference_core_h": 0.02400641143321991
+  },
+  "raw_tensors_used": true,
+  "additional_DFT_calls": 0,
+  "raman_comparison_basis": "Both derivatives contracted with the same Unified eigenvectors; isolates response-fit error.",
+  "normalization_factor": 34.47923620612465,
+  "optical_mode_numbers": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "excluded_rigid_frequencies_cm1": [
+    -2.805274040616459e-06,
+    2.7152117349129582e-06,
+    4.809994252757354e-06
+  ],
+  "optical_mode_tensor_relative_difference": 0.0005513582938870035
+}

@@ -1,3 +1,84 @@
+## 0.3.0 - 2026-09-07
+
+- Unify symmetry-adapted BEC/APT and zone-center phonon calculations, using
+  actual written displacement vectors for tensor and force-constant reconstruction.
+- Compute IR and static nonresonant Raman response from the Unified ensemble;
+  reuse ABACUS electronic matrices without additional Raman SCFs.
+- Support bulk, slab, wire, and molecular response conventions with retained
+  raw data, explicit tensor units, and independent Separate/Unified benchmarks.
+- Publish organized BEC, IR/Raman, and electrostatic-potential examples with
+  clean run inputs, archived results, launchers, and basis-asset provenance.
+- Standardize response output filenames while keeping historical readers;
+  improve reference-first execution, header selection, private file copies,
+  PYATB precision, and headless plotting.
+- Refresh bilingual manuals, Agent Skill recipes, manuscript-quality figures,
+  literature labels, and release acceptance tooling.
+- Build wheels and source distributions in GitHub Actions, test independently
+  installed wheels, and publish versioned releases with generated change notes.
+- Keep examples in GitHub and exclude them from PyPI distributions.
+
+## 0.3.0rc6 - 2026-09-06 (release acceptance candidate)
+
+- Export IR/Raman figures without requiring a GUI backend or Tcl/Tk.
+- Ensure PYATB input generation disables ABACUS gamma-only storage and exports
+  both Hamiltonian/overlap and position matrices, including partial templates.
+- Keep the current precision adapter when PYATB uses a different Python environment.
+- Make example helper calls independent of executable permission preservation.
+- Exercise installed ZStar in public examples without overriding it with source paths.
+- Align methane spectroscopy rerun inputs with its relaxed Unified benchmark.
+- Clarify example reproduction levels and prioritize Unified automation in the
+  bilingual tutorials and manuscript. Retain external adapters as optional routes.
+- Add independent wheel-install acceptance checks and editable Figure 1 assets.
+
+## 0.3.0rc5 - 2026-09-06 (source snapshot, not uploaded)
+
+- Integrate Unified IR/static nonresonant Raman into `zstar spectra`, reusing
+  BEC displacement matrices with full-precision PYATB response output.
+- Add rank-three dielectric-derivative reconstruction, overlap-based rigid-mode
+  classification, private matrix copies, source/output validation and resume locks.
+- Add matched four-dimensional spectroscopy costs, reproducible `results/Unified`
+  archives, bilingual tutorials and an updated Agent Skill recipe.
+
+- Preserve VASP physical dimensionality and periodic axes through preparation
+  and response export; low-dimensional electronic tensors are explicitly labeled
+  as supercell responses, without changing the solver boundary conditions.
+- Organize BEC cases under `3D_Bulk`, `2D_Slab`, `1D_Nanowire`, and
+  `0D_Molecules`; retain matched controls in the benchmark index and preserve
+  original evidence hashes. Keep spectroscopy and electrostatic-potential cases
+  in their dedicated directories.
+- Add explicit response-only offline verification for the BN(9,0) and Sb2S3
+  BEC/Gamma bundles; missing spectra still fail full-spectrum verification.
+- Refresh the current-framework editable figures, appendix BEC tables, HSE
+  source labels, dimensional normalization table, citation-key figure labels,
+  and bilingual documentation from the final annotated manuscript review.
+
+## 0.3.0rc4 - 2026-09-06 (source snapshot, not uploaded)
+
+- Standardize new BEC outputs as `BEC.*`; retain read-only historical aliases
+  and reject conflicting automatic matches without changing tensor precision.
+- Correct example launcher configuration and molecular IR orchestration;
+  match HfO2 inputs to the manuscript's PBEsol/9-au results.
+- Add the converged nonpolar GeS control, six-panel potential comparison,
+  four-row spectroscopy figure, bibliography-key labels, and refreshed manuals.
+- Verify 410 tests and 66 subtests, Linux alias/shell behavior, and retained
+  one-dimensional tensor, spectrum and timing evidence.
+
+## Earlier development - One-dimensional publication examples
+
+- Add unpassivated BN nanotube and Sb2S3-chain unified BEC/Gamma results,
+  complete IR/Raman calculations, private input assets and resumable examples.
+- Export BN(9,0) Cartesian/local cylindrical BEC data and site-matched Sb2S3
+  diagonal comparisons against the explicitly identified public CRYSTAL dataset.
+- Add an equal-scale structure/IR/Raman comparison with original unshifted
+  Sb2S3 reference samples, retaining relative-intensity disagreement.
+- Correct the example documentation's response.json tensor-axis description;
+  add coordinate-covariance, reference-mapping and joint-observation tests.
+- Complete matched independent BEC/phonon controls: BN(9,0) uses 270.41 versus
+  125.04 successful solver core-hours (2.16-fold speedup), Sb2S3 41.67 versus
+  18.95 (2.20-fold). Preserve the unmeasured BN9 interrupted attempt separately.
+- Add read-only native-evidence, tensor/eigensystem, spectrum and timing-ledger
+  verification, including compatibility with Phonopy 2.36, 2.44 and 4.4.
+
 ## 0.3.0rc2 - 2026-09-04
 
 - Correct a platform-specific test assertion to use pathlib rather than a
@@ -199,3 +280,18 @@ Submission candidate; this tag is a GitHub prerelease, not a PyPI publication.
 - Obtain software copyright (former name: PyKAPPA).
 
 
+## 0.3.0rc3 - 2026-09-04
+
+Local manuscript-revision candidate; not a PyPI publication.
+
+- Standardize new outputs as `bec.dat`, `bec.raw.dat`, representative tables,
+  `response.json`, `response_fit.json`, `force_fit.json`, and `apt.json`.
+  Keep bidirectional filename fallback for old archives without rewriting them.
+  Write `BORN` once, removing its redundant long-name copy.
+- Complete 30 independent force SCFs to measure Separate versus Unified
+  workflows for all eight benchmark systems. Retain the original combined
+  Cartesian controls and disclose force-output overhead in their BEC timing.
+- Archive the matching PBE+D3(BJ) MoS2 BEC and dielectric evidence alongside
+  its IR/Raman results, correcting the manuscript's older dataset index.
+- Update bilingual output documentation and redraw the potential figure from
+  source as four panels with a single-cell GeS map.

@@ -25,13 +25,13 @@ does not supply microscopic local-field screening missing from a PYATB input.
 
 For isolated molecules, separate rigid translations and rotations before
 interpreting a fixed-orientation vibrational response. A generic low-frequency
-cutoff is not a substitute for that check. The [molecular Unified benchmarks](../examples/Shared_Response/README.md)
+cutoff is not a substitute for that check. The [molecular Unified benchmarks](../examples/Benchmarks/README.md)
 include an independent mass-weighted internal-subspace audit.
 
 ## Required files
 
 - `qpoints.yaml`: Gamma-point frequencies, eigenvectors, masses, and cell.
-- `Z-BORN-symm.out` or `BORN`: atomic BEC tensors in Phonopy atom order.
+- `BEC.dat` or `BORN`: atomic BEC tensors in Phonopy atom order.
 - `BORN`: optional electronic dielectric tensor followed by the BEC tensors.
 - `phonopy.yaml`: optional companion structure file when `qpoints.yaml` does
   not contain the primitive cell metadata.
@@ -39,7 +39,7 @@ include an independent mass-weighted internal-subspace audit.
 The static command evaluates the zero-frequency contraction:
 
 ```bash
-zstar dielectric static --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3
 ```
 
@@ -47,7 +47,7 @@ The frequency-domain command uses the same mode contraction and adds damped
 Lorentz oscillators:
 
 ```bash
-zstar dielectric freq --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric freq --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 3 --broadening 8 \
   --max-frequency 800 --points 2501 --outdir dielectric_response
 ```

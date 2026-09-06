@@ -6,6 +6,13 @@ The plots were generated from converged ABACUS `ElecStaticPot.cube` files. The c
 
 ![Representative 2D electrostatic-potential diagnostics](paper_figures/potential_examples_2d.png)
 
+The lower four panels now compare polar GeS with a separately calculated,
+fixed-ion inversion-symmetric reference. Maps are tiled 3x3 for plotting only,
+with common colors and profile scales. `examples/Electrostatic_Potential/GeS_nonpolar/`
+includes the native compressed cube, inputs, assets and bilingual instructions.
+Its `bash run.sh` is an offline rerun; `--calculate` requests a new SCF.
+The reference is not claimed to be a verified switching-path saddle point.
+
 The upper panels provide the decisive slab-normal comparison. Using 0.75 Angstrom local vacuum windows after excluding 6 Angstrom from each surface, MoS2 gives `Delta V_vac = -1.65e-5 eV`, whereas alpha-In2Se3 gives `Delta V_vac = 1.220812 eV`. The local-window rule is important for dipole-corrected polar slabs because averaging an entire half-vacuum can mix a surface plateau with the correction reset.
 
 ## MoS2: Centered Nonpolar 2D Reference

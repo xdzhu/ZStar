@@ -9,20 +9,40 @@ directories are intentionally excluded.
 
 | Directory | Scope | Cases |
 |---|---|---|
-| `1d_wires/` | periodic one-dimensional response | GaAs nanowire |
-| `2d_materials/` | slab and vacuum-independent sheet response | MoS2, hBN, alpha-In2Se3 |
-| `3d_bulk/` | bulk BEC and dielectric response | tetragonal and cubic BaTiO3, HfO2 |
-| `molecules/` | molecular APT, IR, and Raman | H2O, CH4, CO2 |
+| `3D_Bulk/` | bulk BEC and dielectric response | tetragonal and cubic BaTiO3, HfO2, 3C-SiC |
+| `2D_Slab/` | slab and vacuum-independent sheet response | MoS2, hBN, alpha-In2Se3 |
+| `1D_Nanowire/` | periodic one-dimensional response | BN(9,0), Sb2S3; earlier GaAs example |
+| `0D_Molecules/` | molecular APT, IR, and Raman | H2O, CH4, CO2 |
 | `backend_examples/` | calculator-specific validation | CP2K BEC/IR/Raman; ABACUS/VASP SiC and HfO2 benchmarks |
-| `IR_Raman_Spectra/` | one-command IR and Raman workflows | HfO2, MoS2, CH4, GaAs nanowire |
+| `IR_Raman_Spectra/` | one-command IR and Raman workflows | HfO2, MoS2, Sb2S3, CH4, BN nanotubes; earlier GaAs example |
 | `Electrostatic_Potential/` | cube-based electrostatic-potential analysis | MoS2, alpha-In2Se3, GeS, SnS, SnSe, SnTe |
-| `Shared_Response/` | matched Unified/Cartesian BEC/APT and Gamma-Hessian efficiency | cubic BaTiO3, SiC, t-HfO2, alpha-In2Se3, hBN, MoS2, H2O, CH4 |
+| `Benchmarks/` | matched Unified/Cartesian BEC/APT and Gamma-Hessian efficiency | cubic BaTiO3, SiC, t-HfO2, alpha-In2Se3, hBN, MoS2, H2O, CH4 |
 
-The machine-readable index is `manifest.json`. Every case contains a clean
+The machine-readable index is `manifest.json`; `path_migration.json` maps older
+paths to the dimension-based layout. `Benchmarks/` indexes paired comparisons,
+while the material inputs now live in the four dimensionality directories.
+Historical result records retain their original paths as provenance.
+Every indexed case contains a clean
 `run/` input directory, a `results/` directory with retained outputs, a
 bilingual README, and a root-level `run.sh`. The reference files are
 provenance-bearing validation records, not a substitute for convergence
-testing on a new machine.
+testing on a new machine. A complete directory layout does not imply that every
+case includes the upstream DFT data: see the reproduction levels below.
+
+## Reproduction levels
+
+- **Electronic-structure rerun:** run the supplied inputs with configured external
+  calculators and the case's assets. Licensed VASP inputs remain user-supplied.
+- **Offline reconstruction:** regenerate numerical outputs from retained response
+  observations or a retained cube, without running DFT. The four Unified spectra
+  examples provide `bash run.sh --post-only`; their inputs are hash checked.
+- **Supplied-result analysis:** inspect retained tables and figures, or supply the
+  original kind of solver output to rerun postprocessing. SnS, SnSe and SnTe
+  potential cases require `bash run.sh --cube /path/to/ElecStaticPot.cube`.
+
+Potential scripts for MoS2, In2Se3 and GeS also expect an existing cube; they do
+not launch the upstream SCF automatically. `GeS_nonpolar` has its own runner and
+retained compressed cube. Follow each case README before starting a calculation.
 
 ## Quick start
 
@@ -36,16 +56,16 @@ bash run.sh
 
 The script seeds a sibling `work/` directory, preserves existing stages, and
 resumes after interruption. Use `bash run.sh --stage all` to continue through
-phonon generation and force calculations. For ABACUS + PYATB cases, the
+phonon postprocessing. The default Gamma calculation reuses Unified forces;
+a nontrivial supercell requires separate force calculations. For ABACUS + PYATB cases, the
 equivalent explicit commands are:
 
 ```bash
-cd examples/3d_bulk/HfO2
+cd examples/3D_Bulk/HfO2
 cp -r run work
 cd work
-zstar bec pre --stru STRU --pp assets --orb assets \
-  --dim 3 --method central --displacement 0.01 --force
-zstar bec job --root . --system shell --tasks 1 --cpus-per-task 20
+zstar bec pre --stru STRU --pp assets --orb assets
+zstar bec job --system shell
 zstar bec run --root . --abacus-command "mpirun -np 20 abacus"
 zstar bec stat --root .
 zstar bec post --root .

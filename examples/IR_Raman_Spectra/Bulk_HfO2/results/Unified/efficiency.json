@@ -1,0 +1,26 @@
+{
+  "case": "HfO2",
+  "dimension": 3,
+  "IR_SCF_old": 17,
+  "IR_SCF_unified": 5,
+  "IR_core_h_old": 29.976658615050837,
+  "IR_core_h_unified": 10.87362902115306,
+  "IR_speedup": 2.7568218997296685,
+  "Raman_mode_SCF_old": 30,
+  "Raman_extra_SCF_unified": 0,
+  "full_SCF_old": 47,
+  "full_SCF_unified": 5,
+  "old_mode_Raman_core_h": 57.411057176673786,
+  "new_static_postprocessing_core_h": 4.603304468778273,
+  "full_core_h_old": 87.38771579172462,
+  "full_core_h_unified": 15.476933489931334,
+  "assembled_speedup": 5.646319786059398,
+  "parallelism_matched": true,
+  "Raman_atomic_Cartesian_tensor_error": 0.00012091507428172684,
+  "Raman_direct_tensor_error": 0.00018183441766854105,
+  "Raman_direct_activity_error": 0.00023124756267807014,
+  "IR_validation": {
+    "mode_charge_relative_L2_common_basis": 5.3311362307054304e-05,
+    "maximum_sorted_frequency_difference_cm1": 0.0686936527269495
+  }
+}

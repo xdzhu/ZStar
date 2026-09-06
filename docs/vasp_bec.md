@@ -23,6 +23,16 @@ pip install "zstar[vasp]"
 
 ## Quick start
 
+Physical dimensionality is retained by the VASP adapter. For a wire embedded
+in a periodic vacuum supercell, add `--dim 1 --periodic-axes z` at preparation.
+Use `--dim 2 --periodic-axes xy` for a slab and `--dim 0` for a molecule.
+These options describe the physical system; they do not enable a Coulomb cutoff
+or change VASP's electrical boundary conditions. For `dim < 3`, `response.json`
+labels the electronic tensor `supercell_electronic_dielectric`, not an intrinsic
+line/sheet/molecular polarizability. Apply the dimensional conversion explicitly
+when analyzing that quantity. Existing manifests without this metadata retain
+their historical `dim=3` meaning.
+
 Put a converged `INCAR`, `POSCAR`, `KPOINTS`, and licensed `POTCAR` in one
 directory. Do not commit or redistribute `POTCAR`.
 
@@ -57,7 +67,7 @@ zstar vasp-bec prepare \
 
 Generated outputs are:
 
-- `Z-BORN-all.out`: full-cell tensors in ZStar order.
+- `BEC.raw.dat`: full-cell tensors in ZStar order.
 - `BORN`: dielectric tensor plus BEC tensors in Phonopy format.
 - `vasp_bec.json`: backend, tensor-convention, atom-order, and sum-rule metadata.
 

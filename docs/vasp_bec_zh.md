@@ -21,6 +21,13 @@ pip install "zstar[vasp]"
 
 ## 快速使用
 
+VASP 入口保留用户指定的物理维度。一维真空超胞在准备时加
+`--dim 1 --periodic-axes z`，二维片层用 `--dim 2 --periodic-axes xy`，
+分子用 `--dim 0`。这些参数只描述体系，不自动启用 Coulomb cutoff，也不改变
+VASP 的电场边界条件。对于低维体系，`response.json` 将电子介电张量标识为
+`supercell_electronic_dielectric`，不能直接称为本征线、面或分子极化率；
+后续分析需明确进行相应的维度转换。缺少新元数据的历史清单仍按原有 `dim=3` 解释。
+
 将收敛过的 `INCAR`、`POSCAR`、`KPOINTS` 和有许可证的 `POTCAR` 放在同一
 目录。`POTCAR` 不应提交到仓库或对外分发。
 
@@ -54,7 +61,7 @@ zstar vasp-bec prepare \
 
 最终输出包括：
 
-- `Z-BORN-all.out`：采用 ZStar 统一约定的完整逐原子张量；
+- `BEC.raw.dat`：采用 ZStar 统一约定的完整逐原子张量；
 - `BORN`：可直接供 Phonopy 使用的介电张量和 BEC；
 - `vasp_bec.json`：后端、张量约定、原子顺序和声学和规则残差等元数据。
 

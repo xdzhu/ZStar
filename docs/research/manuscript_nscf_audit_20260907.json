@@ -1,0 +1,558 @@
+{
+  "definition": "N_NSCF counts successful PYATB solver invocations in the timed production components, including the reference band check. Multiple observables in one invocation count once; input preparation, failed attempts and unrelated validation are excluded. This is not an ABACUS NSCF or k-point count. Independent force-only SCFs add no PYATB calls.",
+  "tables": {
+    "BEC_phonon": {
+      "cubic_BaTiO3": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 10,
+                "PYATB": 11
+              },
+              "costs": {
+                "ABACUS": 2.6675734274192817,
+                "PYATB": 2.6598335088851552
+              },
+              "source": {
+                "path": "examples/3D_Bulk/cubic_BaTiO3/results/legacy_bec/component_times.jsonl",
+                "member": null,
+                "sha256": "bec66f4ec38f1c9cf5b6b1b4b0d570abedd207f554ed74fdb084da411379e1c1"
+              }
+            },
+            {
+              "calls": {
+                "ABACUS": 3
+              },
+              "costs": {
+                "ABACUS": 0.7517450768775435
+              },
+              "source": {
+                "path": "examples/3D_Bulk/cubic_BaTiO3/results/legacy_phonon/component_times.jsonl",
+                "member": null,
+                "sha256": "799e387ce68a33af2c320fab3d34af87904897fb0aaea1d69dc71d32afd85191"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 4,
+                "PYATB": 5
+              },
+              "costs": {
+                "ABACUS": 1.3387104119381144,
+                "PYATB": 1.2211411569784911
+              },
+              "source": {
+                "path": "examples/3D_Bulk/cubic_BaTiO3/results/unified/component_times.jsonl",
+                "member": null,
+                "sha256": "fae7c6e01e17d72d79c466868230ce2ecad6110d5fe2e9a9cf41b44f3cd659f5"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 11,
+        "NSCF_Unified": 5
+      },
+      "SiC": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 13,
+                "PYATB": 14
+              },
+              "costs": {
+                "ABACUS": 1.535088616852752,
+                "PYATB": 11.387259782690347
+              },
+              "source": {
+                "path": "examples/3D_Bulk/SiC/results/controls/cartesian/component_times.jsonl",
+                "member": null,
+                "sha256": "1e806e6180cb005e2e03d5f2f0c0e42152c6e4d6a8699868fe5ba40f2e9ccdf3"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 3,
+                "PYATB": 4
+              },
+              "costs": {
+                "ABACUS": 0.34805826954543595,
+                "PYATB": 3.4326674286224366
+              },
+              "source": {
+                "path": "examples/3D_Bulk/SiC/results/shared/component_times.jsonl",
+                "member": null,
+                "sha256": "01b0bf23d1a49ec89bc15acacd628ab03622110d5003e8d58bbc41243baaf505"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 14,
+        "NSCF_Unified": 4
+      },
+      "t_HfO2": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 13,
+                "PYATB": 14
+              },
+              "costs": {
+                "ABACUS": 14.62400827026512,
+                "PYATB": 9.510237319612257
+              },
+              "source": {
+                "path": "examples/3D_Bulk/t_HfO2/results/controls/cartesian/component_times.jsonl",
+                "member": null,
+                "sha256": "e126131922f9d6e940288ac05bc0b68b6b09f9a3f0655aca472f4fa090a2f0f6"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 5,
+                "PYATB": 6
+              },
+              "costs": {
+                "ABACUS": 6.683518302419947,
+                "PYATB": 4.190110718733114
+              },
+              "source": {
+                "path": "examples/3D_Bulk/t_HfO2/results/shared/component_times.jsonl",
+                "member": null,
+                "sha256": "c1c9c8457b1aea9b64e936aae6aa09f4c8235f0975935b88aae21dc040f128bd"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 14,
+        "NSCF_Unified": 6
+      },
+      "alpha_In2Se3": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 31,
+                "PYATB": 32
+              },
+              "costs": {
+                "ABACUS": 10.25341987384276,
+                "PYATB": 7.90033512228272
+              },
+              "source": {
+                "path": "examples/2D_Slab/alpha_In2Se3_PBE/results/controls/cartesian/component_times.jsonl",
+                "member": null,
+                "sha256": "7746b2c7cb6bb6433d2290e48f06007d2727e25389eb6ab8ecac5246f26eabca"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 11,
+                "PYATB": 12
+              },
+              "costs": {
+                "ABACUS": 4.558164079777069,
+                "PYATB": 2.839259663927886
+              },
+              "source": {
+                "path": "examples/2D_Slab/alpha_In2Se3_PBE/results/shared/component_times.jsonl",
+                "member": null,
+                "sha256": "32df52101a117e6462bd24307222b100f92b8e42d539e629bdc41634e72abe0d"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 32,
+        "NSCF_Unified": 12
+      },
+      "hBN": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 13,
+                "PYATB": 14
+              },
+              "costs": {
+                "ABACUS": 1.516509944378696,
+                "PYATB": 0.45126016826705173
+              },
+              "source": {
+                "path": "examples/2D_Slab/hBN_unified/results/cartesian/component_times.jsonl",
+                "member": null,
+                "sha256": "18913b88d93e3c3941f864d002af95dc624b6de97a7ac6338b05bd27eecd13fd"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 3,
+                "PYATB": 4
+              },
+              "costs": {
+                "ABACUS": 0.42918042612210333,
+                "PYATB": 0.1380790877660426
+              },
+              "source": {
+                "path": "examples/2D_Slab/hBN_unified/results/unified/component_times.jsonl",
+                "member": null,
+                "sha256": "8c8b8bce264116eb4db19eddb86ec6b32aaa28e4e3738eb8f843e12bca59293d"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 14,
+        "NSCF_Unified": 4
+      },
+      "MoS2": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 13,
+                "PYATB": 14
+              },
+              "costs": {
+                "ABACUS": 4.500941982078884,
+                "PYATB": 0.46854758831775856
+              },
+              "source": {
+                "path": "examples/2D_Slab/MoS2_unified/results/cartesian/component_times.jsonl",
+                "member": null,
+                "sha256": "7c4d9f22307517db1cf4fa5e621fb21a6e8130dc7055cd76b1afdde3dbf3b047"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 4,
+                "PYATB": 5
+              },
+              "costs": {
+                "ABACUS": 2.8375220460196338,
+                "PYATB": 0.17565149202321964
+              },
+              "source": {
+                "path": "examples/2D_Slab/MoS2_unified/results/unified/component_times.jsonl",
+                "member": null,
+                "sha256": "85540771faf1d98ac3c6438b79b3e8e1e0cc3e61cb824c599b671375f3987659"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 14,
+        "NSCF_Unified": 5
+      },
+      "H2O": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 13,
+                "PYATB": 14
+              },
+              "costs": {
+                "ABACUS": 13.88239629033746,
+                "PYATB": 0.38640524576314617
+              },
+              "source": {
+                "path": "examples/0D_Molecules/H2O_unified/results/cartesian/component_times.jsonl",
+                "member": null,
+                "sha256": "60ce8c2381f7893a195644b433cdad7b348a3c240e159db14b96277cfed6eebe"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 7,
+                "PYATB": 8
+              },
+              "costs": {
+                "ABACUS": 8.682301991732999,
+                "PYATB": 0.22572908791092533
+              },
+              "source": {
+                "path": "examples/0D_Molecules/H2O_unified/results/unified/component_times.jsonl",
+                "member": null,
+                "sha256": "443d4717f17fc08c583163f8cfd3f48c94ef02b9e5b975cf545fbcaa7bae3d9d"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 14,
+        "NSCF_Unified": 8
+      },
+      "CH4": {
+        "components": {
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 13,
+                "PYATB": 14
+              },
+              "costs": {
+                "ABACUS": 10.13564079979745,
+                "PYATB": 0.36522694038123726
+              },
+              "source": {
+                "path": "examples/0D_Molecules/CH4_unified/results/cartesian/component_times.jsonl",
+                "member": null,
+                "sha256": "b32a326aa9d4735eda396b6606d198a875ef73db5f135369e8598bf79ca6a0a1"
+              }
+            }
+          ],
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 4,
+                "PYATB": 5
+              },
+              "costs": {
+                "ABACUS": 3.1229222155486545,
+                "PYATB": 0.137607511660705
+              },
+              "source": {
+                "path": "examples/0D_Molecules/CH4_unified/results/unified/component_times.jsonl",
+                "member": null,
+                "sha256": "2f2447fcc0eeaa531f979aec400652986d21ce7fdb67ed86449fcb20fd47bcbc"
+              }
+            }
+          ]
+        },
+        "NSCF_Separate": 14,
+        "NSCF_Unified": 5
+      },
+      "BN_9_0": {
+        "components": {
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 57,
+                "PYATB": 58
+              },
+              "costs": {
+                "ABACUS": 109.4055066299728,
+                "PYATB": 15.62973637154533
+              },
+              "source": {
+                "path": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/native_evidence.tar.gz",
+                "member": "unified/component_times.jsonl",
+                "sha256": "4239f03be3da2bff4ed311cbcea663044902e90432f2372670d52121c11c1129"
+              }
+            }
+          ],
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 61,
+                "PYATB": 62
+              },
+              "costs": {
+                "ABACUS": 122.81839017759388,
+                "PYATB": 17.23314908726348
+              },
+              "source": {
+                "path": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/benchmark/benchmark_evidence.tar.gz",
+                "member": "BN_9_0/cartesian/component_times.jsonl",
+                "sha256": "e56127a71f6a3d384c16a51f17289858750081737c12aa8e02dd628d55ae6b3e"
+              }
+            }
+          ]
+        },
+        "NSCF_Unified": 58,
+        "NSCF_Separate": 62
+      },
+      "Sb2S3": {
+        "components": {
+          "Unified": [
+            {
+              "calls": {
+                "ABACUS": 21,
+                "PYATB": 22
+              },
+              "costs": {
+                "ABACUS": 17.919839405816877,
+                "PYATB": 1.0252245456032043
+              },
+              "source": {
+                "path": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/native_evidence.tar.gz",
+                "member": "unified/component_times.jsonl",
+                "sha256": "879a32f20821533d0947515ceb257233f15fe12d1a7e5fe17e0d1cc8b593ee0a"
+              }
+            }
+          ],
+          "Separate": [
+            {
+              "calls": {
+                "ABACUS": 31,
+                "PYATB": 32
+              },
+              "costs": {
+                "ABACUS": 22.288375126347983,
+                "PYATB": 1.4541502749909545
+              },
+              "source": {
+                "path": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/benchmark/benchmark_evidence.tar.gz",
+                "member": "Sb2S3/cartesian/component_times.jsonl",
+                "sha256": "ef1ca75d235118d8e05f35c9468e7d1a7b920c2a815c3c94c68743a864decee8"
+              }
+            }
+          ]
+        },
+        "NSCF_Unified": 22,
+        "NSCF_Separate": 32
+      }
+    },
+    "IR_Raman": {
+      "HfO2": {
+        "NSCF_Separate": 44,
+        "NSCF_Unified": 11,
+        "components": {
+          "additional_Separate": {
+            "calls": {
+              "ABACUS": 30,
+              "PYATB": 30
+            },
+            "costs": {
+              "ABACUS": 29.620344768443875,
+              "PYATB": 27.79071240822992
+            },
+            "source": {
+              "path": "docs/research/unified_spectroscopy_20260906/evidence/HfO2/direct_control/component_times.jsonl",
+              "member": null,
+              "sha256": "95c7833b46231058ad44aad4224bef0fc2447b58fa99c5ef82daa537161f7cf5"
+            }
+          },
+          "additional_Unified": {
+            "calls": {
+              "PYATB": 5
+            },
+            "costs": {
+              "PYATB": 4.603304468778273
+            },
+            "source": {
+              "path": "docs/research/unified_spectroscopy_20260906/evidence/HfO2/unified/component_times.jsonl",
+              "member": null,
+              "sha256": "c4da0eecda19905f994b8acae2425fe9aa1496b36c5210a6ad8e15e3d017db79"
+            }
+          }
+        }
+      },
+      "MoS2": {
+        "NSCF_Separate": 26,
+        "NSCF_Unified": 9,
+        "components": {
+          "additional_Separate": {
+            "calls": {
+              "ABACUS": 12,
+              "PYATB": 12
+            },
+            "costs": {
+              "ABACUS": 3.033178661613621,
+              "PYATB": 0.2891208934804632
+            },
+            "source": {
+              "path": "docs/research/unified_spectroscopy_20260906/evidence/MoS2/direct_control/component_times.jsonl",
+              "member": null,
+              "sha256": "f20055b9c8cf7c22862b15c65bfd0dc4a695fd05e5907ab4666ae29547756c50"
+            }
+          },
+          "additional_Unified": {
+            "calls": {
+              "PYATB": 4
+            },
+            "costs": {
+              "PYATB": 0.09953080280166532
+            },
+            "source": {
+              "path": "docs/research/unified_spectroscopy_20260906/evidence/MoS2/unified/component_times.jsonl",
+              "member": null,
+              "sha256": "5285c505d615bb23581cb71c8bdd7043613ffee036a45ff80bceda70821a9cfb"
+            }
+          }
+        }
+      },
+      "Sb2S3": {
+        "NSCF_Separate": 84,
+        "NSCF_Unified": 43,
+        "components": {
+          "additional_Separate": {
+            "calls": {
+              "ABACUS": 52,
+              "PYATB": 52
+            },
+            "costs": {
+              "ABACUS": 28.393558629850553,
+              "PYATB": 1.6980136709598206
+            },
+            "source": {
+              "path": "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/native_evidence.tar.gz",
+              "member": "raman/part-1/component_times.jsonl",
+              "sha256": "5d3c88a941b574845b8b98e109b92911b140b0b39b4dcb0431c6bdb3ab38eb7c"
+            }
+          },
+          "additional_Unified": {
+            "calls": {
+              "PYATB": 21
+            },
+            "costs": {
+              "PYATB": 0.5660195539808937
+            },
+            "source": {
+              "path": "docs/research/unified_spectroscopy_20260906/evidence/Sb2S3/unified/component_times.jsonl",
+              "member": null,
+              "sha256": "4ae00e7df5f231ab1789538a5e5eddd83083c9151b71f7ad3a22690d03f174cd"
+            }
+          }
+        }
+      },
+      "CH4": {
+        "NSCF_Separate": 32,
+        "NSCF_Unified": 9,
+        "components": {
+          "additional_Separate": {
+            "calls": {
+              "ABACUS": 18,
+              "PYATB": 18
+            },
+            "costs": {
+              "ABACUS": 14.549508736199805,
+              "PYATB": 0.3569046187007593
+            },
+            "source": {
+              "path": "docs/research/unified_spectroscopy_20260906/evidence/CH4/direct_control/component_times.jsonl",
+              "member": null,
+              "sha256": "f49cd24634d0401ff03f1f5f6c9b38370f567f690710c07180ce0726cec92cd6"
+            }
+          },
+          "additional_Unified": {
+            "calls": {
+              "PYATB": 4
+            },
+            "costs": {
+              "PYATB": 0.07756975207270847
+            },
+            "source": {
+              "path": "docs/research/unified_spectroscopy_20260906/evidence/CH4/unified/component_times.jsonl",
+              "member": null,
+              "sha256": "2236f28aa7289af0566f24a58181f04f1dcdc9a15ba5789fcd6963bd1a253a52"
+            }
+          }
+        }
+      }
+    }
+  }
+}

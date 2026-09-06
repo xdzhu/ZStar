@@ -1,0 +1,17 @@
+{
+  "source_doi": "10.17632/6tntvw37tr.1",
+  "license": "CC BY 4.0",
+  "source_sha256": "3348dfdebfde61682a0c491562070fabaa3c8e21dbed8f41ca835a2a5dc2fc4f",
+  "software": "CRYSTAL",
+  "xc": "B3LYP-D3(BJ)",
+  "model": "isolated full-chain Sb4S6",
+  "temperature_K": 298,
+  "laser_nm": 532,
+  "frequency_shift_cm1": 0,
+  "source_periodic_axis": "x",
+  "zstar_periodic_axis": "z",
+  "spectrum_kind": "isotropic relative Raman; integrated IR in km/mol",
+  "modes": 30,
+  "raman_modes": 15,
+  "caveat": "Rigid-rotation overlap and low-frequency stability must be audited before mode matching."
+}

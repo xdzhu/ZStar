@@ -55,14 +55,16 @@ fi
 work=${work:-"${ZSTAR_WORK:-$case_dir/work}"}
 if [[ "$work" != /* ]]; then work="$case_dir/$work"; fi
 work=$(cd "$(dirname "$work")" && pwd)/$(basename "$work")
-abacus_command=${ABACUS_COMMAND:-abacus}
-pyatb_command=${PYATB_COMMAND:-pyatb}
-omp_threads=${OMP_NUM_THREADS:-20}
-displacement=${ZSTAR_DISPLACEMENT:-0.01}
-method=${ZSTAR_METHOD:-central}
-[[ "$method" == "forward" || "$method" == "central" ]] || {
-    echo "ZSTAR_METHOD must be forward or central" >&2; exit 2;
+abacus_command=${ABACUS_COMMAND:-"ZStar configured ABACUS launcher"}
+pyatb_command=${PYATB_COMMAND:-"ZStar configured PYATB launcher"}
+omp_threads=${OMP_NUM_THREADS:-"ZStar configured OMP threads"}
+displacement=${ZSTAR_DISPLACEMENT:-}
+method=${ZSTAR_METHOD:-auto}
+[[ "$method" == "auto" || "$method" == "forward" || "$method" == "central" ]] || {
+    echo "ZSTAR_METHOD must be auto, forward or central" >&2; exit 2;
 }
+pre_options=(--method "$method")
+[[ -z "$displacement" ]] || pre_options+=(--displacement "$displacement")
 
 for required in INPUT STRU; do
     [[ -f "$input_dir/$required" ]] || {
@@ -87,8 +89,8 @@ if [[ "$dry_run" -eq 1 ]]; then
 DRY RUN: no files will be generated and no external solver will be started.
 1. cp -a "$input_dir/." "$work/"
 2. zstar bec pre --stru STRU --input INPUT --pp assets --orb assets --dim $dim \\
-     --method $method --displacement $displacement --force
-3. zstar workflow run --root . --dimensionality $dim --omp-threads $omp_threads \\
+     ${pre_options[*]}
+3. zstar bec run --root . --dimensionality $dim --omp-threads $omp_threads \\
      --abacus-command "$abacus_command" --pyatb-command "$pyatb_command"
 4. zstar bec post --root .
 5. Reuse shared Gamma forces for --phonon-dim "1 1 1"; otherwise prepare
@@ -102,6 +104,13 @@ command -v zstar >/dev/null 2>&1 || {
     exit 4
 }
 
+runtime=$("${ZSTAR_PYTHON:-python}" "$(dirname "${BASH_SOURCE[0]}")/runtime.py" "$case_dir")
+mapfile -t runtime_values <<< "$runtime"
+abacus_command=${runtime_values[0]}
+pyatb_command=${runtime_values[1]}
+omp_threads=${runtime_values[2]}
+export OMP_NUM_THREADS="$omp_threads"
+
 if [[ ! -f "$work/.zstar-example-seeded" ]]; then
     mkdir -p "$work"
     cp -a "$input_dir/." "$work/"
@@ -110,14 +119,14 @@ fi
 
 cd "$work"
 if [[ ! -f .zstar-bec-prepared ]]; then
-    zstar bec pre --stru STRU --input INPUT --pp assets --orb assets --dim "$dim" \\
-        --method "$method" --displacement "$displacement" --force
+    zstar bec pre --stru STRU --input INPUT --pp assets --orb assets --dim "$dim" \
+        "${pre_options[@]}"
     touch .zstar-bec-prepared
 fi
 
-zstar workflow run --root . --dimensionality "$dim" --omp-threads "$omp_threads" \\
+zstar bec run --root . --dimensionality "$dim" --omp-threads "$omp_threads" \
     --abacus-command "$abacus_command" --pyatb-command "$pyatb_command"
-zstar workflow status --root .
+zstar bec stat --root .
 zstar bec post --root .
 
 if [[ "$stage" == "all" ]]; then
@@ -140,10 +149,10 @@ if [[ "$stage" == "all" ]]; then
             cp "$input_dir/INPUT.phonon" INPUT
         fi
         if [[ ! -f phonopy_disp.yaml ]]; then
-            zstar ph --stru STRU --dim "$phonon_dim"
+            zstar phonon pre --stru STRU --dim "$phonon_dim"
         fi
         zstar phonon run --root . --command "$abacus_command" --omp-threads "$omp_threads"
-        zstar postph --stru STRU --physical-dim "$dim"
+        zstar phonon post --stru STRU --physical-dim "$dim"
         zstar phonon stat --root . || true
     fi
 fi

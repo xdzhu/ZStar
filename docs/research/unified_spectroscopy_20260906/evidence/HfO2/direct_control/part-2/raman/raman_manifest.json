@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "source_stru": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/STRU",
+  "qpoints_atoms": 6,
+  "amplitude_A_sqrt_amu": 0.02,
+  "modes": [
+    {
+      "mode": 5,
+      "frequency_cm-1": 96.39246046009605,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0005/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0005/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0005/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0005/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 9,
+      "frequency_cm-1": 286.16185487561535,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0009/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0009/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0009/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0009/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 13,
+      "frequency_cm-1": 456.8184894798121,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0013/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0013/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0013/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0013/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    },
+    {
+      "mode": 17,
+      "frequency_cm-1": 670.4616028432578,
+      "amplitude_A_sqrt_amu": 0.02,
+      "plus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0017/plus",
+      "minus": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0017/minus",
+      "plus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0017/plus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat",
+      "minus_dielectric": "/home/zhuxd/abacus/agent-runs/20260906-unified-spectroscopy/HfO2/direct_control/part-2/raman/mode-0017/minus/pyatb/Out/Optical_Conductivity/static_dielectric_function.dat"
+    }
+  ],
+  "reference_dir": "/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark/hfo2/shared/0.no-move"
+}

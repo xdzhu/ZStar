@@ -1,5 +1,10 @@
 # One-dimensional wires and nanowires
 
+The [Unified spectroscopy tutorial](unified_spectroscopy.md) covers the current
+default Raman route. The Sb2S3 case now reuses the BEC matrices; its retained
+52-SCF mode-displacement result is the independent control, not an additional
+requirement of the Unified workflow.
+
 ZStar uses `dim=1` for a system periodic along one lattice direction. The
 production ABACUS + PYATB workflow currently requires that direction to be
 Cartesian `z`, with the two nonperiodic cell vectors aligned with `x` and `y`.
@@ -43,26 +48,29 @@ the intrinsic electronic line polarizability
 alpha_1D = A_perp (epsilon_supercell - I) / (4 pi)
 ```
 
-in `Angstrom^2` in `zstar_response.json`. The frequency-dependent `zstar ir`
+in `Angstrom^2` in `response.json`. The frequency-dependent `zstar ir`
 and `zstar dielectric static` outputs report
 `alpha_1D/epsilon_0 = A_perp (epsilon_supercell - I)` in `Angstrom^2`.
 
-## BEC workflow
+## Unified BEC and Gamma-phonon workflow
 
-Prepare central finite displacements and a reference-first workflow:
+Prepare the default symmetry-reduced Phonopy ensemble in a fresh work directory.
+Keep `KPT` next to the supplied `INPUT` to preserve the example's axial mesh:
 
 ```bash
-zstar bec pre --stru STRU --input INPUT --dim 1 \
-  --method central --kspacing 0.12 --force
+zstar bec pre --stru STRU --input INPUT --dim 1 --symmprec 1e-5
 
-zstar bec job --system shell --tasks 20 \
-  --cpus-per-task 1 --env-script env.sh
-bash run_zstar_born.sh
+zstar bec job --system shell --dim 1 --output run.sh
+bash run.sh
 
 zstar bec stat --root .
 zstar bec post --root .
 ```
 
+The default `--ensemble phonopy` and `--method auto` reuse each SCF's polarization
+and forces to reconstruct both BECs and the Gamma Hessian. No additional phonon
+SCFs are required for Gamma spectroscopy. `--ensemble cartesian` retains the
+legacy BEC-only route; it must not be confused with the unified default.
 The executor runs `0.no-move` first, checks the automatic one-dimensional
 high-symmetry band path along the periodic axis with PYATB, and stops before
 all displacements if the gap is below the selected threshold. Every
@@ -71,15 +79,24 @@ stages are skipped when the driver is restarted.
 
 Important outputs are:
 
-- `Z-BORN-symm.out`: full symmetry-expanded, charge-neutral BEC tensors;
+- `BEC.dat`: full symmetry-expanded, charge-neutral BEC tensors;
 - `BORN`: supercell electronic dielectric tensor plus primitive BEC tensors;
-- `zstar_response.json`: calculator-neutral response record with intrinsic
+- `response.json`: calculator-neutral response record with intrinsic
   line polarizability;
-- `zstar_1d_bec.json`: per-atom hybrid-polarization diagnostics.
+- `FORCE_CONSTANTS`, `qpoints.yaml`: Gamma force constants and eigensystem;
+- `response_fit.json`: actual displacements, joint observations and fit diagnostics;
+- `BEC.raw.dat`, `FORCE_CONSTANTS.raw`: values before constraint projection.
+
+Executable paths and MPI/OMP settings can come from the ZStar configuration.
+Scheduler directives and module activation belong in the job header. Selection
+is **Specified** (`--header FILE`) > **Current** (`./header.sh`) > **Global**
+(`~/.zstar/header.sh`). Without a header, an editable commented template is emitted.
 
 ## Gamma phonons, IR, and Raman
 
-Generate a force-constant supercell elongated only along the wire:
+For the BN and Sb2S3 examples, use the unified `qpoints.yaml` directly. The supplied
+`run.sh` performs rigid-mode checks and the complete IR/Raman sequence. A separate
+supercell phonon calculation is needed only when extending to finite wavevector:
 
 ```bash
 zstar phonon pre --stru STRU --dim "1 1 2" --physical-dim 1
@@ -103,10 +120,10 @@ their own structures instead of applying the value blindly.
 Calculate the Gamma-point IR response:
 
 ```bash
-zstar ir --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar ir --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 1 --periodic-axis z --outdir ir_spectrum
 
-zstar dielectric static --qpoints qpoints.yaml --born Z-BORN-symm.out \
+zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 1 --periodic-axis z --outdir dielectric_response
 ```
 
@@ -129,11 +146,11 @@ covers all four `mm2` irreducible representations. It is a selected-mode
 Raman benchmark, whereas the accompanying IR calculation contracts the BECs
 with every stable optical mode.
 
-## Retained GaAs benchmark
+## Legacy GaAs benchmark (separate calculations)
 
 The distributed 24-atom hydrogen-passivated GaAs nanowire completed 49
 reference/BEC stages and 40 phonon-force stages. Its default PYATB band gap along
-`3.3994 eV`. Automatic atom matching against an independent VASP calculation
+the periodic direction is `3.3994 eV`. Automatic atom matching against an independent VASP calculation
 gives a full-tensor BEC RMS difference of `0.02068 e` and a maximum component
 difference of `0.08906 e`. The periodic-axis line polarizabilities are
 `27.099 Angstrom^2` from ABACUS + PYATB and `27.218 Angstrom^2` from VASP.
@@ -152,7 +169,136 @@ effects, whereas the PYATB Kubo response is independent-particle, so the
 transverse electronic-response difference is retained as a convention
 diagnostic rather than reported as agreement.
 
-## Scope of the current implementation
+## Unpassivated Examples
+
+Three additional ABACUS/PYATB examples are available under
+`examples/IR_Raman_Spectra`: `Nanotube_BN_6_0`, `Nanotube_BN_9_0`, and
+`Nanowire_Sb2S3`. Both BN tubes use PBE; the Sb2S3 full chain uses PBE-D3(BJ),
+not HSE. All are centered in xy and periodic along z, without hydrogen termination.
+Each includes `run/`, `run/relaxation/`, `results/`, bilingual READMEs, `run.sh`,
+pseudopotentials, orbitals and an optimized `structure.vasp` for visualization.
+
+| Case | Band gap (eV) | Nonrigid Gamma modes | Lowest (cm^-1) | BEC + Gamma core-hours | Raman core-hours |
+|---|---:|---:|---:|---:|---:|
+| BN(6,0) | 2.799 | 68 | 99.20 | 27.0 | 119.8 |
+| BN(9,0) | 3.813 | 104 | 47.92 | 125.0 | 294.3 |
+| Sb2S3 | 1.501 | 26 | 39.38 | 18.9 | 30.1 |
+
+Costs sum completed ABACUS and PYATB calls, excluding preparation overhead and
+geometry optimization. BN(9,0) also excludes the unrecorded interrupted PYATB
+call during a cu20 reboot. Full stage accounting is in `results/compute_costs.json`.
+Reference geometry optimization costs are 13.6, 22.4 and 36.1 core-hours,
+respectively. These are allocated core-hours, not integrated CPU-utilization time.
+
+The runner rejects incompatible work paths and changed input hashes, reuses
+completed stages, checks reference forces and insulation, and excludes three
+translations plus axial rigid rotation using mass-weighted eigenvector overlaps.
+All other modes are calculated, including weak/inactive modes; no peak shifts or
+intensity fitting are applied. This proves neither finite-q stability nor absolute
+Raman-intensity accuracy.
+
+For BN(6,0), seven candidate IR branches differ by at most 3.1% from the explicit
+CRYSTAL/B3LYP values in Erba et al., Table I
+([DOI](https://doi.org/10.1063/1.4788831)); the breathing mode is 408.45 versus
+414.41 cm^-1 and has radial overlap 0.99684. Branch assignment uses frequency
+order, multiplicity and polarization, not unavailable reference eigenvectors.
+BN(9,0) Raman is compared qualitatively with Wirtz et al.
+([DOI](https://doi.org/10.1103/PhysRevB.71.241402)); low-frequency relative
+intensities differ, and transverse depolarization/local fields cannot be assumed
+equivalent to the independent-particle PYATB response.
+
+For Sb2S3, the original sampled IR/Raman curves in the public
+[CRYSTAL/B3LYP-D3(BJ) dataset](https://doi.org/10.17632/6tntvw37tr.1) are retained
+without frequency shifts in the comparison figure. Raman relative intensities
+differ substantially. Its 31.5762 cm^-1 reference mode has approximately 98.3%
+axial-rotation overlap from printed eigenvectors; this feature is disclosed, not
+silently removed from the reference curve. Different XC and response approximations
+preclude interpreting the comparison as a same-method quantitative benchmark.
+
+## BEC presentation and efficiency accounting
+
+For BN(9,0), rotate each tensor into its atom-local radial/tangential/axial frame
+before averaging over a species. The B means `(Zrr, Ztt, Zzz)` are
+`(0.397, 1.256, 2.745) e`; N means are `(-0.474, -1.178, -2.745) e`.
+Do not apply a componentwise neutrality test to sums expressed in different local
+frames. All-atom Cartesian tensors, local ranges, and source hashes are in
+`Nanotube_BN_9_0/results/BEC_comparison/`.
+
+For Sb2S3, the representative atoms `(7,8,1,2,3)` have axial charges
+`(4.642, 5.972, -4.101, -3.353, -3.159) e`. After mapping the reference atom order
+and rotating its periodic x axis to z, the public B3LYP-D3(BJ) data give
+`(4.341, 6.135, -3.786, -3.430, -3.260) e`. The full three-diagonal comparison
+and matching diagnostics are in `Nanowire_Sb2S3/results/BEC_comparison/`.
+The reference is [Ulian's computational dataset](https://doi.org/10.17632/6tntvw37tr.1),
+not a verified associated journal article. Independent relaxed geometries and XC
+methods make this a tensor-pattern comparison, not a matched-method accuracy test.
+
+| Case | Separate BEC SCFs | Separate phonon SCFs | Separate total | Unified joint SCFs |
+|---|---:|---:|---:|---:|
+| BN(9,0) | 61 | 56 | 117 | 57 |
+| Sb2S3 | 31 | 20 | 51 | 21 |
+
+| Case | Separate BEC core-h | Separate phonon core-h | Separate total core-h | Unified joint core-h | Speedup |
+|---|---:|---:|---:|---:|---:|
+| BN(9,0) | 140.05 | 130.36 | 270.41 | 125.04 | 2.16 |
+| Sb2S3 | 23.74 | 17.93 | 41.67 | 18.95 | 2.20 |
+
+Counts include one reference in the BEC route and none in the additional
+force-only route. Unified shares every reference/displacement SCF between both
+observables: its BEC and phonon costs cannot be added twice. Counts are SCF
+calculations, not electronic iterations. For Sb2S3, the matched Separate BEC and
+phonon runs cost 23.74 and 17.93 core-hours (41.67 total), versus 18.95 for Unified:
+2.20-fold measured speedup, or 54.5% saved. BN(9,0) saves 53.8% of successful
+solver core-hours. One interrupted force attempt on cu20 has no complete timing
+record; its partial log is retained, and the remaining stages completed on cu25.
+Listed costs exclude that interruption and are not total billed usage. No task-count
+ratio is reported as measured speedup.
+Raman derivatives and optimization are excluded from this benchmark.
+
+For Sb2S3, the raw BEC maximum difference is 0.00104 e and the internal-mode
+frequency maximum difference is 0.0184 cm^-1. The all-mode maximum of 0.769 cm^-1
+belongs to near-zero axial rigid rotation, classified from eigenvectors in both
+routes. The raw Hessian relative difference is 4.91e-5. Native evidence and timing
+ledgers are in `Nanowire_Sb2S3/results/benchmark/`.
+
+For BN(9,0), these differences are 0.000208 e, 0.514 cm^-1 (the lowest internal
+pair near 48 cm^-1), and 1.18e-5, respectively. Its independently reconstructed
+internal modes remain positive. Its benchmark archive uses the same folder layout.
+BN9 BEC displacements decrease only from 60 to 56 because the vacuum-cell
+symmetry is a subgroup of the full rod group; avoiding 56 duplicate force SCFs
+provides the larger saving. The workflow does not claim the minimum possible
+displacement count under full rod symmetry.
+
+Recreate the source-backed summaries and comparison figure from the repository root:
+
+```bash
+python tools/shared_response/export_one_dimensional_bec.py
+python tools/shared_response/plot_sb2s3_comparison.py examples/IR_Raman_Spectra/Nanowire_Sb2S3 --packaged --with-structure
+python -m tools.shared_response.verify_one_dimensional_example --case examples/IR_Raman_Spectra/Nanowire_Sb2S3 --verify-archive
+python -m tools.shared_response.verify_one_dimensional_example --case examples/IR_Raman_Spectra/Nanotube_BN_9_0 --verify-archive
+```
+
+The last two commands need the repository's Python dependencies, but no DFT or
+PYATB executable. They reconstruct tensors, recalculate both spectra and verify
+native evidence hashes without modifying the case. Where a completed benchmark
+is included, its timing ledgers are checked as well. This is a reproducibility
+check, not an independent validation of the electronic response approximation.
+
+### Dimension-indexed BEC cases
+
+The dimension-indexed BEC/Gamma bundles are now `examples/1D_Nanowire/BN_9_0`
+and `examples/1D_Nanowire/Sb2S3`. Their `run/`, `results/`, and `run.sh` do not
+duplicate the full spectroscopy workflow. Verify either response-only bundle with:
+
+```bash
+python -m tools.shared_response.verify_one_dimensional_example \
+  --case examples/1D_Nanowire/BN_9_0 --verify-archive --response-only
+```
+
+Omitting `--response-only` still requires complete IR/Raman outputs; the verifier
+does not silently accept missing spectra.
+
+### Finite-wavevector electrostatics
 
 Gamma-point mode-resolved IR and Raman spectra are well-defined and supported.
 At finite wavevector, polar one-dimensional phonons have a different

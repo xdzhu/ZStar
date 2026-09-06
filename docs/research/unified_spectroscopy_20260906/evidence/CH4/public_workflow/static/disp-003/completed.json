@@ -1,0 +1,40 @@
+{
+  "sources": {
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/pyatb/Input": "5814357f5b728bb3186f997eb12c411caa473fe1a021ceb3c27bf0dab616f150",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/pyatb/STRU": "d70dde623c5966bc31066cdc96aed53c51f4ee96ee204895d42fff95a486012e",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/0.no-move/pyatb/Input": "bfbc8a3c99e3cd7c9dd8cadc1a9d0efe1949ebe6fe5e8191322575c9e2c767f1",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/OUT.CH4/data-HR-sparse_SPIN0.csr": "4f301af1163e42d21acddbb5b2c1bcd3b34362e344d67eed577e8e08d393ecef",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/OUT.CH4/data-SR-sparse_SPIN0.csr": "bfd123a503bb6e1912ca035cda83afc2cd7a553218e3e2e01173fb7f76eb8d59",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/OUT.CH4/data-rR-sparse.csr": "52fd05951c4a80bc5cc747827bd3daab6303696144023c4a040e0af9dacf9e0b",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/C.upf": "a5b0fe8d6b63f703745b99d47e2dd47ed18efdb35a01ff410bc8e8d0af4e247f",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/H.upf": "8272fc45fbee2b45a490830c61ef9b2f2b894591b2c9a310fe4af152b76502a6",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/C_gga_9au_100Ry_3s3p2d.orb": "357472063c9f249d7cfa74ee68901bab80b738b6502db9a2f52fe4e7e67ea264",
+    "../../../../../20260904-molecular-relaxed-efficiency/CH4/unified/disp-003/H_gga_9au_100Ry_3s2p.orb": "7234ccdfeed67ab25561fec0d3bf48c0fbf1080f05b1ca6686fa029df49be9e9"
+  },
+  "success": true,
+  "additional_DFT_calls": 0,
+  "epsilon": [
+    [
+      1.0056870972435685,
+      -1.2022121797814126e-05,
+      -1.2022121721736824e-05
+    ],
+    [
+      -1.2022121797814126e-05,
+      1.0056998876133565,
+      -1.1328010400760405e-05
+    ],
+    [
+      -1.2022121721736824e-05,
+      -1.1328010400760405e-05,
+      1.0056998876118237
+    ]
+  ],
+  "outputs": {
+    "Out/Optical_Conductivity/static_dielectric_function.dat": "1ae967e004632e52c1fb2694670ea32c6f8f1e7eb3ca01b3bc1ff2bfe8284cf4",
+    "Out/Optical_Conductivity/zstar_static_precision.json": "0ef7aea8e192004dbb448dcc02fe86880f3da3a1a9c8fe227b689443b38d7e5a",
+    "Input": "639efa3e2b9ab951027c6e5da755fa5adb3e18b7bf5201b858ef263fdc1ab087",
+    "STRU": "b70cc22c9371fd188135fbb1df161dfe797ee31890869ba9bcdf8bde11da71ff"
+  },
+  "wall_seconds": 2.1469083540141582
+}

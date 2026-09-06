@@ -1,0 +1,59 @@
+{
+  "case": "MoS2",
+  "force_source": "/home/zhuxd/abacus/agent-runs/20260904-independent-force-benchmark/MoS2",
+  "bec_source": "/home/zhuxd/abacus/agent-runs/20260904-eight-system-efficiency/MoS2/cartesian",
+  "separate": {
+    "status": "computed",
+    "unit": "Angstrom sheet phonon polarizability (Gaussian alpha_2D)",
+    "tensor": [
+      [
+        0.04496340188682355,
+        4.655404640641541e-68,
+        3.0108517735021806e-40
+      ],
+      [
+        4.655404640641544e-68,
+        0.04496340188679921,
+        3.857887736855195e-37
+      ],
+      [
+        3.0108517735021827e-40,
+        3.857887736855197e-37,
+        1.9953557524896655e-08
+      ]
+    ]
+  },
+  "unified": {
+    "status": "computed",
+    "unit": "Angstrom sheet phonon polarizability (Gaussian alpha_2D)",
+    "tensor": [
+      [
+        0.04561948182960429,
+        -3.346986310118636e-66,
+        3.1385348402920267e-36
+      ],
+      [
+        -3.346986310118639e-66,
+        0.04561948182957957,
+        -1.4251523625420033e-36
+      ],
+      [
+        3.1385348402920267e-36,
+        -1.4251523625420033e-36,
+        1.8052673311555567e-07
+      ]
+    ]
+  },
+  "max_projected_frequency_difference_cm1": 0.0010969311367148293,
+  "force_initialization": "atomic charge, independent SCFs",
+  "reference_force_source": "retained Cartesian reference",
+  "timing": {
+    "case": "MoS2",
+    "host": "cu23",
+    "SCFs": 3,
+    "independent_force_core_hours": 2.254919289942417,
+    "max_force_difference_from_unified_eV_A": 3.5558000000008444e-06,
+    "status": "completed"
+  },
+  "static_response_relative_difference": 0.014591421580089158
+}

@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_read_abacus_stru_without_pymatgen():
-    structure = read_structure(ROOT / "examples" / "molecules" / "CH4" / "run" / "STRU")
+    structure = read_structure(ROOT / "examples" / "0D_Molecules" / "CH4" / "run" / "STRU")
     assert structure.symbols == ("C", "H", "H", "H", "H")
     assert np.isclose(structure.volume, 8000.0)
     assert np.allclose(structure.cart_coords[0], [10.0, 10.0, 10.0])
@@ -52,7 +52,7 @@ def blocked(name, *args, **kwargs):
 builtins.__import__ = blocked
 import zstar
 from zstar.read_irrep import estimate_cell_volume
-assert abs(estimate_cell_volume('examples/molecules/CH4/run/STRU') - 8000.0) < 1e-8
+assert abs(estimate_cell_volume('examples/0D_Molecules/CH4/run/STRU') - 8000.0) < 1e-8
 """
     result = subprocess.run(
         [sys.executable, "-c", code],
