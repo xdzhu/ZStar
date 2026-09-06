@@ -1,8 +1,18 @@
-# ZStar 0.3.0 release acceptance
+# ZStar 0.3.1 release acceptance
 
 Date: 2026-09-07. This stable release incorporates the previously validated
 Unified BEC/phonon/spectroscopy implementation and the September 7 manuscript
 annotation review. No new DFT calculations were launched for this acceptance.
+
+## Linux release gate
+
+After the 0.3.0 upload, GitHub Linux CI found two example-layout failures:
+the index stored `examples/3d_bulk` while the manifest specified `3D_Bulk`.
+Windows accepted that spelling mismatch. Version 0.3.1 corrects the Git-index
+directory name and adds a case-sensitive manifest/index regression test.
+Runtime numerical code and retained results are unchanged. The original
+0.3.0 tag and PyPI artifacts are not rewritten. The Windows and offline
+checks below concern the 0.3.0 wheel; 0.3.1 receives a fresh Linux CI gate.
 
 ## Independent installation
 
@@ -29,7 +39,7 @@ unchanged. Both 35-page manuscript PDFs compile without unresolved references.
 All 71 cited records have DOI/URL metadata; spectroscopy reference labels were
 regenerated without changing approved structure images or plotting geometry.
 English and Chinese README PDFs were regenerated. The PyPI description uses
-public image URLs pinned to v0.3.0 rather than local or private-repository paths.
+public image URLs pinned to the release tag rather than local or private-repository paths.
 
 ## Distribution and publishing
 
@@ -38,7 +48,7 @@ The wheel contains runtime modules and the Agent Skill; the source distribution
 includes documentation but excludes examples. Neither distribution includes
 dist build directories. Build products are kept outside the Git checkout.
 
-The v0.3.0 tag triggers the tested GitHub release workflow. It builds wheel and
+The v0.3.1 tag triggers the tested GitHub release workflow. It builds wheel and
 source archives and combines the versioned CHANGELOG entry with automatically
 generated GitHub notes. PyPI publishing is a separate authenticated upload;
 a local successful build alone does not establish remote publication.

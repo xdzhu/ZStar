@@ -1,3 +1,12 @@
+## 0.3.1 - 2026-09-07
+
+- Correct the Git-index spelling of `examples/3D_Bulk` so the documented
+  bulk examples resolve on case-sensitive Linux filesystems.
+- Add an explicit manifest-to-Git path-case regression test, including on
+  Windows where filesystem lookups alone cannot reveal this mismatch.
+- Keep the 0.3.0 numerical implementation and retained results unchanged;
+  point installation, example links, and manuscript metadata to this patch.
+
 ## 0.3.0 - 2026-09-07
 
 - Unify symmetry-adapted BEC/APT and zone-center phonon calculations, using

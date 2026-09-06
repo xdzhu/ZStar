@@ -1,6 +1,6 @@
 # ZStar
 
-<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/v0.3.0/docs/logo.png" alt="ZStar logo" width="176"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/v0.3.1/docs/logo.png" alt="ZStar logo" width="176"></p>
 
 [![PyPI](https://img.shields.io/pypi/v/zstar)](https://pypi.org/project/zstar/)
 [![Python](https://img.shields.io/pypi/pyversions/zstar)](https://pypi.org/project/zstar/)
@@ -29,21 +29,21 @@ ZStar is a Python workflow toolkit for polarization, Born effective charge (BEC)
 
 ## Examples
 
-![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/v0.3.0/docs/paper_figures/spectroscopy_across_dimensions.png)
+![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/v0.3.1/docs/paper_figures/spectroscopy_across_dimensions.png)
 
 The four-dimensional examples compare calculated spectra with literature
 frequencies or published curves. Relative Raman intensities for Sb2S3 remain
 different from the reference; the examples document this limitation explicitly.
 Full inputs, results, and bilingual tutorials are in the
-[versioned GitHub example library](https://github.com/xdzhu/zstar/tree/v0.3.0/examples).
+[versioned GitHub example library](https://github.com/xdzhu/zstar/tree/v0.3.1/examples).
 
 ## Installation
 
-Version `0.3.0` includes the Unified BEC, phonon, IR, and Raman framework.
+Version `0.3.1` includes the Unified BEC, phonon, IR, and Raman framework.
 Install the version associated with the manuscript:
 
 ```bash
-pip install zstar==0.3.0
+pip install zstar==0.3.1
 zstar --version
 ```
 

@@ -59,7 +59,7 @@ displacements between BEC and Gamma phonons. See the
 actual-displacement convention, precision safeguards, and validation status.
 The released package and historical examples retain their recorded versions.
 
-Version `0.3.0` includes the Unified framework, short output names, and completed
+Version `0.3.1` includes the Unified framework, short output names, and completed
 Separate/Unified benchmarks. Use the matching release when reproducing the
 manuscript; historical examples retain their original provenance.
 
@@ -154,8 +154,8 @@ effective charge, diagnostics, and PNG/PDF/SVG plots.
 
 ZStar requires Python 3.9 or newer.
 
-The revised manuscript accompanies **0.3.0**. For exact reproduction, install
-its wheel with `pip install zstar==0.3.0` and obtain the examples from the
+The revised manuscript accompanies **0.3.1**. For exact reproduction, install
+its wheel with `pip install zstar==0.3.1` and obtain the examples from the
 matching GitHub tag. Examples are not included in the PyPI package.
 See [the reproducible benchmarks](examples/Benchmarks/README.md) and
 [revision validation](docs/research/PUBLICATION_REVISION_20260904.md).

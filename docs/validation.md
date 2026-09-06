@@ -1,6 +1,11 @@
 # ZStar Validation Record
 
-## Current Release: 0.3.0
+## Current Release: 0.3.1
+
+Version 0.3.1 corrects the Git-index case of `examples/3D_Bulk`; 0.3.0 stored
+`3d_bulk`, which Windows accepted but Linux CI correctly rejected. A new test
+compares manifest paths with the Git index. The numerical implementation is
+unchanged; the independent-installation evidence below concerns 0.3.0.
 
 The September 7 wheel passes 383 runtime tests and 66 subtests in each of two
 independent Python 3.10 environments with Phonopy 2.36.0 and 4.4.0. Including

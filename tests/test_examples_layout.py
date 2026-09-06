@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import subprocess
 
 from zstar.abacus_assets import prepare_stru_assets
 
@@ -24,6 +25,17 @@ def test_manifest_cases_are_self_describing():
         assert any(p.is_file() for p in (case / "run").rglob("*")), record["id"]
         assert (case / "results").is_dir(), record["id"]
         assert any((case / "results").rglob("*")), record["id"]
+
+
+def test_manifest_paths_match_git_index_case():
+    if not (ROOT / ".git").exists():
+        return
+    tracked = set(subprocess.check_output(
+        ["git", "ls-files", "-z", "--", "examples"], cwd=ROOT
+    ).decode("utf-8").split("\0"))
+    for record in _manifest_cases():
+        path = f"examples/{record['path']}/run.sh"
+        assert path in tracked, f"Case-sensitive Git path missing: {path}"
 
 
 def test_abacus_cases_ship_matching_assets(tmp_path):

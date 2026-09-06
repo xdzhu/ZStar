@@ -54,7 +54,7 @@ Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 [共用位移教程](docs/research/shared_response/USAGE.zh-CN.md) 和
 [配对案例](examples/Benchmarks/README.md)。已发布版本与历史案例仍保留其原有版本记录。
 
-`0.3.0` 包含 Unified 框架、短输出文件名与 Separate/Unified 实测基准。
+`0.3.1` 包含 Unified 框架、短输出文件名与 Separate/Unified 实测基准。
 复现论文时请使用匹配的发布版本；历史案例保留原始版本与来源记录。
 
 混合位移不仅需要检查 SCF 与位移步长，也要检查 PYATB 的 Berry 积分网格。
@@ -141,7 +141,7 @@ PNG/PDF/SVG 图片。
 
 ZStar 要求 Python 3.9 或更高版本。
 
-本次修订稿对应 **0.3.0**，精确复现可使用 `pip install zstar==0.3.0`，
+本次修订稿对应 **0.3.1**，精确复现可使用 `pip install zstar==0.3.1`，
 并从匹配的 GitHub 标签获取案例。PyPI 安装包不包含案例目录。
 参见[可复现基准](examples/Benchmarks/README.zh-CN.md)
 及[本轮验证记录](docs/research/PUBLICATION_REVISION_20260904.md)。
