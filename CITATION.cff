@@ -5,7 +5,7 @@ type: software
 version: 0.3.1
 date-released: 2026-09-07
 license: GPL-3.0-only
-repository-code: "https://github.com/xdzhu/zstar"
+repository-code: "https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy"
 url: "https://pypi.org/project/zstar/"
 authors:
   - family-names: Zhu

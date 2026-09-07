@@ -22,9 +22,15 @@
 
 ---
 
+## Workflow overview
+
+![ZStar workflow](docs/paper_figures/unified_workflow.png)
+
+The vector version is available as [PDF](docs/paper_figures/unified_workflow.pdf).
+
 ## Unified Spectroscopy
 
-One symmetry-adapted SCF ensemble now supports BEC/APT, Gamma phonons, IR and
+One symmetry-adapted SCF displacement set now supports BEC/APT, Gamma phonons, IR and
 static nonresonant Raman. Raman reuses retained electronic matrices, adding
 PYATB postprocessing rather than new SCFs.
 
@@ -43,7 +49,7 @@ Set `--dim 2`, `1`, or `0` at BEC preparation for slabs, wires, or molecules.
 ZStar automates efficient, symmetry-adapted finite-displacement response
 calculations. Its Unified ABACUS + PYATB framework reconstructs Born effective
 charges (BECs), Gamma force constants and Raman derivatives from one displacement
-ensemble. Polarization, force and electronic dielectric observations yield
+set. Polarization, force and electronic dielectric observations yield
 infrared (IR), Raman and dielectric responses with explicit accuracy checks.
 Additional VASP, CP2K and Quantum ESPRESSO adapters support their documented
 response routes; they are complementary to the Unified framework.
@@ -62,8 +68,8 @@ displacements between BEC and Gamma phonons. See the
 actual-displacement convention, precision safeguards, and validation status.
 The released package and historical examples retain their recorded versions.
 
-Version `0.3.1` includes the Unified framework, short output names, and completed
-Separate/Unified benchmarks. Use the matching release when reproducing the
+The current release includes the Unified framework, short output names, and completed
+Separate/Unified benchmarks. Historical examples retain their
 manuscript; historical examples retain their original provenance.
 
 For mixed displacements, converge the PYATB Berry mesh as well as the SCF and
@@ -157,9 +163,8 @@ effective charge, diagnostics, and PNG/PDF/SVG plots.
 
 ZStar requires Python 3.9 or newer.
 
-The revised manuscript accompanies **0.3.1**. For exact reproduction, install
-its wheel with `pip install zstar==0.3.1` and obtain the examples from the
-matching GitHub tag. Examples are not included in the PyPI package.
+The repository contains the reproducible inputs and retained results used by
+the manuscript. Examples are not included in the PyPI package.
 See [the reproducible benchmarks](examples/Benchmarks/README.md) and
 [release validation](docs/validation.md).
 
@@ -172,7 +177,7 @@ pip install -U zstar
 Or install a local checkout:
 
 ```bash
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy.git
 cd zstar
 pip install .
 ```

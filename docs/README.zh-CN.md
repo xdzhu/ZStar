@@ -3,8 +3,14 @@
 [English](README.md) | [项目首页](../README.zh-CN.md) |
 [中文 PDF](README.zh-CN.pdf) | [English PDF](README.en.pdf)
 
-本手册对应已发布的 **ZStar 0.3.1**，安装命令为 `pip install zstar==0.3.1`。
+本手册对应当前 ZStar 发布版，安装命令为 `pip install zstar`。
 默认路线需要另行安装 ABACUS 和 PYATB；安装 ZStar 的 Python 包不会安装这些求解器。
+
+## 工作流总览
+
+![ZStar 工作流](paper_figures/unified_workflow.png)
+
+矢量 PDF 版本见：[统一工作流图](paper_figures/unified_workflow.pdf)。
 
 ## 按任务查找
 
@@ -46,7 +52,7 @@
   [四体系 IR/Raman 效率基准](research/unified_spectroscopy_20260906/README.zh-CN.md)。
 - [验证记录](validation.zh-CN.md)及[论文质量图片](paper_figures/README.md)。
 
-论文冻结输入请使用 [v0.3.1 源码树](https://github.com/xdzhu/zstar/tree/v0.3.1/examples)。
+请使用仓库中的 `examples/` 目录获取可复现输入和保留结果。
 PyPI 的 wheel 和源码包都不含案例。命令预览、离线重建与重新执行 DFT 是
 不同层次的复现；请按各案例 README 检查外部软件、文件及计算资源要求。
 

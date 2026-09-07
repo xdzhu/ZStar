@@ -22,6 +22,12 @@
 
 ---
 
+## 工作流总览
+
+![ZStar 工作流](docs/paper_figures/unified_workflow.png)
+
+矢量版本见 [PDF](docs/paper_figures/unified_workflow.pdf)。
+
 ## Unified 谱学
 
 同一套对称性约化 SCF 现在同时支持 BEC/APT、Gamma 声子、IR 与静态非共振 Raman。
@@ -56,8 +62,7 @@ Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 [Unified BEC/声子教程](docs/research/shared_response/USAGE.zh-CN.md) 和
 [配对案例](examples/Benchmarks/README.md)。已发布版本与历史案例仍保留其原有版本记录。
 
-`0.3.1` 包含 Unified 框架、短输出文件名与 Separate/Unified 实测基准。
-复现论文时请使用匹配的发布版本；历史案例保留原始版本与来源记录。
+当前仓库包含论文使用的可复现输入和保留结果；历史案例保留原始版本与来源记录。
 
 混合位移不仅需要检查 SCF 与位移步长，也要检查 PYATB 的 Berry 积分网格。
 [直接验证报告](docs/research/shared_response/DIRECT_VALIDATION.md) 保留了 SiC、
@@ -143,8 +148,7 @@ PNG/PDF/SVG 图片。
 
 ZStar 要求 Python 3.9 或更高版本。
 
-本次修订稿对应 **0.3.1**，精确复现可使用 `pip install zstar==0.3.1`，
-并从匹配的 GitHub 标签获取案例。PyPI 安装包不包含案例目录。
+仓库中的 `examples/` 目录提供可复现输入和保留结果。PyPI 安装包不包含案例目录。
 参见[可复现基准](examples/Benchmarks/README.zh-CN.md)
 及[本轮验证记录](docs/research/PUBLICATION_REVISION_20260904.md)。
 
@@ -157,7 +161,7 @@ pip install -U zstar
 从本地仓库安装：
 
 ```bash
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy.git
 cd zstar
 pip install .
 ```

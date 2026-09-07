@@ -3,9 +3,15 @@
 [简体中文](README.zh-CN.md) | [Project overview](../README.md) |
 [English PDF](README.en.pdf) | [Chinese PDF](README.zh-CN.pdf)
 
-These instructions apply to the released **ZStar 0.3.1**. Install with
-`pip install zstar==0.3.1`. ABACUS and PYATB are external requirements for the
+These instructions follow the current ZStar release. Install with
+`pip install zstar`. ABACUS and PYATB are external requirements for the
 default route; installing the Python package does not install those solvers.
+
+## Workflow overview
+
+![ZStar workflow](paper_figures/unified_workflow.png)
+
+The workflow figure is also available as a vector PDF: [unified workflow](paper_figures/unified_workflow.pdf).
 
 ## Start With a Task
 
@@ -47,8 +53,8 @@ line/sheet responses, not a vacuum-dependent bulk dielectric constant.
   [four-system IR/Raman benchmarks](research/unified_spectroscopy_20260906/README.md).
 - [Validation record](validation.md) and [manuscript-quality figures](paper_figures/README.md).
 
-Use the [v0.3.1 source tree](https://github.com/xdzhu/zstar/tree/v0.3.1/examples)
-for frozen manuscript inputs. Examples are not in the PyPI wheel or source
+Use the `examples/` tree in the repository for reproducible inputs and retained
+results. Examples are not in the PyPI wheel or source
 distribution. Dry runs, offline reconstruction and new DFT calculations are
 different reproduction levels; each case README states its requirements.
 
