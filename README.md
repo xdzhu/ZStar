@@ -177,7 +177,7 @@ pip install -U zstar
 Or install a local checkout:
 
 ```bash
-git clone https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy.git
+git clone https://github.com/xdzhu/zstar.git
 cd zstar
 pip install .
 ```

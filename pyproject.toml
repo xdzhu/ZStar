@@ -46,8 +46,8 @@ full = ["pymatgen>=2024.0.0"]
 
 
 [project.urls]
-Homepage = "https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy"
-Repository = "https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy"
+Homepage = "https://github.com/xdzhu/zstar"
+Repository = "https://github.com/xdzhu/zstar"
 
 [project.scripts]
 zstar = "zstar.cli:zstar_cli"

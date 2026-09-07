@@ -35,7 +35,7 @@ The four-dimensional examples compare calculated spectra with literature
 frequencies or published curves. Relative Raman intensities for Sb2S3 remain
 different from the reference; the examples document this limitation explicitly.
 Full inputs, results, and bilingual tutorials are in the
-[versioned GitHub example library](https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy/tree/v0.3.1/examples).
+[versioned GitHub example library](https://github.com/xdzhu/zstar/tree/v0.3.1/examples).
 
 ## Installation
 
@@ -138,7 +138,7 @@ Additional normal-mode polarizability derivatives provide Raman spectra.
 The Sb2S3 comparison retains original public reference curves and the observed
 Raman-intensity differences; its reference is a computational dataset, not a
 verified associated journal article. See the
-[one-dimensional guide](https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy/blob/main/docs/one_dimensional_workflow.md).
+[one-dimensional guide](https://github.com/xdzhu/zstar/blob/main/docs/one_dimensional_workflow.md).
 
 For an isolated molecule, `--dim 0` generates and collects atomic polar
 tensors in units of `e`. The name is deliberate: an APT is the molecular

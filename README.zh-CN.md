@@ -161,7 +161,7 @@ pip install -U zstar
 从本地仓库安装：
 
 ```bash
-git clone https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy.git
+git clone https://github.com/xdzhu/zstar.git
 cd zstar
 pip install .
 ```

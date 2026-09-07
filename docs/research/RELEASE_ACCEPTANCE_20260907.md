@@ -14,9 +14,9 @@ Runtime numerical code and retained results are unchanged. The original
 0.3.0 tag and PyPI artifacts are not rewritten. The Windows and offline
 checks below concern the 0.3.0 wheel. The final 0.3.1 wheel passes 477 tests,
 66 subtests and 30 installed CLI checks. Both Linux Phonopy profiles and
-independent installation pass in [build CI](https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy/actions/runs/34056725679).
-The [release CI](https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy/actions/runs/34056874177) also passes.
-[GitHub Release](https://github.com/xdzhu/ZStar-Polarization-BEC-Dielectric-Spectroscopy/releases/tag/v0.3.1) and
+independent installation pass in [build CI](https://github.com/xdzhu/zstar/actions/runs/34056725679).
+The [release CI](https://github.com/xdzhu/zstar/actions/runs/34056874177) also passes.
+[GitHub Release](https://github.com/xdzhu/zstar/releases/tag/v0.3.1) and
 [PyPI](https://pypi.org/project/zstar/0.3.1/) are published; the latter's SHA256
 values match the locally tested wheel and source distribution. Logo and
 spectroscopy image URLs return HTTP 200. Full receipts are retained locally.
