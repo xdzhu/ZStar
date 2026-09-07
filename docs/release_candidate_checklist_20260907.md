@@ -24,10 +24,10 @@ This checklist records the coordinated close-out triggered by the annotated CPC 
 - [x] Put the approved Figure 1 PDF in the manual figure assets and update both README variants.
 - [x] Quarantine superseded manual figure output with an archive note; retain source and historical workflow records.
 - [ ] Audit all command examples for line wrapping and the current `zstar backend list` entry point.
-- [ ] Rename the GitHub repository to match the manuscript title after the local tree is clean; update all links and release metadata.
+- [x] Rename the GitHub repository to match the manuscript title after the local tree is clean; update all links and release metadata. The rename succeeded; the final push is pending a transient HTTPS connection failure.
 
 ## Priority 4: acceptance
 
 - [x] Run the full test suite and clean-environment CLI smoke tests.
 - [x] Compile clean and revision manuscripts, render representative pages, and check figures, references, captions, and cross-references.
-- [ ] Verify the public repository, PyPI metadata, README PDFs, and example manifests agree with the final manuscript.
+- [ ] Verify the public repository, PyPI metadata, README PDFs, and example manifests agree with the final manuscript after the pending push completes.
