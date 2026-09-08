@@ -6,7 +6,7 @@
 通过 387 项安装包测试、66 项子测试、30 个 CLI 检查，以及全部 40 个公开案例的
 dry-run。In2Se3、立方 BaTiO3 与多体系 benchmark 的归档验证也全部通过，且未
 重新计算 DFT 数据。wheel 与源码包均通过 `twine check`，并排除 `examples/`。
-发布文件见 [GitHub Release](https://github.com/xdzhu/zstar/releases/tag/v0.3.2)
+发布文件见 [GitHub Release](https://github.com/xdzhu/ZStar/releases/tag/v0.3.2)
 与 [PyPI](https://pypi.org/project/zstar/0.3.2/)。
 
 0.3.2 补全规范谱学入口的参数传递与 Unified 偏振 Raman 后处理，增强当前

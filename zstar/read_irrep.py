@@ -15,6 +15,7 @@ read_irrep.py
           'IR':    { irrep_label: [band_indices...], ... },
           'Raman': { irrep_label: [band_indices...], ... },
           'Silent':{ irrep_label: [band_indices...], ... },
+          'Unresolved': { irrep_label: [band_indices...], ... }, # 未能可靠解析的标签
           'Acoustic': { irrep_label: [band_indices...], ... },   # 频率小于阈值的模式
           'All':   { irrep_label: [band_indices...], ... },      # 汇总（方便外部复用）
           '_meta': {
@@ -28,6 +29,7 @@ read_irrep.py
 - 数据库模式(db/default) 会尝试从 irreps.yaml 中解析 point_group，然后调用 group_modesDB.py 中的数据库：
     * 优先使用函数 group_modesDB.get_irrep_activities(point_group, spectrum_type='ir'/'raman') -> (active, inactive)
     * 若无该函数，则尝试读取 group_modesDB._IRREP_ACTIVITIES[point_group]
+- Phonopy 未解析的非声学模式归入 Unresolved，不会被误判为 Silent。
 - smodes 模式：保留为对“旧实现”的调用占位。如果你的旧逻辑在其它文件中（例如旧版 read_irrep.py、或 get_wyckoff 中封装了完整流程），
   请在本文件底部的 `_try_call_legacy_smodes(...)` 中挂接即可。
 
@@ -41,6 +43,7 @@ import argparse
 import math
 import sys
 import warnings
+from collections.abc import Mapping as MappingABC
 from collections import defaultdict
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union, Set
 
@@ -64,6 +67,7 @@ except Exception as exc:
 
 
 CM1_PER_THZ = 33.35640951981521  # 1 THz = 33.3564095198 cm^-1
+UNRESOLVED_IRREP = "Unresolved"
 
 
 # ----------------------
@@ -123,17 +127,25 @@ def read_irreps_yaml(file_path: Union[str, Path] = "irreps.yaml",
     results: List[Tuple[str, List[int], float]] = []
 
     def _guess_label(block: dict) -> Optional[str]:
+        def _normalize_label(value) -> str:
+            if value is None:
+                return UNRESOLVED_IRREP
+            text = str(value).strip()
+            if not text or text.lower() in {"none", "null", "~"}:
+                return UNRESOLVED_IRREP
+            return text
+
         # 兼容不同键名
         for key in ("irrep", "ir_label", "irrep_label", "label", "symbol"):
             if key in block:
                 val = block[key]
                 if isinstance(val, dict) and "symbol" in val:
-                    return str(val["symbol"])
-                return str(val)
+                    return _normalize_label(val["symbol"])
+                return _normalize_label(val)
         # 某些版本把符号嵌入在类似 {'irrep': {'symbol': 'A1g'}} 的结构中
         irrep_obj = block.get("irrep", None)
         if isinstance(irrep_obj, dict) and "symbol" in irrep_obj:
-            return str(irrep_obj["symbol"])
+            return _normalize_label(irrep_obj["symbol"])
         return None
 
     for blk in irreps_section:
@@ -177,7 +189,7 @@ def _get_irrep_sets_from_group_modesDB(point_group: str
         # 获取 all 集合
         if hasattr(group_modesDB, "_IRREP_ACTIVITIES"):
             mapping = getattr(group_modesDB, "_IRREP_ACTIVITIES")
-            if isinstance(mapping, dict) and point_group in mapping:
+            if isinstance(mapping, MappingABC) and point_group in mapping:
                 all_set = set(mapping[point_group].get("all", []))
         # 如果拿不到 all，就用并集兜底
         if not all_set:
@@ -187,7 +199,7 @@ def _get_irrep_sets_from_group_modesDB(point_group: str
     # 次选：直接读取内部 dict
     if hasattr(group_modesDB, "_IRREP_ACTIVITIES"):
         mapping = getattr(group_modesDB, "_IRREP_ACTIVITIES")
-        if isinstance(mapping, dict) and point_group in mapping:
+        if isinstance(mapping, MappingABC) and point_group in mapping:
             pg = mapping[point_group]
             ir_set = set(pg.get("ir", []))
             raman_set = set(pg.get("raman", []))
@@ -205,6 +217,8 @@ def build_mode_active_info_from_db(point_group: str
     """
     根据点群从数据库生成 mode_active_info（类别 -> irrep_label集合）。
     类别包括 'IR'、'Raman'、'Silent' 三类；Silent = all - IR - Raman。
+    未能由 Phonopy 解析或不在数据库中的标签由后续步骤归为 Unresolved，
+    不会被误判为 Silent。
     """
     ir_set, raman_set, all_set = _get_irrep_sets_from_group_modesDB(point_group)
 
@@ -239,6 +253,7 @@ def get_mode_band_indices(
           'Raman': {...},
           'Silent': {...},
           'Acoustic': {...},
+          'Unresolved': {...},
           'All': {'A1g': [...], 'A2u': [...], ...},
           '_meta': {'point_group': 'mmm', 'acoustic_threshold_thz': 0.05, 'mode': 'db'}
         }
@@ -253,8 +268,15 @@ def get_mode_band_indices(
         "Raman": defaultdict(list),
         "Silent": defaultdict(list),
         "Acoustic": defaultdict(list),
+        "Unresolved": defaultdict(list),
         "All": defaultdict(list),
     }
+
+    known_irreps = set().union(
+        normalized.get("IR", set()),
+        normalized.get("Raman", set()),
+        normalized.get("Silent", set()),
+    )
 
     for label, bands, freq in irrep_labels_band_indices:
         # 汇总 All
@@ -264,6 +286,10 @@ def get_mode_band_indices(
         if abs(float(freq)) <= float(acoustic_threshold):
             result["Acoustic"][label].extend(bands)
             # 声学通常不再计入 IR / Raman / Silent；如需计入，可在此修改策略
+            continue
+
+        if label == UNRESOLVED_IRREP or label not in known_irreps:
+            result["Unresolved"][label].extend(bands)
             continue
 
         # 分类到 IR / Raman / Silent（允许同时进入 IR 与 Raman）
@@ -586,6 +612,7 @@ def main(argv: Optional[Sequence[str]] = None) -> Dict[str, Dict[str, List[int]]
     _format_category_block("IR active", result.get("IR", {}), tuples)
     _format_category_block("Raman active", result.get("Raman", {}), tuples)
     _format_category_block("Silent (inactive)", result.get("Silent", {}), tuples)
+    _format_category_block("Unresolved symmetry label", result.get("Unresolved", {}), tuples)
     _format_category_block("Acoustic (|f| <= threshold)", result.get("Acoustic", {}), tuples)
 
     print("\n" + "*" * 62)

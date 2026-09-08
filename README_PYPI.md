@@ -16,13 +16,13 @@ Install ZStar and download the public examples:
 
 ```bash
 pip install -U zstar
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar.git
 ```
 
 The `pip install` command alone is sufficient when the reproducible examples
 are not needed; examples are distributed through GitHub rather than the wheel.
 
-Follow the [calculator configuration guide](https://github.com/xdzhu/zstar/blob/main/docs/cli_reference.md#calculator-configuration)
+Follow the [calculator configuration guide](https://github.com/xdzhu/ZStar/blob/main/docs/cli_reference.md#calculator-configuration)
 to set ABACUS, PYATB, and MPI/OMP, then confirm the two executables with
 `zstar config check`.
 
@@ -90,7 +90,7 @@ The four-dimensional examples compare calculated spectra with literature
 frequencies or published curves. Relative Raman intensities for Sb2S3 remain
 different from the reference; the examples document this limitation explicitly.
 Full inputs, results, and bilingual tutorials are in the
-[GitHub example library](https://github.com/xdzhu/zstar/tree/main/examples).
+[GitHub example library](https://github.com/xdzhu/ZStar/tree/main/examples).
 
 Representative archived results include `Z*(Ti) = 7.440 e` for cubic BaTiO3,
 `Z*(B,parallel) = 2.702 e` for monolayer hBN,
@@ -191,7 +191,7 @@ Additional normal-mode polarizability derivatives provide Raman spectra.
 The Sb2S3 comparison retains original public reference curves and the observed
 Raman-intensity differences; its reference is a computational dataset, not a
 verified associated journal article. See the
-[one-dimensional guide](https://github.com/xdzhu/zstar/blob/main/docs/one_dimensional_workflow.md).
+[one-dimensional guide](https://github.com/xdzhu/ZStar/blob/main/docs/one_dimensional_workflow.md).
 
 For an isolated molecule, `--dim 0` generates and collects atomic polar
 tensors in units of `e`. The name is deliberate: an APT is the molecular

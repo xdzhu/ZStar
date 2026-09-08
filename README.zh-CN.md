@@ -34,7 +34,7 @@ ABACUS 输入、SG15 赝势和 DZP 轨道。
 ZStar。如需获取可复现案例，则克隆仓库并安装同一份源码：
 
 ```bash
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar.git
 cd zstar
 pip install .
 ```
@@ -108,7 +108,7 @@ SiC Quick Start：
 - agent skills 目录：$HOME/.codex/skills
 - 计算工作目录：$HOME/zstar-work/SiC
 
-将 https://github.com/xdzhu/zstar.git 克隆到 $HOME/software/zstar。使用
+将 https://github.com/xdzhu/ZStar.git 克隆到 $HOME/software/zstar。使用
 Python 3.10 在 $HOME/.venvs/zstar 创建并激活独立环境，然后在源码目录执行
 `pip install .` 安装 ZStar。执行以下命令安装软件自带的 agent skill：
 
@@ -255,7 +255,7 @@ pip install -U zstar
 从本地仓库安装：
 
 ```bash
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar.git
 cd zstar
 pip install .
 ```
@@ -590,6 +590,10 @@ zstar phonon stat --root .
 zstar phonon post --root .
 zstar phonon irrep --root . --file irreps.yaml --mode db
 ```
+
+Phonopy 无法可靠解析的模式会标记为 `Unresolved`，而不会被直接推断为
+静默模式。选择定则及 32 个点群的独立核验见
+[点群活性规则核验](docs/point_group_activity_validation.zh-CN.md)。
 
 如果需要非解析项修正，应先把 BEC 工作流中的 `BORN` 复制到声子目录：
 

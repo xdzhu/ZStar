@@ -43,7 +43,7 @@ def compose_job_script(root, system, default_header, body, *, specified=None):
         '# Header: Specified --header FILE > Current ./header.sh > Global ~/.zstar/header.sh.',
         '# Put scheduler resources and module/source commands in that header.',
         '# MPI/OMP and executable paths: zstar config.',
-        '# Tutorial: https://github.com/xdzhu/zstar/blob/main/docs/job_headers.md',
+        '# Tutorial: https://github.com/xdzhu/ZStar/blob/main/docs/job_headers.md',
     ]
     if source is None:
         header = list(default_header) + guide + ['# module load <your-compiler> <your-mpi>']

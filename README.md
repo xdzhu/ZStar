@@ -36,7 +36,7 @@ using ZStar directly. To obtain the
 reproducible cases, clone the repository and install the same source tree:
 
 ```bash
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar.git
 cd zstar
 pip install .
 ```
@@ -118,7 +118,7 @@ the SiC Quick Start using the following locations:
 - Agent skills directory: $HOME/.codex/skills
 - Calculation workspace: $HOME/zstar-work/SiC
 
-Clone https://github.com/xdzhu/zstar.git into $HOME/software/zstar. Create the
+Clone https://github.com/xdzhu/ZStar.git into $HOME/software/zstar. Create the
 Python environment at $HOME/.venvs/zstar with Python 3.10, activate it, and
 install ZStar from the cloned source using `pip install .`. Install the packaged
 agent skill using:
@@ -285,7 +285,7 @@ pip install -U zstar
 Or install a local checkout:
 
 ```bash
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar.git
 cd zstar
 pip install .
 ```
@@ -649,6 +649,11 @@ zstar phonon stat --root .
 zstar phonon post --root .
 zstar phonon irrep --root . --file irreps.yaml --mode db
 ```
+
+Mode labels that Phonopy cannot resolve are reported as `Unresolved`, not
+silently inferred to be inactive. The selection rules and their independent
+32-point-group audit are documented in
+[Point-group activity validation](docs/point_group_activity_validation.md).
 
 For non-analytical corrections, copy the BEC workflow's `BORN` into the phonon directory before post-processing:
 

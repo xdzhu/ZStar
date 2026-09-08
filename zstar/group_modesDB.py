@@ -3,6 +3,9 @@ from __future__ import annotations
 from types import MappingProxyType
 from typing import Dict, List, Mapping, Tuple
 
+ACTIVITY_REFERENCE_URL = "https://www.cryst.ehu.eus/rep/point.html"
+ACTIVITY_REFERENCE_DOI = "10.1107/S0108767305040286"
+
 ZERO_TOLERANCE = 1.0e-8
 THZ_TO_INV_CM = 33.35641
 THZ_TO_MEV = 4.13567
@@ -43,6 +46,9 @@ class _IrrepRecord:
         }
 
 
+# Selection rules follow the Bilbao POINT decomposition of the polar-vector
+# representation V (IR) and its symmetric square [V^2] (static Raman).
+# Complex-conjugate 1E/2E pairs are written in the conventional real E notation.
 # Format per line:
 # point_group ; ir-active irreps ; raman-active irreps ; all irreps
 _RAW_ACTIVITY_TABLE = """

@@ -8,7 +8,7 @@ checkout-independent Python 3.10 environment with Phonopy 4.4.0. The retained
 In2Se3, cubic BaTiO3, and multi-system benchmark verifiers also pass without
 recalculating DFT data. The release artifacts pass `twine check`; examples are
 excluded from both the wheel and source distribution. See the
-[GitHub release](https://github.com/xdzhu/zstar/releases/tag/v0.3.2) and
+[GitHub release](https://github.com/xdzhu/ZStar/releases/tag/v0.3.2) and
 [PyPI files](https://pypi.org/project/zstar/0.3.2/).
 
 Version 0.3.2 completes canonical spectroscopy option forwarding, supports

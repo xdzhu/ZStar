@@ -17,7 +17,7 @@ to install and use the program. Clone the repository only when its reproducible
 cases are needed:
 
 ```bash
-git clone https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/ZStar.git
 cd zstar
 pip install .
 ```
@@ -110,7 +110,8 @@ line/sheet responses, not a vacuum-dependent bulk dielectric constant.
   [potential cases](../examples/Electrostatic_Potential/README.md).
 - [Ten-system BEC/phonon benchmarks](../examples/Benchmarks/README.md) and
   [four-system IR/Raman benchmarks](research/unified_spectroscopy_20260906/README.md).
-- [Validation record](validation.md) and [validation figures with source data](paper_figures/README.md).
+- [Validation record](validation.md), [32-point-group activity audit](point_group_activity_validation.md),
+  and [validation figures with source data](paper_figures/README.md).
 
 Use the `examples/` tree in the repository for reproducible inputs and retained
 results. Examples are not in the PyPI wheel or source
