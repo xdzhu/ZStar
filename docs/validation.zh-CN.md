@@ -1,14 +1,19 @@
 # ZStar 数值验证记录
 
-## 当前版本：0.3.1
+## 当前版本：0.3.2
 
-最终 0.3.1 wheel 通过 477 项测试、66 项子测试（含仓库验证工具）及 30 个
-已安装 CLI 检查。两组 Linux Phonopy 测试、独立安装和自动发布均通过：
-[构建验收](https://github.com/xdzhu/zstar/actions/runs/34056725679)、
-[发布验收](https://github.com/xdzhu/zstar/actions/runs/34056874177)。
-[GitHub Release](https://github.com/xdzhu/zstar/releases/tag/v0.3.1) 与
-[PyPI](https://pypi.org/project/zstar/0.3.1/) 已发布，PyPI 文件哈希与本地测试包一致。
-该补丁修复交付路径，不改动响应计算或已有数值结果。
+0.3.2 发布候选版在独立于源码目录的 Python 3.10 + Phonopy 4.4.0 环境中
+通过 387 项安装包测试、66 项子测试、30 个 CLI 检查，以及全部 40 个公开案例的
+dry-run。In2Se3、立方 BaTiO3 与多体系 benchmark 的归档验证也全部通过，且未
+重新计算 DFT 数据。wheel 与源码包均通过 `twine check`，并排除 `examples/`。
+发布文件见 [GitHub Release](https://github.com/xdzhu/zstar/releases/tag/v0.3.2)
+与 [PyPI](https://pypi.org/project/zstar/0.3.2/)。
+
+0.3.2 补全规范谱学入口的参数传递与 Unified 偏振 Raman 后处理，增强当前
+ABACUS/Phonopy 日志兼容性，并刷新中英文手册、图件、元数据和案例哈希；保留的
+数值结果未改变。
+
+## 上一版本：0.3.1
 
 0.3.1 修复了 Git 索引中的 `examples/3D_Bulk` 大小写。0.3.0 索引仍是
 `3d_bulk`，Windows 可以访问，而 Linux CI 正确发现了此问题。新增测试
@@ -298,13 +303,14 @@ benchmark。现在 ABACUS、VASP 和 CP2K 谱学路径默认拒绝低于 -20 cm-
 Gamma 点本征谱；只有明确使用 `--allow-imaginary` 才会继续分析不稳定相的
 正频支。
 
-论文级图片、绘图脚本、紧凑源数据和哈希已归档于
+当前论文级图片、绘图脚本、紧凑源数据和哈希已归档于
 [docs/paper_figures](paper_figures/README.md)：
 
-- [四方 BTO 诊断模式图](paper_figures/bto_mode_spectroscopy.png)
-- [alpha-In2Se3 二维混合极化/BEC 图](paper_figures/in2se3_hybrid_polarization.png)
-- [已验证的 Bulk--Slab--Molecule IR/Raman 对比图](paper_figures/spectroscopy_across_dimensions.png)
+- [跨四种维度的 IR/Raman 对比图](paper_figures/spectroscopy_across_dimensions.png)
 - [Bulk 与二维介电响应图](paper_figures/dielectric_response_examples.png)
+- [二维静电势分析图](paper_figures/potential_examples_2d.png)
+
+早期诊断图仅在绘图档案中保留以便追溯，不再作为当前手册或稿件的展示内容。
 
 ## 分子光谱
 

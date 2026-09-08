@@ -1,17 +1,19 @@
 # ZStar
 
-<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/v0.3.1/docs/logo.png" alt="ZStar logo" width="176"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/v0.3.2/docs/logo.png" alt="ZStar logo" width="176"></p>
 
 [![PyPI](https://img.shields.io/pypi/v/zstar)](https://pypi.org/project/zstar/)
 [![Python](https://img.shields.io/pypi/pyversions/zstar)](https://pypi.org/project/zstar/)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-ZStar is a Python workflow toolkit for polarization, Born effective charge (BEC), phonon, infrared, Raman, and dielectric-response calculations with ABACUS, PYATB, and Phonopy.
+ZStar is an automated toolkit for polarization, Born effective charges, dielectric
+response, and infrared and Raman spectra calculations. Its principal workflow
+uses ABACUS, PYATB, and Phonopy.
 
 ## Highlights
 
 - Unified symmetry-adapted BEC/APT, Gamma force constants and static nonresonant
-  Raman derivatives from one displacement ensemble. Retained electronic matrices
+  Raman derivatives from the same calculations. Retained electronic matrices
   supply additional PYATB responses without additional SCFs.
 - Molecular atomic polar tensors (APT) from ABACUS + PYATB or CP2K dipoles.
 - Symmetry reduction, full-cell reconstruction, and acoustic-sum-rule correction.
@@ -29,21 +31,27 @@ ZStar is a Python workflow toolkit for polarization, Born effective charge (BEC)
 
 ## Examples
 
-![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/v0.3.1/docs/paper_figures/spectroscopy_across_dimensions.png)
+![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/v0.3.2/docs/paper_figures/spectroscopy_across_dimensions.png)
 
 The four-dimensional examples compare calculated spectra with literature
 frequencies or published curves. Relative Raman intensities for Sb2S3 remain
 different from the reference; the examples document this limitation explicitly.
 Full inputs, results, and bilingual tutorials are in the
-[versioned GitHub example library](https://github.com/xdzhu/zstar/tree/v0.3.1/examples).
+[versioned GitHub example library](https://github.com/xdzhu/zstar/tree/v0.3.2/examples).
+
+Representative archived results include `Z*(Ti) = 7.440 e` for cubic BaTiO3,
+`Z*(B,parallel) = 2.702 e` for monolayer hBN,
+`(Zrr,Ztt,Zzz)_B = (0.397,1.256,2.745) e` for BN(9,0), and
+`q_GAPT(O) = -0.481 e` for H2O. Periodic values are BEC components; the molecular
+value is the APT invariant `Tr(A)/3`.
 
 ## Installation
 
-Version `0.3.1` includes the Unified BEC, phonon, IR, and Raman framework.
+Version `0.3.2` includes the Unified BEC, phonon, IR, and Raman framework.
 Install the version associated with the manuscript:
 
 ```bash
-pip install zstar==0.3.1
+pip install zstar==0.3.2
 zstar --version
 ```
 
@@ -155,13 +163,17 @@ Full `x/y/z` displacements are required because the out-of-plane polarization
 column is obtained from the real-space slab dipole. The slab normal must
 currently align with Cartesian `z`.
 
-Audit one reference/displaced charge-density pair directly:
+Run a complete two-dimensional response calculation through the canonical BEC
+lifecycle:
 
 ```bash
-zstar polar2d --reference-cube reference.cube \
-  --displaced-cube atom_zplus.cube \
-  --displacement 0.01 --outdir slab_dipole_check
+zstar bec pre --stru STRU --dim 2
+zstar bec run
+zstar bec post
 ```
+
+The low-level `zstar polar2d` command is retained only for auditing an existing
+reference/displaced cube pair.
 
 The default insulating gate runs only for `0.no-move` and uses:
 
@@ -247,8 +259,8 @@ zstar spectra post --root raman
 
 ZStar converts Berry polarization through `dmu/dQ = V*dP/dQ` and the
 dilute-supercell dielectric response through
-`dalpha/dQ = V/(4*pi)*d(epsilon_r)/dQ`. Existing mode-pair polarizations can
-can also be collected through the retained low-level `zstar ir` expert command.
+`dalpha/dQ = V/(4*pi)*d(epsilon_r)/dQ`. Existing prepared mode-pair results can
+be checked with `zstar spectra stat` and reprocessed with `zstar spectra post`.
 
 ## Electrostatic Potential Diagnostics
 

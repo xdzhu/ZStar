@@ -1,16 +1,22 @@
 # ZStar Validation Record
 
-## Current Release: 0.3.1
+## Current Release: 0.3.2
 
-The final 0.3.1 wheel passes 477 tests and 66 subtests (including repository
-tools) and 30 installed CLI checks. Both Linux Phonopy profiles, independent
-wheel installation, and the automatic release build pass:
-[build acceptance](https://github.com/xdzhu/zstar/actions/runs/34056725679),
-[release acceptance](https://github.com/xdzhu/zstar/actions/runs/34056874177).
-The [GitHub release](https://github.com/xdzhu/zstar/releases/tag/v0.3.1) and
-[PyPI files](https://pypi.org/project/zstar/0.3.1/) are published. PyPI hashes
-match the locally tested distributions. This patch changes delivery paths,
-not response calculations or the retained numerical results.
+The 0.3.2 release candidate passes 387 installed-package tests, 66 subtests,
+30 installed CLI checks, and dry runs for all 40 indexed public examples in a
+checkout-independent Python 3.10 environment with Phonopy 4.4.0. The retained
+In2Se3, cubic BaTiO3, and multi-system benchmark verifiers also pass without
+recalculating DFT data. The release artifacts pass `twine check`; examples are
+excluded from both the wheel and source distribution. See the
+[GitHub release](https://github.com/xdzhu/zstar/releases/tag/v0.3.2) and
+[PyPI files](https://pypi.org/project/zstar/0.3.2/).
+
+Version 0.3.2 completes canonical spectroscopy option forwarding, supports
+polarized Unified Raman post-processing, improves current ABACUS/Phonopy log
+compatibility, and refreshes manuals, figures, metadata, and archive hashes.
+The retained numerical results are unchanged.
+
+## Previous Release: 0.3.1
 
 Version 0.3.1 corrects the Git-index case of `examples/3D_Bulk`; 0.3.0 stored
 `3d_bulk`, which Windows accepted but Linux CI correctly rejected. A new test
@@ -353,13 +359,15 @@ now rejects any Gamma eigensystem below -20 cm-1 by default in the ABACUS,
 VASP, and CP2K spectroscopy paths. `--allow-imaginary` is an explicit opt-in
 for intentionally studying the stable branches of an unstable phase.
 
-The manuscript-ready figures, plotting code, compact source data, and hashes
-are archived in [docs/paper_figures](paper_figures/README.md):
+The current manuscript-ready figures, plotting code, compact source data, and
+hashes are archived in [docs/paper_figures](paper_figures/README.md):
 
-- [Tetragonal BTO diagnostic mode figure](paper_figures/bto_mode_spectroscopy.png)
-- [Alpha-In2Se3 hybrid 2D polarization/BEC figure](paper_figures/in2se3_hybrid_polarization.png)
-- [Validated Bulk--Slab--Molecule IR/Raman comparison](paper_figures/spectroscopy_across_dimensions.png)
+- [IR/Raman comparison across all four dimensionalities](paper_figures/spectroscopy_across_dimensions.png)
 - [Bulk and two-dimensional dielectric response](paper_figures/dielectric_response_examples.png)
+- [Two-dimensional electrostatic-potential analysis](paper_figures/potential_examples_2d.png)
+
+Earlier diagnostic plots remain in the figure archive for provenance, but are
+not part of the current manual or manuscript presentation.
 
 ## Molecular Spectroscopy
 

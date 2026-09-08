@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "If you use ZStar, please cite the software release and the associated software article."
-title: "ZStar: An Automated Toolkit for Polarization, Born Effective Charges, Dielectric Response, and Infrared and Raman Spectra Calculations"
+title: "ZStar: An automated toolkit for polarization, Born effective charges, dielectric response, and infrared and Raman spectra calculations"
 type: software
-version: 0.3.1
-date-released: 2026-09-07
+version: 0.3.2
+date-released: 2026-09-08
 license: GPL-3.0-only
 repository-code: "https://github.com/xdzhu/zstar"
 url: "https://pypi.org/project/zstar/"
@@ -21,7 +21,7 @@ authors:
     given-names: Lixin
 preferred-citation:
   type: generic
-  title: "ZStar: An Automated Toolkit for Polarization, Born Effective Charges, Dielectric Response, and Infrared and Raman Spectra Calculations"
+  title: "ZStar: An automated toolkit for polarization, Born effective charges, dielectric response, and infrared and Raman spectra calculations"
   authors:
     - family-names: Zhu
       given-names: Xudong

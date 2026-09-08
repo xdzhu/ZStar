@@ -193,6 +193,25 @@ def prepare_shared_abacus(f_stru="STRU", *, root=".", scf_input=None,
     return data
 
 
+def _read_force_block(text, natoms):
+    marker = "TOTAL-FORCE (eV/Angstrom)"
+    if marker not in text:
+        raise ValueError("ABACUS output does not contain a TOTAL-FORCE block")
+    rows = []
+    for line in text.rsplit(marker, 1)[1].splitlines():
+        fields = line.split()
+        if len(fields) < 4:
+            continue
+        try:
+            row = [float(value) for value in fields[-3:]]
+        except ValueError:
+            continue
+        rows.append(row)
+        if len(rows) == natoms:
+            return np.asarray(rows)
+    raise ValueError(f"Expected {natoms} force rows in the final TOTAL-FORCE block, found {len(rows)}")
+
+
 def read_forces(stage):
     from phonopy.interface.abacus import read_abacus_output
     from .workflow import scf_is_complete
@@ -205,8 +224,14 @@ def read_forces(stage):
     text = logs[0].read_text(encoding="utf-8", errors="replace")
     if "TOTAL-FORCE (eV/Angstrom)" not in text:
         raise ValueError(f"Missing forces in {stage}; rerun with cal_force 1 in a fresh ensemble")
-    values = np.asarray(read_abacus_output(str(logs[0])))
-    if values.shape != (len(read_structure(stage / "STRU")), 3) or not np.all(np.isfinite(values)):
+    natoms = len(read_structure(stage / "STRU"))
+    try:
+        values = np.asarray(read_abacus_output(str(logs[0])))
+    except (IndexError, TypeError, ValueError):
+        values = _read_force_block(text, natoms)
+    if values.shape != (natoms, 3) or not np.all(np.isfinite(values)):
+        values = _read_force_block(text, natoms)
+    if values.shape != (natoms, 3) or not np.all(np.isfinite(values)):
         raise ValueError(f"Invalid force array in {logs[0]}")
     return values
 

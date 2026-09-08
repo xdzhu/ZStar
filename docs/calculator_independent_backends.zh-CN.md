@@ -105,8 +105,9 @@ zstar density sidecar --cube charge.cube --backend generic \
   --charges 4 4 6
 ```
 
-参考态和位移态 cube 可直接交给 `zstar polar2d`。这样 ABACUS、VASP、QE 和
-CP2K 共用同一套积分物理，不会产生四份相互偏离的实现。
+规范 BEC 工作流在 `zstar bec post` 阶段使用参考态和位移态 cube。保留的专家命令
+`zstar polar2d` 仅用于审计一对已有 cube，不负责准备或执行工作流。两条路径在
+ABACUS、VASP、QE 和 CP2K 间共用同一套积分物理。
 
 ## 光谱与光学量
 
@@ -116,7 +117,7 @@ Phonopy 模式可以脱离力计算器导入。三维 bulk 的 NAC 支持显式�
 偏振 Raman 强度采用 `|e_s^T R e_i|^2`：
 
 ```bash
-zstar raman spectrum --raman-dir raman \
+zstar spectra post --root raman \
   --incident-polarization 1 0 0 --scattered-polarization 0 1 0
 ```
 

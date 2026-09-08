@@ -62,6 +62,16 @@ def _has(arguments: Sequence[str], name: str) -> bool:
     return any(token == name or token.startswith(name + "=") for token in arguments)
 
 
+def _vector_option(arguments: Sequence[str], name: str) -> list[str] | None:
+    for index, token in enumerate(arguments):
+        if token == name:
+            values = list(arguments[index + 1:index + 4])
+            if len(values) != 3 or any(value.startswith("--") for value in values):
+                raise SystemExit(f"{name} requires three Cartesian components")
+            return values
+    return None
+
+
 def _saved(root: str, calculator: str | None, kind: str | None, dim: int | None):
     path = manifest_path(root, "spectra")
     options = {}
@@ -347,6 +357,40 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             ir_args = ["ir", "--qpoints", qpoints, "--born", str(born), "--dim", str(dim)]
             if options.get("dielectric"):
                 ir_args.extend(["--dielectric", str(options["dielectric"])])
+            for flag in ("--periodic-axis", "--thickness", "--slab-boundary", "--modes",
+                         "--acoustic-cutoff", "--imaginary-tolerance", "--broadening",
+                         "--max-frequency", "--points"):
+                value = _option(rest, flag)
+                if value is not None:
+                    ir_args.extend([flag, str(value)])
+            if _has(rest, "--allow-imaginary"):
+                ir_args.append("--allow-imaginary")
+            if _has(rest, "--no-plot"):
+                ir_args.append("--no-plot")
+            ir_outdir = _option(rest, "--ir-outdir")
+            if ir_outdir is not None:
+                ir_args.extend(["--outdir", str(ir_outdir)])
             legacy(ir_args)
         if kind in {"raman", "all"}:
-            legacy(["raman", "spectrum", "--raman-dir", root, "--qpoints", qpoints, "--dim", str(dim)])
+            raman_args = ["raman", "spectrum", "--raman-dir", root,
+                          "--qpoints", qpoints, "--dim", str(dim)]
+            for flag in ("--periodic-axis", "--temperature", "--broadening",
+                         "--max-frequency", "--points", "--imaginary-tolerance"):
+                value = _option(rest, flag)
+                if value is not None:
+                    raman_args.extend([flag, str(value)])
+            laser = _option(rest, "--laser", "--laser-nm")
+            if laser is not None:
+                raman_args.extend(["--laser-nm", str(laser)])
+            for flag in ("--incident-polarization", "--scattered-polarization"):
+                values = _vector_option(rest, flag)
+                if values is not None:
+                    raman_args.extend([flag, *values])
+            if _has(rest, "--allow-imaginary"):
+                raman_args.append("--allow-imaginary")
+            if _has(rest, "--no-plot"):
+                raman_args.append("--no-plot")
+            raman_outdir = _option(rest, "--raman-outdir")
+            if raman_outdir is not None:
+                raman_args.extend(["--outdir", str(raman_outdir)])
+            legacy(raman_args)

@@ -1,6 +1,6 @@
 # Molecular IR and Raman spectroscopy
 
-The preferred ABACUS route now reuses the [Unified displacement ensemble](unified_spectroscopy.md)
+The preferred ABACUS route now reuses the [Unified displacement workflow](unified_spectroscopy.md)
 for APT, Gamma modes, IR and Raman. The explicit normal-mode workflow below remains
 available with `zstar spectra pre --method mode` as an independent control.
 
@@ -37,40 +37,36 @@ gas-phase integrated cross sections.
    `zstar phonon pre` and `zstar phonon post`.
 3. Inspect the Gamma modes with `zstar phonon irrep`. Exclude rigid translations and
    rotations by a reviewed frequency cutoff or explicit mode list.
-4. Prepare central mode displacements with `zstar raman prepare`.
+4. Prepare central mode displacements with `zstar spectra pre --method mode`.
 5. Run the reference SCF once and retain its reusable charge density.
-6. Run `zstar raman run --dim 0`. Each displaced SCF reuses the reference
+6. Run `zstar spectra run`. Each displaced SCF reuses the reference
    charge density; PYATB then calculates static dielectric response and Berry
    polarization without repeating DFT.
 
 ```bash
-zstar raman prepare --stru STRU --qpoints qpoints.yaml \
-  --acoustic-cutoff 100 --amplitude 0.02 --outdir raman \
+zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml \
+  --dim 0 --acoustic-cutoff 100 --amplitude 0.02 --root raman \
   --copy INPUT-scf --copy KPT
 
-zstar raman run --raman-dir raman --reference 0.no-move \
-  --qpoints qpoints.yaml --dim 0 \
+zstar spectra run --root raman --reference 0.no-move \
   --abacus-command "mpirun -np 1 abacus" \
-  --pyatb-command "mpirun -np 1 pyatb" \
-  --spectrum-outdir raman_spectrum --ir-outdir ir_spectrum
+  --pyatb-command "mpirun -np 1 pyatb"
+zstar spectra stat --root raman
+zstar spectra post --root raman
 ```
 
-The workflow is serial and resumable. Use `zstar raman status --raman-dir
-raman` to inspect every plus/minus stage.
+The workflow is serial and resumable. Use `zstar spectra stat --root raman`
+to inspect every plus/minus stage.
 
 ## Independent post-processing
 
 ```bash
-zstar ir --dim 0 --qpoints qpoints.yaml \
-  --displacements raman --outdir ir_spectrum
-
-zstar raman collect --dim 0 --qpoints qpoints.yaml --raman-dir raman
-zstar raman spectrum --dim 0 --qpoints qpoints.yaml \
-  --raman-dir raman --outdir raman_spectrum
+zstar spectra stat --root raman
+zstar spectra post --root raman
 ```
 
-`zstar ir` automatically checks `pyatb` and `pyatb-polar` under each mode
-stage. `--polarization-subdir NAME` can select a nonstandard folder.
+The postprocessor checks `pyatb` and `pyatb-polar` under each mode stage and
+writes both spectra from the saved workflow manifest.
 
 ## Outputs
 

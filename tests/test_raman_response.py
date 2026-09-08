@@ -55,6 +55,47 @@ def test_canonical_pre_run_and_job_use_unified(tmp_path, monkeypatch):
         unified_spectra.prepare(tmp_path/'other',response,dimension=0)
 
 
+def test_canonical_mode_post_forwards_spectrum_options(monkeypatch):
+    from zstar import spectra_frontend
+    monkeypatch.setattr(
+        spectra_frontend,
+        '_saved',
+        lambda *args, **kwargs: ('abacus', 'raman', 1, {'qpoints': 'qpoints.yaml'}),
+    )
+    calls = []
+    spectra_frontend.run_spectra_cli([
+        'post', '--root', 'raman', '--temperature', '80', '--laser', '633',
+        '--broadening', '6', '--incident-polarization', '1', '0', '0',
+        '--scattered-polarization', '0', '1', '0', '--no-plot',
+    ], calls.append)
+    command = calls[0]
+    assert command[:3] == ['raman', 'spectrum', '--raman-dir']
+    assert command[command.index('--laser-nm') + 1] == '633'
+    assert command[command.index('--incident-polarization') + 1:
+                   command.index('--incident-polarization') + 4] == ['1', '0', '0']
+    assert '--no-plot' in command
+
+
+def test_unified_post_accepts_polarized_geometry(tmp_path, monkeypatch, capsys):
+    received = {}
+    monkeypatch.setattr(
+        unified_spectra,
+        'collect',
+        lambda root, **kwargs: received.update(kwargs) or {'ok': True},
+    )
+    unified_spectra.run_cli('post', [
+        '--temperature', '80', '--laser-nm', '633', '--max-frequency', '900',
+        '--incident-polarization', '1', '0', '0',
+        '--scattered-polarization', '0', '1', '0', '--no-plot',
+    ], tmp_path)
+    assert received['laser'] == 633
+    assert received['max_frequency'] == 900
+    assert received['incident_polarization'] == [1.0, 0.0, 0.0]
+    assert received['scattered_polarization'] == [0.0, 1.0, 0.0]
+    assert received['plot'] is False
+    assert '"ok": true' in capsys.readouterr().out
+
+
 def test_missing_band_gate_runs_and_failure_releases_lock(tmp_path, monkeypatch):
     from types import SimpleNamespace
     (tmp_path/'.zstar').mkdir()

@@ -5,7 +5,7 @@
 <h1 align="center">ZStar</h1>
 
 <p align="center">
-  Reproducible polarization, Born effective charge, phonon, infrared, Raman, and dielectric-response workflows.
+  An automated toolkit for polarization, Born effective charges, dielectric response, and infrared and Raman spectra calculations.
 </p>
 
 <p align="center">
@@ -69,8 +69,7 @@ actual-displacement convention, precision safeguards, and validation status.
 The released package and historical examples retain their recorded versions.
 
 The current release includes the Unified framework, short output names, and completed
-Separate/Unified benchmarks. Historical examples retain their
-manuscript; historical examples retain their original provenance.
+Separate/Unified benchmarks. Historical examples retain their original provenance.
 
 For mixed displacements, converge the PYATB Berry mesh as well as the SCF and
 displacement amplitude. The [direct validation report](docs/research/shared_response/DIRECT_VALIDATION.md)
@@ -129,8 +128,6 @@ comparison retains the original public reference curves and the observed Raman
 intensity differences; its reference is a computational dataset, not a verified
 associated journal article.
 
-![Sb2S3 one-dimensional IR and Raman comparison](examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.png)
-
 ### Two-dimensional slabs
 
 A slab requires separate treatment of in-plane and out-of-plane response:
@@ -148,16 +145,17 @@ the legacy BEC route (`--ensemble cartesian`) explicitly generates `x`, `y`, and
 implementation requires the slab normal to align with Cartesian `z`; a tilted
 slab is rejected explicitly.
 
-One reference/displaced cube pair can be audited independently:
+Prepare and run a complete slab response calculation through the canonical BEC lifecycle:
 
 ```bash
-zstar polar2d --reference-cube reference.cube \
-  --displaced-cube atom_zplus.cube \
-  --displacement 0.01 --outdir slab_dipole_check
+zstar bec pre --stru STRU --dim 2
+zstar bec run
+zstar bec post
 ```
 
-This writes the planar charge redistribution, dipole finite difference,
-effective charge, diagnostics, and PNG/PDF/SVG plots.
+The post-processing stage combines Berry-phase in-plane responses with
+cube-integrated out-of-plane dipoles. The low-level `zstar polar2d` command is
+retained only for auditing an existing reference/displaced cube pair.
 
 ## Installation
 
@@ -517,8 +515,8 @@ For the Unified BEC workflow, `zstar bec post` already writes Gamma force
 constants, `qpoints.yaml`, `irreps.yaml`, and `BORN`. Continue directly with
 `zstar phonon irrep` and `zstar dielectric static`; no second Gamma SCF set is
 needed. The separate-directory workflow below is for supercell phonons or
-legacy archives. Keep a finite-q supercell calculation outside a Unified Gamma
-ensemble, whose real-space interactions cannot resolve a dispersion.
+legacy archives. Keep a finite-q supercell calculation outside the Unified Gamma
+displacement set, whose real-space interactions cannot resolve a dispersion.
 
 ### 1. Generate phonon calculations
 
@@ -530,7 +528,9 @@ zstar phonon pre --root . --calculator abacus \
 zstar phonon run --root .
 ```
 
-Run every generated `disp-*` force calculation with the local execution system. `zstar ph` does not require or duplicate an `abacus_x.sh`; if one is present it is copied only as an optional convenience.
+Run every generated `disp-*` force calculation with the selected execution system.
+`zstar phonon pre` does not require or duplicate an `abacus_x.sh`; if one is
+present it is copied only as an optional convenience.
 
 ### 2. Post-process forces and classify Gamma modes
 
@@ -600,13 +600,6 @@ zstar spectra pre --kind ir
 zstar spectra post
 ```
 
-The retained low-level expert command exposes mode selection and plotting
-details when needed:
-
-```bash
-zstar ir --modes "4,5,8-10" --outdir ir_selected
-```
-
 Typical outputs are `ir_modes.csv`, `ir_spectrum.dat`, `ir_response_real.dat`, `ir_response_imag.dat`, `ir_spectrum.png`, `ir_spectrum.pdf`, `ir_spectrum.svg`, and `ir_summary.json`.
 
 ## Raman Spectrum
@@ -632,8 +625,8 @@ zstar spectra post
 
 The reference insulating gate is reused once; it is not repeated for every mode displacement. Each `plus`/`minus` stage reuses the reference charge density and records resumable state.
 
-The low-level `zstar raman collect` and `zstar raman spectrum` commands remain
-available for expert reprocessing of an existing mode tree.
+An existing prepared mode tree can be checked and reprocessed with
+`zstar spectra stat --root raman` and `zstar spectra post --root raman`.
 
 For 2D, `--dim 2` converts the vacuum-dependent dielectric derivative to a sheet-susceptibility derivative using the cell height stored in the phonon data.
 
@@ -664,14 +657,12 @@ dielectric response is converted to a molecular polarizability derivative,
 converted to a molecular dipole derivative, `dmu/dQ = V * dP/dQ`. The
 normal-coordinate step `Q` is in `angstrom * sqrt(amu)`.
 
-Existing polarization results can still be reprocessed with the low-level
-expert commands:
+Existing prepared molecular results can be checked and reprocessed through the
+same canonical lifecycle:
 
 ```bash
-zstar ir --dim 0 --qpoints qpoints.yaml \
-  --displacements raman --outdir ir_spectrum
-zstar raman spectrum --dim 0 --qpoints qpoints.yaml \
-  --raman-dir raman --outdir raman_spectrum
+zstar spectra stat --root raman
+zstar spectra post --root raman
 ```
 
 Molecular spectra are normalized for mode assignment and workflow validation.
@@ -706,6 +697,25 @@ records retain the functional, convergence threshold, displacement, tensor
 convention, and symmetry-corrected values needed to identify the benchmark.
 Both HSE examples use ABACUS charge-density cube dipoles, without PYATB.
 
+## Representative BEC and APT Results
+
+The example archive includes the tensors, raw response records, and calculation
+settings behind these representative values:
+
+| Dimensionality | System | Method | Representative result |
+| --- | --- | --- | --- |
+| 3D | [Cubic BaTiO3](examples/3D_Bulk/cubic_BaTiO3) | ABACUS + PYATB, PBEsol | `Z*(Ti) = 7.440 e`; `Z*(Ba) = 2.734 e` |
+| 3D | [Tetragonal HfO2](examples/3D_Bulk/t_HfO2) | ABACUS + PYATB, PBEsol | `Z*(Hf,xx) = 5.394 e`; `Z*(Hf,zz) = 4.828 e` |
+| 2D | [Monolayer hBN](examples/2D_Slab/hBN_unified) | ABACUS + PYATB, PBE | `Z*(B,parallel) = 2.702 e`; `Z*(B,z) = 0.343 e` |
+| 2D | [Alpha-In2Se3](examples/2D_Slab/alpha_In2Se3_PBE) | ABACUS + PYATB, PBE | `Z*(In(2),parallel) = 4.016 e`; `Z*(In(2),zz) = 0.278 e` |
+| 1D | [BN(9,0)](examples/1D_Nanowire/BN_9_0) | ABACUS + PYATB, PBE | `(Zrr,Ztt,Zzz)_B = (0.397,1.256,2.745) e` |
+| 0D | [H2O](examples/0D_Molecules/H2O_unified) | ABACUS + PYATB, PBE | `q_GAPT(O) = -0.481 e`; `q_GAPT(H) = +0.240 e` |
+| 0D | [CH4](examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.0208 e`; `q_GAPT(H) = +0.0052 e` |
+
+Periodic entries are selected BEC components. Molecular entries are the
+rotational invariant `q_GAPT = Tr(A)/3` of the atomic polar tensor; they should
+not be interpreted as periodic-crystal BECs.
+
 ## Representative Validation Figures
 
 The compact source data, plotting script, vector files, and integrity manifest
@@ -722,21 +732,6 @@ PBEsol HfO2 row contains all 15 stable optical modes and 30 completed Raman
 response stages. The refreshed ABACUS/PBE-D3(BJ) MoS2 row combines all six
 optical modes with production BEC-derived IR intensities and 12 completed
 central-difference Raman response stages.
-
-<p align="center">
-  <img src="docs/paper_figures/bto_mode_spectroscopy.png" alt="Tetragonal BaTiO3 mode-resolved IR and Raman spectra" width="820">
-</p>
-
-The BTO validation includes all ten positive-frequency optical modes and 20
-completed Raman finite-difference response tasks. The `B1` mode at
-293.38 cm-1 is Raman active and IR silent.
-
-<p align="center">
-  <img src="docs/paper_figures/in2se3_hybrid_polarization.png" alt="Alpha-In2Se3 hybrid two-dimensional polarization and BEC validation" width="820">
-</p>
-
-The In2Se3 validation displays the Berry-phase/cube-integral split and the
-actual planar charge redistribution for an out-of-plane In displacement.
 
 <p align="center">
   <img src="docs/paper_figures/dielectric_response_examples.png" alt="Static and frequency-dependent dielectric response for tetragonal HfO2 and monolayer MoS2" width="820">

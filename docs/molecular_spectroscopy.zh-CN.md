@@ -29,39 +29,35 @@ SCF 完成 APT、Gamma 模式、IR 与 Raman。下述显式模式差分仍通过
 2. 释放全部原子，通过 `zstar phonon pre` 和 `zstar phonon post` 计算有限位移力常数；
 3. 使用 `zstar phonon irrep` 检查 Gamma 点模式，通过经过审查的频率阈值或显式模式列表排除
    刚体平移和转动；
-4. 使用 `zstar raman prepare` 生成模式中心差分位移；
+4. 使用 `zstar spectra pre --method mode` 生成模式中心差分位移；
 5. 只计算一次参考结构 SCF，并保留可复用的电荷密度；
-6. 运行 `zstar raman run --dim 0`。所有位移 SCF 复用参考电荷密度，随后 PYATB
+6. 运行 `zstar spectra run`。所有位移 SCF 复用参考电荷密度，随后 PYATB
    分别计算静态介电响应和 Berry 极化，不重复 DFT。
 
 ```bash
-zstar raman prepare --stru STRU --qpoints qpoints.yaml \
-  --acoustic-cutoff 100 --amplitude 0.02 --outdir raman \
+zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml \
+  --dim 0 --acoustic-cutoff 100 --amplitude 0.02 --root raman \
   --copy INPUT-scf --copy KPT
 
-zstar raman run --raman-dir raman --reference 0.no-move \
-  --qpoints qpoints.yaml --dim 0 \
+zstar spectra run --root raman --reference 0.no-move \
   --abacus-command "mpirun -np 1 abacus" \
-  --pyatb-command "mpirun -np 1 pyatb" \
-  --spectrum-outdir raman_spectrum --ir-outdir ir_spectrum
+  --pyatb-command "mpirun -np 1 pyatb"
+zstar spectra stat --root raman
+zstar spectra post --root raman
 ```
 
-该工作流串行运行并支持断点续算。使用 `zstar raman status --raman-dir raman`
+该工作流串行运行并支持断点续算。使用 `zstar spectra stat --root raman`
 查看每个正负位移阶段。
 
 ## 独立后处理
 
 ```bash
-zstar ir --dim 0 --qpoints qpoints.yaml \
-  --displacements raman --outdir ir_spectrum
-
-zstar raman collect --dim 0 --qpoints qpoints.yaml --raman-dir raman
-zstar raman spectrum --dim 0 --qpoints qpoints.yaml \
-  --raman-dir raman --outdir raman_spectrum
+zstar spectra stat --root raman
+zstar spectra post --root raman
 ```
 
-`zstar ir` 会自动检查每个模式目录中的 `pyatb` 和 `pyatb-polar`；非标准目录可通过
-`--polarization-subdir NAME` 指定。
+后处理会检查每个模式目录中的 `pyatb` 和 `pyatb-polar`，并按照已保存的工作流
+清单同时写出两种光谱。
 
 ## 输出文件
 
@@ -96,7 +92,7 @@ zstar raman spectrum --dim 0 --qpoints qpoints.yaml \
 二氧化碳是中心对称互补 benchmark。已在专用计算节点上使用 20 核直接完成全流程，采用
 ABACUS 3.10.0 LTS、PBE、100 Ry 截断能、20 Angstrom 超胞且不使用经验频率缩放。
 接受的线性结构 C-O 键长为 1.17042 Angstrom，最大残余力为 0.00623 eV/Angstrom，
-参考路径带隙为 8.6179 eV。
+参考结构带隙为 8.618 eV。
 
 | 基频 | 对称性 | ZStar/ABACUS (cm-1) | NIST (cm-1) | 误差 | IR | Raman |
 | --- | --- | ---: | ---: | ---: | --- | --- |

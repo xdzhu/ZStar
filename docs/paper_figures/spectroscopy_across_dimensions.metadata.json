@@ -1,12 +1,12 @@
 {
-  "figure": "Figure_7_Spectroscopy_with_1D_layout_v2",
+  "figure": "spectroscopy_across_dimensions",
   "backend": "Python/matplotlib 3.10.9",
   "core_conclusion": "Compare mode-resolved IR and Raman spectra for bulk, slab, wire, and molecular systems; agreement with references is assessed, not assumed.",
   "normalization": "ZStar spectra are normalized independently in every panel; intensities are not compared across rows or response types.",
   "placeholder": false,
   "image_scaling": "Aspect-preserving uniform scaling, centered at the largest size that fits each structure panel.",
-  "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all four two-line labels use one common left edge across rows.",
-  "reference_overlay": "HfO2, MoS2, and CH4 reference data unchanged; numeric citation labels follow the compiled bibliography. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled IR and Raman curves, DOI 10.17632/6tntvw37tr.1, independently normalized with no peak shifts. Raman relative-intensity agreement is not claimed.",
+  "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all three two-line labels use one common left edge across rows.",
+  "reference_overlay": "Original three rows unchanged. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled IR and Raman curves, DOI 10.17632/6tntvw37tr.1, independently normalized with no peak shifts. Raman relative-intensity agreement is not claimed.",
   "row_geometry_inches": {
     "height": 1.3961538461538459,
     "pitch": 2.2059230769230767
@@ -24,9 +24,9 @@
   },
   "bibliography_labels": {
     "Fan2022HfO2": 54,
-    "Ulian2023MoS2": 67,
-    "Ulian2026Sb2S3Data": 59,
-    "Shimanouchi1972": 68
+    "Ulian2023MoS2": 69,
+    "Ulian2026Sb2S3Data": 61,
+    "Shimanouchi1972": 70
   },
   "systems": [
     "HfO2",
@@ -189,6 +189,5 @@
     "svg": "spectroscopy_across_dimensions.svg",
     "powerpoint_svg": "spectroscopy_across_dimensions_powerpoint.svg",
     "tiff": "spectroscopy_across_dimensions.tiff"
-  },
-  "source_script": "plot_spectroscopy_across_dimensions.py"
+  }
 }

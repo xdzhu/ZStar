@@ -128,8 +128,8 @@ These examples use local execution. On Slurm, replace the local `run` with
 then submit it with `sbatch run_zstar_born.slurm`. Wait for completion before
 `post`; `job` alone does not execute any calculation.
 
-In ZStar 0.3.1, `zstar bec pre` defaults to ABACUS + PYATB and
-Phonopy's symmetry-adapted Unified BEC/Gamma displacement ensemble, with
+In ZStar 0.3.2, `zstar bec pre` defaults to ABACUS + PYATB and
+Phonopy's symmetry-adapted Unified BEC/Gamma displacement set, with
 automatic +/- selection. The calculator and `--pyatb` switch remain optional;
 specify `--calculator cp2k`, `vasp`, or `qe` only when changing backends.
 `--ensemble cartesian` retains the legacy atom/direction layout used by the Separate BEC controls. See the
@@ -159,7 +159,7 @@ zstar spectra post
 
 For scheduled execution, use `zstar spectra job --system slurm` or
 `zstar phonon job --system slurm`, inspect the generated driver and submit it.
-The spectroscopy example uses the Unified ensemble;
+The spectroscopy example uses the Unified calculations;
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` explicitly
 selects the independent mode-displacement route.
 

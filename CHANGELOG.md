@@ -1,3 +1,16 @@
+## 0.3.2 - 2026-09-08
+
+- Complete the canonical `zstar spectra post` option forwarding and add
+  polarized Raman output to the Unified response route without additional SCFs.
+- Parse current ABACUS force logs when Phonopy's legacy reader is unavailable,
+  and select the built-in Phonopy force-constant solver across supported APIs.
+- Verify 387 installed-package tests, 66 subtests, 30 CLI checks, three retained
+  numerical archives, and dry runs for all 40 indexed public examples.
+- Refresh the bilingual manuals, representative BEC/APT results, four-dimensional
+  spectroscopy figure, citation labels, package metadata, and example checksums.
+- Keep historical expert commands available while presenting the canonical
+  BEC, phonon, spectra, dielectric, structure, data, and potential lifecycles.
+
 ## 0.3.1 - 2026-09-07
 
 - Correct the Git-index spelling of `examples/3D_Bulk` so the documented

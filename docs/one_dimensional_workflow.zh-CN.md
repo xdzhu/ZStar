@@ -160,8 +160,9 @@ zstar phonon irrep --root . --file irreps.yaml --mode db --acoustic-thz 0.5
 计算 Gamma 点 IR 响应：
 
 ```bash
-zstar ir --qpoints qpoints.yaml --born BEC.dat \
-  --dielectric BORN --dim 1 --periodic-axis z --outdir ir_spectrum
+zstar spectra pre --kind ir --root spectra --dim 1 \
+  --qpoints qpoints.yaml --born BEC.dat --dielectric BORN
+zstar spectra post --root spectra
 
 zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 1 --periodic-axis z --outdir dielectric_response
@@ -170,12 +171,13 @@ zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
 Raman 计算先从 `qpoints.yaml` 中选择稳定的光学模式：
 
 ```bash
-zstar raman prepare --stru STRU --qpoints qpoints.yaml \
-  --modes 17,21,24,29,37,39,40,41,55,57 --outdir raman
-zstar raman run --raman-dir raman --reference 0.no-move \
-  --qpoints qpoints.yaml --dim 1 --periodic-axis z \
+zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml \
+  --modes 17,21,24,29,37,39,40,41,55,57 --root raman --dim 1
+zstar spectra run --root raman --reference 0.no-move \
+  --periodic-axis z \
   --abacus-command "mpirun -np 20 abacus" \
   --pyatb-command "mpirun -np 20 pyatb"
+zstar spectra post --root raman
 ```
 
 ZStar 在计算 Raman 活性前，会把依赖真空的介电导数转换为线极化率导数

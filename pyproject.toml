@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zstar"
-version = "0.3.1"
-description = "Workflows for polarization, Born effective charges, dielectric response, and vibrational spectroscopy."
+version = "0.3.2"
+description = "An automated toolkit for polarization, Born effective charges, dielectric response, and infrared and Raman spectra calculations."
 readme = "README_PYPI.md"
 requires-python = ">=3.9"
 license = "GPL-3.0-only"

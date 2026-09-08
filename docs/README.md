@@ -18,7 +18,7 @@ The workflow figure is also available as a vector PDF: [unified workflow](paper_
 | Task | Guide | Main entry |
 | --- | --- | --- |
 | BEC/APT and Gamma phonons from the same calculations | [Unified BEC and phonons](research/shared_response/USAGE.md) | `zstar bec pre/run/stat/post` |
-| IR and Raman from the Unified ensemble | [Unified spectroscopy](unified_spectroscopy.md) | `zstar spectra pre/run/stat/post` |
+| IR and Raman from the Unified calculations | [Unified spectroscopy](unified_spectroscopy.md) | `zstar spectra pre/run/stat/post` |
 | Static and frequency-dependent dielectric response | [Dielectric response](dielectric_response.md) | `zstar dielectric static/freq/optics` |
 | Supercell phonons and mode labels | [Command reference](cli_reference.md#representative-lifecycles) | `zstar phonon pre/run/post/irrep` |
 | Potential maps, profiles and vacuum steps | [Electrostatic potential](potential_examples.md) | `zstar pot` |

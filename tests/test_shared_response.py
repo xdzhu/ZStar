@@ -10,7 +10,22 @@ import spglib
 
 from zstar.shared_response import (BOHR_ANGSTROM, actual_displacement, make_phonopy,
     project_response, read_structure, reconstruct_responses, symmetry_operations, write_structure)
-from zstar.shared_abacus import load_manifest, prepare_shared_abacus
+from zstar.shared_abacus import _read_force_block, load_manifest, prepare_shared_abacus
+
+
+def test_archived_abacus_force_block_parser_accepts_current_format():
+    text = """header
+ TOTAL-FORCE (eV/Angstrom)
+ ------------------------------------------------------------
+ C1  0.1000000000 -0.2000000000 0.3000000000
+ H1 -0.4000000000  0.5000000000 0.6000000000
+ ------------------------------------------------------------
+ !FINAL_ETOT_IS -1.0 eV
+"""
+    np.testing.assert_allclose(
+        _read_force_block(text, 2),
+        [[0.1, -0.2, 0.3], [-0.4, 0.5, 0.6]],
+    )
 
 
 def point_groups():
@@ -302,8 +317,6 @@ def test_raw_force_jacobian_matches_phonopy_with_index_conversion():
         rows.append({'atom': item['number'], 'displacement_A': item['displacement'],
                      'dipole_change_e_A': [0,0,0], 'forces_eV_A': f})
     raw = reconstruct_responses(2, rows, symmetry_operations(phonon))
-    from phonopy.interface.fc_calculator import fc_calculator_names
-    # Older Phonopy selects its traditional solver through the default None.
-    calculator = 'traditional' if 'traditional' in fc_calculator_names else None
-    phonon.produce_force_constants(fc_calculator=calculator)
+    from zstar.shared_response import produce_force_constants
+    produce_force_constants(phonon)
     np.testing.assert_allclose(phonon.force_constants.transpose(1,0,3,2), raw.force_constants, atol=1e-10)

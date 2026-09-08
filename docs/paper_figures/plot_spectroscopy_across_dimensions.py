@@ -619,6 +619,7 @@ def build_figure(
     sb2s3_image: Path | None = None,
     *,
     reference_numbers: dict[str, int],
+    stem: str | None = None,
 ) -> dict[str, object]:
     available_systems = [
         {
@@ -870,7 +871,7 @@ def build_figure(
     )
 
     output.mkdir(parents=True, exist_ok=True)
-    stem = "Figure_7_Spectroscopy_with_1D_layout_v2" if sb2s3_case else "spectroscopy_across_dimensions"
+    stem = stem or ("Figure_7_Spectroscopy_with_1D_layout_v2" if sb2s3_case else "spectroscopy_across_dimensions")
     products = {
         "png": output / f"{stem}.png",
         "pdf": output / f"{stem}.pdf",
@@ -945,6 +946,7 @@ def main() -> None:
                         help="JSON mapping of BibTeX keys to the final manuscript numbers.")
     parser.add_argument("--sb2s3-case", type=Path)
     parser.add_argument("--sb2s3-image", type=Path)
+    parser.add_argument("--stem", default=None)
     args = parser.parse_args()
     configure_matplotlib()
     metadata = build_figure(
@@ -953,6 +955,7 @@ def main() -> None:
         args.sb2s3_case,
         args.sb2s3_image,
         reference_numbers=json.loads(args.reference_map.read_text(encoding="utf-8")),
+        stem=args.stem,
     )
     print(json.dumps(metadata, indent=2))
 

@@ -5,7 +5,7 @@
 <h1 align="center">ZStar</h1>
 
 <p align="center">
-  面向极化、Born 有效电荷、声子、红外、拉曼与介电响应的可复现工作流工具。
+  面向极化、Born 有效电荷、介电响应以及红外与拉曼谱计算的自动化工具包。
 </p>
 
 <p align="center">
@@ -117,8 +117,6 @@ Z*(kappa, alpha, beta) = Omega/e * dP_alpha / du_(kappa,beta)
 同一套 SCF。Sb2S3 图中的参考为公开计算数据集，尚未核实对应期刊论文；保留
 原始参考曲线及实际存在的 Raman 相对强度差异，不作峰位平移或强度拟合。
 
-![Sb2S3 一维 IR 与 Raman 对照](examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.png)
-
 ### 二维材料
 
 二维薄膜的面内与面外响应采用不同处理：
@@ -133,16 +131,16 @@ Z*(kappa, alpha, beta) = Omega/e * dP_alpha / du_(kappa,beta)
 对称性像获得满秩的信息；旧式笛卡尔流程则显式生成 `x`、`y`、`z` 三个
 方向。当前混合算法要求薄膜法向与笛卡尔 `z` 轴对齐；对于倾斜薄膜会明确报错退出。
 
-可以独立审计一对参考/位移电荷密度 cube：
+完整二维响应计算使用规范 BEC 生命周期：
 
 ```bash
-zstar polar2d --reference-cube reference.cube \
-  --displaced-cube atom_zplus.cube \
-  --displacement 0.01 --outdir slab_dipole_check
+zstar bec pre --stru STRU --dim 2
+zstar bec run
+zstar bec post
 ```
 
-程序会输出平面电荷重排、偶极有限差分、有效电荷、诊断信息，以及
-PNG/PDF/SVG 图片。
+后处理会组合面内 Berry 相位响应与面外 cube 积分偶极。底层
+`zstar polar2d` 仅保留用于审计已有参考/位移 cube 文件对，不作为新工作流入口。
 
 ## 安装
 
@@ -485,7 +483,9 @@ zstar phonon pre --root . --calculator abacus \
 zstar phonon run --root .
 ```
 
-随后按照本地运行环境完成全部 `disp-*` 目录中的力计算。`zstar ph` 不要求也不会强制复制 `abacus_x.sh`；若当前目录确有该脚本，则只把它作为可选便利文件复制。
+随后按照选定运行环境完成全部 `disp-*` 目录中的力计算。`zstar phonon pre`
+不要求也不会强制复制 `abacus_x.sh`；若当前目录确有该脚本，则只把它作为
+可选便利文件复制。
 
 ### 2. 后处理力并查看 Gamma 模式分类
 
@@ -553,12 +553,6 @@ zstar spectra pre --kind ir
 zstar spectra post
 ```
 
-需要显式选择模式或精细控制绘图时，可调用保留的底层专家命令：
-
-```bash
-zstar ir --modes "4,5,8-10" --outdir ir_selected
-```
-
 典型输出包括 `ir_modes.csv`、`ir_spectrum.dat`、`ir_response_real.dat`、`ir_response_imag.dat`、`ir_spectrum.png`、`ir_spectrum.pdf`、`ir_spectrum.svg` 和 `ir_summary.json`。
 
 ## 拉曼谱
@@ -584,8 +578,8 @@ zstar spectra post
 
 参考结构的绝缘性门控只复用一次，不会对每个模式位移重复计算。所有 `plus`/`minus` 阶段都复用参考电荷密度，并记录可恢复状态。
 
-保留的 `zstar raman collect` 与 `zstar raman spectrum` 专家命令可用于对已有
-模式位移树重新后处理。
+已有模式位移树可用 `zstar spectra stat --root raman` 检查，并用
+`zstar spectra post --root raman` 重新后处理。
 
 二维体系使用 `--dim 2`。程序会利用声子数据中的超胞高度，将依赖真空的介电导数转换为片层极化率导数。
 
@@ -614,13 +608,11 @@ zstar spectra post
 后的 Berry 极化按照 `dmu/dQ = V * dP/dQ` 转换为分子偶极矩导数。简正坐标步长
 `Q` 的单位为 `angstrom * sqrt(amu)`。
 
-已有位移结果仍可用底层专家命令独立后处理：
+已有分子位移结果仍通过同一套规范生命周期检查和重新后处理：
 
 ```bash
-zstar ir --dim 0 --qpoints qpoints.yaml \
-  --displacements raman --outdir ir_spectrum
-zstar raman spectrum --dim 0 --qpoints qpoints.yaml \
-  --raman-dir raman --outdir raman_spectrum
+zstar spectra stat --root raman
+zstar spectra post --root raman
 ```
 
 分子谱默认归一化，用于模式归属和工作流验证，不宣称为气相积分截面。定量强度计算
@@ -651,6 +643,23 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 和对称性修正后的结果，足以追溯该基准。
 两套 HSE 案例均采用 ABACUS 电荷密度 cube 积分，不经过 PYATB。
 
+## 代表性 BEC 与 APT 结果
+
+案例库保留了下列代表值对应的完整张量、原始响应记录和计算设置：
+
+| 维度 | 体系 | 方法 | 代表性结果 |
+| --- | --- | --- | --- |
+| 3D | [立方 BaTiO3](examples/3D_Bulk/cubic_BaTiO3) | ABACUS + PYATB, PBEsol | `Z*(Ti) = 7.440 e`; `Z*(Ba) = 2.734 e` |
+| 3D | [四方 HfO2](examples/3D_Bulk/t_HfO2) | ABACUS + PYATB, PBEsol | `Z*(Hf,xx) = 5.394 e`; `Z*(Hf,zz) = 4.828 e` |
+| 2D | [单层 hBN](examples/2D_Slab/hBN_unified) | ABACUS + PYATB, PBE | `Z*(B,parallel) = 2.702 e`; `Z*(B,z) = 0.343 e` |
+| 2D | [alpha-In2Se3](examples/2D_Slab/alpha_In2Se3_PBE) | ABACUS + PYATB, PBE | `Z*(In(2),parallel) = 4.016 e`; `Z*(In(2),zz) = 0.278 e` |
+| 1D | [BN(9,0)](examples/1D_Nanowire/BN_9_0) | ABACUS + PYATB, PBE | `(Zrr,Ztt,Zzz)_B = (0.397,1.256,2.745) e` |
+| 0D | [H2O](examples/0D_Molecules/H2O_unified) | ABACUS + PYATB, PBE | `q_GAPT(O) = -0.481 e`; `q_GAPT(H) = +0.240 e` |
+| 0D | [CH4](examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.0208 e`; `q_GAPT(H) = +0.0052 e` |
+
+周期体系行列出 BEC 的代表分量。分子行列出原子极化张量的旋转不变量
+`q_GAPT = Tr(A)/3`，不应将其解释为周期晶体 BEC。
+
 ## 代表性验证图
 
 紧凑源数据、绘图脚本、矢量图片和完整性清单均归档在
@@ -665,20 +674,6 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 稳定光学模式和 30 个已完成的 Raman 响应阶段；更新后的
 ABACUS/PBE-D3(BJ) MoS2 行则将全部 6 个光学模式与生产级 BEC 导出的
 IR 强度及 12 个已完成的中心差分 Raman 响应阶段结合起来。
-
-<p align="center">
-  <img src="docs/paper_figures/bto_mode_spectroscopy.png" alt="四方 BaTiO3 模式分辨红外与拉曼谱" width="820">
-</p>
-
-BTO 验证包含全部 10 个正频光学模式和 20 个已完成的 Raman 正负有限差分
-响应任务，其中 293.38 cm-1 的 `B1` 模式 Raman 活性但 IR 静默。
-
-<p align="center">
-  <img src="docs/paper_figures/in2se3_hybrid_polarization.png" alt="alpha-In2Se3 二维混合极化与 BEC 验证" width="820">
-</p>
-
-In2Se3 验证展示了 Berry 相位/cube 积分的维度分工，以及 In 原子面外位移
-引起的真实平面电荷重排。
 
 <p align="center">
   <img src="docs/paper_figures/dielectric_response_examples.png" alt="四方 HfO2 与单层 MoS2 的静态和频率相关介电响应" width="820">

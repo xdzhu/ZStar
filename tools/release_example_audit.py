@@ -1,19 +1,25 @@
 """Exercise each indexed example's documented dry run without starting DFT."""
 import argparse
 import json
+import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 
 
 def audit(repo, output, shell='bash'):
+    env = os.environ.copy()
+    env['PATH'] = os.pathsep.join((str(Path(sys.executable).resolve().parent),
+                                  env.get('PATH', '')))
     records = []
     for case in json.loads((repo/'examples/manifest.json').read_text())['cases']:
         folder = repo/'examples'/case['path']
         started = time.monotonic()
         try:
             run = subprocess.run([shell, 'run.sh', '--dry-run'], cwd=folder,
-                                 capture_output=True, text=True, timeout=120)
+                                 capture_output=True, text=True, timeout=120,
+                                 env=env)
             row = dict(case=case['path'], returncode=run.returncode,
                        stdout=run.stdout, stderr=run.stderr)
         except subprocess.TimeoutExpired as exc:

@@ -15,7 +15,8 @@ from zstar import workflow
 from zstar.pyatb_compat import read_static_dielectric
 from zstar.shared_abacus import _dipole_changes, load_manifest, read_forces
 from zstar.shared_response import (SharedResponse, actual_displacement,
-    make_phonopy, project_response, read_structure, reconstruct_responses, symmetry_operations)
+    make_phonopy, produce_force_constants, project_response, read_structure,
+    reconstruct_responses, symmetry_operations)
 
 
 def load(path):
@@ -53,7 +54,7 @@ def phonopy_from_observations(atoms, entries, force_reference):
     p.dataset = {"natom": len(atoms), "first_atoms": [
         {"number": s["atom"], "displacement": np.array(s["displacement_A"]),
          "forces": np.array(s["forces_eV_A"]) - force_reference} for s in entries]}
-    p.produce_force_constants(fc_calculator="traditional")
+    produce_force_constants(p)
     return p
 
 

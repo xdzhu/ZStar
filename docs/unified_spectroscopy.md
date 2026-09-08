@@ -2,13 +2,13 @@
 
 [Chinese](unified_spectroscopy.zh-CN.md)
 
-This guide applies to the released ZStar 0.3.1. Install with
-`python -m pip install zstar==0.3.1`; an editable source installation is not
+This guide applies to ZStar 0.3.2. Install with
+`python -m pip install zstar==0.3.2`; an editable source installation is not
 required. See the [user manual](README.md) for configuration and example links.
 
 ![Unified response workflow](paper_figures/unified_workflow.png)
 
-The ABACUS + PYATB route now reuses one symmetry-adapted displacement ensemble
+The ABACUS + PYATB route now reuses the same symmetry-adapted calculations
 for BEC/APT, Gamma force constants, IR and static nonresonant Placzek Raman.
 Raman still needs dielectric-response derivatives: it is not obtained from BECs
 alone. Retained Hamiltonian, overlap and position matrices allow PYATB to evaluate
@@ -31,13 +31,13 @@ zstar spectra post
 ```
 
 Use `--dim 2`, `1`, or `0` at BEC preparation for slabs, wires, or molecules.
-Spectroscopy infers the dimension and geometry from the ensemble. It creates
+Spectroscopy infers the dimension and geometry from the response workflow. It creates
 `spectra/` separately from the electronic-response source. The run completes
 missing reference/displacement stages, including the reference band-gap check,
 then performs static dielectric postprocessing. Post collects the BEC and
 Gamma results when they are not already available.
 
-For a completed ensemble:
+For a completed Unified response calculation:
 
 ```bash
 zstar spectra pre --response /path/to/completed/bec
@@ -97,7 +97,7 @@ internal modes or ambiguous rigid-mode mixing stop collection.
 
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` retains
 normal-mode finite differences. VASP, CP2K and QE retain their documented native
-workflows; they are not silently converted to the ABACUS ensemble algorithm.
+workflows; they are not silently converted to the ABACUS Unified algorithm.
 The Unified route does not imply resonant Raman or full phonon dispersions.
 
 The four reference cases are under `examples/IR_Raman_Spectra/`:

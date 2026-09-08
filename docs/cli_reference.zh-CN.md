@@ -124,7 +124,7 @@ zstar bec post --root .
 检查生成的 `run_zstar_born.slurm`，再执行 `sbatch run_zstar_born.slurm`。
 计算完成后才执行 `post`；仅运行 `job` 不会执行计算。
 
-ZStar 0.3.1 的 `zstar bec pre` 默认使用 ABACUS + PYATB 和 Phonopy 对称性适配的
+ZStar 0.3.2 的 `zstar bec pre` 默认使用 ABACUS + PYATB 和 Phonopy 对称性适配的
 Unified BEC/Gamma 声子位移，自动选择所需正负位移。计算器和 `--pyatb` 开关仍可
 省略；切换后端时才指定 `--calculator cp2k`、`vasp` 或 `qe`。
 `--ensemble cartesian` 保留旧的原子/笛卡尔方向布局。完整说明见
@@ -153,7 +153,7 @@ zstar spectra post
 
 调度执行可使用 `zstar spectra job --system slurm` 或
 `zstar phonon job --system slurm`，检查生成的脚本后自行提交。
-上述路线默认使用 Unified 位移集合。独立模式位移对照需显式指定
+上述路线默认使用 Unified 计算。独立模式位移对照需显式指定
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml`。
 
 静态与频率相关介电响应：

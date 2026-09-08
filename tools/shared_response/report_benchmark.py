@@ -9,7 +9,9 @@ from pathlib import Path
 import numpy as np
 
 from analyze_archive import static_response
-from zstar.shared_response import make_phonopy, read_structure, reconstruct_responses, symmetry_operations
+from zstar.shared_response import (make_phonopy, produce_force_constants,
+                                   read_structure, reconstruct_responses,
+                                   symmetry_operations)
 from zstar.pyatb_compat import read_static_dielectric
 from zstar.artifacts import resolve_artifact
 
@@ -77,7 +79,7 @@ def result(root):
         {'number': s['atom'], 'displacement': np.array(s['displacement_A']),
          'forces': np.array(s['forces_eV_A'])-data['reference_forces_eV_A']}
         for s in data['observations']]}
-    p.produce_force_constants(fc_calculator='traditional')
+    produce_force_constants(p)
     independent_fc_error = float(np.max(np.abs(p.force_constants.transpose(1,0,3,2)-raw.force_constants)))
     epsilon, _ = read_static_dielectric(root / '0.no-move/pyatb')
     summary.update({'status': 'joint_result_available', 'dimension': meta['dimension'],

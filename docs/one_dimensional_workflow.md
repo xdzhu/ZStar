@@ -48,7 +48,7 @@ the intrinsic electronic line polarizability
 alpha_1D = A_perp (epsilon_supercell - I) / (4 pi)
 ```
 
-in `Angstrom^2` in `response.json`. The frequency-dependent `zstar ir`
+in `Angstrom^2` in `response.json`. The frequency-dependent `zstar spectra post`
 and `zstar dielectric static` outputs report
 `alpha_1D/epsilon_0 = A_perp (epsilon_supercell - I)` in `Angstrom^2`.
 
@@ -117,11 +117,13 @@ is suitable for the distributed GaAs benchmark, whose next optical mode is
 well separated at about `1.29 THz`; users should review this separation for
 their own structures instead of applying the value blindly.
 
-Calculate the Gamma-point IR response:
+Calculate the Gamma-point IR response through the canonical spectroscopy
+lifecycle:
 
 ```bash
-zstar ir --qpoints qpoints.yaml --born BEC.dat \
-  --dielectric BORN --dim 1 --periodic-axis z --outdir ir_spectrum
+zstar spectra pre --kind ir --root spectra --dim 1 \
+  --qpoints qpoints.yaml --born BEC.dat --dielectric BORN
+zstar spectra post --root spectra
 
 zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
   --dielectric BORN --dim 1 --periodic-axis z --outdir dielectric_response
@@ -130,12 +132,13 @@ zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
 For Raman spectra, first select stable optical modes from `qpoints.yaml`:
 
 ```bash
-zstar raman prepare --stru STRU --qpoints qpoints.yaml \
-  --modes 17,21,24,29,37,39,40,41,55,57 --outdir raman
-zstar raman run --raman-dir raman --reference 0.no-move \
-  --qpoints qpoints.yaml --dim 1 --periodic-axis z \
+zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml \
+  --modes 17,21,24,29,37,39,40,41,55,57 --root raman --dim 1
+zstar spectra run --root raman --reference 0.no-move \
+  --periodic-axis z \
   --abacus-command "mpirun -np 20 abacus" \
   --pyatb-command "mpirun -np 20 pyatb"
+zstar spectra post --root raman
 ```
 
 ZStar converts the vacuum-dependent dielectric derivative to the line

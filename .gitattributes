@@ -1,3 +1,4 @@
 # Preserve byte-level provenance across Windows and Linux checkouts.
 *.sh text eol=lf
 examples/** -text
+examples/**/checksums.json whitespace=cr-at-eol

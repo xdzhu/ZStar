@@ -8,7 +8,7 @@ plots calculator-independent. The electronic-response layer can now use:
 - CP2K native `VIBRATIONAL_ANALYSIS INTENSITIES`, dipoles, and `LINRES/POLAR`.
 
 All calculators use the canonical entry point `zstar spectra`. The reusable
-symmetry-adapted SCF ensemble is currently the ABACUS implementation; the other
+symmetry-adapted SCF displacement set is currently the ABACUS implementation; the other
 backends retain their native response routes below.
 
 ## VASP: crystalline SiC

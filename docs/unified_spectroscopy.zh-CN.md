@@ -2,7 +2,7 @@
 
 [English](unified_spectroscopy.md)
 
-本教程对应已发布的 ZStar 0.3.1，使用 `python -m pip install zstar==0.3.1`
+本教程对应 ZStar 0.3.2，使用 `python -m pip install zstar==0.3.2`
 即可安装，不要求源码 editable 安装。配置与案例入口见[使用手册](README.zh-CN.md)。
 
 ![统一响应工作流](paper_figures/unified_workflow.png)

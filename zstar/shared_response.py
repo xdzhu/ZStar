@@ -79,6 +79,14 @@ def make_phonopy(atoms: PhonopyAtoms, *, symprec: float = 1e-5) -> Phonopy:
                    primitive_matrix=np.eye(3), symprec=symprec)
 
 
+def produce_force_constants(phonon: Phonopy) -> None:
+    """Use Phonopy's built-in finite-displacement solver across API versions."""
+    from phonopy.interface.fc_calculator import fc_calculator_names
+
+    calculator = "traditional" if "traditional" in fc_calculator_names else None
+    phonon.produce_force_constants(fc_calculator=calculator)
+
+
 def symmetry_operations(phonon: Phonopy, *, dimension: int = 3):
     """Return Cartesian rotations and source-to-target permutations."""
     atoms = phonon.supercell

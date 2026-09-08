@@ -118,8 +118,10 @@ zstar density sidecar --cube charge.cube --backend generic \
   --charges 4 4 6
 ```
 
-The resulting reference/displaced cubes can be passed to `zstar polar2d`.
-This preserves one integration formula across ABACUS, VASP, QE, and CP2K.
+The canonical BEC workflow consumes the resulting reference/displaced cubes
+during `zstar bec post`. The retained expert command `zstar polar2d` audits one
+existing cube pair without preparing or running a workflow. Both routes use the
+same integration formula across ABACUS, VASP, QE, and CP2K.
 
 ## Spectroscopy and optics
 
@@ -130,7 +132,7 @@ is rejected instead of returning a physically misleading LO-TO splitting.
 Polarized Raman intensity uses `|e_s^T R e_i|^2`:
 
 ```bash
-zstar raman spectrum --raman-dir raman \
+zstar spectra post --root raman \
   --incident-polarization 1 0 0 --scattered-polarization 0 1 0
 ```
 

@@ -17,7 +17,7 @@
 | 任务 | 教程 | 主要入口 |
 | --- | --- | --- |
 | 同一套计算得到 BEC/APT 与 Gamma 声子 | [Unified BEC 与声子](research/shared_response/USAGE.zh-CN.md) | `zstar bec pre/run/stat/post` |
-| Unified 位移集合上的 IR 与 Raman | [Unified 谱学](unified_spectroscopy.zh-CN.md) | `zstar spectra pre/run/stat/post` |
+| Unified 计算得到 IR 与 Raman | [Unified 谱学](unified_spectroscopy.zh-CN.md) | `zstar spectra pre/run/stat/post` |
 | 静态及频率相关介电响应 | [介电响应](dielectric_response.zh-CN.md) | `zstar dielectric static/freq/optics` |
 | 超胞声子、频率及模式分类 | [命令参考](cli_reference.zh-CN.md) | `zstar phonon pre/run/post/irrep` |
 | 平面静电势、线剖面与真空电势差 | [静电势](potential_examples.zh-CN.md) | `zstar pot` |
