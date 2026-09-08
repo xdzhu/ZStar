@@ -15,8 +15,8 @@ uses ABACUS, PYATB, and Phonopy.
 Install ZStar and download the public examples:
 
 ```bash
-python -m pip install -U zstar
-git clone --depth 1 https://github.com/xdzhu/zstar.git
+pip install -U zstar
+git clone https://github.com/xdzhu/zstar.git
 ```
 
 The `pip install` command alone is sufficient when the reproducible examples

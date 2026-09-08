@@ -15,9 +15,9 @@
 需要获取可复现案例时才需要克隆仓库：
 
 ```bash
-git clone --depth 1 https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/zstar.git
 cd zstar
-python -m pip install .
+pip install .
 ```
 
 首先按照[计算软件配置教程](cli_reference.zh-CN.md#计算软件路径配置)设置 ABACUS、PYATB 和

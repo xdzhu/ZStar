@@ -17,9 +17,9 @@ to install and use the program. Clone the repository only when its reproducible
 cases are needed:
 
 ```bash
-git clone --depth 1 https://github.com/xdzhu/zstar.git
+git clone https://github.com/xdzhu/zstar.git
 cd zstar
-python -m pip install .
+pip install .
 ```
 
 Configure ABACUS, PYATB, and MPI/OMP by following the
