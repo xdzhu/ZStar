@@ -1,7 +1,7 @@
 {
   "system": "cubic BaTiO3",
   "space_group": "Pm-3m",
-  "source": "/home/zhuxd/abacus/agent-runs/20260904-cubic-bto-unified/code/examples/3d_bulk/BaTiO3_cubic/run",
+  "source": "~/abacus/agent-runs/20260904-cubic-bto-unified/code/examples/3d_bulk/BaTiO3_cubic/run",
   "cell_A": [
     [
       3.981414890929184,
@@ -34,7 +34,7 @@
   "legacy_phonon_displacements": 3,
   "legacy_BEC_scheme": "symmetry-inequivalent atoms, Cartesian forward",
   "legacy_phonon_start": "independent atomic-charge SCFs, no matrix/density export",
-  "unified_and_legacy_BEC_start": "reference first, private reference-charge copies",
+  "unified_and_legacy_BEC_start": "reference first, local reference-charge copies",
   "precision": "same output-only full-precision PYATB adapter on both BEC routes",
   "timing": "completed command monotonic seconds times 40 reserved physical cores; components reported separately",
   "exclusions": "no relaxation, Raman, or finite-q dispersion; no stable static dielectric claim if soft modes remain",

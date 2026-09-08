@@ -133,7 +133,7 @@ The response files carry an explicit header. It distinguishes a total response
 from a lattice-only response and prevents a missing electronic tensor from
 being silently interpreted as a physical `epsilon_infinity = 1` result.
 
-## Reproduce the manuscript figure
+## Reproduce the dielectric-response figure
 
 ```bash
 python docs/paper_figures/plot_dielectric_response.py

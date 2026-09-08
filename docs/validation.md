@@ -37,11 +37,11 @@ Independent wheel installations on Python 3.10 pass 383 tests and 66 subtests
 with each of Phonopy 2.36.0 and 4.4.0. Neither environment inherits system
 site packages. Thirty installed CLI checks and all 40 indexed Linux dry runs
 pass. Four Unified spectra examples reproduce their retained arrays within
-1.4e-15 absolute difference. A fresh methane calculation on cu23 completes
+1.4e-15 absolute difference. A fresh methane calculation on a dedicated compute node completes
 the reference plus three displaced SCFs, polarization, Gamma modes and static
 nonresonant Raman; its repeat run skips completed solver stages.
 See the [release acceptance record](research/RELEASE_ACCEPTANCE_20260906.md)
-for scope, fixes, evidence and remaining author actions.
+for its scope, fixes, and evidence.
 
 ## Previous Snapshot: 0.3.0rc4
 
@@ -58,7 +58,7 @@ that every old dependency matrix was rerun for this snapshot.
 
 The historical material checks below are supplemented by the 0.3.0rc2
 [eight-system Unified benchmark](../examples/Benchmarks/README.md)
-and the [publication-revision audit](research/PUBLICATION_REVISION_20260904.md).
+and the [numerical-validation audit](research/PUBLICATION_REVISION_20260904.md).
 That earlier candidate passed 319 tests with each of Phonopy 2.36.0 and 4.4.0.
 An isolated wheel installation with NumPy 2.2.6 and each Phonopy version also passes
 319 tests (47 additional subtests) and `pip check`; it does not inherit the
@@ -359,7 +359,7 @@ now rejects any Gamma eigensystem below -20 cm-1 by default in the ABACUS,
 VASP, and CP2K spectroscopy paths. `--allow-imaginary` is an explicit opt-in
 for intentionally studying the stable branches of an unstable phase.
 
-The current manuscript-ready figures, plotting code, compact source data, and
+The current publication-quality validation figures, plotting code, compact source data, and
 hashes are archived in [docs/paper_figures](paper_figures/README.md):
 
 - [IR/Raman comparison across all four dimensionalities](paper_figures/spectroscopy_across_dimensions.png)
@@ -367,7 +367,7 @@ hashes are archived in [docs/paper_figures](paper_figures/README.md):
 - [Two-dimensional electrostatic-potential analysis](paper_figures/potential_examples_2d.png)
 
 Earlier diagnostic plots remain in the figure archive for provenance, but are
-not part of the current manual or manuscript presentation.
+not part of the current user documentation.
 
 ## Molecular Spectroscopy
 

@@ -31,9 +31,9 @@ ABACUS/Phonopy 日志兼容性，并刷新中英文手册、图件、元数据�
 两个不继承系统 site-packages 的 Python 3.10 环境独立安装 wheel，分别使用
 Phonopy 2.36.0 和 4.4.0，均通过 383 项测试和 66 项子测试。30 个已安装 CLI
 检查、40 个索引案例的 Linux dry-run 均通过。四个 Unified 谱学案例重建
-数组的最大绝对差低于 1.4e-15。cu23 上重新计算甲烷的参考态和三个位移，
+数组的最大绝对差低于 1.4e-15。在专用计算节点上重新计算甲烷的参考态和三个位移，
 完成极化、Gamma 模式及静态非共振 Raman；重复运行跳过已完成的计算阶段。
-范围、修复、证据与作者待确认事项见
+范围、修复与证据见
 [发布候选版验收记录](research/RELEASE_ACCEPTANCE_20260906.md)。
 
 ## 历史快照：0.3.0rc4
@@ -47,7 +47,7 @@ Linux 另行验证了大小写敏感的 BEC 文件兼容、分子/周期体系�
 不表示当前快照重新运行了所有旧依赖版本组合。
 
 下列历史材料验证由 0.3.0rc2 的[八体系 Unified 基准](../examples/Benchmarks/README.zh-CN.md)
-和[投稿修订审计](research/PUBLICATION_REVISION_20260904.md)补充。
+和[数值验证记录](research/PUBLICATION_REVISION_20260904.md)补充。
 候选版本在 Phonopy 2.36.0 与 4.4.0 下均通过 319 项测试。
 另外在不继承工作站 ZStar/pymatgen 的全新 wheel 环境中，NumPy 2.2.6 与
 两个 Phonopy 版本均通过 319 项测试（另有 47 个子测试）及 `pip check`。
@@ -142,7 +142,7 @@ SCF 完成后，默认用 `pyatb_input --band` 进行普通能带路径门控；
 | HfO2（PBEsol/TZDP 9-au） | 3D | 4.7103 | 12 |
 
 一个专门用于测试金属性门控的 BaTiO3 输入得到 0.000 eV 带隙，程序在任何
-位移阶段开始前将其拒绝。它仅作为负面工作流测试保留。另一个与论文基准
+位移阶段开始前将其拒绝。它仅作为负面工作流测试保留。另一个与数值基准
 同晶相的立方 $Pm\bar{3}m$ 输入经过全新的 PBEsol 参考态 SCF 复核，沿
 G-X-M-G-R-X-M-R 路径得到 1.686 eV 带隙；该公开案例能够通过绝缘性门控。
 
@@ -303,14 +303,14 @@ benchmark。现在 ABACUS、VASP 和 CP2K 谱学路径默认拒绝低于 -20 cm-
 Gamma 点本征谱；只有明确使用 `--allow-imaginary` 才会继续分析不稳定相的
 正频支。
 
-当前论文级图片、绘图脚本、紧凑源数据和哈希已归档于
+当前高质量验证图、绘图脚本、紧凑源数据和哈希已归档于
 [docs/paper_figures](paper_figures/README.md)：
 
 - [跨四种维度的 IR/Raman 对比图](paper_figures/spectroscopy_across_dimensions.png)
 - [Bulk 与二维介电响应图](paper_figures/dielectric_response_examples.png)
 - [二维静电势分析图](paper_figures/potential_examples_2d.png)
 
-早期诊断图仅在绘图档案中保留以便追溯，不再作为当前手册或稿件的展示内容。
+早期诊断图仅在绘图档案中保留以便追溯，不再作为当前用户文档的展示内容。
 
 ## 分子光谱
 
@@ -459,5 +459,5 @@ ZStar 所选 Mg+O 的对角求和仅为 `0.000763 e`；CP2K 原生完整八原�
 ## 复现边界
 
 原始求解器材料目录仅保存在隔离的远端 scratch 空间。公开的 `examples/`
-只包含精简输入、资产、来源说明和参考记录。任何用于论文的结果，都应将
+只包含精简输入、资产、来源说明和参考记录。任何用于发表的结果，都应将
 对应的机器可读阶段记录、张量与光谱随科研数据一同归档。

@@ -1,6 +1,6 @@
 {
-  "README.md": "f4d8489478cec34b5204c5071fe9f67149198295345a8c32e00c18ea83714f81",
-  "README.zh-CN.md": "ae05df29f37a8dbe374ace883add1ff76985ad8f536985ad953de99a54d19d68",
+  "README.md": "f7597482071c3c69844f54ca59cf9b67e57383d74ddea80cd6aa973d87b6712e",
+  "README.zh-CN.md": "d5625a1bedb843b8a07fbd78c0cee6b10d38ae4d30d4cb8d79b3839edaddafb0",
   "relaxation/fixed_a_control/results/OUT.SHARED_IN2SE3/running_relax.log": "7cce72f02667951c45401cd4e3454f12aeee699dd714ff7a5f044cd2639c3d43",
   "relaxation/fixed_a_control/results/OUT.SHARED_IN2SE3/STRU_ION_D": "0d4f1c36e5433979f22e64bfacfa522125e0ab7bad9793dcba0ef39f34de602d",
   "relaxation/fixed_a_control/results/provenance.json": "434cd25906c46d7c5d5840f45bf24d46583520a05d8f8e692cf2c07cdc125ab3",
@@ -14,7 +14,7 @@
   "relaxation/fixed_a_control/run/Se_gga_10au_100Ry_2s2p1d.orb": "c901084e499d2a7cbb3115073a2c4f504888e0908068a76861e8d7a385acde36",
   "relaxation/fixed_a_control/run/Se_ONCV_PBE_FR-1.1.upf": "a9ad4b05bd0141a2d2cea708691d00540d7d43c95ed36a9a295b527928df620e",
   "relaxation/fixed_a_control/run/STRU": "913abd7d81777b445f8fffa21f5f7420123b04bc3c73501d2898f9cb81f85e04",
-  "relaxation/README.md": "03b0cc7927dc806ba34ac48705d3f27d0b709c7f344a60faaef89b7e99098f7d",
+  "relaxation/README.md": "1c29543e33e43324c847c643aca9bb7befcdce95ef69c96f4e0b76703727f7a4",
   "relaxation/relax/results/OUT.SHARED_IN2SE3/running_cell-relax.log": "911353d1d3dc78a5010d41c9dcb64589c02ff62a28b5d720d8c3bb1b3e9eb51c",
   "relaxation/relax/results/OUT.SHARED_IN2SE3/STRU_ION_D": "58257779676ac18e7e620e9ef64c6041d74f67bbe680e4169ebb81681c9bf404",
   "relaxation/relax/results/provenance.json": "434cd25906c46d7c5d5840f45bf24d46583520a05d8f8e692cf2c07cdc125ab3",

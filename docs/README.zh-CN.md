@@ -102,7 +102,7 @@ zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式�
   [静电势案例](../examples/Electrostatic_Potential/README.zh-CN.md)。
 - [十体系 BEC/声子效率基准](../examples/Benchmarks/README.zh-CN.md)及
   [四体系 IR/Raman 效率基准](research/unified_spectroscopy_20260906/README.zh-CN.md)。
-- [验证记录](validation.zh-CN.md)及[论文质量图片](paper_figures/README.md)。
+- [验证记录](validation.zh-CN.md)及[验证图与源数据](paper_figures/README.md)。
 
 请使用仓库中的 `examples/` 目录获取可复现输入和保留结果。
 PyPI 的 wheel 和源码包都不含案例。命令预览、离线重建与重新执行 DFT 是

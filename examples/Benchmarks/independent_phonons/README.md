@@ -4,7 +4,7 @@ These are 30 newly calculated force-only SCFs, not duplicated timings or
 forces relabeled from a BEC workflow. `results/` contains written inputs,
 SCF logs, forces, successful-stage timings, validation and checksums.
 `run/force_workflow.py` is the portable driver. Basis files are taken from
-each sibling case's self-contained `run/` directory and copied privately.
+each sibling case's self-contained `run/` directory and copied into the work directory.
 
 ```bash
 # Offline verification, no DFT and no changes to results/

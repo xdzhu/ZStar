@@ -1,6 +1,6 @@
 # H2O: HSE APT evidence
 
-This archive supports the HSE row and full APT tensor in the manuscript.
+This archive retains the HSE comparison value and full APT tensor.
 The actual backend is ABACUS charge-cube dipole integration, not PYATB HSE.
 The stage INPUT files use SCF 1e-7, exact-exchange fraction 0.25 and screening
 parameter 0.11 bohr^-1, a 100-Ry cutoff, and the retained 9-au orbitals.
@@ -14,7 +14,7 @@ as a starting point and retain the actual HSE stage settings for a fresh HSE
 calculation. Do not mix these tensors with the separately relaxed PBE
 efficiency-benchmark Hessian.
 
-中文：本目录支撑论文 HSE APT 结果，采用 ABACUS cube 偶极积分，不是
+中文：本目录保存 HSE APT 验证结果，采用 ABACUS cube 偶极积分，不是
 PYATB 的 HSE 响应。实际逐阶段 INPUT 为 SCF 1e-7、交换比例 0.25、屏蔽
 参数 0.11 bohr^-1；逐阶段输入优先于历史顶层模板。保留原始与电荷中性
 校正后的张量，旧带编号张量为位移行、偶极列。大型 cube 和交换中间文件

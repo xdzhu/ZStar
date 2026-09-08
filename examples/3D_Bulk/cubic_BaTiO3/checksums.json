@@ -1,6 +1,6 @@
 {
-  "README.md": "9947730b1935a161a9b2fcb66c9c1b18a62e6b30f68f41c1a1693e4b7cccb12c",
-  "README.zh-CN.md": "43a9c3fb73d885e69dc01292934c54295326c1407d3e4c4adb192b330afafa4d",
+  "README.md": "c4a9ba5d04307568f01c49c83b33155792bdd95378cb407e4b4745fb0753aae7",
+  "README.zh-CN.md": "adc22a2db7db3641d8a7dd5ffb77d557b550b3c914dbf72c71e4b0c3a5c9cb97",
   "results/benchmark_summary.json": "a29eec67d87bc3de28da7faa99c7d25e3de321fc55ce52588a4c0e8a5c297183",
   "results/legacy_bec/.zstar/stages/0.no-move.json": "6c130e0d6636d131a5d68114483df5e5071f4cf2b83872ef6807eee50c1b0ee3",
   "results/legacy_bec/.zstar/stages/1.Ba__x+.json": "6957f3ccebb5af37d299ffd1687aa6d2d80f07dc43f257cb325ae5f2ab88a40a",
@@ -268,7 +268,7 @@
   "results/legacy_phonon/phonopy_disp.yaml": "0213e7b30cf1008c09d90b1b5196fa3ce25f11c9a3864f2c3d38626477bdd8c5",
   "results/legacy_phonon/STRU": "ad9a82083bcb9769997b169dc38372f321810138dba038e6de0f242336b5573f",
   "results/legacy_phonon/worker.json": "2f5ec8924bf3240286d226ee96887ff5e92e573f8526d410985c27324b83ac2f",
-  "results/plan.json": "107646e8db5a0088d83791ab79c027fd4551a8aebe6b1d4a939ffb0582aa9983",
+  "results/plan.json": "3a8d57d1ccf6fd1ab205e5873edc91482ed50d67d78239f4803f808f8d50f498",
   "results/unified/.zstar/stages/0.no-move.json": "513efbe886e968f5febf9a35f7130ea0756cf427b2b525fa200ac687686eb249",
   "results/unified/.zstar/stages/disp-001.json": "081a1ecd9a8055e54ad12b3864d6ee1676100d96c39cf435099d8014e78330df",
   "results/unified/.zstar/stages/disp-002.json": "c629f544f8419024fa2d27618c9c0e71308a19bbb11f4e92d7c0e4e646bc2c66",

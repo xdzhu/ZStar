@@ -1,10 +1,10 @@
 # 四方 HfO2：BEC 与介电响应
 
-当前输入与论文对应：PBEsol、ONCV 赝势、Hf 6s3p3d2f1g 和 O 2s2p1d
+当前验证输入采用 PBEsol、ONCV 赝势、Hf 6s3p3d2f1g 和 O 2s2p1d
 的 **9-bohr** 轨道、100 Ry、Gamma 中心 10x10x7 网格、SCF 阈值 1e-8。
 六原子 P42/nmc 晶胞的 a=3.55652、c=5.13487 Angstrom。
 
-`run/` 是含赝势和轨道的干净输入；`results/` 是论文使用的 BEC、
+`run/` 是含赝势和轨道的干净输入；`results/` 是已验证的 BEC、
 声子、谱学和介电曲线，设置见 `provenance.json`。旧 10-au 输入及
 旧张量保存在 `legacy/before_20260906/`，不要与当前结果混用。
 

@@ -9,7 +9,7 @@ the static dielectric derivatives required for Raman analysis.
 The three optical modes are degenerate at 772.645 cm^-1. They have equal IR
 intensities and equal normalized Raman activities, as required by the cubic
 symmetry. The archive contains tabulated data, response tensors, and PNG, PDF,
-and SVG plots. Large private matrix copies and temporary PYATB workspaces are
+and SVG plots. Large matrix copies and temporary PYATB workspaces are
 excluded.
 
 Run `bash run.sh --with-spectra` from the case root to repeat the complete

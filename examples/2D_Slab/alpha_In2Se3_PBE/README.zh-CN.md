@@ -21,7 +21,7 @@ ABACUS ONCV/LCAO 与原文的 VASP PAW 基组不同；本例不加 HSE 或 D3。
 0.00154 e，频率最大差 0.168 cm^-1，静态声子面响应相对差 0.799%。
 它们不是实验误差；软模导致的约 1.1% 步长敏感性仍需说明。
 
-本例与论文 BEC 文献对照中的 PBEsol 档案不同，后者在
+本例与 BEC 文献对照所用的 PBEsol 档案不同，后者在
 `examples/2D_Slab/In2Se3_PBEsol/`。
 报告面极化率，不将其当作真空无关的三维介电常数。完整验证方法见
 [效率基准教程](../../Benchmarks/README.zh-CN.md)。

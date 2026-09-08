@@ -1,6 +1,6 @@
 # 四方 HfO2：IR 与 Raman
 
-`run/` 使用论文对应的 PBEsol、9 bohr 数值轨道、100 Ry 截断能、
+`run/` 使用验证计算对应的 PBEsol、9 bohr 数值轨道、100 Ry 截断能、
 10x10x7 Gamma 中心网格和 `scf_thr 1e-8`。赝势与轨道随案例附带。
 `results/` 保存匹配的 BEC、声子、IR/Raman 数据及 `provenance.json`。
 更早的输入仅存放在 `legacy/before_20260906/`，不可混入本次结果。

@@ -1,6 +1,8 @@
 # ZStar 的 GitHub 与 PyPI 更新流程
 
-本文档用于以后自行发布 ZStar。先设置仓库根目录：
+> 本页仅供项目维护者发布版本时使用，普通用户无需执行这些步骤。
+
+发布前先设置仓库根目录：
 
 ```powershell
 $RepoRoot = "C:\path\to\zstar"
@@ -10,7 +12,7 @@ Set-Location $RepoRoot
 ## 基本约定
 
 - `examples/` 是 GitHub 上公开的案例库；wheel 和 PyPI 源码包均不包含它。
-  完整审稿交付包另附案例，并区分 DFT 重跑、离线重建和需用户提供 cube 的分析。
+  各案例会说明 DFT 重跑、离线重建和需用户提供 cube 的分析边界。
 - `dist/`、`build/` 和 `*.egg-info/` 是本地构建产物，不提交 GitHub。
 - 调度脚本由 ZStar CLI 按系统自动生成；仓库不再维护站点专用的旧作业模板。
 - 开发和测试使用 `zstar-test` 环境。
@@ -36,7 +38,7 @@ Set-Location $RepoRoot
 - `CITATION.cff` 中的版本与日期
 - `CHANGELOG.md` 中的发布记录
 
-还应同步当前 README、教程和稿件中的安装版本、GitHub 标签与图片 URL。
+还应同步当前 README、教程和发布元数据中的安装版本、GitHub 标签与图片 URL。
 历史验证报告、原始计算的版本号及哈希保留，不做全局替换。
 
 ## 1. 检查工作区
@@ -125,19 +127,20 @@ pdftoppm -png -r 120 docs\README.zh-CN.pdf tmp\pdfs\README-zh
 
 ## 4. 检查 PyPI 描述
 
-由于仓库可能是私有的，`README_PYPI.md` 不应使用：
+PyPI 不能解析仓库相对路径，因此 `README_PYPI.md` 不应使用：
 
 ```html
 <img src="docs/logo.png">
 ```
 
-也不应使用私有仓库的 `raw.githubusercontent.com` 地址。PyPI 访问者没有仓库登录权限，图片会失效。
+当前仓库公开，因此可使用现有的公共 HTTPS 地址：
 
-可选方案：
+```text
+https://raw.githubusercontent.com/xdzhu/zstar/main/docs/logo.png
+```
 
-1. 不在 PyPI 描述中显示 logo，这是当前默认方案。
-2. 将 logo 放在独立的公开仓库或长期稳定的公共 HTTPS 静态资源服务中。
-3. 把该公开 URL 写入 `README_PYPI.md`。
+发布前应在未登录状态下确认该地址可访问。若仓库以后改为私有，应将 logo
+迁移到长期稳定的公共 HTTPS 静态资源，再更新 `README_PYPI.md`。
 
 PyPI 不会为安装包中的 `docs/logo.png` 提供可直接嵌入项目页面的稳定资源 URL。
 
@@ -265,7 +268,8 @@ tmp\pypi-smoke\Scripts\zstar --help
 
 ### GitHub 能显示 logo，但 PyPI 不能
 
-相对路径图片只对仓库页面有效。私有 GitHub 原始文件对未登录的 PyPI 访问者不可见，应使用公开 HTTPS URL 或不显示 logo。
+相对路径图片只对仓库页面有效。PyPI 描述应使用无需登录即可访问的公共
+HTTPS URL，并在发布前检查该地址。
 
 ### 只改 README，是否需要更新软件版本
 

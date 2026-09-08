@@ -1,7 +1,7 @@
 # Water (H2O) HSE APT record
 
 This directory contains a runnable PBE ABACUS + PYATB H2O APT baseline and the
-compact HSE molecular APT record used in the manuscript. The full HSE
+compact HSE molecular APT validation record. The full HSE
 displacement scratch tree and cube files are deliberately excluded; the
 included `run/` directory contains the PBE structure, pseudopotentials, and
 numerical orbitals.

@@ -65,7 +65,7 @@ request, completion or failure records. Source/output hashes prevent silent reus
 after changes. A worker lock prevents two writers in the same workspace; only
 remove a stale lock after confirming that its process has ended.
 
-Electronic matrices and structure assets are copied into private workspaces,
+Electronic matrices and structure assets are copied into independent workspaces,
 never symlinked. The source BEC inputs, matrices and cubes are not overwritten.
 Direct-static PYATB is used when available; older PYATB retains the zero-energy
 sample from a minimal optical window. The precision adapter saves original rounded

@@ -23,7 +23,7 @@ The work is divided into dependency-ordered stages:
    dimensional NAC/LO-TO handling, polarized and powder Raman geometries, and
    dielectric-derived optical observables.
 7. Validate representative calculations on dedicated compute nodes and update tests,
-   bilingual documentation, examples, and the manuscript.
+   bilingual documentation and examples.
 
 Every stage must retain raw calculator output, explicit units and tensor
 conventions, a completion contract, and a small benchmark. New backends are not
@@ -103,7 +103,7 @@ phonon solver remains explicitly outside the current release.
 - [x] Hybrid ABACUS/PYATB 1D BEC and Gamma-point IR/Raman workflow.
 - [x] Shared VASP/QE/CP2K cube preparation for real-space dipoles.
 - [x] Dimensional NAC guards, polarized Raman, and optical observables.
-- [x] Unit tests, bilingual manuals, README PDFs, and CPC manuscript text.
+- [x] Unit tests, bilingual manuals, README PDFs, and release documentation.
 
 The rejected general-workflow expansion (including AiiDA integration) was not
 implemented. This keeps the calculator-neutral layer focused on response

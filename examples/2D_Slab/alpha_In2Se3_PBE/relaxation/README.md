@@ -18,7 +18,7 @@ convergence log, final STRU, and timing/provenance. To rerun one stage:
 ABACUS_COMMAND='mpirun -np 1 abacus' OMP_NUM_THREADS=40 bash run.sh relax
 ```
 
-The script creates a private `work/` for that stage. It will not overwrite an
+The script creates a separate `work/` for that stage. It will not overwrite an
 existing one. To generate response tasks for a newly optimized structure,
 copy its final STRU and the matching INPUT/KPT/basis into a new directory,
 check the residual force and symmetry, then use `zstar bec pre --dim 2`.

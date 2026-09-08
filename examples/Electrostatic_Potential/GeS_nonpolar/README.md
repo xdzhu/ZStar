@@ -20,7 +20,7 @@ bash run.sh --dry-run
 bash run.sh
 ```
 
-The default decompresses a private copy of the retained electrostatic cube
+The default decompresses an independent working copy of the retained electrostatic cube
 and regenerates plane maps and directional profiles under a new `work/`.
 No DFT is required. The archive is never edited or symlinked.
 

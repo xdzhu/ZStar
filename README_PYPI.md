@@ -338,10 +338,6 @@ polarization magnitudes.
 | `dielectric_response.pdf` / `.svg` | Editable real/imaginary frequency-response plots. |
 | `raman_spectrum/` | Raman activities, tensors, and broadened spectrum. |
 
-## Logo on PyPI
-
-This description intentionally contains no repository-relative logo. PyPI cannot render an image stored only in a private GitHub repository. A logo must use a stable, publicly accessible HTTPS URL; relative images remain suitable for the private GitHub README itself.
-
 ## License
 
 ZStar is distributed under GPL-3.0.

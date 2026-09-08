@@ -110,7 +110,7 @@ line/sheet responses, not a vacuum-dependent bulk dielectric constant.
   [potential cases](../examples/Electrostatic_Potential/README.md).
 - [Ten-system BEC/phonon benchmarks](../examples/Benchmarks/README.md) and
   [four-system IR/Raman benchmarks](research/unified_spectroscopy_20260906/README.md).
-- [Validation record](validation.md) and [manuscript-quality figures](paper_figures/README.md).
+- [Validation record](validation.md) and [validation figures with source data](paper_figures/README.md).
 
 Use the `examples/` tree in the repository for reproducible inputs and retained
 results. Examples are not in the PyPI wheel or source

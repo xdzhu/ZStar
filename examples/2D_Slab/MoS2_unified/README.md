@@ -28,7 +28,7 @@ summary records solver-only costs, including the reference and band gate.
 A reduction in task count is not assumed to equal the measured speedup.
 
 The in-plane response uses Berry polarization and the open-direction response
-uses private charge-cube copies. `kspacing` in INPUT takes precedence over the
+uses independent charge-cube copies. `kspacing` in INPUT takes precedence over the
 retained KPT file. Sheet response keeps the electric-field convention of its
 source; volume normalization alone does not establish an intrinsic normal
 permittivity.
@@ -42,5 +42,5 @@ for offline verification and the comparison protocol.
 The baseline Berry mesh is 28x28x2. Separate `*-mesh112/` result trees
 repeat only polarization on a 112x112x2 mesh, keeping forces and reference
 electronic response fixed. Their additional costs are not part of the baseline
-speedup. These benchmark records do not replace the manuscript spectroscopy
+speedup. These benchmark records are distinct from the spectroscopy
 case in `IR_Raman_Spectra/2D_MoS2`.

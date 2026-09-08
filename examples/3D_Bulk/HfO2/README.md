@@ -1,12 +1,12 @@
 # Tetragonal HfO2: BEC and dielectric response
 
-The current inputs match the manuscript reference: PBEsol, ONCV
+The validated inputs use PBEsol, ONCV
 pseudopotentials, Hf 6s3p3d2f1g and O 2s2p1d **9-bohr** orbitals,
 100 Ry, a Gamma-centered 10x10x7 mesh, and SCF threshold 1e-8.
 The six-atom P42/nmc structure has a=3.55652 and c=5.13487 Angstrom.
 
 `run/` contains clean inputs and included PP/ORB assets. `results/` contains
-the paper-reference BEC, phonons, IR/Raman data and dielectric curves;
+the validated BEC, phonons, IR/Raman data and dielectric curves;
 `provenance.json` identifies their settings. Historical 10-au inputs
 and older tensors are preserved under `legacy/before_20260906/`.
 They must not be substituted for the current reference.

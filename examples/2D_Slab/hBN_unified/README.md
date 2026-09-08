@@ -28,7 +28,7 @@ summary records solver-only costs, including the reference and band gate.
 A reduction in task count is not assumed to equal the measured speedup.
 
 The in-plane response uses Berry polarization and the open-direction response
-uses private charge-cube copies. `kspacing` in INPUT takes precedence over the
+uses independent charge-cube copies. `kspacing` in INPUT takes precedence over the
 retained KPT file. Sheet response keeps the electric-field convention of its
 source; volume normalization alone does not establish an intrinsic normal
 permittivity.

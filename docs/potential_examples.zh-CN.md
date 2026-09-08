@@ -48,7 +48,7 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 ```
 
 `--mirror-test` 会输出最佳镜面中心、归一化非对称度、镜像奇分量 RMS 和折叠后的
-单周期曲线。论文选取 SnS 的 `a+b` 结果：先去除任意的势能零点，
+单周期曲线。随仓库提供的对比图选取 SnS 的 `a+b` 结果：先去除任意的势能零点，
 再优化镜面中心 `c`，使
 `A_M = ||V(s) - V(2c-s)||_2 / (2 ||V(s)||_2)` 最小。所得
 `A_M = 0.033`，镜像奇分量的 RMS 为 `0.048 eV`，说明该方向的微观势轮廓
@@ -59,7 +59,7 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 
 ## 可复现数据
 
-论文复合图由
+复合对比图由
 `docs/paper_figures/make_validation_figures.py` 生成。对应的紧凑源数据位于
 `docs/paper_figures/source_data/potential/`，其中不包含原始大体积 cube、
 计算集群路径或求解器临时文件。

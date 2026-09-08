@@ -37,7 +37,7 @@ the matching GitHub tag for frozen example inputs.
 Unified obtains BEC and Gamma force constants from the same SCFs. Separate
 adds independently executed force-only SCFs to the Cartesian BEC cost.
 Cubic BaTiO3 retains its historical forward BEC timing; the other nine
-comparisons use central differences. The manuscript reference-state table
+comparisons use central differences. The reference-state comparison
 separately lists prepared central-displacement counts for every system.
 Prepared counts do not change the measured forward timing denominator.
 

@@ -137,7 +137,7 @@ Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 继续得到 IR 与 Raman 结果。
 已发布版本与历史案例仍保留其原有版本记录。
 
-当前仓库包含论文使用的可复现输入和保留结果；历史案例保留原始版本与来源记录。
+当前仓库包含可复现输入和保留的参考结果；历史案例保留原始版本与来源记录。
 
 混合位移不仅需要检查 SCF 与位移步长，也要检查 PYATB 的 Berry 积分网格。
 [直接验证报告](docs/research/shared_response/DIRECT_VALIDATION.md) 保留了 SiC、
@@ -744,7 +744,7 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
   <img src="docs/paper_figures/spectroscopy_across_dimensions.png" alt="体材料、二维片层、一维纳米线与分子的 IR 和 Raman 谱" width="820">
 </p>
 
-四行对比图按论文顺序展示四方 HfO2（`3D, bulk`）、单层 MoS2
+四行对比图展示四方 HfO2（`3D, bulk`）、单层 MoS2
 （`2D, slab`）、Sb2S3（`1D, nanowire`）和 CH4（`0D, molecule`）。PBEsol HfO2 行包含全部 15 个
 稳定光学模式和 30 个已完成的 Raman 响应阶段；更新后的
 ABACUS/PBE-D3(BJ) MoS2 行则将全部 6 个光学模式与生产级 BEC 导出的
@@ -810,17 +810,6 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 
 别名、全部叶节点和软件路径解析规则见[完整命令行参考](docs/cli_reference.zh-CN.md)。
 
-## 仓库与发布约定
-
-- `examples/` 保存可直接运行的精简案例输入、参考结果和后端示例；大型
-  求解器 scratch 输出仍保留在仓库之外，不提交到 GitHub。
-- `dist/` 与 `build/` 是本地构建产物，不提交。
-- 调度脚本由 `zstar bec job`、`zstar phonon job` 和 `zstar spectra job` 自动生成；
-  集群资源和环境命令通过 [Specified、Current、Global header](docs/job_headers.zh-CN.md) 设置。
-- PyPI 更新流程见 [docs/how_to_update_pypi.md](docs/how_to_update_pypi.md)。
-
-私有 GitHub 仓库中的 README 可以使用相对路径 logo，因为已登录的仓库访问者能够读取图片；PyPI 无法访问私有仓库的图片地址。因此 `README_PYPI.md` 不引用私有相对图片。若希望 PyPI 展示 logo，必须提供长期稳定、无需登录即可访问的 HTTPS 图片地址。
-
 ## 引用与许可证
 
 如果 ZStar 支持了您的论文工作，请引用 ZStar 软件论文或对应仓库版本，同时引用实际使用的电子结构与晶格动力学程序。
@@ -830,9 +819,3 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 ZStar 使用 GNU General Public License v3.0。
 
 Copyright (c) Xudong Zhu.
-## 持续构建与发布
-
-每次推送到 `main` 以及每个面向 `main` 的 pull request，GitHub Actions 都会
-自动构建 wheel 和源码包，并将其保存为 workflow artifact。推送类似 `v0.2.1`
-的版本标签时，还会创建 GitHub Release 并附加构建文件。PyPI 发布仍然保持为
-单独、明确执行的发布步骤。

@@ -1,5 +1,5 @@
 {
-  "README.md": "823b8ffb8d701aa2563b3029431a0c66ef5edfcaeb2c864d8add666da115a9e3",
+  "README.md": "420c737f0424cc78e5d58a1d407c5179e4809bf085e91ce8b38f0d6e508da0f0",
   "README.zh-CN.md": "6c9571c0e45845608b0f28f7d76681866f4748b1f21ae0783b9ca161a951a700",
   "results/controls/cartesian/BEC.dat": "8245b72ebcf7f46ee7cf6e009b4ce967354ed3aa65b8be2f8e4669b8e11e1f6f",
   "results/controls/cartesian/BEC.raw.dat": "77d662fb528c56e2d450c39257b997ebdd12f5b081f58df57a39f12817ad916c",
@@ -75,8 +75,8 @@
   "results/shared/shared_response_result.json": "0eb09bf7d09f8b3cc26b56fbae35573f0b8aced870858f8a3d2096bfe4b1b684",
   "results/shared/zstar_response.json": "f2b2fc93d4a1774e7c009660f234ec2ff4930cc6658c1ab4f29f02648db21696",
   "results/spectra/.zstar/spectra.json": "fa55d315ea88708cdb5d27e5e5adfd2affc56af953e201ec28239b9e5ecc2318",
-  "results/spectra/README.md": "5f940eb65babc3e843933bc207512e31c3213b5959b5fad742b916b59045e383",
-  "results/spectra/README.zh-CN.md": "146d18aac79ca1447a246e8d38dfbb10a6b87ca8a078333f63886a521cf3b6ed",
+  "results/spectra/README.md": "1f5443dbfe4ca5c8957ba49b96e0f7443affada5f5f643fb89a78c1933ba8152",
+  "results/spectra/README.zh-CN.md": "22e1e7823c9f6b69d7b1faceae7e3df253bf6970992a8d8911167975fe1e25c0",
   "results/spectra/ir/dielectric_response.pdf": "74544add348834753f15c0b0af8d1f2991990642186e621090a4b42bd746067c",
   "results/spectra/ir/dielectric_response.png": "6072c9a44aa135c32156bb6edd51a8ed2c6331089a9efabd190d1c411f19642e",
   "results/spectra/ir/dielectric_response.svg": "5fae0d28931b90765c61a2cc7c61a508000ac44bc04af158893453432927205a",
@@ -117,5 +117,5 @@
   "work/Si_ONCV_PBE-1.0.upf": "481a5fae1167fd712d4e8e2e4df33f8bfc1e7d2abbc0565290d39fbba9dccb41",
   "work/Si_gga_7au_100Ry_2s2p1d.orb": "193aa6c3d6dadf80f0466559f44498a2a56b1dd27291f64e0688b0786248639b",
   "work/assets/STRU.resolved": "d4485fd9468bb7d2de9d3f3a7eed0ae1095e1e0411493c8e942bde7bbb2dcbf3",
-  "work/assets/assets.json": "c43b13b400d24738bcb48a84f240fc012782e6d0e5caddadd6fbcf9a7d1dc4e0"
+  "work/assets/assets.json": "c7af36b9653929915d2608ecf4459464a6809049b3a1ce6eab6bafd63a053a73"
 }

@@ -2,7 +2,7 @@
 
 These examples demonstrate `zstar pot` on representative two-dimensional materials. MoS2 is used as a nonpolar reference, In2Se3 as an out-of-plane polar slab, and SnS/SnSe/SnTe as in-plane polar monolayers.
 
-The plots were generated from converged ABACUS `ElecStaticPot.cube` files. The compact source profiles and path-free calculation metadata used for the manuscript figure are archived under `docs/paper_figures/source_data/potential/`.
+The plots were generated from converged ABACUS `ElecStaticPot.cube` files. The compact source profiles and path-free calculation metadata used for the comparison figure are archived under `docs/paper_figures/source_data/potential/`.
 
 ![Representative 2D electrostatic-potential diagnostics](paper_figures/potential_examples_2d.png)
 
@@ -68,8 +68,8 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 To compare the legacy hard-binning curve with interpolated perpendicular slices, repeat `--direction-method` or use `--direction-method all`. The generated `*-compare*.png` overlay shows how much of the apparent saw-tooth structure comes from discretization.
 
 `--mirror-test` writes the optimized mirror center, normalized asymmetry,
-mirror-odd RMS amplitude, and the folded one-period profile. The manuscript
-uses the SnS `a+b` result. After
+mirror-odd RMS amplitude, and the folded one-period profile. The supplied
+comparison uses the SnS `a+b` result. After
 removing the arbitrary potential offset, the reflection center `c` is optimized
 to minimize
 `A_M = ||V(s) - V(2c-s)||_2 / (2 ||V(s)||_2)`.

@@ -171,7 +171,7 @@ zstar dielectric freq
 
 ## 静电势能力闭环
 
-`zstar pot` 保留了 ZStar 论文中展示的完整分析能力：
+`zstar pot` 提供验证案例所展示的完整分析能力：
 
 ```bash
 zstar pot --cube ElecStaticPot.cube --axes z \

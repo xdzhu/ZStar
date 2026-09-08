@@ -32,4 +32,4 @@ INPUT 的 `kspacing` 优先于保留的 KPT。片层响应保留源数据的电�
 
 基准 Berry 网格为 28x28x2。`*-mesh112/` 只将极化网格加密到
 112x112x2，力和参考电子响应不变；加密耗时另计。这套效率数据不会
-替换 `IR_Raman_Spectra/2D_MoS2` 中的论文谱学案例。
+替换 `IR_Raman_Spectra/2D_MoS2` 中的谱学案例。

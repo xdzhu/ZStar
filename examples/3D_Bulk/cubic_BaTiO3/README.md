@@ -97,4 +97,4 @@ on equivalent dual Xeon Gold 6248 nodes with 40 physical cores. ABACUS used
 of monotonic command durations times 40/3600. Relaxation, Raman, finite-q
 phonons, and archive verification are excluded. Separate force SCFs start
 from atomic charge and do not export unnecessary Hamiltonians or densities;
-both BEC routes initialize displacements from private reference-charge copies.
+both BEC routes initialize displacements from local reference-charge copies.

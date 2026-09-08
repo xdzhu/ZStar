@@ -1,7 +1,7 @@
 # Cubic BaTiO3 BEC benchmark
 
 This PBEsol $Pm\bar{3}m$ case is the phase-matched source of the cubic
-BaTiO3 BEC values reported in the paper. It is kept separate from the
+BaTiO3 BEC validation values. It is kept separate from the
 tetragonal `BaTiO3` workflow example so that phase labels, symmetry reduction,
 and literature comparisons remain unambiguous.
 

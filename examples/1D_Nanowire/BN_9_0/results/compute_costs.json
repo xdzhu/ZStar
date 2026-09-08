@@ -10,5 +10,5 @@
     "preparation": 1.061820230159523
   },
   "relaxation_core_hours": 22.35948383933347,
-  "interruption_caveat": "cu20 reboot interrupted one PYATB call; its elapsed cost is unrecorded. Listed totals cover completed calls, not the full billed total."
+  "interruption_caveat": "One PYATB call was interrupted before its elapsed cost was recorded. Listed totals cover completed calls, not the full billed total."
 }

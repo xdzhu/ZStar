@@ -1,6 +1,6 @@
 # Completed independent native DFPT check
 
-VASP 6.3.2 ran on cu23, 40 MPI ranks x 1 OpenMP thread. Both stages completed
+VASP 6.3.2 ran with 40 MPI ranks x 1 OpenMP thread. Both stages completed
 normally. OUTCAR wall times give 91.406 allocated core-hours including the
 reference SCF. This is a BEC-only cross-check, not a full phonon benchmark.
 

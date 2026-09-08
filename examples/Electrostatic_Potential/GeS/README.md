@@ -1,7 +1,7 @@
 # GeS electrostatic potential
 
 This PBE-D3 monolayer GeS case reproduces the in-plane-polar comparison used
-in Fig. 8 of the ZStar paper. The `run/` directory contains the ABACUS input,
+in the supplied comparison figure. The `run/` directory contains the ABACUS input,
 structure, pseudopotentials, and numerical orbitals. The `results/` directory
 contains the verified 3x3 planar map and one-period mirror diagnostics along
 the polar lattice vector $a$ and the nonpolar vector $b$.

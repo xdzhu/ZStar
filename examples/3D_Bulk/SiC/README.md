@@ -44,7 +44,7 @@ Cartesian central set has twelve. Both also calculate `0.no-move`.
 
 Compare full raw/projected Born tensors, the Gamma Hessian and optical triplet,
 and the stable phonon dielectric response. See the parent README and benchmark
-JSON for exact results and measured costs. This is an internal numerical
+JSON for exact results and measured costs. This is a matched-setting numerical
 equivalence test, not an accuracy claim against experiment.
 
 The Unified result gives opposite Si/C diagonal BEC values of 2.70094 e and

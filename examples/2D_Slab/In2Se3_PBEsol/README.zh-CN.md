@@ -1,6 +1,6 @@
 # Alpha-In2Se3：PBEsol BEC 文献对照
 
-本目录对应论文逐层 BEC 表中的铁电单层 PBEsol 数据，不是旁边
+本目录保存铁电单层的逐层 PBEsol BEC 验证数据，不是旁边
 `In2Se3` 目录的旧 PBE+D3(0) 示例，也不是 `Benchmarks` 中新优化的
 PBE 效率基准。
 

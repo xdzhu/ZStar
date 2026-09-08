@@ -1,7 +1,7 @@
 # Alpha-In2Se3: PBEsol BEC literature comparison
 
-This is the specific ferroelectric monolayer dataset used by the manuscript's
-layer-resolved BEC table. It is **not** the older PBE+D3(0) `../In2Se3` example
+This ferroelectric monolayer dataset provides the layer-resolved BEC comparison.
+It is **not** the older PBE+D3(0) `../In2Se3` example
 or the newly optimized PBE efficiency benchmark in `Benchmarks`.
 
 The actual archived INPUT uses PBEsol, D3(0), a 100-Ry cutoff, SCF threshold

@@ -20,7 +20,7 @@ python examples/3D_Bulk/cubic_BaTiO3/verify.py
 
 Unified 从同一批位移 SCF 同时获得 BEC 和 Gamma 力常数。Separate 的机时
 包含 Cartesian BEC 与另外实际执行的力计算。立方 BTO 历史计时采用 forward，
-其他九个体系采用 central；论文参考态表统一列出的 central **准备任务数**
+其他九个体系采用 central；参考态对照表统一列出的 central **准备任务数**
 不等于这些任务都已执行，也不用于替换历史 forward 实测分母。
 
 [独立声子档案](independent_phonons/README.md)保留实际力计算证据。计时包括

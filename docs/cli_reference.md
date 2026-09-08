@@ -180,7 +180,7 @@ missing local-field physics to PYATB results. See
 
 ## Electrostatic-potential coverage
 
-`zstar pot` retains the complete analysis used in the ZStar paper:
+`zstar pot` provides the complete analysis demonstrated by the validation cases:
 
 ```bash
 zstar pot --cube ElecStaticPot.cube --axes z \

@@ -115,14 +115,14 @@ alpha_2D,ph(0) / epsilon_0
 | `ir_response_real.dat` | 对角响应的实部 |
 | `ir_response_imag.dat` | 对角响应的虚部 |
 | `dielectric_response.png` | 快速预览图 |
-| `dielectric_response.pdf` | 投稿级矢量图 |
+| `dielectric_response.pdf` | 高分辨率矢量图 |
 | `dielectric_response.svg` | 可编辑矢量图 |
 | `ir_summary.json` | 参数、响应类型和输出清单 |
 
 响应数据头会明确区分总响应与仅晶格响应，避免在缺少电子张量时把隐含的
 `epsilon_infinity = 1` 误解为真实物理结果。
 
-## 复现论文图片
+## 复现介电响应图
 
 ```bash
 python docs/paper_figures/plot_dielectric_response.py

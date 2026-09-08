@@ -85,4 +85,4 @@ and the individual case READMEs for calculator-specific setup.
 
 The `Electrostatic_Potential/SnS`, `SnSe`, and `SnTe` cases are compact
 post-processing examples: they retain verified profiles and plots, while the
-upstream raw cube and private SCF inputs remain outside the public package.
+upstream raw cube and large SCF outputs remain outside the public package.

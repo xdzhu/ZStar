@@ -22,8 +22,8 @@ See the [English tutorial](../../../docs/unified_spectroscopy.md) and
 [中文教程](../../../docs/unified_spectroscopy.zh-CN.md).
 
 This tetragonal HfO2 case uses PBEsol, 9-bohr numerical orbitals,
-100 Ry, a 10x10x7 Gamma-centered mesh and SCF threshold 1e-8
-of the manuscript reference. The input and matching
+100 Ry, a 10x10x7 Gamma-centered mesh and SCF threshold 1e-8.
+The input and matching
 assets are under `run/`; compact IR/Raman tables, spectra, and plots are under
 `results/`.
 
@@ -38,7 +38,7 @@ ABACUS_COMMAND="mpirun -np 20 abacus" PYATB_COMMAND="pyatb" bash run.sh
 The retained Raman record contains all 15 optical modes. The compact reference
 uses a 532 nm laser and 8 cm-1 broadening. Scratch data are written to `work/`.
 
-`results/provenance.json` identifies the manuscript data. Older input
+`results/provenance.json` identifies the validated data. Older input
 settings are retained only in `legacy/before_20260906/`. The default unified
 BEC/force ensemble has four displacements plus its reference. The 15 optical
 Raman mode-difference control requires 30 further positive/negative response

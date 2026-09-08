@@ -61,7 +61,7 @@ Gamma 点基准的范围。
 
 ## 保留的参考结果
 
-`results/` 包含论文使用的紧凑 ABACUS/PYATB 输出：24 原子完整 BEC
+`results/` 包含紧凑的 ABACUS/PYATB 验证输出：24 原子完整 BEC
 张量、计算器无关响应记录、72 个 Gamma 模、全部 68 个正频 IR 模以及 10 个
 选定 Raman 模。已完成计算给出：
 

@@ -33,7 +33,7 @@ export VASP_COMMAND="mpirun -np 40 vasp_std"
 bash run_vasp.sh
 ```
 
-赝势目录需要有 `B/POTCAR` 和 `N/POTCAR`，交付包不分发 VASP 授权赝势。
+赝势目录需要有 `B/POTCAR` 和 `N/POTCAR`，仓库不分发 VASP 授权赝势。
 新计算写入 `work-vasp/`，完成的阶段可断点续算。准备清单保留一维物理维度，
 但 VASP 求解器仍采用含真空的三维周期超胞，不施加孤立管横向镜像修正。
 对比时使用同一几何下的局域径向、切向和轴向 BEC；不要将含真空的介电张量

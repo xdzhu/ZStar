@@ -1,6 +1,6 @@
 # 立方 BaTiO3 BEC 基准
 
-这个 PBEsol $Pm\bar{3}m$ 案例是论文中立方 BaTiO3 BEC 数值的同晶相来源。
+这个 PBEsol $Pm\bar{3}m$ 案例提供立方 BaTiO3 BEC 的同晶相验证数据。
 它与四方 `BaTiO3` 工作流案例分开保存，从而避免晶相、对称性约化与文献对照
 发生混淆。
 

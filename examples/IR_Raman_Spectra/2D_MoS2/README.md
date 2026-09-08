@@ -34,15 +34,15 @@ The out-of-plane BEC convention remains the cube-integrated 2D route. The
 spectral response is reported as a sheet response and must not be interpreted
 as a vacuum-dependent bulk dielectric tensor.
 
-## Paper result archive
+## Validated result archive
 
 `results/bec/` contains the original seven-stage forward BEC evidence, including
 the reference electronic tensor in `BORN`, full-cell `Z-BORN-symm.out`, written
 structures, PYATB inputs, Berry outputs, and integrated open-axis observations.
 `source_manifest.json` records original file hashes. Mo has in-plane BEC
 `-0.80585922 e`; this is not the older `2D_Slab/MoS2` quick-start dataset.
-`results/dielectric_response/` holds the paper's phonon-only sheet response.
-`results/phonon/` preserves the exact paper post-processing inputs. Its mode
+`results/dielectric_response/` holds the validated phonon-only sheet response.
+`results/phonon/` preserves the corresponding post-processing inputs. Its mode
 frequencies, eigenvectors, and symmetry labels equal those in `results/bec/`.
 The compact structural metadata uses angstrom rather than bohr and masses of
 95.95/32.06 amu rather than the solver's 95.96/32.065 amu. This small mass

@@ -74,7 +74,7 @@ Coulomb cutoff, which is outside this Gamma-point benchmark.
 ## Retained reference results
 
 `results/` contains the compact ABACUS/PYATB outputs used by the
-paper: the full 24-atom BEC tensor, calculator-neutral response record, 72
+comparison: the full 24-atom BEC tensor, calculator-neutral response record, 72
 Gamma modes, all 68 positive-frequency IR modes, and the ten selected Raman
 modes. The completed calculation gives:
 

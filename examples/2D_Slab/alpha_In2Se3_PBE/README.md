@@ -5,7 +5,7 @@ PBE structural-relaxation settings reported by Ding et al., Nature
 Communications 8, 14956 (2017), https://doi.org/10.1038/ncomms14956:
 Gamma-centered 12x12x1 mesh, vacuum greater than 15 Angstrom, dipole correction,
 and forces below 0.005 eV/Angstrom. No HSE or monolayer D3 is added.
-ABACUS ONCV/LCAO and the paper's VASP PAW basis are not identical.
+ABACUS ONCV/LCAO and the reference study's VASP PAW basis are not identical.
 
 The 30-Angstrom cell contains about 23 Angstrom of vacuum. Cell relaxation is
 followed by a recorded, sub-1e-4-Angstrom numerical shear cleanup and a fresh

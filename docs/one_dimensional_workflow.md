@@ -188,8 +188,8 @@ pseudopotentials, orbitals and an optimized `structure.vasp` for visualization.
 | Sb2S3 | 1.501 | 26 | 39.38 | 18.9 | 30.1 |
 
 Costs sum completed ABACUS and PYATB calls, excluding preparation overhead and
-geometry optimization. BN(9,0) also excludes the unrecorded interrupted PYATB
-call during a cu20 reboot. Full stage accounting is in `results/compute_costs.json`.
+geometry optimization. BN(9,0) also excludes one interrupted PYATB call whose
+elapsed time was not recorded. Full stage accounting is in `results/compute_costs.json`.
 Reference geometry optimization costs are 13.6, 22.4 and 36.1 core-hours,
 respectively. These are allocated core-hours, not integrated CPU-utilization time.
 
@@ -252,8 +252,8 @@ observables: its BEC and phonon costs cannot be added twice. Counts are SCF
 calculations, not electronic iterations. For Sb2S3, the matched Separate BEC and
 phonon runs cost 23.74 and 17.93 core-hours (41.67 total), versus 18.95 for Unified:
 2.20-fold measured speedup, or 54.5% saved. BN(9,0) saves 53.8% of successful
-solver core-hours. One interrupted force attempt on cu20 has no complete timing
-record; its partial log is retained, and the remaining stages completed on cu25.
+solver core-hours. One interrupted force attempt has no complete timing record;
+its partial log is retained, and the remaining stages were completed in a fresh run.
 Listed costs exclude that interruption and are not total billed usage. No task-count
 ratio is reported as measured speedup.
 Raman derivatives and optimization are excluded from this benchmark.

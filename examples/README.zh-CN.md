@@ -73,4 +73,4 @@ bash run.sh --with-spectra
 以及各案例 README。
 
 `Electrostatic_Potential/SnS`、`SnSe` 和 `SnTe` 是紧凑的后处理案例：保留已核验
-的轮廓和图像，但原始 cube 与上游私有 SCF 输入不放入公开包。
+的轮廓和图像，但原始 cube 与上游大型 SCF 输出不放入公开包。

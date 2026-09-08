@@ -70,5 +70,5 @@ zstar db collect --manifest candidates.csv --output database
 能、k 点、SCF 阈值、位移量、对称性阈值、声子超胞、电子/静态总介电张量、原始/
 修正 BEC、能隙门控、收敛等级和失败原因。
 
-合作交付包内包含 GaAs 纳米线、BaTiO3、HfO2、MoS2、In2Se3、CH4 和 CO2 的已验证案例，以及
+仓库案例库包含 GaAs 纳米线、BaTiO3、HfO2、MoS2、In2Se3、CH4 和 CO2 的已验证案例，以及
 批量准备与数据库冒烟脚本。
