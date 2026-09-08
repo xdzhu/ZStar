@@ -11,6 +11,9 @@
 使用仓库自带的双原子 3C-SiC 案例，可以用一条短路径完成安装、BEC、Gamma 点
 声子、IR 和 Raman 计算。
 
+如果不需要复现案例，直接执行 `pip install zstar` 即可安装并使用程序。只有在
+需要获取可复现案例时才需要克隆仓库：
+
 ```bash
 git clone --depth 1 https://github.com/xdzhu/zstar.git
 cd zstar

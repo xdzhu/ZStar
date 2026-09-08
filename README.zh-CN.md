@@ -30,14 +30,16 @@ ABACUS 输入、SG15 赝势和 DZP 轨道。
 
 ### 1. 安装 ZStar 并获取案例
 
+如果不需要复现案例，直接执行 `python -m pip install -U zstar` 即可安装并使用
+ZStar。如需获取可复现案例，则克隆仓库并安装同一份源码：
+
 ```bash
 git clone --depth 1 https://github.com/xdzhu/zstar.git
 cd zstar
 python -m pip install .
 ```
 
-如果只需要安装软件包，可使用 `python -m pip install -U zstar`。可复现案例位于
-GitHub 仓库中，不包含在 PyPI wheel 内。
+可复现案例位于 GitHub 仓库中，不包含在 PyPI wheel 内。
 
 ### 2. 配置计算软件
 

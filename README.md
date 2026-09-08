@@ -31,14 +31,17 @@ ABACUS inputs, SG15 pseudopotentials, and DZP orbitals.
 
 ### 1. Install ZStar and get the example
 
+If you do not need to reproduce the examples, run
+`python -m pip install -U zstar` and start using ZStar directly. To obtain the
+reproducible cases, clone the repository and install the same source tree:
+
 ```bash
 git clone --depth 1 https://github.com/xdzhu/zstar.git
 cd zstar
 python -m pip install .
 ```
 
-For a package-only installation, use `python -m pip install -U zstar`. The
-reproducible examples are available from GitHub rather than the PyPI wheel.
+The examples are available from GitHub rather than the PyPI wheel.
 
 ### 2. Configure the calculators
 

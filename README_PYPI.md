@@ -19,6 +19,9 @@ python -m pip install -U zstar
 git clone --depth 1 https://github.com/xdzhu/zstar.git
 ```
 
+The `pip install` command alone is sufficient when the reproducible examples
+are not needed; examples are distributed through GitHub rather than the wheel.
+
 Follow the [calculator configuration guide](https://github.com/xdzhu/zstar/blob/main/docs/cli_reference.md#calculator-configuration)
 to set ABACUS, PYATB, and MPI/OMP, then confirm the two executables with
 `zstar config check`.

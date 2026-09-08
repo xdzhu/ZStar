@@ -12,6 +12,10 @@ default route; installing the Python package does not install those solvers.
 Use the included two-atom 3C-SiC case for a short path from installation to
 BEC, Gamma phonons, IR, and Raman results.
 
+If you do not need to reproduce an example, `pip install zstar` is sufficient
+to install and use the program. Clone the repository only when its reproducible
+cases are needed:
+
 ```bash
 git clone --depth 1 https://github.com/xdzhu/zstar.git
 cd zstar
