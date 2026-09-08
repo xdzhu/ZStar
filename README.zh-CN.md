@@ -22,26 +22,74 @@
 
 ---
 
+## 快速上手
+
+最短的完整入门路线使用仓库自带的双原子 3C-SiC 案例。它从同一套对称性适配
+位移中计算 BEC 和 Gamma 点力常数，随后生成 IR 与 Raman 谱。案例已经包含
+ABACUS 输入、SG15 赝势和 DZP 轨道。
+
+### 1. 安装 ZStar 并获取案例
+
+```bash
+git clone --depth 1 https://github.com/xdzhu/zstar.git
+cd zstar
+python -m pip install .
+```
+
+如果只需要安装软件包，可使用 `python -m pip install -U zstar`。可复现案例位于
+GitHub 仓库中，不包含在 PyPI wheel 内。
+
+### 2. 配置 ABACUS 与 PYATB
+
+```bash
+zstar config set --user executables.abacus /path/to/abacus
+zstar config set --user executables.pyatb /path/to/pyatb
+zstar config set --user execution.mpi 1
+zstar config set --user execution.omp 8
+zstar config check
+```
+
+将两个可执行文件路径替换为本机实际位置，并按可用资源调整 MPI/OMP 数量。
+对于本案例，只需确认 ABACUS 和 PYATB 显示为 available；其他计算器检查项均为
+可选。Phonopy 会随 ZStar 安装，DFT 可执行程序不由 ZStar 打包提供。
+
+### 3. 预览并运行 3C-SiC
+
+```bash
+cd examples/3D_Bulk/SiC
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
+```
+
+第二条命令支持断点续算。`BEC.dat`、`BORN`、`FORCE_CONSTANTS` 和 Gamma 点
+模式数据写入 `work/`，最终谱图与数据表位于 `work/spectra/ir/` 和
+`work/spectra/raman/`。在新环境中建议先执行 dry run。
+保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式约为
+771 cm^-1，可用于快速判断完整计算是否正常。
+
+### 4. 让智能体运行同一案例
+
+安装随软件提供的 agent skill，然后新建一个智能体会话：
+
+```bash
+zstar skill install
+```
+
+示例提示词：
+
+```text
+使用 $run-zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
+先执行 preflight 和 dry run；如果 ABACUS 与 PYATB 可用，再运行 Unified BEC、
+Gamma 点声子、IR 和 Raman 工作流。最后报告 BEC 表、光学模式频率及谱图路径。
+```
+
+后续章节再依次说明物理约定、其他维度、计算器后端、作业系统与进阶分析。
+
 ## 工作流总览
 
 ![ZStar 工作流](docs/paper_figures/unified_workflow.png)
 
 矢量版本见 [PDF](docs/paper_figures/unified_workflow.pdf)。
-
-## Unified 谱学
-
-同一套对称性约化 SCF 现在同时支持 BEC/APT、Gamma 声子、IR 与静态非共振 Raman。
-Raman 复用已有电子矩阵，新增 PYATB 后处理而不新增 SCF。
-
-```bash
-zstar bec pre --stru STRU
-zstar spectra pre
-zstar spectra run
-zstar spectra post
-```
-
-二维、一维、分子在 BEC 准备时分别使用 `--dim 2/1/0`。
-[完整教程](docs/unified_spectroscopy.zh-CN.md) · [四维效率与精度对照](docs/research/unified_spectroscopy_20260906/README.md)
 
 ## 项目简介
 
@@ -60,7 +108,10 @@ ZStar 不会隐藏中间步骤。结构、输入文件、绝缘性门控、极�
 Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 与 Gamma 点声子响应。推导、真实位移处理、极化输出精度及验证状态见
 [Unified BEC/声子教程](docs/research/shared_response/USAGE.zh-CN.md) 和
-[配对案例](examples/Benchmarks/README.md)。已发布版本与历史案例仍保留其原有版本记录。
+[配对案例](examples/Benchmarks/README.md)。
+[Unified 谱学教程](docs/unified_spectroscopy.zh-CN.md)进一步说明如何用同一套计算
+继续得到 IR 与 Raman 结果。
+已发布版本与历史案例仍保留其原有版本记录。
 
 当前仓库包含论文使用的可复现输入和保留结果；历史案例保留原始版本与来源记录。
 
@@ -83,7 +134,7 @@ Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
 - 三维、二维混合以及一维混合极化/BEC 处理。
 - 声子生成、后处理、模式分类、红外谱、拉曼谱和介电响应。
 - 面向薄膜和极性材料的静电势辅助分析。
-- 随软件打包的规范化 Agent Skill 和 JSON 工作区预检查。
+- 随软件打包的规范化 agent skill 和 JSON 工作区预检查。
 - 版本化的计算器无关响应规范和后端插件注册机制。
 - 面向分子和三维 bulk 的 Quantum ESPRESSO 原生 DFPT BEC/IR 收集流程。
 
@@ -202,7 +253,7 @@ zstar config check
 zstar backend list --check
 ```
 
-## Agent Skill
+## agent skill
 
 安装 ZStar 后，可直接安装随软件提供的 `$run-zstar-workflows` 技能：
 
@@ -730,7 +781,7 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 | `zstar density` | 生成电荷密度导出适配器和来源 sidecar。 |
 | `zstar stru convert/wyckoff` | 转换结构或检查 Wyckoff 位置。 |
 | `zstar data db/qnep` | 管理可追溯 BEC/High-K 数据库或导出 qNEP 数据。 |
-| `zstar skill install/path/preflight` | 安装 Agent Skill 或检查工作区。 |
+| `zstar skill install/path/preflight` | 安装 agent skill 或检查工作区。 |
 | `zstar pot` | 绘制势曲线/平面图、真空势差和镜面非对称度。 |
 
 别名、全部叶节点和软件路径解析规则见[完整命令行参考](docs/cli_reference.zh-CN.md)。

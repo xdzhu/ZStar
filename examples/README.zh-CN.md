@@ -40,32 +40,18 @@ MoS2、In2Se3、GeS 的静电势脚本同样需要已有 cube，不会自动启�
 
 ## 快速开始
 
-先安装 ZStar 和所需的外部计算器，再进入案例目录。最短路径是：
+双原子 3C-SiC 是最短的完整 BEC 与谱学案例。配置 ABACUS 和 PYATB 后执行：
 
 ```bash
-bash run.sh --dry-run
-bash run.sh
+cd examples/3D_Bulk/SiC
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
 ```
 
-脚本会在案例旁边创建 `work/`，保留已有阶段，并支持中断后续算。使用
-`bash run.sh --stage all` 可以继续完成声子后处理；默认 Gamma 点直接复用
-Unified 位移的力，仅非平凡超胞需要额外声子力计算。ABACUS + PYATB
-案例也可以使用以下等价的显式命令：
-
-```bash
-cd examples/3D_Bulk/HfO2
-cp -r run work
-cd work
-zstar bec pre --stru STRU --pp assets --orb assets
-zstar bec job --system shell
-zstar bec run --root . --abacus-command "mpirun -np 20 abacus"
-zstar bec stat --root .
-zstar bec post --root .
-```
-
-声子、IR、Raman 和介电函数的具体命令请参阅对应案例 README。计算器命令
-可以通过 `zstar config` 配置，或由集群的 module 环境提供；本仓库不捆绑
-DFT 可执行程序。
+脚本会在案例旁边创建 `work/`，保留已有阶段，并支持中断后续算。
+`work/` 保存 Unified BEC/Gamma 响应，`work/spectra/` 保存 IR/Raman 谱图。
+输入与输出的具体说明见该案例 README。其他案例沿用相同的 `run/`、`results/`
+和 `work/` 约定，并在各自 README 中说明维度相关差异。
 
 ## 可复现约定
 

@@ -1,6 +1,6 @@
 # Agent-Friendly ZStar Workflows
 
-ZStar ships the standards-compliant Agent Skill `run-zstar-workflows`. The skill
+ZStar ships the standards-compliant agent skill `run-zstar-workflows`. The skill
 turns the command-line interface, physical conventions, resumable state, and
 output contracts into reusable instructions that a compatible coding or
 scientific agent can discover and follow.
@@ -51,7 +51,7 @@ zstar skill path
 
 The skill is also present in a source checkout at
 `zstar/agent_skills/run-zstar-workflows/` and can be installed directly from
-that repository path by an Agent Skill installer.
+that repository path by an agent-skill installer.
 
 ## Invoke
 

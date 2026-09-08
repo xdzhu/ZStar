@@ -1,6 +1,6 @@
 # ZStar
 
-<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/v0.3.2/docs/logo.png" alt="ZStar logo" width="176"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/main/docs/logo.png" alt="ZStar logo" width="176"></p>
 
 [![PyPI](https://img.shields.io/pypi/v/zstar)](https://pypi.org/project/zstar/)
 [![Python](https://img.shields.io/pypi/pyversions/zstar)](https://pypi.org/project/zstar/)
@@ -9,6 +9,49 @@
 ZStar is an automated toolkit for polarization, Born effective charges, dielectric
 response, and infrared and Raman spectra calculations. Its principal workflow
 uses ABACUS, PYATB, and Phonopy.
+
+## Quick Start
+
+Install ZStar, download the public examples, and configure the ABACUS and PYATB
+executables:
+
+```bash
+python -m pip install -U zstar
+git clone --depth 1 https://github.com/xdzhu/zstar.git
+
+zstar config set --user executables.abacus /path/to/abacus
+zstar config set --user executables.pyatb /path/to/pyatb
+zstar config set --user execution.mpi 1
+zstar config set --user execution.omp 8
+zstar config check
+```
+
+Only ABACUS and PYATB must report as available for this example; other
+calculator checks are optional.
+
+The supplied two-atom 3C-SiC case is the shortest complete route to BEC,
+Gamma-point phonons, IR, and Raman results:
+
+```bash
+cd zstar/examples/3D_Bulk/SiC
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
+```
+
+The calculation is resumable. Main response files are written under `work/`,
+and final spectra under `work/spectra/ir/` and `work/spectra/raman/`. The
+retained reference gives opposite Si/C BEC values of about 2.70 e and a triply
+degenerate optical mode near 771 cm^-1.
+
+For agent-assisted use, run `zstar skill install`, open a new agent session,
+and use:
+
+```text
+Use $run-zstar-workflows to reproduce the 3C-SiC Quick Start in
+examples/3D_Bulk/SiC. Run the preflight and dry run first, then run the Unified
+BEC, Gamma-phonon, IR, and Raman workflow if ABACUS and PYATB are available.
+Report the BEC table, optical-mode frequencies, and generated spectrum paths.
+```
 
 ## Highlights
 
@@ -25,19 +68,19 @@ uses ABACUS, PYATB, and Phonopy.
 - Hybrid 1D BECs: transverse charge-density dipoles plus longitudinal Berry polarization.
 - Hybrid 2D BECs: Berry-phase in-plane response plus cube-integrated out-of-plane dipole.
 - IR, Raman, and static/frequency-dependent dielectric response.
-- A packaged `run-zstar-workflows` Agent Skill with JSON preflight.
+- A packaged `run-zstar-workflows` agent skill with JSON preflight.
 - Slab electrostatic-potential maps, directional profiles, and local two-sided
   vacuum diagnostics.
 
 ## Examples
 
-![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/v0.3.2/docs/paper_figures/spectroscopy_across_dimensions.png)
+![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/main/docs/paper_figures/spectroscopy_across_dimensions.png)
 
 The four-dimensional examples compare calculated spectra with literature
 frequencies or published curves. Relative Raman intensities for Sb2S3 remain
 different from the reference; the examples document this limitation explicitly.
 Full inputs, results, and bilingual tutorials are in the
-[versioned GitHub example library](https://github.com/xdzhu/zstar/tree/v0.3.2/examples).
+[GitHub example library](https://github.com/xdzhu/zstar/tree/main/examples).
 
 Representative archived results include `Z*(Ti) = 7.440 e` for cubic BaTiO3,
 `Z*(B,parallel) = 2.702 e` for monolayer hBN,
@@ -47,15 +90,7 @@ value is the APT invariant `Tr(A)/3`.
 
 ## Installation
 
-Version `0.3.2` includes the Unified BEC, phonon, IR, and Raman framework.
-Install the version associated with the manuscript:
-
-```bash
-pip install zstar==0.3.2
-zstar --version
-```
-
-To upgrade to the latest stable release:
+Install or upgrade the latest stable release:
 
 ```bash
 pip install -U zstar
@@ -99,9 +134,9 @@ ZStar preserves the source `STRU`, writes a resolved copy to
 `.zstar/assets.json`, and stops with an actionable error when matching files
 are missing or ambiguous.
 
-## Agent Skill
+## Agent skill
 
-Install the bundled Agent Skill and open a new agent session:
+Install the bundled agent skill and open a new agent session:
 
 ```bash
 zstar skill install

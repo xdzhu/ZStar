@@ -1,6 +1,6 @@
 # 面向智能体的 ZStar 工作流
 
-ZStar 随软件发行符合规范的 Agent Skill：`run-zstar-workflows`。它将命令行接口、
+ZStar 随软件发行符合规范的 agent skill：`run-zstar-workflows`。它将命令行接口、
 物理约定、断点续算状态和输出完成判据组织为可复用指令，使兼容的编程或科研智能体
 能够自动发现并正确调用 ZStar。
 

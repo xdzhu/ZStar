@@ -6,6 +6,44 @@
 本手册对应当前 ZStar 发布版，安装命令为 `pip install zstar`。
 默认路线需要另行安装 ABACUS 和 PYATB；安装 ZStar 的 Python 包不会安装这些求解器。
 
+## 快速上手
+
+使用仓库自带的双原子 3C-SiC 案例，可以用一条短路径完成安装、BEC、Gamma 点
+声子、IR 和 Raman 计算。
+
+```bash
+git clone --depth 1 https://github.com/xdzhu/zstar.git
+cd zstar
+python -m pip install .
+
+zstar config set --user executables.abacus /path/to/abacus
+zstar config set --user executables.pyatb /path/to/pyatb
+zstar config set --user execution.mpi 1
+zstar config set --user execution.omp 8
+zstar config check
+
+cd examples/3D_Bulk/SiC
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
+```
+
+本案例只要求 ABACUS 和 PYATB 显示为 available；其他计算器检查项均为可选。
+
+该工作流支持断点续算。`BEC.dat`、`BORN` 和 `FORCE_CONSTANTS` 位于 `work/`，
+最终谱图位于 `work/spectra/ir/` 和 `work/spectra/raman/`。案例已经包含赝势与
+轨道文件。保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式
+约为 771 cm^-1。
+
+如需让智能体协助运行，先执行 `zstar skill install`，新建智能体会话，然后使用：
+
+```text
+使用 $run-zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
+先执行 preflight 和 dry run；如果 ABACUS 与 PYATB 可用，再运行 Unified BEC、
+Gamma 点声子、IR 和 Raman 工作流。最后报告 BEC 表、光学模式频率及谱图路径。
+```
+
+后文再按需查阅任务入口、维度约定、作业系统、其他计算器和进阶分析。
+
 ## 工作流总览
 
 ![ZStar 工作流](paper_figures/unified_workflow.png)
@@ -23,7 +61,7 @@
 | 平面静电势、线剖面与真空电势差 | [静电势](potential_examples.zh-CN.md) | `zstar pot` |
 | 可执行文件、MPI/OMP、赝势与轨道 | [配置及资源解析](cli_reference.zh-CN.md) | `zstar config` |
 | Shell、Slurm、Torque/PBS 脚本 | [作业 header](job_headers.zh-CN.md) | `zstar bec/phonon/spectra job` |
-| 智能体辅助使用 | [Agent Skill](agent_skill.zh-CN.md) | `zstar skill` |
+| 智能体辅助使用 | [agent skill](agent_skill.zh-CN.md) | `zstar skill` |
 
 表中的斜杠用于列举子命令，不是可以直接复制运行的完整命令。例如依次执行
 `zstar bec pre --stru STRU`、`zstar bec run`、`zstar bec post`。

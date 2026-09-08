@@ -3,8 +3,17 @@
 两原子原胞，PBE、SG15 ONCV 赝势、7-au DZP 轨道，100 Ry，
 Gamma 中心的 13x13x13 网格，SCF 阈值 1e-8。
 
-配置 ABACUS/PYATB 后执行 `bash run.sh`。`run/` 包含输入及赝势轨道，
-`results/` 是已有结果；新计算在 `work/` 中进行，不覆盖档案。
+配置 ABACUS/PYATB 后执行 `bash run.sh`。添加 `--with-spectra` 可在 Unified
+BEC/Gamma 计算后继续生成 IR 与 Raman：
+
+```bash
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
+```
+
+`run/` 包含输入及赝势轨道，`results/` 是已有结果；新计算在 `work/` 中进行，
+不覆盖档案。BEC 与 Gamma 点结果位于 `work/`，谱线和数据表位于
+`work/spectra/ir/` 与 `work/spectra/raman/`。
 Unified 自动选取两个位移，对照的 Cartesian 中心差分需要十二个位移；
 两者均另算 `0.no-move`。从仓库根目录执行
 `python examples/Benchmarks/run_control.py SiC` 可运行对照组。

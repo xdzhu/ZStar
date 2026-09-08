@@ -46,35 +46,20 @@ retained compressed cube. Follow each case README before starting a calculation.
 
 ## Quick start
 
-Install ZStar and the external calculator(s) first, then enter a case directory.
-The shortest path is:
+The two-atom 3C-SiC case is the shortest complete BEC and spectroscopy example.
+After configuring ABACUS and PYATB, run:
 
 ```bash
-bash run.sh --dry-run
-bash run.sh
+cd examples/3D_Bulk/SiC
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
 ```
 
 The script seeds a sibling `work/` directory, preserves existing stages, and
-resumes after interruption. Use `bash run.sh --stage all` to continue through
-phonon postprocessing. The default Gamma calculation reuses Unified forces;
-a nontrivial supercell requires separate force calculations. For ABACUS + PYATB cases, the
-equivalent explicit commands are:
-
-```bash
-cd examples/3D_Bulk/HfO2
-cp -r run work
-cd work
-zstar bec pre --stru STRU --pp assets --orb assets
-zstar bec job --system shell
-zstar bec run --root . --abacus-command "mpirun -np 20 abacus"
-zstar bec stat --root .
-zstar bec post --root .
-```
-
-Use the case README for the dimensionality-specific phonon, IR, Raman, and
-dielectric commands. Replace `abacus` and `pyatb` with commands resolved by
-`zstar config` or your site module environment. The repository does not bundle
-DFT executables.
+resumes after interruption. It writes the Unified BEC/Gamma response under
+`work/` and the IR/Raman plots under `work/spectra/`. Use the case README for
+the exact inputs and outputs. Other cases follow the same `run/`, `results/`,
+and `work/` convention, with dimensionality-specific details stated locally.
 
 ## Reproducibility contract
 

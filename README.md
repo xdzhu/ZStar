@@ -22,27 +22,79 @@
 
 ---
 
+## Quick Start
+
+The fastest complete introduction uses the supplied two-atom 3C-SiC case. It
+calculates BEC and Gamma-point force constants from the same symmetry-adapted
+displacements, then generates IR and Raman spectra. The example includes its
+ABACUS inputs, SG15 pseudopotentials, and DZP orbitals.
+
+### 1. Install ZStar and get the example
+
+```bash
+git clone --depth 1 https://github.com/xdzhu/zstar.git
+cd zstar
+python -m pip install .
+```
+
+For a package-only installation, use `python -m pip install -U zstar`. The
+reproducible examples are available from GitHub rather than the PyPI wheel.
+
+### 2. Configure ABACUS and PYATB
+
+```bash
+zstar config set --user executables.abacus /path/to/abacus
+zstar config set --user executables.pyatb /path/to/pyatb
+zstar config set --user execution.mpi 1
+zstar config set --user execution.omp 8
+zstar config check
+```
+
+Replace the two executable paths and adjust the MPI/OMP values for your
+machine. For this example, only the ABACUS and PYATB entries must report as
+available; the other calculator checks are optional. Phonopy is installed with
+ZStar, while the DFT executables are not bundled.
+
+### 3. Preview and run 3C-SiC
+
+```bash
+cd examples/3D_Bulk/SiC
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
+```
+
+The second command is resumable. It writes `BEC.dat`, `BORN`,
+`FORCE_CONSTANTS`, and Gamma-mode data under `work/`, with the final plots and
+tables under `work/spectra/ir/` and `work/spectra/raman/`. Start with the dry
+run when checking a new installation. The retained reference gives opposite
+Si/C BEC values of about 2.70 e and a triply degenerate optical mode near
+771 cm^-1, which provide quick checks of a completed run.
+
+### 4. Let an agent run the same workflow
+
+Install the packaged agent skill, then open a new agent session:
+
+```bash
+zstar skill install
+```
+
+Example prompt:
+
+```text
+Use $run-zstar-workflows to reproduce the 3C-SiC Quick Start in
+examples/3D_Bulk/SiC. Run the preflight and dry run first, then run the Unified
+BEC, Gamma-phonon, IR, and Raman workflow if ABACUS and PYATB are available.
+Report the BEC table, optical-mode frequencies, and generated spectrum paths.
+```
+
+The sections below explain the physical conventions, other dimensionalities,
+calculators, scheduler integration, and advanced analysis.
+
 ## Workflow overview
 
 ![ZStar workflow](docs/paper_figures/unified_workflow.png)
 
 The vector version is available as [PDF](docs/paper_figures/unified_workflow.pdf).
-
-## Unified Spectroscopy
-
-One symmetry-adapted SCF displacement set now supports BEC/APT, Gamma phonons, IR and
-static nonresonant Raman. Raman reuses retained electronic matrices, adding
-PYATB postprocessing rather than new SCFs.
-
-```bash
-zstar bec pre --stru STRU
-zstar spectra pre
-zstar spectra run
-zstar spectra post
-```
-
-Set `--dim 2`, `1`, or `0` at BEC preparation for slabs, wires, or molecules.
-[Full tutorial](docs/unified_spectroscopy.md) · [Four-dimensional cost and accuracy comparison](docs/research/unified_spectroscopy_20260906/README.md)
 
 ## Overview
 
@@ -66,6 +118,8 @@ displacements between BEC and Gamma phonons. See the
 [Unified BEC/phonon guide](docs/research/shared_response/USAGE.md) and
 [matched examples](examples/Benchmarks/README.md) for its theory,
 actual-displacement convention, precision safeguards, and validation status.
+The [Unified spectroscopy guide](docs/unified_spectroscopy.md) explains how the
+same calculations continue to IR and Raman analysis.
 The released package and historical examples retain their recorded versions.
 
 The current release includes the Unified framework, short output names, and completed
@@ -90,7 +144,7 @@ mesh/step diagnostics, and separately accounted CPU core-hours.
 - Three-dimensional, hybrid two-dimensional, and hybrid one-dimensional polarization/BEC analysis.
 - Phonon generation, post-processing, mode classification, IR spectra, Raman spectra, and dielectric response.
 - Auxiliary electrostatic-potential analysis for slabs and polar materials.
-- A packaged, standards-compliant Agent Skill with JSON workspace preflight.
+- A packaged, standards-compliant agent skill with JSON workspace preflight.
 - A calculator-neutral response schema and backend plugin registry.
 - Native Quantum ESPRESSO DFPT collection for molecular and bulk BEC/IR data.
 
@@ -218,7 +272,7 @@ zstar config check
 zstar backend list --check
 ```
 
-## Agent Skill
+## Agent skill
 
 Install the bundled, standards-compliant `$run-zstar-workflows` skill after
 installing ZStar:
@@ -791,7 +845,7 @@ Commands, interpretation limits, and the SnS/SnSe/SnTe directional examples are 
 | `zstar density` | Prepare density-export adapters and provenance sidecars. |
 | `zstar stru convert/wyckoff` | Convert structures or inspect Wyckoff positions. |
 | `zstar data db/qnep` | Manage a traceable BEC/High-K database or export qNEP data. |
-| `zstar skill install/path/preflight` | Install the Agent Skill or inspect a workspace. |
+| `zstar skill install/path/preflight` | Install the agent skill or inspect a workspace. |
 | `zstar pot` | Plot potential profiles/maps, vacuum steps, and mirror asymmetry. |
 
 See the [complete CLI reference](docs/cli_reference.md) for aliases, leaf

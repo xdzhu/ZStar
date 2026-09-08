@@ -7,6 +7,49 @@ These instructions follow the current ZStar release. Install with
 `pip install zstar`. ABACUS and PYATB are external requirements for the
 default route; installing the Python package does not install those solvers.
 
+## Quick Start
+
+Use the included two-atom 3C-SiC case for a short path from installation to
+BEC, Gamma phonons, IR, and Raman results.
+
+```bash
+git clone --depth 1 https://github.com/xdzhu/zstar.git
+cd zstar
+python -m pip install .
+
+zstar config set --user executables.abacus /path/to/abacus
+zstar config set --user executables.pyatb /path/to/pyatb
+zstar config set --user execution.mpi 1
+zstar config set --user execution.omp 8
+zstar config check
+
+cd examples/3D_Bulk/SiC
+bash run.sh --with-spectra --dry-run
+bash run.sh --with-spectra
+```
+
+Only ABACUS and PYATB must report as available for this example; other
+calculator checks are optional.
+
+The run is resumable. Look for `BEC.dat`, `BORN`, and `FORCE_CONSTANTS` under
+`work/`, and for the final plots under `work/spectra/ir/` and
+`work/spectra/raman/`. The case includes its pseudopotentials and orbitals. Its
+retained reference gives opposite Si/C BEC values of about 2.70 e and a triply
+degenerate optical mode near 771 cm^-1.
+
+For agent-assisted use, install the packaged skill with `zstar skill install`,
+open a new agent session, and use this prompt:
+
+```text
+Use $run-zstar-workflows to reproduce the 3C-SiC Quick Start in
+examples/3D_Bulk/SiC. Run the preflight and dry run first, then run the Unified
+BEC, Gamma-phonon, IR, and Raman workflow if ABACUS and PYATB are available.
+Report the BEC table, optical-mode frequencies, and generated spectrum paths.
+```
+
+Continue below for task selection, dimensional conventions, schedulers, other
+calculators, and advanced analysis.
+
 ## Workflow overview
 
 ![ZStar workflow](paper_figures/unified_workflow.png)
@@ -24,7 +67,7 @@ The workflow figure is also available as a vector PDF: [unified workflow](paper_
 | Potential maps, profiles and vacuum steps | [Electrostatic potential](potential_examples.md) | `zstar pot` |
 | Configure executables, MPI/OMP and PP/orbitals | [Configuration and assets](cli_reference.md#calculator-configuration) | `zstar config` |
 | Shell, Slurm and Torque/PBS execution | [Job headers](job_headers.md) | `zstar bec/phonon/spectra job` |
-| Agent-assisted execution | [Agent Skill](agent_skill.md) | `zstar skill` |
+| Agent-assisted execution | [Agent skill](agent_skill.md) | `zstar skill` |
 
 The command-reference tables list actions, not literal slash-containing commands.
 For example, run `zstar bec pre --stru STRU`, then `zstar bec run`, followed by
