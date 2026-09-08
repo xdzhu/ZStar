@@ -68,7 +68,8 @@ The second command is resumable. It writes `BEC.dat`, `BORN`,
 tables under `work/spectra/ir/` and `work/spectra/raman/`. Start with the dry
 run when checking a new installation. The retained reference gives opposite
 Si/C BEC values of about 2.70 e and a triply degenerate optical mode near
-771 cm^-1, which provide quick checks of a completed run.
+773 cm^-1, which provide quick checks of a completed run. Matching archived
+spectra are available under `results/spectra/` in the case directory.
 
 ### 4. Let an agent run the same workflow
 

@@ -13,7 +13,8 @@ bash run.sh --with-spectra
 
 `run/` 包含输入及赝势轨道，`results/` 是已有结果；新计算在 `work/` 中进行，
 不覆盖档案。BEC 与 Gamma 点结果位于 `work/`，谱线和数据表位于
-`work/spectra/ir/` 与 `work/spectra/raman/`。
+`work/spectra/ir/` 与 `work/spectra/raman/`。对应的保留谱学结果位于
+`results/spectra/`，同时提供数据表及 PNG、PDF、SVG 格式的谱图。
 Unified 自动选取两个位移，对照的 Cartesian 中心差分需要十二个位移；
 两者均另算 `0.no-move`。从仓库根目录执行
 `python examples/Benchmarks/run_control.py SiC` 可运行对照组。
@@ -21,3 +22,6 @@ Unified 自动选取两个位移，对照的 Cartesian 中心差分需要十二�
 此处核验原始与投影后的 BEC、Gamma Hessian、光学模式及静态声子介电响应，
 是同设置下的数值一致性验证，不代表与实验的误差。
 完整机时、计数及离线验证方法见[效率基准教程](../../Benchmarks/README.zh-CN.md)。
+
+Unified 结果中 Si/C 的对角 BEC 分别为符号相反的 2.70094 e，三个同时具有
+IR 与 Raman 活性的光学模式简并于 772.645 cm^-1。

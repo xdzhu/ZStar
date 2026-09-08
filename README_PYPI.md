@@ -41,7 +41,8 @@ bash run.sh --with-spectra
 The calculation is resumable. Main response files are written under `work/`,
 and final spectra under `work/spectra/ir/` and `work/spectra/raman/`. The
 retained reference gives opposite Si/C BEC values of about 2.70 e and a triply
-degenerate optical mode near 771 cm^-1.
+degenerate optical mode near 773 cm^-1. Matching archived spectra are included
+under `results/spectra/` in the GitHub case.
 
 For agent-assisted use, run `zstar skill install`, open a new agent session,
 and use:

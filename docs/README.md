@@ -35,7 +35,8 @@ The run is resumable. Look for `BEC.dat`, `BORN`, and `FORCE_CONSTANTS` under
 `work/`, and for the final plots under `work/spectra/ir/` and
 `work/spectra/raman/`. The case includes its pseudopotentials and orbitals. Its
 retained reference gives opposite Si/C BEC values of about 2.70 e and a triply
-degenerate optical mode near 771 cm^-1.
+degenerate optical mode near 773 cm^-1. Matching archived spectra are under
+`results/spectra/` in the case directory.
 
 For agent-assisted use, install the packaged skill with `zstar skill install`,
 open a new agent session, and use this prompt:

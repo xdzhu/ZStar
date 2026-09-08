@@ -32,7 +32,7 @@ bash run.sh --with-spectra
 该工作流支持断点续算。`BEC.dat`、`BORN` 和 `FORCE_CONSTANTS` 位于 `work/`，
 最终谱图位于 `work/spectra/ir/` 和 `work/spectra/raman/`。案例已经包含赝势与
 轨道文件。保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式
-约为 771 cm^-1。
+约为 773 cm^-1；对应谱图和数据表位于案例的 `results/spectra/`。
 
 如需让智能体协助运行，先执行 `zstar skill install`，新建智能体会话，然后使用：
 

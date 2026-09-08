@@ -1,0 +1,12 @@
+{
+  "tensor_kind": "1/(angstrom*sqrt(amu))",
+  "modes": 3,
+  "files": {
+    "modes": "raman/raman_modes.csv",
+    "tensors": "raman/raman_tensors.npy",
+    "spectrum": "raman/raman_spectrum.dat",
+    "plot": "raman/raman_spectrum.png",
+    "plot_pdf": "raman/raman_spectrum.pdf",
+    "plot_svg": "raman/raman_spectrum.svg"
+  }
+}

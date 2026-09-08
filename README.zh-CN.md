@@ -65,7 +65,8 @@ bash run.sh --with-spectra
 模式数据写入 `work/`，最终谱图与数据表位于 `work/spectra/ir/` 和
 `work/spectra/raman/`。在新环境中建议先执行 dry run。
 保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式约为
-771 cm^-1，可用于快速判断完整计算是否正常。
+773 cm^-1，可用于快速判断完整计算是否正常。案例的 `results/spectra/`
+还提供了对应的保留谱图和数据表。
 
 ### 4. 让智能体运行同一案例
 

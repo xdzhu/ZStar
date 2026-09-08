@@ -1,0 +1,15 @@
+{
+  "schema": "zstar-workflow",
+  "schema_version": 1,
+  "family": "spectra",
+  "calculator": "abacus",
+  "dimensionality": 3,
+  "root": ".",
+  "created_at": "2026-09-08T09:10:33.044303+00:00",
+  "options": {
+    "kind": "all",
+    "method": "unified",
+    "response": "../shared",
+    "response_manifest_sha256": "169578933b6cfefeaaf6348b497217c4405c0e3802bdd4ece2bac1e798d6af65"
+  }
+}

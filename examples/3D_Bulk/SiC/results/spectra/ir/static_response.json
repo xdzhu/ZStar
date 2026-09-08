@@ -1,0 +1,26 @@
+{
+  "frequency_cm-1": 0.0,
+  "tensor": [
+    [
+      10.237501162961545,
+      -6.408789184865998e-11,
+      -3.819186372846937e-11
+    ],
+    [
+      -6.408789184865998e-11,
+      10.237501162925003,
+      1.0041567443456217e-08
+    ],
+    [
+      -3.819186372846937e-11,
+      1.0041567443456217e-08,
+      10.237501162971899
+    ]
+  ],
+  "response_kind": "total relative dielectric tensor",
+  "response_unit": "1",
+  "response_convention": "relative permittivity",
+  "electronic_response_included": true,
+  "mode_effective_charge_unit": "e/sqrt(amu)",
+  "oscillator_strength_unit": "e^2/amu"
+}

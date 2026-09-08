@@ -1,0 +1,60 @@
+{
+  "method": "unified",
+  "dimension": 3,
+  "mode_selection": {
+    "rigid_mode_numbers": [
+      1,
+      2,
+      3
+    ],
+    "rigid_frequencies_cm1": [
+      -9.56328260933102e-06,
+      -4.3363332375759774e-07,
+      1.557410760480172e-05
+    ],
+    "rigid_overlaps": [
+      1.000000000000006,
+      0.9999999999999993,
+      1.0000000000000009,
+      4.105803795680501e-29,
+      1.0938575650599539e-29,
+      1.4324972532204662e-29
+    ]
+  },
+  "mode_numbers": [
+    4,
+    5,
+    6
+  ],
+  "source_manifest_sha256": "169578933b6cfefeaaf6348b497217c4405c0e3802bdd4ece2bac1e798d6af65",
+  "raman_convention": {
+    "response_definition": "epsilon_r",
+    "response_unit": "1",
+    "response_convention": "relative dielectric tensor",
+    "normal_coordinate": "q",
+    "normal_coordinate_unit": "angstrom*sqrt(amu)",
+    "tensor_unit": "1/(angstrom*sqrt(amu))",
+    "field_convention": "inherited from the electronic-response source",
+    "local_field_correction_added": false
+  },
+  "raman_diagnostics": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 1.0000000000260176,
+        "max_epsilon_residual": 0.0016304528728270195
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 1.0000000000260176,
+        "max_epsilon_residual": 0.0015709041304867726
+      }
+    ],
+    "translation_sum_max_per_A": 0.0021803698311202435,
+    "symmetry_ab_max_per_A": 1.1102230246251565e-16,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false
+  }
+}
