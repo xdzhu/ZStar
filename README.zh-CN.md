@@ -41,11 +41,15 @@ pip install .
 
 可复现案例位于 GitHub 仓库中，不包含在 PyPI wheel 内。
 
-### 2. 配置计算软件
+### 2. 安装并配置计算软件
 
-按照[计算软件配置教程](docs/cli_reference.zh-CN.md#计算软件路径配置)一次性设置 ABACUS、PYATB
-可执行文件以及 MPI/OMP 资源，然后执行 `zstar config check`。本案例只要求
-ABACUS 和 PYATB 显示为 available；Phonopy 会随 ZStar 安装。
+本案例需要安装 [ABACUS](https://github.com/deepmodeling/abacus-develop)，推荐使用经过测试的
+[LTSv3.10.0 版本](https://github.com/deepmodeling/abacus-develop/releases/tag/LTSv3.10.0)。
+同时还需要安装 [PYATB](https://github.com/pyatb/pyatb)；Phonopy 会随 ZStar 一同安装。
+
+安装 ABACUS 和 PYATB 后，请按照
+[计算软件配置教程](docs/cli_reference.zh-CN.md#计算软件路径配置)设置可执行文件路径及
+MPI/OMP 资源。随后执行 `zstar config check`，确认两者均显示为 `available` 后再运行案例。
 
 ### 3. 计算 BEC 与 Gamma 点声子
 
@@ -93,18 +97,37 @@ IR 谱由模式频率和 BEC 后处理得到；`spectra run` 补充 Raman 所需
 
 ### 5. 让智能体运行同一案例
 
-安装随软件提供的 agent skill，然后新建一个智能体会话：
-
-```bash
-zstar skill install
-```
-
 示例提示词：
 
 ```text
-使用 $run-zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
-先执行 preflight；如果 ABACUS 与 PYATB 可用，再分别执行 zstar bec 和
-zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式频率及谱图路径。
+假设本机尚未安装 ZStar 及其 agent skill。按照以下固定位置完成安装、配置并复现
+SiC Quick Start：
+
+- ZStar 源码：$HOME/software/zstar
+- Python 环境：$HOME/.venvs/zstar
+- agent skills 目录：$HOME/.codex/skills
+- 计算工作目录：$HOME/zstar-work/SiC
+
+将 https://github.com/xdzhu/zstar.git 克隆到 $HOME/software/zstar。使用
+Python 3.10 在 $HOME/.venvs/zstar 创建并激活独立环境，然后在源码目录执行
+`pip install .` 安装 ZStar。执行以下命令安装软件自带的 agent skill：
+
+zstar skill install --dest "$HOME/.codex/skills" --force
+
+确认 skill 已安装至 $HOME/.codex/skills/run-zstar-workflows，并在本次任务中
+读取和遵循其中的 SKILL.md。
+
+查找本机已有的 ABACUS 和 PYATB 可执行文件，将它们的真实路径以及可用的
+MPI/OMP 资源写入 ZStar 配置。不要猜测可执行文件路径。执行
+`zstar config check`，确认 ABACUS 和 PYATB 均显示为 available 后直接继续。
+
+将 $HOME/software/zstar/examples/3D_Bulk/SiC/run 复制到干净的工作目录
+$HOME/zstar-work/SiC。先执行 preflight，再逐步运行
+`zstar bec pre/run/stat/post` 和 `zstar spectra pre/run/stat/post`，不要使用
+run.sh。简要解释每个阶段，并保持仓库中的原始案例文件不变。
+
+全部完成后，报告 ZStar、ABACUS 和 PYATB 的版本及可执行文件路径、计算得到的
+BEC、Gamma 点光学模式频率、IR 与 Raman 结果路径，以及各阶段是否均成功完成。
 ```
 
 后续章节再依次说明物理约定、其他维度、计算器后端、作业系统与进阶分析。
@@ -112,8 +135,6 @@ zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式�
 ## 工作流总览
 
 ![ZStar 工作流](docs/paper_figures/unified_workflow.png)
-
-矢量版本见 [PDF](docs/paper_figures/unified_workflow.pdf)。
 
 ## 项目简介
 

@@ -43,12 +43,18 @@ pip install .
 
 The examples are available from GitHub rather than the PyPI wheel.
 
-### 2. Configure the calculators
+### 2. Install and configure the calculators
 
-Configure the ABACUS and PYATB executables and the MPI/OMP resources once,
-following the [calculator configuration guide](docs/cli_reference.md#calculator-configuration).
-Then run `zstar config check`; only ABACUS and PYATB must be available for this
-example. Phonopy is installed with ZStar.
+This example requires [ABACUS](https://github.com/deepmodeling/abacus-develop);
+the tested [LTSv3.10.0 release](https://github.com/deepmodeling/abacus-develop/releases/tag/LTSv3.10.0)
+is recommended. [PYATB](https://github.com/pyatb/pyatb) must also be installed,
+whereas Phonopy is installed together with ZStar.
+
+After installing ABACUS and PYATB, follow the
+[calculator configuration guide](docs/cli_reference.md#calculator-configuration)
+to set their executable paths and the MPI/OMP resources. Run
+`zstar config check` and continue only when both programs are reported as
+`available`.
 
 ### 3. Calculate BEC and Gamma phonons
 
@@ -101,19 +107,42 @@ case directory provides the same workflow as a resumable convenience command.
 
 ### 5. Let an agent run the same workflow
 
-Install the packaged agent skill, then open a new agent session:
-
-```bash
-zstar skill install
-```
-
 Example prompt:
 
 ```text
-Use $run-zstar-workflows to reproduce the 3C-SiC Quick Start in
-examples/3D_Bulk/SiC. Run the preflight first, then execute the zstar bec and
-zstar spectra stages individually if ABACUS and PYATB are available. Explain
-each stage and report the BEC table, optical-mode frequencies, and spectrum paths.
+Assume that neither ZStar nor its agent skill is installed. Set up and reproduce
+the SiC Quick Start using the following locations:
+
+- ZStar source: $HOME/software/zstar
+- Python environment: $HOME/.venvs/zstar
+- Agent skills directory: $HOME/.codex/skills
+- Calculation workspace: $HOME/zstar-work/SiC
+
+Clone https://github.com/xdzhu/zstar.git into $HOME/software/zstar. Create the
+Python environment at $HOME/.venvs/zstar with Python 3.10, activate it, and
+install ZStar from the cloned source using `pip install .`. Install the packaged
+agent skill using:
+
+zstar skill install --dest "$HOME/.codex/skills" --force
+
+Verify that the skill is installed at
+$HOME/.codex/skills/run-zstar-workflows, then read and follow its SKILL.md during
+this task.
+
+Locate the existing ABACUS and PYATB executables on this machine and configure
+their real paths and the available MPI/OMP resources in ZStar. Do not guess
+executable paths. Run `zstar config check` and proceed only after ABACUS and
+PYATB are both reported as available.
+
+Create $HOME/zstar-work/SiC as a clean working directory by copying
+$HOME/software/zstar/examples/3D_Bulk/SiC/run. Run the preflight, then execute
+the `zstar bec pre/run/stat/post` and `zstar spectra pre/run/stat/post` stages
+individually rather than using run.sh. Explain each stage briefly and preserve
+the original example files.
+
+After completion, report the ZStar, ABACUS, and PYATB versions and executable
+paths, the calculated BEC, the Gamma-point optical-mode frequencies, the IR and
+Raman output paths, and whether every stage completed successfully.
 ```
 
 The sections below explain the physical conventions, other dimensionalities,
@@ -122,8 +151,6 @@ calculators, scheduler integration, and advanced analysis.
 ## Workflow overview
 
 ![ZStar workflow](docs/paper_figures/unified_workflow.png)
-
-The vector version is available as [PDF](docs/paper_figures/unified_workflow.pdf).
 
 ## Overview
 
