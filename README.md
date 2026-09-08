@@ -40,38 +40,63 @@ python -m pip install .
 For a package-only installation, use `python -m pip install -U zstar`. The
 reproducible examples are available from GitHub rather than the PyPI wheel.
 
-### 2. Configure ABACUS and PYATB
+### 2. Configure the calculators
 
-```bash
-zstar config set --user executables.abacus /path/to/abacus
-zstar config set --user executables.pyatb /path/to/pyatb
-zstar config set --user execution.mpi 1
-zstar config set --user execution.omp 8
-zstar config check
-```
+Configure the ABACUS and PYATB executables and the MPI/OMP resources once,
+following the [calculator configuration guide](docs/cli_reference.md#calculator-configuration).
+Then run `zstar config check`; only ABACUS and PYATB must be available for this
+example. Phonopy is installed with ZStar.
 
-Replace the two executable paths and adjust the MPI/OMP values for your
-machine. For this example, only the ABACUS and PYATB entries must report as
-available; the other calculator checks are optional. Phonopy is installed with
-ZStar, while the DFT executables are not bundled.
+### 3. Calculate BEC and Gamma phonons
 
-### 3. Preview and run 3C-SiC
+Create a private working copy so that the supplied inputs and archived results
+remain unchanged:
 
 ```bash
 cd examples/3D_Bulk/SiC
-bash run.sh --with-spectra --dry-run
-bash run.sh --with-spectra
+cp -r run work
+cd work
 ```
 
-The second command is resumable. It writes `BEC.dat`, `BORN`,
-`FORCE_CONSTANTS`, and Gamma-mode data under `work/`, with the final plots and
-tables under `work/spectra/ir/` and `work/spectra/raman/`. Start with the dry
-run when checking a new installation. The retained reference gives opposite
-Si/C BEC values of about 2.70 e and a triply degenerate optical mode near
-773 cm^-1, which provide quick checks of a completed run. Matching archived
-spectra are available under `results/spectra/` in the case directory.
+Prepare and inspect the Unified calculation before starting the solvers, then
+run and postprocess it:
 
-### 4. Let an agent run the same workflow
+```bash
+zstar bec pre --stru STRU
+zstar bec run --dry-run
+zstar bec run
+zstar bec stat
+zstar bec post
+```
+
+`bec pre` creates the reference and symmetry-adapted displacement stages.
+`bec run` executes the insulating-state check, ABACUS SCFs, and PYATB
+polarization calculations; rerunning it resumes incomplete stages. `bec post`
+jointly reconstructs the BEC and Gamma-point force constants and writes
+`BEC.dat`, `BORN`, `FORCE_CONSTANTS`, and the mode data.
+
+### 4. Generate the IR and Raman spectra
+
+Use the completed response calculation as the spectroscopy source:
+
+```bash
+zstar spectra pre --root spectra --response .
+zstar spectra run --root spectra
+zstar spectra stat --root spectra
+zstar spectra post --root spectra
+```
+
+The IR spectrum follows from the mode frequencies and BEC. `spectra run`
+evaluates the additional PYATB dielectric responses required for Raman, and
+`spectra post` writes the final tables and plots under `spectra/ir/` and
+`spectra/raman/`. The retained result gives opposite Si/C BEC values of about
+2.70 e and a triply degenerate optical mode near 773 cm^-1. Matching archived
+spectra are available under `../results/spectra/`.
+
+After learning the individual stages, `bash run.sh --with-spectra` from the
+case directory provides the same workflow as a resumable convenience command.
+
+### 5. Let an agent run the same workflow
 
 Install the packaged agent skill, then open a new agent session:
 
@@ -83,9 +108,9 @@ Example prompt:
 
 ```text
 Use $run-zstar-workflows to reproduce the 3C-SiC Quick Start in
-examples/3D_Bulk/SiC. Run the preflight and dry run first, then run the Unified
-BEC, Gamma-phonon, IR, and Raman workflow if ABACUS and PYATB are available.
-Report the BEC table, optical-mode frequencies, and generated spectrum paths.
+examples/3D_Bulk/SiC. Run the preflight first, then execute the zstar bec and
+zstar spectra stages individually if ABACUS and PYATB are available. Explain
+each stage and report the BEC table, optical-mode frequencies, and spectrum paths.
 ```
 
 The sections below explain the physical conventions, other dimensionalities,

@@ -12,46 +12,52 @@ uses ABACUS, PYATB, and Phonopy.
 
 ## Quick Start
 
-Install ZStar, download the public examples, and configure the ABACUS and PYATB
-executables:
+Install ZStar and download the public examples:
 
 ```bash
 python -m pip install -U zstar
 git clone --depth 1 https://github.com/xdzhu/zstar.git
-
-zstar config set --user executables.abacus /path/to/abacus
-zstar config set --user executables.pyatb /path/to/pyatb
-zstar config set --user execution.mpi 1
-zstar config set --user execution.omp 8
-zstar config check
 ```
 
-Only ABACUS and PYATB must report as available for this example; other
-calculator checks are optional.
+Follow the [calculator configuration guide](https://github.com/xdzhu/zstar/blob/main/docs/cli_reference.md#calculator-configuration)
+to set ABACUS, PYATB, and MPI/OMP, then confirm the two executables with
+`zstar config check`.
 
 The supplied two-atom 3C-SiC case is the shortest complete route to BEC,
 Gamma-point phonons, IR, and Raman results:
 
 ```bash
 cd zstar/examples/3D_Bulk/SiC
-bash run.sh --with-spectra --dry-run
-bash run.sh --with-spectra
+cp -r run work
+cd work
+
+zstar bec pre --stru STRU
+zstar bec run --dry-run
+zstar bec run
+zstar bec stat
+zstar bec post
+
+zstar spectra pre --root spectra --response .
+zstar spectra run --root spectra
+zstar spectra stat --root spectra
+zstar spectra post --root spectra
 ```
 
-The calculation is resumable. Main response files are written under `work/`,
-and final spectra under `work/spectra/ir/` and `work/spectra/raman/`. The
-retained reference gives opposite Si/C BEC values of about 2.70 e and a triply
-degenerate optical mode near 773 cm^-1. Matching archived spectra are included
-under `results/spectra/` in the GitHub case.
+The BEC stages construct BEC and Gamma force constants from the common
+displacements. The spectroscopy stages obtain IR from the BEC and modes and
+run the additional PYATB responses required for Raman. Repeated runs resume
+completed stages. Expect opposite Si/C BEC values near 2.70 e and a triply
+degenerate optical mode near 773 cm^-1; matching spectra are archived in the
+GitHub case.
 
 For agent-assisted use, run `zstar skill install`, open a new agent session,
 and use:
 
 ```text
 Use $run-zstar-workflows to reproduce the 3C-SiC Quick Start in
-examples/3D_Bulk/SiC. Run the preflight and dry run first, then run the Unified
-BEC, Gamma-phonon, IR, and Raman workflow if ABACUS and PYATB are available.
-Report the BEC table, optical-mode frequencies, and generated spectrum paths.
+examples/3D_Bulk/SiC. Run the preflight first, then execute the zstar bec and
+zstar spectra stages individually if ABACUS and PYATB are available. Explain
+each stage and report the BEC table, optical-mode frequencies, and spectrum paths.
 ```
 
 ## Highlights

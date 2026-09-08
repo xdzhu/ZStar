@@ -15,31 +15,42 @@
 git clone --depth 1 https://github.com/xdzhu/zstar.git
 cd zstar
 python -m pip install .
-
-zstar config set --user executables.abacus /path/to/abacus
-zstar config set --user executables.pyatb /path/to/pyatb
-zstar config set --user execution.mpi 1
-zstar config set --user execution.omp 8
-zstar config check
-
-cd examples/3D_Bulk/SiC
-bash run.sh --with-spectra --dry-run
-bash run.sh --with-spectra
 ```
 
-本案例只要求 ABACUS 和 PYATB 显示为 available；其他计算器检查项均为可选。
+首先按照[计算软件配置教程](cli_reference.zh-CN.md#计算软件路径配置)设置 ABACUS、PYATB 和
+MPI/OMP，再用 `zstar config check` 确认 ABACUS 与 PYATB 可用。
 
-该工作流支持断点续算。`BEC.dat`、`BORN` 和 `FORCE_CONSTANTS` 位于 `work/`，
-最终谱图位于 `work/spectra/ir/` 和 `work/spectra/raman/`。案例已经包含赝势与
-轨道文件。保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式
-约为 773 cm^-1；对应谱图和数据表位于案例的 `results/spectra/`。
+建立工作副本并逐步执行：
+
+```bash
+cd examples/3D_Bulk/SiC
+cp -r run work
+cd work
+
+zstar bec pre --stru STRU
+zstar bec run --dry-run
+zstar bec run
+zstar bec stat
+zstar bec post
+
+zstar spectra pre --root spectra --response .
+zstar spectra run --root spectra
+zstar spectra stat --root spectra
+zstar spectra post --root spectra
+```
+
+BEC 阶段准备并运行共用位移，随后同时重建 BEC 与 Gamma 点力常数。谱学阶段
+根据 BEC 与模式得到 IR，并运行 Raman 所需的额外 PYATB 响应；最终谱图位于
+`work/spectra/ir/` 和 `work/spectra/raman/`。重复运行会跳过已完成阶段。
+随案例提供的赝势和轨道保留在 `run/`，已有结果位于 `results/`。正常结果中
+Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式约为 773 cm^-1。
 
 如需让智能体协助运行，先执行 `zstar skill install`，新建智能体会话，然后使用：
 
 ```text
 使用 $run-zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
-先执行 preflight 和 dry run；如果 ABACUS 与 PYATB 可用，再运行 Unified BEC、
-Gamma 点声子、IR 和 Raman 工作流。最后报告 BEC 表、光学模式频率及谱图路径。
+先执行 preflight；如果 ABACUS 与 PYATB 可用，再分别执行 zstar bec 和
+zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式频率及谱图路径。
 ```
 
 后文再按需查阅任务入口、维度约定、作业系统、其他计算器和进阶分析。

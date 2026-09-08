@@ -39,36 +39,57 @@ python -m pip install .
 如果只需要安装软件包，可使用 `python -m pip install -U zstar`。可复现案例位于
 GitHub 仓库中，不包含在 PyPI wheel 内。
 
-### 2. 配置 ABACUS 与 PYATB
+### 2. 配置计算软件
 
-```bash
-zstar config set --user executables.abacus /path/to/abacus
-zstar config set --user executables.pyatb /path/to/pyatb
-zstar config set --user execution.mpi 1
-zstar config set --user execution.omp 8
-zstar config check
-```
+按照[计算软件配置教程](docs/cli_reference.zh-CN.md#计算软件路径配置)一次性设置 ABACUS、PYATB
+可执行文件以及 MPI/OMP 资源，然后执行 `zstar config check`。本案例只要求
+ABACUS 和 PYATB 显示为 available；Phonopy 会随 ZStar 安装。
 
-将两个可执行文件路径替换为本机实际位置，并按可用资源调整 MPI/OMP 数量。
-对于本案例，只需确认 ABACUS 和 PYATB 显示为 available；其他计算器检查项均为
-可选。Phonopy 会随 ZStar 安装，DFT 可执行程序不由 ZStar 打包提供。
+### 3. 计算 BEC 与 Gamma 点声子
 
-### 3. 预览并运行 3C-SiC
+先建立独立工作目录，避免修改案例输入和保留结果：
 
 ```bash
 cd examples/3D_Bulk/SiC
-bash run.sh --with-spectra --dry-run
-bash run.sh --with-spectra
+cp -r run work
+cd work
 ```
 
-第二条命令支持断点续算。`BEC.dat`、`BORN`、`FORCE_CONSTANTS` 和 Gamma 点
-模式数据写入 `work/`，最终谱图与数据表位于 `work/spectra/ir/` 和
-`work/spectra/raman/`。在新环境中建议先执行 dry run。
-保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式约为
-773 cm^-1，可用于快速判断完整计算是否正常。案例的 `results/spectra/`
-还提供了对应的保留谱图和数据表。
+依次准备、预览、运行、检查并后处理 Unified 计算：
 
-### 4. 让智能体运行同一案例
+```bash
+zstar bec pre --stru STRU
+zstar bec run --dry-run
+zstar bec run
+zstar bec stat
+zstar bec post
+```
+
+`bec pre` 生成参考态及对称性适配位移任务；`bec run` 依次完成绝缘性检查、
+ABACUS 自洽计算和 PYATB 极化计算，再次执行时会续算未完成阶段；`bec post`
+同时重建 BEC 与 Gamma 点力常数，并输出 `BEC.dat`、`BORN`、
+`FORCE_CONSTANTS` 和模式数据。
+
+### 4. 生成 IR 与 Raman 谱
+
+将已经完成的响应计算作为谱学数据源：
+
+```bash
+zstar spectra pre --root spectra --response .
+zstar spectra run --root spectra
+zstar spectra stat --root spectra
+zstar spectra post --root spectra
+```
+
+IR 谱由模式频率和 BEC 后处理得到；`spectra run` 补充 Raman 所需的 PYATB
+介电响应，`spectra post` 将数据表和谱图写入 `spectra/ir/` 与
+`spectra/raman/`。保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并
+光学模式约为 773 cm^-1；对应档案位于 `../results/spectra/`。
+
+理解各阶段后，也可以回到案例目录执行 `bash run.sh --with-spectra`，以同一
+流程进行一键断点续算。
+
+### 5. 让智能体运行同一案例
 
 安装随软件提供的 agent skill，然后新建一个智能体会话：
 
@@ -80,8 +101,8 @@ zstar skill install
 
 ```text
 使用 $run-zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
-先执行 preflight 和 dry run；如果 ABACUS 与 PYATB 可用，再运行 Unified BEC、
-Gamma 点声子、IR 和 Raman 工作流。最后报告 BEC 表、光学模式频率及谱图路径。
+先执行 preflight；如果 ABACUS 与 PYATB 可用，再分别执行 zstar bec 和
+zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式频率及谱图路径。
 ```
 
 后续章节再依次说明物理约定、其他维度、计算器后端、作业系统与进阶分析。

@@ -3,18 +3,40 @@
 两原子原胞，PBE、SG15 ONCV 赝势、7-au DZP 轨道，100 Ry，
 Gamma 中心的 13x13x13 网格，SCF 阈值 1e-8。
 
-配置 ABACUS/PYATB 后执行 `bash run.sh`。添加 `--with-spectra` 可在 Unified
-BEC/Gamma 计算后继续生成 IR 与 Raman：
+按照[计算软件配置教程](../../../docs/cli_reference.zh-CN.md#计算软件路径配置)设置 ABACUS 与
+PYATB 后，先复制一份干净输入作为工作目录：
 
 ```bash
-bash run.sh --with-spectra --dry-run
-bash run.sh --with-spectra
+cp -r run work
+cd work
 ```
 
-`run/` 包含输入及赝势轨道，`results/` 是已有结果；新计算在 `work/` 中进行，
-不覆盖档案。BEC 与 Gamma 点结果位于 `work/`，谱线和数据表位于
-`work/spectra/ir/` 与 `work/spectra/raman/`。对应的保留谱学结果位于
-`results/spectra/`，同时提供数据表及 PNG、PDF、SVG 格式的谱图。
+首先计算 BEC 与 Gamma 点力常数：
+
+```bash
+zstar bec pre --stru STRU
+zstar bec run --dry-run
+zstar bec run
+zstar bec stat
+zstar bec post
+```
+
+然后以完成的响应计算为数据源生成 IR 与 Raman 谱：
+
+```bash
+zstar spectra pre --root spectra --response .
+zstar spectra run --root spectra
+zstar spectra stat --root spectra
+zstar spectra post --root spectra
+```
+
+`bec post` 输出 BEC、`BORN`、力常数和 Gamma 点模式。IR 使用模式频率与
+BEC；`spectra run` 计算 Raman 额外需要的 PYATB 介电响应。`run/` 保留输入、
+赝势和轨道，`results/` 保存已有结果，新计算全部位于 `work/`。保留谱学结果
+位于 `results/spectra/`，同时提供数据表及 PNG、PDF、SVG 格式的谱图。
+
+熟悉各阶段后，可在案例目录执行 `bash run.sh --with-spectra` 完成同一套断点
+续算流程；添加 `--dry-run` 可以只预览而不启动求解器。
 Unified 自动选取两个位移，对照的 Cartesian 中心差分需要十二个位移；
 两者均另算 `0.no-move`。从仓库根目录执行
 `python examples/Benchmarks/run_control.py SiC` 可运行对照组。
