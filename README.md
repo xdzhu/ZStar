@@ -831,6 +831,23 @@ Periodic entries are selected BEC components. Molecular entries are the
 rotational invariant `q_GAPT = Tr(A)/3` of the atomic polar tensor; they should
 not be interpreted as periodic-crystal BECs.
 
+<div class="print-page-break"></div>
+
+## Measured Efficiency
+
+The paired markers show measured solver core-hours under matched settings;
+each label is the `Separate / Unified` speedup. The ten-system BEC/APT and
+Gamma-phonon benchmark reaches 3.98 times, while the combined IR/Raman benchmark
+spanning bulk, slab, nanowire and molecular systems reaches 8.35 times. Exact task counts, timing boundaries and
+source data are retained in the [benchmark archive](examples/Benchmarks/README.md)
+and [figure archive](docs/paper_figures/README.md).
+
+<p align="center" class="efficiency-figure">
+  <img src="docs/paper_figures/unified_efficiency_benchmarks.png" alt="Measured Separate and Unified workflow costs for BEC, phonon, IR and Raman calculations" width="820" height="778">
+</p>
+
+<div class="print-page-break"></div>
+
 ## Representative Validation Figures
 
 The compact source data, plotting script, vector files, and integrity manifest

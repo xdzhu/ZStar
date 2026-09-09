@@ -37,6 +37,30 @@ if (!versionMatch) {
 const tempDir = path.join(repoRoot, "tmp", "pdfs", "readme-render");
 fs.mkdirSync(tempDir, { recursive: true });
 
+function inlineLocalImages(html) {
+  const mimeTypes = {
+    ".gif": "image/gif",
+    ".jpeg": "image/jpeg",
+    ".jpg": "image/jpeg",
+    ".png": "image/png",
+    ".svg": "image/svg+xml",
+    ".webp": "image/webp",
+  };
+  return html.replace(/(<img\b[^>]*\bsrc=")([^"]+)("[^>]*>)/gi, (match, prefix, src, suffix) => {
+    if (/^(?:data:|https?:)/i.test(src)) {
+      return match;
+    }
+    const cleanSrc = decodeURIComponent(src.split(/[?#]/, 1)[0]);
+    const imagePath = path.resolve(repoRoot, cleanSrc);
+    const mimeType = mimeTypes[path.extname(imagePath).toLowerCase()];
+    if (!mimeType || !fs.existsSync(imagePath)) {
+      return match;
+    }
+    const encoded = fs.readFileSync(imagePath).toString("base64");
+    return `${prefix}data:${mimeType};base64,${encoded}${suffix}`;
+  });
+}
+
 const documents = [
   ["README.md", "docs/README.en.pdf", "ZStar English Manual"],
   ["README.zh-CN.md", "docs/README.zh-CN.pdf", "ZStar 中文手册"],
@@ -75,7 +99,7 @@ for (const [sourceName, outputName, title] of documents) {
       /<img alt="(?:License|许可证)"[^>]*>/g,
       '<span class="pdf-badge badge-license">License GPL-3.0</span>',
     );
-  const content = marked.parse(markdown, { gfm: true });
+  const content = inlineLocalImages(marked.parse(markdown, { gfm: true }));
   const html = `<!doctype html>
 <html>
 <head>
@@ -97,7 +121,7 @@ for (const [sourceName, outputName, title] of documents) {
     "--disable-extensions",
     "--disable-background-networking",
     "--no-pdf-header-footer",
-    "--virtual-time-budget=1500",
+    "--virtual-time-budget=5000",
     `--user-data-dir=${profilePath}`,
     `--print-to-pdf=${outputPath}`,
     pathToFileURL(htmlPath).href,

@@ -8,6 +8,26 @@ now available in the public repository `examples/` tree.
 
 ## Figures
 
+### Unified workflow efficiency
+
+![Measured Separate and Unified workflow costs](unified_efficiency_benchmarks.png)
+
+The paired markers reproduce the measured total solver core-hours in manuscript
+Tables 14 and 15. Panel (a) compares Separate and Unified BEC/APT plus
+Gamma-point phonon calculations for ten systems; panel (b) extends the same
+accounting to combined IR and Raman workflows in 3D, 2D, 1D, and 0D. Labels
+show the reported `Separate / Unified` speedup. The logarithmic cost axis keeps
+the 0.57--270.41 core-hour range readable without replacing absolute timing by
+normalized bars.
+
+The sole numerical input is
+`source_data/unified_efficiency_benchmarks.csv`. Rebuild the vector and raster
+outputs with:
+
+```bash
+python docs/paper_figures/plot_unified_efficiency.py
+```
+
 ### One-dimensional Sb2S3 spectroscopy
 
 ![Sb2S3 chain, IR and Raman comparison](../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/comparison/Sb2S3_IR_Raman_comparison_with_structure.png)
@@ -212,6 +232,7 @@ python -m pip install -e .
 python docs/paper_figures/make_validation_figures.py
 python docs/paper_figures/plot_co2_molecular_benchmark.py
 python docs/paper_figures/plot_molecular_validation_overview.py
+python docs/paper_figures/plot_unified_efficiency.py
 python docs/paper_figures/plot_spectroscopy_across_dimensions.py \
   --reference-map docs/paper_figures/reference_numbers.json \
   --sb2s3-case examples/IR_Raman_Spectra/Nanowire_Sb2S3 \
@@ -229,6 +250,8 @@ source-data sizes, and SHA-256 hashes.
   representations, IR mode table/spectrum, and full Raman table/tensors/spectrum.
 - `source_data/bec_literature_benchmark.csv` contains the plotted ZStar and
   literature BEC/APT values together with DOI and method provenance.
+- `source_data/unified_efficiency_benchmarks.csv` contains the task counts,
+  measured core-hours and reported speedups from manuscript Tables 14 and 15.
 - `source_data/in2se3/` contains the Gamma-point Phonopy data, corrected BEC
   tensors, and the derived planar charge-difference profile and dipole summary.
 - `source_data/potential/` contains compact slab-normal profiles, local

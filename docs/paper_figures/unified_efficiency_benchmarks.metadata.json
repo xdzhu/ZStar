@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "backend": "Python/matplotlib",
+  "figure_contract": {
+    "conclusion": "The Unified workflow lowers measured solver cost across dimensionalities for both BEC/phonon and combined IR/Raman calculations.",
+    "archetype": "quantitative comparison",
+    "cost_definition": "successful ABACUS and PYATB solver wall time multiplied by allocated CPU cores",
+    "excluded_costs": [
+      "geometry relaxation",
+      "workflow preparation",
+      "failed attempts",
+      "additional validation runs"
+    ]
+  },
+  "source": "manuscript Tables 14 and 15",
+  "source_data": "source_data/unified_efficiency_benchmarks.csv",
+  "source_sha256": "cae6dc0c29d4d56636a5f9e2c633ea50e0718ab63d739b2fbcf4d796e1aee433",
+  "exports": {
+    "pdf": "unified_efficiency_benchmarks.pdf",
+    "svg": "unified_efficiency_benchmarks.svg",
+    "png": "unified_efficiency_benchmarks.png",
+    "tiff": "unified_efficiency_benchmarks.tiff"
+  }
+}

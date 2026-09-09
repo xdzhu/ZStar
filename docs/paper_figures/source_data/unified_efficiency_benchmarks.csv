@@ -1,0 +1,15 @@
+benchmark,system,dimension,n_bec_separate,n_bec_unified,n_raman_scf_separate,n_raman_scf_unified,n_scf_separate,n_scf_unified,n_nscf_separate,n_nscf_unified,separate_core_hours,unified_core_hours,reported_speedup
+BEC/APT + Gamma phonons,c-BaTiO3,3D,9,3,,,13,4,11,5,6.08,2.56,2.37
+BEC/APT + Gamma phonons,3C-SiC,3D,12,2,,,15,3,14,4,13.16,3.78,3.48
+BEC/APT + Gamma phonons,t-HfO2,3D,12,4,,,17,5,14,6,29.98,10.87,2.76
+BEC/APT + Gamma phonons,alpha-In2Se3,2D,30,10,,,41,11,32,12,22.11,7.40,2.99
+BEC/APT + Gamma phonons,hBN,2D,12,2,,,15,3,14,4,2.25,0.57,3.96
+BEC/APT + Gamma phonons,MoS2,2D,12,3,,,16,4,14,5,7.22,3.01,2.40
+BEC/APT + Gamma phonons,"BN(9,0)",1D,60,56,,,117,57,62,58,270.41,125.04,2.16
+BEC/APT + Gamma phonons,Sb2S3,1D,30,20,,,51,21,32,22,41.67,18.95,2.20
+BEC/APT + Gamma phonons,H2O,0D,12,6,,,19,7,14,8,21.67,8.91,2.43
+BEC/APT + Gamma phonons,CH4,0D,12,3,,,16,4,14,5,12.98,3.26,3.98
+IR + Raman,t-HfO2,3D,,,30,0,47,5,44,11,87.39,15.48,5.65
+IR + Raman,MoS2,2D,,,12,0,28,4,26,9,10.55,3.11,3.39
+IR + Raman,Sb2S3,1D,,,52,0,103,21,84,43,71.76,19.51,3.68
+IR + Raman,CH4,0D,,,18,0,34,4,32,9,27.88,3.34,8.35

@@ -72,6 +72,19 @@ calculators, and advanced analysis.
 
 The workflow figure is also available as a vector PDF: [unified workflow](paper_figures/unified_workflow.pdf).
 
+## Measured Efficiency
+
+![Measured Separate and Unified workflow costs](paper_figures/unified_efficiency_benchmarks.png)
+
+Paired markers report measured solver core-hours under matched electronic
+settings and 40-core execution profiles; labels give `Separate / Unified`.
+Across ten BEC/APT plus Gamma-phonon cases, Unified is 2.16 to 3.98 times faster.
+For the IR/Raman benchmark spanning bulk, slab, nanowire and molecular systems,
+the measured gain is 3.39 to 8.35 times. Relaxation, failed attempts and additional validation runs are excluded
+from both routes. Exact counts and timing provenance are available in the
+[benchmark cases](../examples/Benchmarks/README.md) and
+[figure source data](paper_figures/source_data/unified_efficiency_benchmarks.csv).
+
 ## Start With a Task
 
 | Task | Guide | Main entry |

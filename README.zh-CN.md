@@ -760,6 +760,22 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 周期体系行列出 BEC 的代表分量。分子行列出原子极化张量的旋转不变量
 `q_GAPT = Tr(A)/3`，不应将其解释为周期晶体 BEC。
 
+<div class="print-page-break"></div>
+
+## 实测计算效率
+
+成对数据点是在相同设置下测得的求解器核时，图中数字为
+`Separate / Unified` 加速倍数。十体系 BEC/APT 与 Gamma 点声子基准最高加速
+3.98 倍，覆盖四种维度的 IR/Raman 联合基准最高加速 8.35 倍。精确任务数、
+统计边界和源数据保留在[基准案例](examples/Benchmarks/README.zh-CN.md)和
+[绘图归档](docs/paper_figures/README.md)中。
+
+<p align="center" class="efficiency-figure">
+  <img src="docs/paper_figures/unified_efficiency_benchmarks.png" alt="BEC、声子、IR 与 Raman 计算中 Separate 与 Unified 工作流的实测核时" width="820" height="778">
+</p>
+
+<div class="print-page-break"></div>
+
 ## 代表性验证图
 
 紧凑源数据、绘图脚本、矢量图片和完整性清单均归档在

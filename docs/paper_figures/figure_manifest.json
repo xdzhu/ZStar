@@ -153,6 +153,19 @@
         "CH$_4$"
       ],
       "placeholder": false
+    },
+    {
+      "figure": "unified_efficiency_benchmarks",
+      "files": {
+        "pdf": "unified_efficiency_benchmarks.pdf",
+        "svg": "unified_efficiency_benchmarks.svg",
+        "png": "unified_efficiency_benchmarks.png",
+        "tiff": "unified_efficiency_benchmarks.tiff",
+        "metadata": "unified_efficiency_benchmarks.metadata.json"
+      },
+      "source_data": "source_data/unified_efficiency_benchmarks.csv",
+      "layout": "two stacked paired-cost panels for BEC/phonons and IR/Raman",
+      "placeholder": false
     }
   ],
   "source_data": [
@@ -525,6 +538,11 @@
       "path": "structure_images/Sb2S3.png",
       "size": 222151,
       "sha256": "c895fab75a84bc45d3443606a057bfd1e2bc6cacb03adc37a4845d83244d42a1"
+    },
+    {
+      "path": "unified_efficiency_benchmarks.csv",
+      "size": 1109,
+      "sha256": "cae6dc0c29d4d56636a5f9e2c633ea50e0718ab63d739b2fbcf4d796e1aee433"
     }
   ]
 }
