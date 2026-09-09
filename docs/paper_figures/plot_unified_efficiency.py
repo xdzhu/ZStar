@@ -9,8 +9,7 @@ from pathlib import Path
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.ticker import FixedLocator, FuncFormatter
+from matplotlib.patches import Patch
 import numpy as np
 
 
@@ -21,7 +20,6 @@ COLORS = {
     "separate": "#AEB5B8",
     "separate_edge": "#697176",
     "unified": "#377D73",
-    "connector": "#C9CECF",
     "grid": "#E7EAEB",
     "text": "#303538",
 }
@@ -54,19 +52,11 @@ def _read_rows() -> list[dict[str, str]]:
     return rows
 
 
-def _format_log_tick(value: float, _position: int) -> str:
-    if value < 1:
-        return f"{value:.1f}"
-    return f"{value:g}"
-
-
-def _style_axis(axis: plt.Axes, ticks: list[float], limits: tuple[float, float]) -> None:
-    axis.set_xscale("log")
-    axis.set_xlim(*limits)
-    axis.xaxis.set_major_locator(FixedLocator(ticks))
-    axis.xaxis.set_major_formatter(FuncFormatter(_format_log_tick))
-    axis.xaxis.set_minor_locator(FixedLocator([]))
+def _style_axis(axis: plt.Axes) -> None:
+    axis.set_xlim(0, 124)
+    axis.set_xticks([0, 25, 50, 75, 100])
     axis.grid(axis="x", color=COLORS["grid"], linewidth=0.7, zorder=0)
+    axis.axvline(100, color="#858D91", linewidth=0.75, linestyle="--", zorder=1)
     for spine in axis.spines.values():
         spine.set_visible(True)
         spine.set_linewidth(0.8)
@@ -80,7 +70,7 @@ def _style_axis(axis: plt.Axes, ticks: list[float], limits: tuple[float, float])
         width=0.8,
         colors=COLORS["text"],
     )
-    axis.set_xlabel("Measured solver cost (CPU core-hours, log scale)")
+    axis.set_xlabel("Relative measured solver cost (Separate = 100%)")
 
 
 def _draw_panel(
@@ -88,67 +78,86 @@ def _draw_panel(
     rows: list[dict[str, str]],
     *,
     title: str,
-    ticks: list[float],
-    limits: tuple[float, float],
 ) -> None:
     positions = np.arange(len(rows), dtype=float)
     separate = np.asarray([float(row["separate_core_hours"]) for row in rows])
     unified = np.asarray([float(row["unified_core_hours"]) for row in rows])
     speedups = np.asarray([float(row["reported_speedup"]) for row in rows])
+    unified_percent = 100.0 * unified / separate
+    bar_height = 0.31
+    offset = 0.18
 
-    for y_value, old_cost, new_cost, speedup in zip(
-        positions, separate, unified, speedups
-    ):
-        axis.annotate(
-            "",
-            xy=(new_cost, y_value),
-            xytext=(old_cost, y_value),
-            arrowprops={
-                "arrowstyle": "-|>",
-                "color": COLORS["connector"],
-                "linewidth": 1.35,
-                "mutation_scale": 9,
-                "shrinkA": 7,
-                "shrinkB": 7,
-            },
-            zorder=1,
-        )
-        midpoint = float(np.sqrt(old_cost * new_cost))
-        axis.text(
-            midpoint,
-            y_value - 0.20,
-            rf"${speedup:.2f}\times$",
-            ha="center",
-            va="bottom",
-            color=COLORS["unified"],
-            fontsize=8.3,
-            fontweight="semibold",
-            zorder=4,
-        )
-
-    axis.scatter(
-        separate,
-        positions,
-        s=48,
+    axis.barh(
+        positions - offset,
+        np.full_like(separate, 100.0),
+        height=bar_height,
         color=COLORS["separate"],
         edgecolor=COLORS["separate_edge"],
         linewidth=0.8,
-        zorder=3,
+        zorder=2,
     )
-    axis.scatter(
-        unified,
-        positions,
-        s=52,
+    axis.barh(
+        positions + offset,
+        unified_percent,
+        height=bar_height,
         color=COLORS["unified"],
-        edgecolor="white",
-        linewidth=0.7,
-        zorder=3,
+        edgecolor=COLORS["unified"],
+        linewidth=0.8,
+        zorder=2,
     )
+
+    for y_value, separate_cost, unified_cost, relative, speedup in zip(
+        positions, separate, unified, unified_percent, speedups
+    ):
+        axis.text(
+            98.2,
+            y_value - offset,
+            f"{separate_cost:.2f}",
+            ha="right",
+            va="center",
+            color=COLORS["text"],
+            fontsize=7.3,
+            zorder=3,
+        )
+        inside = relative >= 19
+        axis.text(
+            relative - 1.2 if inside else relative + 1.2,
+            y_value + offset,
+            f"{unified_cost:.2f}",
+            ha="right" if inside else "left",
+            va="center",
+            color="white" if inside else COLORS["unified"],
+            fontsize=7.3,
+            fontweight="semibold",
+            zorder=3,
+        )
+        axis.text(
+            115.5,
+            y_value,
+            rf"${speedup:.2f}\times$",
+            ha="center",
+            va="center",
+            color=COLORS["unified"],
+            fontsize=7.8,
+            fontweight="semibold",
+            zorder=3,
+        )
+
     axis.set_yticks(positions, [LABELS[row["system"]] for row in rows])
     axis.invert_yaxis()
-    axis.set_ylim(len(rows) - 0.45, -0.65)
+    axis.set_ylim(len(rows) - 0.55, -0.75)
     axis.set_title(title, loc="left", fontsize=11.5, fontweight="normal", pad=8)
-    _style_axis(axis, ticks, limits)
+    axis.text(
+        0.932,
+        1.012,
+        "Speedup",
+        transform=axis.transAxes,
+        ha="center",
+        va="bottom",
+        color=COLORS["text"],
+        fontsize=7.8,
+    )
+    _style_axis(axis)
 
 
 def _sha256(path: Path) -> str:
@@ -174,7 +183,7 @@ def _update_manifest(exports: dict[str, Path], metadata_path: Path) -> None:
             "metadata": metadata_path.name,
         },
         "source_data": str(SOURCE.relative_to(ROOT)).replace("\\", "/"),
-        "layout": "two stacked paired-cost panels for BEC/phonons and IR/Raman",
+        "layout": "two stacked paired-bar panels normalized to the Separate cost for each case",
         "placeholder": False,
     }
     manifest["figures"] = [
@@ -227,49 +236,35 @@ def build_figure() -> None:
         axes[0],
         bec_rows,
         title=r"(a) BEC/APT + $\Gamma$-point phonons",
-        ticks=[0.5, 1, 2, 5, 10, 20, 50, 100, 200],
-        limits=(0.45, 340),
     )
     _draw_panel(
         axes[1],
         spectra_rows,
         title="(b) IR + Raman",
-        ticks=[2, 5, 10, 20, 50, 100],
-        limits=(2.5, 110),
     )
 
     legend_handles = [
-        Line2D(
-            [0],
-            [0],
-            marker="o",
-            linestyle="none",
-            markerfacecolor=COLORS["separate"],
-            markeredgecolor=COLORS["separate_edge"],
-            markersize=7,
+        Patch(
+            facecolor=COLORS["separate"],
+            edgecolor=COLORS["separate_edge"],
             label="Separate",
         ),
-        Line2D(
-            [0],
-            [0],
-            marker="o",
-            linestyle="none",
-            markerfacecolor=COLORS["unified"],
-            markeredgecolor="white",
-            markersize=7,
+        Patch(
+            facecolor=COLORS["unified"],
+            edgecolor=COLORS["unified"],
             label="Unified",
         ),
     ]
     fig.legend(
         handles=legend_handles,
         loc="upper center",
-        bbox_to_anchor=(0.80, 0.995),
+        bbox_to_anchor=(0.77, 0.992),
         ncol=2,
         handletextpad=0.5,
         columnspacing=1.8,
         fontsize=9.5,
     )
-    fig.subplots_adjust(left=0.18, right=0.985, top=0.945, bottom=0.085, hspace=0.42)
+    fig.subplots_adjust(left=0.18, right=0.985, top=0.935, bottom=0.085, hspace=0.38)
 
     stem = ROOT / "unified_efficiency_benchmarks"
     exports = {
@@ -297,6 +292,7 @@ def build_figure() -> None:
             "conclusion": "The Unified workflow lowers measured solver cost across dimensionalities for both BEC/phonon and combined IR/Raman calculations.",
             "archetype": "quantitative comparison",
             "cost_definition": "successful ABACUS and PYATB solver wall time multiplied by allocated CPU cores",
+            "bar_definition": "each Separate cost is normalized to 100 percent; labels inside bars report absolute CPU core-hours",
             "excluded_costs": [
                 "geometry relaxation",
                 "workflow preparation",

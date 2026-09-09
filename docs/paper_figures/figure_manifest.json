@@ -119,19 +119,6 @@
       }
     },
     {
-      "figure": "unified_efficiency_benchmarks",
-      "files": {
-        "pdf": "unified_efficiency_benchmarks.pdf",
-        "svg": "unified_efficiency_benchmarks.svg",
-        "png": "unified_efficiency_benchmarks.png",
-        "tiff": "unified_efficiency_benchmarks.tiff",
-        "metadata": "unified_efficiency_benchmarks.metadata.json"
-      },
-      "source_data": "source_data/unified_efficiency_benchmarks.csv",
-      "layout": "two stacked paired-cost panels for BEC/phonons and IR/Raman",
-      "placeholder": false
-    },
-    {
       "figure": "spectroscopy_across_dimensions",
       "files": {
         "png": "spectroscopy_across_dimensions.png",
@@ -147,6 +134,19 @@
         "Sb$_2$S$_3$",
         "CH$_4$"
       ],
+      "placeholder": false
+    },
+    {
+      "figure": "unified_efficiency_benchmarks",
+      "files": {
+        "pdf": "unified_efficiency_benchmarks.pdf",
+        "svg": "unified_efficiency_benchmarks.svg",
+        "png": "unified_efficiency_benchmarks.png",
+        "tiff": "unified_efficiency_benchmarks.tiff",
+        "metadata": "unified_efficiency_benchmarks.metadata.json"
+      },
+      "source_data": "source_data/unified_efficiency_benchmarks.csv",
+      "layout": "two stacked paired-bar panels normalized to the Separate cost for each case",
       "placeholder": false
     }
   ],

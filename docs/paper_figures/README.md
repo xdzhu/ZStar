@@ -12,13 +12,12 @@ now available in the public repository `examples/` tree.
 
 ![Measured Separate and Unified workflow costs](unified_efficiency_benchmarks.png)
 
-The paired markers reproduce the measured total solver core-hours in manuscript
+The paired bars reproduce the measured total solver core-hours in manuscript
 Tables 14 and 15. Panel (a) compares Separate and Unified BEC/APT plus
 Gamma-point phonon calculations for ten systems; panel (b) extends the same
-accounting to combined IR and Raman workflows in 3D, 2D, 1D, and 0D. Labels
-show the reported `Separate / Unified` speedup. The logarithmic cost axis keeps
-the 0.57--270.41 core-hour range readable without replacing absolute timing by
-normalized bars.
+accounting to combined IR and Raman workflows in 3D, 2D, 1D, and 0D. Each
+Separate bar is normalized to 100%, numbers inside the bars give absolute CPU
+core-hours, and right-hand labels give the `Separate / Unified` speedup.
 
 The sole numerical input is
 `source_data/unified_efficiency_benchmarks.csv`. Rebuild the vector and raster

@@ -68,8 +68,9 @@ zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式�
 
 ![Separate 与 Unified 工作流实测核时](paper_figures/unified_efficiency_benchmarks.png)
 
-成对数据点是在相同电子结构设置和 40 核运行配置下测得的求解器核时，图中数字为
-`Separate / Unified`。十个 BEC/APT 与 Gamma 点声子案例中，Unified 的加速为
+成对柱是在相同电子结构设置和 40 核运行配置下测得的求解器核时。每个 Separate
+柱归一化为 100%，柱内数字为实际 CPU 核时，右侧数字为 `Separate / Unified`。
+十个 BEC/APT 与 Gamma 点声子案例中，Unified 的加速为
 2.16 至 3.98 倍；覆盖四种维度的 IR/Raman 基准中，加速为 3.39 至 8.35 倍。
 两条路线均不计结构优化、失败尝试和额外验证计算。精确任务数、核时边界和来源见
 [基准案例](../examples/Benchmarks/README.zh-CN.md)及

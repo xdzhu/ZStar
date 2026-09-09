@@ -835,15 +835,16 @@ not be interpreted as periodic-crystal BECs.
 
 ## Measured Efficiency
 
-The paired markers show measured solver core-hours under matched settings;
-each label is the `Separate / Unified` speedup. The ten-system BEC/APT and
+The paired bars compare measured solver core-hours under matched settings. Each
+Separate bar is normalized to 100%, numbers inside the bars give absolute
+CPU core-hours, and the right-hand label gives the `Separate / Unified` speedup. The ten-system BEC/APT and
 Gamma-phonon benchmark reaches 3.98 times, while the combined IR/Raman benchmark
 spanning bulk, slab, nanowire and molecular systems reaches 8.35 times. Exact task counts, timing boundaries and
 source data are retained in the [benchmark archive](examples/Benchmarks/README.md)
 and [figure archive](docs/paper_figures/README.md).
 
 <p align="center" class="efficiency-figure">
-  <img src="docs/paper_figures/unified_efficiency_benchmarks.png" alt="Measured Separate and Unified workflow costs for BEC, phonon, IR and Raman calculations" width="820" height="778">
+  <img src="docs/paper_figures/unified_efficiency_benchmarks.png" alt="Measured Separate and Unified workflow costs for BEC, phonon, IR and Raman calculations" width="820">
 </p>
 
 <div class="print-page-break"></div>

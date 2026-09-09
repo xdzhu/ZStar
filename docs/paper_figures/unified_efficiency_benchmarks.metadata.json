@@ -5,6 +5,7 @@
     "conclusion": "The Unified workflow lowers measured solver cost across dimensionalities for both BEC/phonon and combined IR/Raman calculations.",
     "archetype": "quantitative comparison",
     "cost_definition": "successful ABACUS and PYATB solver wall time multiplied by allocated CPU cores",
+    "bar_definition": "each Separate cost is normalized to 100 percent; labels inside bars report absolute CPU core-hours",
     "excluded_costs": [
       "geometry relaxation",
       "workflow preparation",
