@@ -35,7 +35,7 @@ PUBLIC_COMMANDS = (
     ('density', 'Export calculator densities to the ZStar cube contract.'),
     ('stru', 'Structure conversion and symmetry utilities.'),
     ('data', 'qNEP dataset and BEC database utilities.'),
-    ('skill', 'Install and inspect the packaged Agent Skill.'),
+    ('skill', 'Install and inspect the packaged agent skill.'),
     ('pot', 'Electrostatic-potential profiles, maps, and asymmetry analysis.'),
 )
 
@@ -201,7 +201,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         ('dielectric', 'Static and frequency-dependent dielectric response.'),
         ('stru', 'Structure conversion and symmetry utilities.'),
         ('data', 'qNEP dataset and BEC database utilities.'),
-        ('skill', 'Install and inspect the packaged Agent Skill.'),
+        ('skill', 'Install and inspect the packaged agent skill.'),
         ('config', 'Configure and check calculator executables.'),
     ):
         subparsers.add_parser(family, help=family_help)
@@ -217,7 +217,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_gen.add_argument('--method', choices=['auto', 'forward', 'central'], default=None,
                             help='Phonopy +/- selection: auto (default), forward, or central. Legacy Cartesian default: forward.')
     parser_gen.add_argument('--ensemble', choices=['phonopy', 'cartesian'], default=None,
-                            help='Shared BEC/Gamma Phonopy ensemble (default), or legacy Cartesian displacements.')
+                            help='Unified BEC/Gamma Phonopy ensemble (default), or Separate Cartesian displacements.')
     parser_gen.add_argument(
         '--xc',
         type=str,
@@ -236,7 +236,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                             help='kspacing in INPUT, default 0.1',
                             default=None)
     parser_gen.add_argument('--force', action='store_true',
-                            help="Overwrite legacy generated directories; shared ensembles require a fresh directory.",
+                            help="Overwrite Separate generated directories; Unified ensembles require a fresh directory.",
                             default=False)
     parser_gen.add_argument('--stru', help='Path to the STRU file', default='STRU')
     parser_gen.add_argument(
@@ -289,7 +289,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_gen.add_argument('--cp2k-root', default='cp2k_bec',
                             help='Output root for --cp2k (default: cp2k_bec).')
     parser_gen.add_argument('--displacement', type=float, default=None,
-                            help='Displacement in Angstrom; shared default 0.02 bohr, legacy default 0.01 Angstrom.')
+                            help='Displacement in Angstrom; Unified default 0.02 bohr, Separate default 0.01 Angstrom.')
 
     # ---------------- deal ----------------
     parser_deal = subparsers.add_parser(
@@ -711,10 +711,10 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_db_collect.add_argument('--manifest', default='candidates.csv')
     parser_db_collect.add_argument('--output', default='database')
 
-    # ---------------- Agent Skill ----------------
+    # ---------------- agent skill ----------------
     parser_agent_skill = subparsers.add_parser(
         'agent-skill',
-        help='Install or inspect the packaged run-zstar-workflows Agent Skill.'
+        help='Install or inspect the packaged run-zstar-workflows agent skill.'
     )
     agent_skill_actions = parser_agent_skill.add_subparsers(
         dest='agent_skill_action', required=True
@@ -734,7 +734,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_agent_skill_preflight.add_argument('--root', default='.')
     parser_agent_skill_preflight.add_argument(
         '--lane',
-        choices=['bec', 'phonon', 'ir', 'raman', 'dielectric', 'md', 'cp2k', 'database'],
+        choices=['bec', 'phonon', 'ir', 'raman', 'dielectric', 'cp2k', 'database'],
         default='bec',
     )
     parser_agent_skill_preflight.add_argument(
@@ -2563,7 +2563,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         legacy_selection = args.atom is not None or args.move is not None or not args.reduce
         shared_compatible = not legacy_selection and not args.abacus and args.input_mode in (None, 'pyatb')
         if args.ensemble == 'phonopy' and not shared_compatible:
-            raise SystemExit('Shared Phonopy ensembles require full tensor scope and ABACUS + PYATB. Use --ensemble cartesian for partial/legacy workflows.')
+            raise SystemExit('Unified Phonopy ensembles require full tensor scope and ABACUS + PYATB. Use --ensemble cartesian for partial or Separate workflows.')
         if args.ensemble == 'phonopy' or (args.ensemble is None and shared_compatible):
             from .shared_abacus import prepare_shared_abacus
             prepare_shared_abacus(

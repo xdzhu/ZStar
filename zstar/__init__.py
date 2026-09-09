@@ -8,7 +8,7 @@ processing for materials scientists and engineers.
 
 Typical capabilities include:
 - Serial and resumable bulk or two-dimensional Born-charge workflows.
-- Phonon, infrared, Raman, harmonic dielectric, and MD dielectric analysis.
+- Phonon, infrared, Raman, and harmonic dielectric analysis.
 - Structure analysis, symmetry reconstruction, and sum-rule checks.
 - Old and new PYATB response-interface compatibility.
 
@@ -30,7 +30,7 @@ See the accompanying LICENSE file for details.
 
 # NOTE:
 # Keep this version in sync with the version declared in pyproject.toml.
-__version__ = "0.3.1"
+__version__ = "0.3.3"
 
 # ---------------------------------------------------------------------------
 # Public API surface

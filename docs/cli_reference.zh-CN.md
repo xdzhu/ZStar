@@ -32,7 +32,7 @@ pre -> job (optional) -> run -> stat -> post
 | `zstar density` | `vasp-cube/qe-input/qe-sidecar/cp2k-block/sidecar` | 电荷密度导出适配器与来源 sidecar。 |
 | `zstar stru` | `convert/wyckoff` | 结构转换与对称性检查。 |
 | `zstar data` | `db/qnep` | 可追溯 BEC/High-K 数据库和 qNEP 训练数据。 |
-| `zstar skill` | `install/path/preflight` | 安装或检查随包发布的 Agent Skill，并执行只读预检查。 |
+| `zstar skill` | `install/path/preflight` | 安装或检查随包发布的 agent skill，并执行只读预检查。 |
 | `zstar pot` | 选项驱动 | 轴向曲线、平面图、方向曲线、真空势差和镜面对称破缺。 |
 
 旧的细粒度命令（`gen`、`workflow`、`deal`、`postph`、`ir`、`raman` 及各类
@@ -124,7 +124,7 @@ zstar bec post --root .
 检查生成的 `run_zstar_born.slurm`，再执行 `sbatch run_zstar_born.slurm`。
 计算完成后才执行 `post`；仅运行 `job` 不会执行计算。
 
-ZStar 0.3.2 的 `zstar bec pre` 默认使用 ABACUS + PYATB 和 Phonopy 对称性适配的
+`zstar bec pre` 默认使用 ABACUS + PYATB 和 Phonopy 对称性适配的
 Unified BEC/Gamma 声子位移，自动选择所需正负位移。计算器和 `--pyatb` 开关仍可
 省略；切换后端时才指定 `--calculator cp2k`、`vasp` 或 `qe`。
 `--ensemble cartesian` 保留旧的原子/笛卡尔方向布局。完整说明见

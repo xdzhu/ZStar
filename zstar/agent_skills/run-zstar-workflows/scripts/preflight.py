@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the packaged ZStar Agent Skill preflight."""
+"""Run the packaged ZStar agent-skill preflight."""
 
 from __future__ import annotations
 

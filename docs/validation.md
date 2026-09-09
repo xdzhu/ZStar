@@ -1,6 +1,20 @@
 # ZStar Validation Record
 
-## Current Release: 0.3.2
+## Current Release: 0.3.3
+
+The 0.3.3 release candidate passes 393 package tests, 30 installed CLI checks,
+and dry runs for all 40 indexed public examples. A clean wheel installation
+reports the same runtime and distribution version, discovers the packaged
+agent skill, and excludes the example library from the PyPI payload. The final
+manuscript citation audit covers 76 cited records with complete title, DOI, and
+URL metadata in first-use order.
+
+Version 0.3.3 aligns the packaged agent skill and preflight checks with the
+public Unified response workflows, honors configured calculator executables,
+and refreshes the bilingual manuals and final figure citation labels. The
+retained numerical results are unchanged.
+
+## Previous Release: 0.3.2
 
 The 0.3.2 release candidate passes 387 installed-package tests, 66 subtests,
 30 installed CLI checks, and dry runs for all 40 indexed public examples in a
@@ -16,7 +30,7 @@ polarized Unified Raman post-processing, improves current ABACUS/Phonopy log
 compatibility, and refreshes manuals, figures, metadata, and archive hashes.
 The retained numerical results are unchanged.
 
-## Previous Release: 0.3.1
+## Earlier Release: 0.3.1
 
 Version 0.3.1 corrects the Git-index case of `examples/3D_Bulk`; 0.3.0 stored
 `3d_bulk`, which Windows accepted but Linux CI correctly rejected. A new test

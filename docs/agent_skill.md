@@ -1,4 +1,4 @@
-# Agent-Friendly ZStar Workflows
+# Agent-friendly ZStar workflows
 
 ZStar ships the standards-compliant agent skill `run-zstar-workflows`. The skill
 turns the command-line interface, physical conventions, resumable state, and
@@ -12,7 +12,7 @@ requirements have been met.
 
 ## Naming and layout
 
-The skill follows the portable Agent Skills directory convention:
+The skill follows the portable agent skills directory convention:
 
 ```text
 run-zstar-workflows/
@@ -97,7 +97,7 @@ The skill encodes the non-obvious invariants that should survive model changes:
 | Dimensional split | Use Berry response along periodic axes and cube-integrated dipoles along open axes for 1D wires and 2D slabs. |
 | 1D boundary | Run the implemented `z`-periodic ABACUS + PYATB BEC and Gamma-spectroscopy route, but do not claim finite-wavevector polar phonons without a genuine 1D Coulomb cutoff. |
 | Resumability | Reuse `.zstar` state and repeat the same serial executor command. |
-| Raman derivative | Use positive/negative normal-coordinate pairs. |
+| Raman derivative | Use the Unified displacement responses by default; reserve positive/negative normal-mode pairs for a Separate control. |
 | Completion | Check named files, state records, units, and physical convention. |
 | Authorization | Do not infer permission to submit or run expensive remote jobs. |
 

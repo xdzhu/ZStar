@@ -1,4 +1,4 @@
-"""Installation and machine-readable preflight support for the ZStar Agent Skill."""
+"""Installation and machine-readable preflight support for the ZStar agent skill."""
 
 from __future__ import annotations
 
@@ -14,14 +14,14 @@ from . import __version__
 
 
 SKILL_NAME = "run-zstar-workflows"
-LANES = ("bec", "phonon", "ir", "raman", "dielectric", "md", "cp2k", "database")
+LANES = ("bec", "phonon", "ir", "raman", "dielectric", "cp2k", "database")
 DIMENSIONS = ("molecule", "1d", "2d", "bulk")
 
 
 def packaged_skill_path() -> Path:
     path = Path(__file__).resolve().parent / "agent_skills" / SKILL_NAME
     if not (path / "SKILL.md").is_file():
-        raise FileNotFoundError(f"Packaged Agent Skill is incomplete: {path}")
+        raise FileNotFoundError(f"Packaged agent skill is incomplete: {path}")
     return path
 
 
@@ -66,9 +66,18 @@ def install_agent_skill(
     return destination.resolve()
 
 
-def _command_record(name: str) -> dict[str, Any]:
-    resolved = shutil.which(name)
-    return {"available": resolved is not None, "path": resolved}
+def _command_record(name: str, root: Path) -> dict[str, Any]:
+    """Resolve commands through ZStar configuration before falling back to PATH."""
+
+    from .configuration import (
+        DEFAULT_EXECUTABLES,
+        executable_available,
+        resolve_executable,
+    )
+
+    command = resolve_executable(name, root=root) if name in DEFAULT_EXECUTABLES else name
+    available, resolved = executable_available(command)
+    return {"command": command, "available": available, "path": resolved}
 
 
 def _state_summary(root: Path) -> dict[str, Any]:
@@ -130,11 +139,10 @@ def preflight_report(
         "ir": ("phonopy",),
         "raman": ("abacus", "pyatb_input", "pyatb"),
         "dielectric": ("phonopy",),
-        "md": (),
-        "cp2k": ("cp2k.psmp",),
+        "cp2k": ("cp2k",),
         "database": (),
     }[lane]
-    commands = {name: _command_record(name) for name in command_names}
+    commands = {name: _command_record(name, root_path) for name in command_names}
     missing_commands = [name for name, record in commands.items() if not record["available"]]
     if missing_commands:
         warnings.append(
@@ -152,7 +160,6 @@ def preflight_report(
             "ir_spectrum/ir_summary.json",
             "raman_spectrum/raman_summary.json",
             "dielectric_response/ir_summary.json",
-            "md_dielectric/md_dielectric_summary.json",
         )
     }
 
@@ -170,10 +177,6 @@ def preflight_report(
         warnings.append("No CP2K *.inp template was detected in the workspace root.")
     if lane == "database" and not (root_path / "candidates.csv").is_file():
         warnings.append("No candidates.csv manifest was detected; create one with zstar db init.")
-    if lane == "md":
-        warnings.append(
-            "MD readiness also requires an explicit trajectory and either fixed or frame-resolved BEC tensors."
-        )
     if dimensionality == "2d":
         warnings.append(
             "Confirm that the slab normal is Cartesian z; out-of-plane BEC requires charge-density cubes."

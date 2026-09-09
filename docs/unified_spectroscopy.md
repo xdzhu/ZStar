@@ -2,9 +2,8 @@
 
 [Chinese](unified_spectroscopy.zh-CN.md)
 
-This guide applies to ZStar 0.3.2. Install with
-`python -m pip install zstar==0.3.2`; an editable source installation is not
-required. See the [user manual](README.md) for configuration and example links.
+Install with `python -m pip install zstar`; an editable source installation is
+not required. See the [user manual](README.md) for configuration and example links.
 
 ![Unified response workflow](paper_figures/unified_workflow.png)
 

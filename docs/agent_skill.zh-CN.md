@@ -4,13 +4,13 @@ ZStar 随软件发行符合规范的 agent skill：`run-zstar-workflows`。它�
 物理约定、断点续算状态和输出完成判据组织为可复用指令，使兼容的编程或科研智能体
 能够自动发现并正确调用 ZStar。
 
-该 Skill 不替代科研判断，也不会自动获得启动计算的权限。它帮助智能体选择正确的
+该 agent skill 不替代科研判断，也不会自动获得启动计算的权限。它帮助智能体选择正确的
 工作流、检查运行条件、保留来源信息、复用已完成阶段，并依据可观察产物判断软件任务
 是否完成。
 
 ## 命名与目录规范
 
-Skill 采用可移植的 Agent Skills 目录结构：
+agent skill 采用可移植的 agent skills 目录结构：
 
 ```text
 run-zstar-workflows/
@@ -25,14 +25,14 @@ run-zstar-workflows/
 
 ## 安装
 
-安装 ZStar 后，可将随 wheel 提供的 Skill 安装到默认 Codex 技能目录：
+安装 ZStar 后，可将随 wheel 提供的 agent skill 安装到默认 Codex 技能目录：
 
 ```bash
 pip install -U zstar
 zstar skill install
 ```
 
-安装后新建一个智能体会话，使其重新发现技能。升级 ZStar 后可覆盖旧 Skill：
+安装后新建一个智能体会话，使其重新发现技能。升级 ZStar 后可覆盖旧 agent skill：
 
 ```bash
 zstar skill install --force
@@ -45,7 +45,7 @@ zstar skill install --dest /path/to/skills
 zstar skill path
 ```
 
-源码仓库中的 Skill 位于 `zstar/agent_skills/run-zstar-workflows/`，兼容的 Skill
+源码仓库中的 agent skill 位于 `zstar/agent_skills/run-zstar-workflows/`，兼容的 skill
 安装器也可以直接从该仓库路径安装。
 
 ## 调用
@@ -81,7 +81,7 @@ zstar skill preflight --root . --lane database --dim 1d
 
 ## 智能体契约
 
-Skill 固化了不应随语言模型变化的关键约束：
+agent skill 固化了不应随语言模型变化的关键约束：
 
 | 契约 | 智能体行为 |
 | --- | --- |
@@ -89,7 +89,7 @@ Skill 固化了不应随语言模型变化的关键约束：
 | 低维分流 | 一维纳米线与二维薄膜沿周期轴使用 Berry 响应，沿开放轴使用 cube 偶极积分。 |
 | 一维边界 | 可执行沿 `z` 周期的 ABACUS + PYATB BEC 与 Gamma 点光谱；没有真正 1D Coulomb cutoff 时，不得宣称有限波矢极性声子已经完成。 |
 | 断点续算 | 复用 `.zstar` 状态并重复同一串行执行命令。 |
-| Raman 差分 | 使用正、负简正坐标位移。 |
+| Raman 差分 | 默认复用 Unified 位移响应；正、负简正坐标位移仅作为 Separate 对照。 |
 | 完成判据 | 检查指定产物、状态记录、单位和物理约定。 |
 | 权限边界 | 不把准备脚本理解为允许提交或启动昂贵远程计算。 |
 

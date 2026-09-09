@@ -128,7 +128,7 @@ def run_phonon_workflow(
     root_path = Path(root).resolve()
     from .shared_abacus import MANIFEST
     if (root_path / MANIFEST).is_file():
-        raise ValueError('This is a shared BEC/Gamma ensemble. Use zstar bec run to preserve reference-first charge reuse and the insulating gate, then zstar phonon post.')
+        raise ValueError('This is a Unified BEC/Gamma ensemble. Use zstar bec run to preserve reference-first charge reuse and the insulating gate, then zstar phonon post.')
     states = phonon_workflow_status(root_path)
     executed = 0
     for state in states:

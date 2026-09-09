@@ -119,21 +119,16 @@
       }
     },
     {
-      "figure": "Figure_7_Spectroscopy_with_1D_layout_v2",
+      "figure": "unified_efficiency_benchmarks",
       "files": {
-        "png": "Figure_7_Spectroscopy_with_1D_layout_v2.png",
-        "pdf": "Figure_7_Spectroscopy_with_1D_layout_v2.pdf",
-        "svg": "Figure_7_Spectroscopy_with_1D_layout_v2.svg",
-        "powerpoint_svg": "Figure_7_Spectroscopy_with_1D_layout_v2_powerpoint.svg",
-        "tiff": "Figure_7_Spectroscopy_with_1D_layout_v2.tiff"
+        "pdf": "unified_efficiency_benchmarks.pdf",
+        "svg": "unified_efficiency_benchmarks.svg",
+        "png": "unified_efficiency_benchmarks.png",
+        "tiff": "unified_efficiency_benchmarks.tiff",
+        "metadata": "unified_efficiency_benchmarks.metadata.json"
       },
-      "layout": "4 rows by 3 columns",
-      "completed_systems": [
-        "HfO$_2$",
-        "MoS$_2$",
-        "Sb$_2$S$_3$",
-        "CH$_4$"
-      ],
+      "source_data": "source_data/unified_efficiency_benchmarks.csv",
+      "layout": "two stacked paired-cost panels for BEC/phonons and IR/Raman",
       "placeholder": false
     },
     {
@@ -152,19 +147,6 @@
         "Sb$_2$S$_3$",
         "CH$_4$"
       ],
-      "placeholder": false
-    },
-    {
-      "figure": "unified_efficiency_benchmarks",
-      "files": {
-        "pdf": "unified_efficiency_benchmarks.pdf",
-        "svg": "unified_efficiency_benchmarks.svg",
-        "png": "unified_efficiency_benchmarks.png",
-        "tiff": "unified_efficiency_benchmarks.tiff",
-        "metadata": "unified_efficiency_benchmarks.metadata.json"
-      },
-      "source_data": "source_data/unified_efficiency_benchmarks.csv",
-      "layout": "two stacked paired-cost panels for BEC/phonons and IR/Raman",
       "placeholder": false
     }
   ],

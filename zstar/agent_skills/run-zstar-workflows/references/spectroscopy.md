@@ -2,7 +2,7 @@
 
 ## ABACUS/PYATB IR and Raman
 
-Prefer the Unified ensemble when `shared_response.json` exists:
+Use the Unified ensemble recorded by `shared_response.json`:
 
 ```bash
 zstar spectra pre
@@ -41,7 +41,8 @@ zstar spectra post --root raman
 ```
 
 Use `--dim 2` for sheet response and `--dim 0` for an isolated molecule.
-Molecular IR and Raman share the same positive/negative normal-mode tree.
+In this Separate control, molecular IR and Raman share the same positive/negative
+normal-mode tree.
 
 The legacy mode-difference and native backend routes reject substantive Gamma-point imaginary modes below
 -20 cm-1 by default. Relax or verify the structure first. Override with

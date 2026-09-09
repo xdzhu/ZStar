@@ -8,8 +8,9 @@ code zero is necessary but not sufficient for a physical result.
 - `.zstar/stages/*.json` has no failed stage.
 - `.zstar/workflow.jsonl` retains the event history.
 - The reference band gap exceeds the configured threshold.
-- `BEC.dat` contains the full-cell, symmetry-reconstructed tensors.
-- `BORN` or `BORN` exists for Phonopy coupling.
+- `BEC.dat` contains the full-cell, symmetry-reconstructed tensor data;
+  `BORN` also exists when
+  Phonopy coupling is requested.
 - The symmetry report records the acoustic-sum correction and atom mapping.
 - For `dim=1`, per-atom `zstar_1d_bec.json` reports identify the transverse
   cube and periodic Berry sources, and `response.json` contains the
@@ -17,7 +18,9 @@ code zero is necessary but not sufficient for a physical result.
 
 ## Phonons and dielectric response
 
-- `FORCE_SETS`, `phonopy.yaml`, `qpoints.yaml`, and `irreps.yaml` are present.
+- A Unified Gamma workflow contains `FORCE_CONSTANTS`, `phonopy.yaml`,
+  `qpoints.yaml`, and `irreps.yaml`; a finite-wavevector Phonopy workflow also
+  retains its displacement dataset and `FORCE_SETS`.
 - Imaginary or near-zero optical modes are reported rather than silently used.
 - `dielectric_response/` contains tensor data and summary metadata.
 - The dimensional convention is explicitly 1D line, 2D sheet, or bulk
@@ -29,7 +32,8 @@ code zero is necessary but not sufficient for a physical result.
 
 - IR: `ir_modes.csv`, `ir_spectrum.dat`, and `ir_summary.json` are present.
 - Raman: `raman_modes.csv`, `raman_spectrum.dat`, and a summary JSON are present.
-- All requested positive/negative Raman stages are complete.
+- `zstar spectra stat` reports no pending or failed requested stages. A Separate
+  mode-difference control must complete both signs for every selected mode.
 - Peak broadening, temperature, laser wavelength, and normalization convention
   are retained in the report or command record.
 - For VASP/CP2K, `.zstar/spectra_state.json` has no failed stage and

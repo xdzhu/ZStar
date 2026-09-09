@@ -136,7 +136,7 @@ PyPI 不能解析仓库相对路径，因此 `README_PYPI.md` 不应使用：
 当前仓库公开，因此可使用现有的公共 HTTPS 地址：
 
 ```text
-https://raw.githubusercontent.com/xdzhu/zstar/main/docs/logo.png
+https://raw.githubusercontent.com/xdzhu/ZStar/main/docs/logo.png
 ```
 
 发布前应在未登录状态下确认该地址可访问。若仓库以后改为私有，应将 logo

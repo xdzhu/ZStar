@@ -33,7 +33,7 @@ aliases. New documentation and automation should use the short canonical verbs.
 | `zstar density` | `vasp-cube/qe-input/qe-sidecar/cp2k-block/sidecar` | Density-export adapters and provenance sidecars. |
 | `zstar stru` | `convert/wyckoff` | Structure conversion and symmetry inspection. |
 | `zstar data` | `db/qnep` | Traceable BEC/High-K databases and qNEP training-data export. |
-| `zstar skill` | `install/path/preflight` | Install or inspect the packaged Agent Skill and run non-mutating preflight checks. |
+| `zstar skill` | `install/path/preflight` | Install or inspect the packaged agent skill and run non-mutating preflight checks. |
 | `zstar pot` | option-driven | Axis profiles, plane maps, directional profiles, vacuum steps, and mirror asymmetry. |
 
 The old fine-grained commands (`gen`, `workflow`, `deal`, `postph`, `ir`,
@@ -128,7 +128,7 @@ These examples use local execution. On Slurm, replace the local `run` with
 then submit it with `sbatch run_zstar_born.slurm`. Wait for completion before
 `post`; `job` alone does not execute any calculation.
 
-In ZStar 0.3.2, `zstar bec pre` defaults to ABACUS + PYATB and
+`zstar bec pre` defaults to ABACUS + PYATB and
 Phonopy's symmetry-adapted Unified BEC/Gamma displacement set, with
 automatic +/- selection. The calculator and `--pyatb` switch remain optional;
 specify `--calculator cp2k`, `vasp`, or `qe` only when changing backends.

@@ -1,6 +1,6 @@
 # ZStar
 
-<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/zstar/main/docs/logo.png" alt="ZStar logo" width="176"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/xdzhu/ZStar/main/docs/logo.png" alt="ZStar logo" width="176"></p>
 
 [![PyPI](https://img.shields.io/pypi/v/zstar)](https://pypi.org/project/zstar/)
 [![Python](https://img.shields.io/pypi/pyversions/zstar)](https://pypi.org/project/zstar/)
@@ -84,7 +84,7 @@ each stage and report the BEC table, optical-mode frequencies, and spectrum path
 
 ## Examples
 
-![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/zstar/main/docs/paper_figures/spectroscopy_across_dimensions.png)
+![IR and Raman spectra for bulk, slab, wire, and molecular examples](https://raw.githubusercontent.com/xdzhu/ZStar/main/docs/paper_figures/spectroscopy_across_dimensions.png)
 
 The four-dimensional examples compare calculated spectra with literature
 frequencies or published curves. Relative Raman intensities for Sb2S3 remain
@@ -144,7 +144,7 @@ ZStar preserves the source `STRU`, writes a resolved copy to
 `.zstar/assets.json`, and stops with an actionable error when matching files
 are missing or ambiguous.
 
-## Agent skill
+## agent skill
 
 Install the bundled agent skill and open a new agent session:
 

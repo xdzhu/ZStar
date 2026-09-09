@@ -12,12 +12,26 @@ from pybtex.database import parse_file
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--article", required=True, type=Path)
+    parser.add_argument("--bbl", type=Path)
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     article = args.article
     tex = (article / "zstar_CPC-full.tex").read_text(encoding="utf-8")
     bib = parse_file(article / "zstar.bib")
+    bbl_path = args.bbl
+    if bbl_path is None:
+        candidates = (
+            article / "zstar_CPC-clean.bbl",
+            article / "zstar_CPC-full.bbl",
+        )
+        bbl_path = next(
+            (path for path in candidates if path.is_file() and path.stat().st_size),
+            None,
+        )
+    if bbl_path is None:
+        raise FileNotFoundError("Compile the manuscript before auditing citations.")
     keys = re.findall(r"\\bibitem(?:\[[^\]]*\])?\{([^}]+)\}",
-                      (article / "zstar_CPC-clean.bbl").read_text(encoding="utf-8"))
+                      bbl_path.read_text(encoding="utf-8"))
     records = []
     for number, key in enumerate(keys, 1):
         entry = bib.entries[key]
@@ -37,7 +51,8 @@ def main():
     first_use = []
     for group in re.findall(r"\\cite\{([^}]+)\}", tex):
         first_use.extend(key for key in group.split(",") if key not in first_use)
-    output = article / "review_20260907/citation_inventory.json"
+    output = args.output or article / "citation_inventory.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps({
         "records": records, "missing_title_doi_or_url": missing,
         "bibliography_matches_first_use_order": keys == first_use,

@@ -755,7 +755,7 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 | 2D | [alpha-In2Se3](examples/2D_Slab/alpha_In2Se3_PBE) | ABACUS + PYATB, PBE | `Z*(In(2),parallel) = 4.016 e`; `Z*(In(2),zz) = 0.278 e` |
 | 1D | [BN(9,0)](examples/1D_Nanowire/BN_9_0) | ABACUS + PYATB, PBE | `(Zrr,Ztt,Zzz)_B = (0.397,1.256,2.745) e` |
 | 0D | [H2O](examples/0D_Molecules/H2O_unified) | ABACUS + PYATB, PBE | `q_GAPT(O) = -0.481 e`; `q_GAPT(H) = +0.240 e` |
-| 0D | [CH4](examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.0208 e`; `q_GAPT(H) = +0.0052 e` |
+| 0D | [CH4](examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.021 e`; `q_GAPT(H) = +0.005 e` |
 
 周期体系行列出 BEC 的代表分量。分子行列出原子极化张量的旋转不变量
 `q_GAPT = Tr(A)/3`，不应将其解释为周期晶体 BEC。

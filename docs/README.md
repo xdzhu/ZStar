@@ -96,7 +96,7 @@ from both routes. Exact counts and timing provenance are available in the
 | Potential maps, profiles and vacuum steps | [Electrostatic potential](potential_examples.md) | `zstar pot` |
 | Configure executables, MPI/OMP and PP/orbitals | [Configuration and assets](cli_reference.md#calculator-configuration) | `zstar config` |
 | Shell, Slurm and Torque/PBS execution | [Job headers](job_headers.md) | `zstar bec/phonon/spectra job` |
-| Agent-assisted execution | [Agent skill](agent_skill.md) | `zstar skill` |
+| Agent-assisted execution | [agent skill](agent_skill.md) | `zstar skill` |
 
 The command-reference tables list actions, not literal slash-containing commands.
 For example, run `zstar bec pre --stru STRU`, then `zstar bec run`, followed by

@@ -1,3 +1,15 @@
+## 0.3.3 - 2026-09-09
+
+- Align the packaged agent skill with the public Unified BEC, Gamma-phonon,
+  dielectric, IR, and Raman workflows, including configured executable lookup
+  and current completion contracts.
+- Keep runtime and distribution versions consistent and add a regression test
+  for installed-package metadata.
+- Refresh the bilingual manuals, PyPI-facing links, representative molecular
+  values, and final literature numbering in the spectroscopy figure.
+- Record the final manuscript citation order, including the verified
+  Berry-phase monograph, without changing retained numerical results.
+
 ## 0.3.2 - 2026-09-08
 
 - Complete the canonical `zstar spectra post` option forwarding and add

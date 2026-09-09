@@ -1766,7 +1766,7 @@ def main(
     from .shared_abacus import MANIFEST, collect_shared_abacus
     if Path(MANIFEST).is_file():
         if displacement_angstrom is not None:
-            raise ValueError('Shared responses use actual STRU displacement vectors; do not override --displacement during postprocessing')
+            raise ValueError('Unified responses use actual STRU displacement vectors; do not override --displacement during postprocessing')
         return collect_shared_abacus('.')
 
     if displacement_angstrom is None:

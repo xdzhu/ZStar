@@ -1,9 +1,12 @@
 import json
+from importlib.metadata import version
 from pathlib import Path
 import tempfile
 import unittest
 
+from zstar import __version__
 from zstar.agent_skill import (
+    LANES,
     SKILL_NAME,
     install_agent_skill,
     packaged_skill_path,
@@ -12,6 +15,13 @@ from zstar.agent_skill import (
 
 
 class AgentSkillTests(unittest.TestCase):
+    def test_runtime_version_matches_distribution_metadata(self):
+        self.assertEqual(__version__, version("zstar"))
+
+    def test_preflight_lanes_match_public_workflows(self):
+        self.assertNotIn("md", LANES)
+        self.assertIn("raman", LANES)
+
     def test_skill_name_and_frontmatter_match_directory(self):
         skill = packaged_skill_path()
         text = (skill / "SKILL.md").read_text(encoding="utf-8")

@@ -115,7 +115,7 @@ the SiC Quick Start using the following locations:
 
 - ZStar source: $HOME/software/zstar
 - Python environment: $HOME/.venvs/zstar
-- Agent skills directory: $HOME/.codex/skills
+- agent skills directory: $HOME/.codex/skills
 - Calculation workspace: $HOME/zstar-work/SiC
 
 Clone https://github.com/xdzhu/ZStar.git into $HOME/software/zstar. Create the
@@ -328,7 +328,7 @@ zstar config check
 zstar backend list --check
 ```
 
-## Agent skill
+## agent skill
 
 Install the bundled, standards-compliant `$run-zstar-workflows` skill after
 installing ZStar:
@@ -825,7 +825,7 @@ settings behind these representative values:
 | 2D | [Alpha-In2Se3](examples/2D_Slab/alpha_In2Se3_PBE) | ABACUS + PYATB, PBE | `Z*(In(2),parallel) = 4.016 e`; `Z*(In(2),zz) = 0.278 e` |
 | 1D | [BN(9,0)](examples/1D_Nanowire/BN_9_0) | ABACUS + PYATB, PBE | `(Zrr,Ztt,Zzz)_B = (0.397,1.256,2.745) e` |
 | 0D | [H2O](examples/0D_Molecules/H2O_unified) | ABACUS + PYATB, PBE | `q_GAPT(O) = -0.481 e`; `q_GAPT(H) = +0.240 e` |
-| 0D | [CH4](examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.0208 e`; `q_GAPT(H) = +0.0052 e` |
+| 0D | [CH4](examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.021 e`; `q_GAPT(H) = +0.005 e` |
 
 Periodic entries are selected BEC components. Molecular entries are the
 rotational invariant `q_GAPT = Tr(A)/3` of the atomic polar tensor; they should
