@@ -22,7 +22,7 @@
 
 ## 证据状态
 
-* 最近一次完整回归为 `432 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动
+* 最近一次完整回归为 `434 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动
   以及 v2 draft tests）；警告均为现有依赖的弃用提示，没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
