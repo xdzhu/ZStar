@@ -39,7 +39,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 | `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换（draft 已实现） | 生成结构文件 |
 | `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |
 | `ensemble.py` | 联合 polarization/force/stress/displacement task graph、v2 状态（draft 已实现） | 具体命令行 |
-| `backends/abacus.py` | 调用既有 ABACUS/PYATB adapter 并收集输出 | 修改 ABACUS |
+| `backends/abacus.py` | 调用既有 ABACUS/PYATB adapter 并收集输出；当前 `v2/abacus.py` 已支持可选 Berry triplet 到统一文档 | 修改 ABACUS |
 | `backends/{vasp,cp2k,qe,abinit}.py` | 能力声明和后续交叉验证 | 假设未验证能力 |
 | `phase.py` | 参考相配对、插值、branch matching、路径检查 | 默认执行 NEB |
 | `finite_temperature.py` | 外部 ML/q-NEP 数据导出/回读、统计分析 | 训练 ML 势 |
@@ -73,6 +73,12 @@ diagnostics: {rank: ..., residual: ..., condition_number: ...}
 functional、pseudopotential/orbital、k mesh、cutoff、SCF thresholds、perturbation
 vectors、task graph、restart state、CPU/wall-time 和失败事件。所有矩阵轴要能由
 metadata 唯一解释；不允许匿名数组。
+
+当前 ABACUS collector 在显式传入每个 ensemble stage 的 `gdir=1,2,3` 目录映射时，
+写入 `polarization_gdir`（晶格方向标量）、`polarization_quantum` 和可选的
+`polarization_cartesian_directional`（每个 gdir 的 Cartesian tuple）。后者只有在
+所有方向都提供 tuple 时才生成；缺失数据不补零。branch matching 仍是独立的
+后处理步骤，不能从这三个 quantity 自动推断自发极化。
 
 ## 4. Task graph 和恢复
 

@@ -54,6 +54,22 @@ def _stage(path: Path, *, stress: bool = True, energy: bool = True) -> None:
     (path / "time.json").write_text(json.dumps({"total": 1.25}), encoding="utf-8")
 
 
+def _polarization_triplet(path: Path, values: tuple[float, float, float], *, tuples: bool = True) -> dict[int, Path]:
+    paths: dict[int, Path] = {}
+    for direction, value in enumerate(values, start=1):
+        stage = path / f"gdir-{direction}"
+        output = stage / "OUT.POLAR"
+        output.mkdir(parents=True)
+        (stage / "INPUT").write_text(f"gdir {direction}\n", encoding="utf-8")
+        suffix = f" ({value}, 0, 0)" if tuples else ""
+        (output / "running_nscf.log").write_text(
+            f"P = {value} (mod 10){suffix} C/m^2\n",
+            encoding="utf-8",
+        )
+        paths[direction] = stage
+    return paths
+
+
 def test_collect_abacus_stage_parses_force_stress_and_iterations(tmp_path):
     stage = tmp_path / "reference"
     _stage(stage)
@@ -157,3 +173,48 @@ def test_collect_abacus_strain_response_does_not_zero_fill_missing_energy(tmp_pa
     document = collect_abacus_strain_response(root)
     assert "energy" not in {quantity.name for quantity in document.quantities}
     assert document.metadata["energy_collected"] is False
+
+
+def test_collect_abacus_strain_response_optionally_adds_polarization_quantities(tmp_path):
+    root = tmp_path / "ensemble"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    polarization = {"reference": _polarization_triplet(tmp_path / "polar" / "reference", (0.0, 0.0, 0.0))}
+    for stage in stages:
+        polarization[stage.stage_id] = _polarization_triplet(
+            tmp_path / "polar" / stage.stage_id,
+            (0.1, 0.2, 0.3),
+        )
+    document = collect_abacus_strain_response(root, polarization_stages=polarization)
+    assert document.quantity("polarization_gdir").shape == (3, 3)
+    assert document.quantity("polarization_quantum").shape == (3, 3)
+    assert document.quantity("polarization_cartesian_directional").shape == (3, 3, 3)
+    assert document.quantity("polarization_gdir").coordinate_system == "lattice_direction_scalar"
+    assert document.metadata["polarization_collected"] is True
+    assert document.metadata["polarization_cartesian_collected"] is True
+
+
+def test_collect_abacus_strain_response_rejects_missing_polarization_mapping(tmp_path):
+    root = tmp_path / "ensemble"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match="missing mappings"):
+        collect_abacus_strain_response(root, polarization_stages={})

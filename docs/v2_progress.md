@@ -47,12 +47,15 @@
     并用 triplet collection → reference branch matching → 对称性约束 e fit 串联审计；
     结果为 `Pm-3m` 禁止的零 e，完整记录见
     [`v2_abacus_strain_polarization_smoke_20260912.md`](v2_abacus_strain_polarization_smoke_20260912.md)。
-17. 上述 9 阶段全量回归保持 `454 passed, 1252 warnings`；准备目录、远端原始日志、
+17. 上述 9 阶段全量回归保持 `456 passed, 1252 warnings`；准备目录、远端原始日志、
     parser 输出和对称性 fit 诊断均已保留，尚未把该零响应提升为一般材料压电结论。
+18. `collect_abacus_strain_response` 现支持显式 `polarization_stages` 映射，将
+    triplet 的晶格方向标量、量子和可选 Cartesian directional tuple 写入 v2 schema；
+    未提供映射时 force/stress/energy 旧行为保持不变。
 
 ## 证据状态
 
-* 本阶段全量回归为 `454 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+* 本阶段全量回归为 `456 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
   v2 draft tests）；Berry 极化/ensemble 定向测试为 `15 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。

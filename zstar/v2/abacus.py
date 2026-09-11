@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import re
-from typing import Any
+from typing import Any, Mapping
 
 import numpy as np
 
@@ -13,6 +13,7 @@ from ..dimensions import DimensionSpec
 from ..shared_response import read_structure
 from .ensemble import ResponseEnsemble
 from .model import BoundaryConditions, ResponseDocument, TensorQuantity
+from .polarization import PolarizationSample, collect_abacus_polarization_triplet
 
 
 def _single_log(stage: Path) -> Path:
@@ -126,8 +127,18 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     }
 
 
-def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
-    """Collect reference and strain stages into a v2 response document."""
+def collect_abacus_strain_response(
+    root: str | Path,
+    *,
+    polarization_stages: Mapping[str, Mapping[int | str, str | Path]] | None = None,
+) -> ResponseDocument:
+    """Collect reference and strain stages into a v2 response document.
+
+    ``polarization_stages`` is an optional explicit map from each ensemble
+    stage name to three ABACUS Berry ``gdir`` directories.  Keeping this map
+    separate avoids assuming a backend-specific directory layout and prevents
+    missing Berry data from being silently filled with zeros.
+    """
 
     base = Path(root).resolve()
     ensemble = ResponseEnsemble.read(base / "ensemble.json")
@@ -200,6 +211,69 @@ def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
                 provenance={"stage_names": stage_names},
             )
         )
+    polarization_samples: list[PolarizationSample] = []
+    if polarization_stages is not None:
+        missing = [name for name in stage_names if name not in polarization_stages]
+        if missing:
+            raise ValueError(
+                "polarization_stages is missing mappings for ensemble stages: "
+                + ", ".join(missing)
+            )
+        polarization_samples = [
+            collect_abacus_polarization_triplet(polarization_stages[name])
+            for name in stage_names
+        ]
+        polarization_boundary = BoundaryConditions(electric="E", mechanical="strain")
+        quantities.append(
+            TensorQuantity(
+                name="polarization_gdir",
+                values=np.asarray([sample.values for sample in polarization_samples]),
+                unit="C/m^2",
+                axes=("stage", "gdir"),
+                coordinate_system="lattice_direction_scalar",
+                boundary_conditions=polarization_boundary,
+                periodic_axes=dimensions.periodic_axes,
+                normalization="cell_volume",
+                source="abacus_berry",
+                backend="abacus",
+                provenance={
+                    "stage_names": stage_names,
+                    "logs": [list(sample.logs) for sample in polarization_samples],
+                    "raw_units": [list(sample.raw_units) for sample in polarization_samples],
+                },
+            )
+        )
+        quantities.append(
+            TensorQuantity(
+                name="polarization_quantum",
+                values=np.asarray([sample.quanta for sample in polarization_samples]),
+                unit="C/m^2",
+                axes=("stage", "gdir"),
+                coordinate_system="lattice_direction_scalar",
+                boundary_conditions=polarization_boundary,
+                periodic_axes=dimensions.periodic_axes,
+                normalization="cell_volume",
+                source="abacus_berry",
+                backend="abacus",
+                provenance={"stage_names": stage_names},
+            )
+        )
+        if all(sample.cartesian_values is not None for sample in polarization_samples):
+            quantities.append(
+                TensorQuantity(
+                    name="polarization_cartesian_directional",
+                    values=np.asarray([sample.cartesian_values for sample in polarization_samples]),
+                    unit="C/m^2",
+                    axes=("stage", "gdir", "cartesian"),
+                    coordinate_system="cartesian_right_handed",
+                    boundary_conditions=polarization_boundary,
+                    periodic_axes=dimensions.periodic_axes,
+                    normalization="cell_volume",
+                    source="abacus_berry",
+                    backend="abacus",
+                    provenance={"stage_names": stage_names},
+                )
+            )
     first_parameters = records[0]["input_parameters"]
     provenance = {
         "reference_hash": ensemble.reference_hash,
@@ -232,7 +306,10 @@ def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
         restart_state={"ensemble": str(base / "ensemble.json")},
         metadata={
             "stage_count": len(records),
-            "polarization_collected": False,
+            "polarization_collected": polarization_stages is not None,
+            "polarization_cartesian_collected": bool(
+                polarization_samples and all(sample.cartesian_values is not None for sample in polarization_samples)
+            ),
             "energy_collected": all(value is not None for value in energies),
         },
     )
