@@ -9,6 +9,8 @@ from zstar.v2 import (
     BOHR_RADIUS,
     ELEMENTARY_CHARGE,
     MatchedPolarizationEnsemble,
+    PolarizationSample,
+    assemble_cartesian_polarization,
     collect_abacus_polarization_component,
     collect_abacus_polarization_stage,
     collect_abacus_polarization_triplet,
@@ -127,6 +129,21 @@ def test_collect_abacus_polarization_triplet_orders_by_declared_gdir(tmp_path):
     np.testing.assert_allclose(sample.values, [1.0, 2.0, 3.0])
     np.testing.assert_allclose(sample.cartesian_values, np.diag([1.0, 2.0, 3.0]))
     assert all(Path(path).is_file() for path in sample.logs)
+
+
+def test_assemble_cartesian_polarization_sums_directional_components():
+    sample = PolarizationSample(
+        values=[1.0, 2.0, 3.0],
+        quanta=[10.0, 10.0, 10.0],
+        cartesian_values=np.diag([1.0, 2.0, 3.0]),
+    )
+    np.testing.assert_allclose(assemble_cartesian_polarization(sample), [1.0, 2.0, 3.0])
+
+
+def test_assemble_cartesian_polarization_rejects_missing_directional_tuple():
+    sample = PolarizationSample(values=[0.0, 0.0, 0.0], quanta=[1.0, 1.0, 1.0])
+    with pytest.raises(ValueError, match="cannot be zero-filled"):
+        assemble_cartesian_polarization(sample)
 
 
 def test_collect_abacus_polarization_triplet_rejects_missing_or_duplicate_gdir(tmp_path):

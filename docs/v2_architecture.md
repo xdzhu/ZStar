@@ -80,6 +80,12 @@ metadata 唯一解释；不允许匿名数组。
 所有方向都提供 tuple 时才生成；缺失数据不补零。branch matching 仍是独立的
 后处理步骤，不能从这三个 quantity 自动推断自发极化。
 
+ABACUS [官方 Berry phase 文档](https://abacus.deepmodeling.com/en/v3.6.2/advanced/elec_properties/Berry_phase.html)
+把括号 tuple 定义为“沿所选晶格方向的 Cartesian components”，因此
+三行 tuple 不是 `(x,y,z)` 标量向量。若三方向 tuple 全部存在，collector 另写入
+`polarization_cartesian`，其值是三个轴向贡献的显式求和；原始 directional quantity
+仍保留，便于审计。这里不对非正交晶胞做隐含旋转或分支选择。
+
 当前 collector 对 `dimensionality < 3` 的 Berry 极化请求明确拒绝。ABACUS 的原始
 `C/m^2` 值按三维晶胞体积归一化；二维 slab 还必须乘以明确的非周期长度得到
 sheet polarization，且该长度/表面边界条件不能由通用 collector 猜测。一维和

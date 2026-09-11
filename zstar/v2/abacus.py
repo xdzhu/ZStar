@@ -13,7 +13,11 @@ from ..dimensions import DimensionSpec
 from ..shared_response import read_structure
 from .ensemble import ResponseEnsemble
 from .model import BoundaryConditions, ResponseDocument, TensorQuantity
-from .polarization import PolarizationSample, collect_abacus_polarization_triplet
+from .polarization import (
+    PolarizationSample,
+    assemble_cartesian_polarization,
+    collect_abacus_polarization_triplet,
+)
 
 
 def _single_log(stage: Path) -> Path:
@@ -279,6 +283,26 @@ def collect_abacus_strain_response(
                     source="abacus_berry",
                     backend="abacus",
                     provenance={"stage_names": stage_names},
+                )
+            )
+            quantities.append(
+                TensorQuantity(
+                    name="polarization_cartesian",
+                    values=np.asarray(
+                        [assemble_cartesian_polarization(sample) for sample in polarization_samples]
+                    ),
+                    unit="C/m^2",
+                    axes=("stage", "cartesian"),
+                    coordinate_system="cartesian_right_handed",
+                    boundary_conditions=polarization_boundary,
+                    periodic_axes=dimensions.periodic_axes,
+                    normalization="cell_volume",
+                    source="abacus_berry_axis_sum",
+                    backend="abacus",
+                    provenance={
+                        "stage_names": stage_names,
+                        "assembly": "sum of three axis-resolved Cartesian tuples",
+                    },
                 )
             )
     first_parameters = records[0]["input_parameters"]

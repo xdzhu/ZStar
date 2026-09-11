@@ -80,7 +80,8 @@ output_kind="polarization")` 的允许秩为 0。将匹配结果交给
 * `strain_vector` `(3, 6)`、`forces` `(3, 5, 3)`、`stress_raw` `(3, 3, 3)` 和
   `energy` `(3,)`；
 * `polarization_gdir`、`polarization_quantum` `(3, 3)`，以及完整的
-  `polarization_cartesian_directional` `(3, 3, 3)`；
+  `polarization_cartesian_directional` `(3, 3, 3)` 和显式轴向求和后的
+  `polarization_cartesian` `(3, 3)`；
 * `polarization_collected=true`、`polarization_cartesian_collected=true`，每个量的
   单位/轴/后端/日志 provenance。
 

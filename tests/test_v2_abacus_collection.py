@@ -198,6 +198,10 @@ def test_collect_abacus_strain_response_optionally_adds_polarization_quantities(
     assert document.quantity("polarization_gdir").shape == (3, 3)
     assert document.quantity("polarization_quantum").shape == (3, 3)
     assert document.quantity("polarization_cartesian_directional").shape == (3, 3, 3)
+    np.testing.assert_allclose(
+        document.quantity("polarization_cartesian").values,
+        [[0.0, 0.0, 0.0], [0.6, 0.0, 0.0], [0.6, 0.0, 0.0]],
+    )
     assert document.quantity("polarization_gdir").coordinate_system == "lattice_direction_scalar"
     assert document.metadata["polarization_collected"] is True
     assert document.metadata["polarization_cartesian_collected"] is True

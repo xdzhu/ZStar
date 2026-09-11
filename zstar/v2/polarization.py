@@ -259,6 +259,25 @@ class PolarizationSample:
         object.__setattr__(self, "quanta", quanta)
 
 
+def assemble_cartesian_polarization(sample: PolarizationSample) -> np.ndarray:
+    """Sum ABACUS axis-resolved Cartesian polarization contributions.
+
+    ABACUS documents the parenthesized tuple as the Cartesian components of
+    the polarization *along the selected lattice direction*. Consequently,
+    the three rows are directional contributions, not a Cartesian vector in
+    ``(x, y, z)`` order. This helper performs only the explicit, documented
+    sum and refuses to infer missing rows or transform a non-orthogonal cell.
+    """
+
+    if sample.cartesian_values is None:
+        raise ValueError(
+            "Cartesian polarization assembly requires a tuple for each gdir; "
+            "missing ABACUS directional components cannot be zero-filled"
+        )
+    result = np.sum(np.asarray(sample.cartesian_values, dtype=float), axis=0)
+    return _finite_vector(result, "assembled Cartesian polarization")
+
+
 def collect_abacus_polarization_stage(stage: str | Path) -> PolarizationSample:
     """Collect ``running_nscf_{a,b,c}.log`` without branch unwrapping."""
 
