@@ -38,6 +38,9 @@
 13. 已加入 `prepare_abacus_berry_stages` dry-run：从已完成的 SCF stage 复制
     `STRU/KPT/赝势/轨道/charge restart`，生成三个独立 NSCF `gdir` 目录和 manifest，
     明确写入 `init_chg/read_file_dir/berry_phase/symmetry`，但不执行 ABACUS。
+14. 已将该 dry-run 生成的 `gdir-3` 目录在 cu26 做单阶段实跑：ABACUS 原始
+    `exit_code=0`、wall time 57.40 s，Berry parser 回读成功；外层 Windows→SSH
+    CRLF 包装返回码单独保留，未与 ABACUS 状态混淆。
 
 ## 证据状态
 

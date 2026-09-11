@@ -41,7 +41,7 @@ ABACUS 官方 Berry 文档要求先有 SCF 电荷，再以 `calculation nscf`、
 
 三个阶段 `time.json` 的 ABACUS wall time 分别为 56.9934 s、57.2715 s 和
 56.5239 s，总计约 170.79 s（单线程 wall-time；不等同于完整生产计算的
-core-hours）。每阶段均以 `exit_code=2` 记录 ABACUS 正常完成的返回码，同时
+core-hours）。每阶段均以 `exit_code=0` 记录 ABACUS 正常完成的返回码，同时
 保存了输入、`running_scf.log`、`running_nscf.log` 和 charge restart。
 
 将本地目录按故意打乱的顺序 `polar-c, polar-a, polar-b` 交给
@@ -54,6 +54,12 @@ core-hours）。每阶段均以 `exit_code=2` 记录 ABACUS 正常完成的返�
 包含独立 `INPUT/STRU/KPT`、赝势/轨道和 `OUT.POLAR/POLAR-CHARGE-DENSITY.restart`，
 并在 manifest 中记录 `executed=false`。这只是任务准备审计，尚未运行应变 Berry
 生产阶段。
+
+为验证 dry-run 的目录可直接执行，又将生成的 `gdir-3` 单独上传到 cu26 运行。
+ABACUS 原始 `exit_code=0`，wall time 为 57.40 s，解析得到
+`gdir=3`、`value=-0.0 C/m²`、`quantum=2.0199409 C/m²` 和 Cartesian tuple
+`[-0.0, 0.0, -0.0] C/m²`。外层 PowerShell 包装因 CRLF 在 `exit` 时返回 1，
+但该包装问题与 ABACUS 计算结果分开记录，原始日志和 `time.txt` 均已保留。
 
 解析器 `zstar.v2.polarization` 的约束为：
 
