@@ -1,6 +1,7 @@
 """Research-only ZStar v2 API, isolated from the stable v1 surface."""
 
 from .algebra import internal_strain_response, relaxed_elastic, relaxed_piezoelectric
+from .abacus import collect_abacus_stage, collect_abacus_strain_response
 from .ensemble import PerturbationStage, ResponseEnsemble, V2StateStore, plan_central_stages
 from .fit import LinearFitResult, central_difference, fit_linear_response
 from .mechanical import (
@@ -54,6 +55,8 @@ __all__ = [
     "TensorQuantity",
     "UnitConversionError",
     "V2StateStore",
+    "collect_abacus_stage",
+    "collect_abacus_strain_response",
     "V2_SCHEMA_NAME",
     "V2_SCHEMA_VERSION",
     "central_difference",

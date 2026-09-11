@@ -86,6 +86,7 @@ def test_unit_conversions_are_explicit():
     assert np.isclose(convert_values([1.0], "angstrom", "m")[0], 1.0e-10)
     assert np.isclose(convert_values([1.0], "eV/angstrom", "N")[0], 1.602176634e-9)
     assert np.isclose(convert_values([1.0], "GPa", "Pa")[0], 1.0e9)
+    assert np.isclose(convert_values([1.0], "kbar", "GPa")[0], 0.1)
     assert np.isclose(convert_dielectric([2.0], "relative", "F/m")[0], 2.0 * 8.8541878128e-12)
     with pytest.raises(UnitConversionError):
         convert_values([1.0], "1", "F/m")

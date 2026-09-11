@@ -27,6 +27,7 @@ def _canonical(unit: str) -> str:
         "ev/angstrom": "ev_per_angstrom",
         "n": "n",
         "gpa": "gpa",
+        "kbar": "kbar",
         "pa": "pa",
         "eå": "e_angstrom",
         "ea": "e_angstrom",
@@ -53,6 +54,7 @@ _FACTORS = {
     "ev_per_angstrom": (ELEMENTARY_CHARGE / 1.0e-10, "force"),
     "n": (1.0, "force"),
     "gpa": (1.0e9, "pressure"),
+    "kbar": (1.0e8, "pressure"),
     "pa": (1.0, "pressure"),
     "dimensionless": (1.0, "dimensionless"),
 }
