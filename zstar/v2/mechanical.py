@@ -10,6 +10,36 @@ import numpy as np
 ENGINEERING_VOIGT = ("xx", "yy", "zz", "yz", "xz", "xy")
 
 
+def convert_stress_sign(
+    stress: np.ndarray | Iterable[float],
+    *,
+    from_sign: str,
+    to_sign: str = "tension-positive",
+) -> np.ndarray:
+    """Convert an explicitly known stress sign convention.
+
+    ``backend-raw`` and any other unrecognized convention are intentionally
+    rejected: a parser must not silently guess whether a calculator reports
+    compression or tension as positive.  The function accepts arbitrary
+    tensor shapes so it can be applied before Voigt conversion.
+    """
+
+    source = str(from_sign).strip().lower()
+    target = str(to_sign).strip().lower()
+    known = {"tension-positive", "compression-positive"}
+    if source not in known:
+        raise ValueError(
+            f"cannot convert unknown stress sign {from_sign!r}; "
+            "provide tension-positive or compression-positive explicitly"
+        )
+    if target not in known:
+        raise ValueError(f"unsupported target stress sign {to_sign!r}")
+    array = np.asarray(stress, dtype=float)
+    if not np.all(np.isfinite(array)):
+        raise ValueError("stress contains non-finite values")
+    return np.array(array, copy=True) if source == target else -np.array(array, copy=True)
+
+
 def _matrix3(value: np.ndarray | Iterable[Iterable[float]], name: str) -> np.ndarray:
     array = np.asarray(value, dtype=float)
     if array.shape != (3, 3):

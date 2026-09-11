@@ -7,6 +7,7 @@ from typing import Iterable
 
 import numpy as np
 
+from .mechanical import convert_stress_sign, stress_tensor_to_voigt
 from .symmetry import IntertwinerBasis
 
 
@@ -142,4 +143,59 @@ def fit_linear_response(
         residual_max=residual_max,
         residual_rms=residual_rms,
         residual_relative=residual_relative,
+    )
+
+
+def _stress_observations_to_voigt(observations: np.ndarray | Iterable[object]) -> np.ndarray:
+    values = np.asarray(observations, dtype=float)
+    if values.ndim == 3 and values.shape[1:] == (3, 3):
+        return np.asarray([stress_tensor_to_voigt(value) for value in values], dtype=float)
+    if values.ndim == 2 and values.shape[1] == 6:
+        return values
+    raise ValueError(
+        "stress observations must have shape (samples, 3, 3) or (samples, 6); "
+        f"got {values.shape}"
+    )
+
+
+def fit_elastic_response(
+    actual_strains: Iterable[Iterable[float]],
+    stress_observations: np.ndarray | Iterable[object],
+    *,
+    reference_stress: np.ndarray | Iterable[float] | None = None,
+    stress_sign: str = "tension-positive",
+    allowed_basis: IntertwinerBasis | None = None,
+    sample_weights: Iterable[float] | None = None,
+    svd_cutoff: float | None = None,
+) -> LinearFitResult:
+    """Fit ``Δσ = C η`` with explicit stress-sign and rank diagnostics.
+
+    Strain rows must be the actual serialized engineering-Voigt vectors from
+    generated structures.  Stress may be supplied as symmetric 3x3 tensors
+    or work-conjugate six-vectors.  ``backend-raw`` is rejected until the
+    backend convention has been independently established.  If a reference
+    stress is supplied it is subtracted before fitting, which avoids treating
+    residual hydrostatic stress as an elastic response.
+    """
+
+    strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
+    stresses = _stress_observations_to_voigt(stress_observations)
+    if strains.ndim != 2 or strains.shape[1] != 6:
+        raise ValueError(f"actual_strains must have shape (samples, 6); got {strains.shape}")
+    if strains.shape[0] != stresses.shape[0]:
+        raise ValueError(
+            f"strain/stress sample counts differ: {strains.shape[0]} and {stresses.shape[0]}"
+        )
+    reference = np.zeros(6, dtype=float) if reference_stress is None else np.asarray(reference_stress, dtype=float)
+    if reference.shape == (3, 3):
+        reference = stress_tensor_to_voigt(reference)
+    if reference.shape != (6,) or not np.all(np.isfinite(reference)):
+        raise ValueError("reference_stress must have shape (6,) or (3, 3) and be finite")
+    converted = convert_stress_sign(stresses - reference, from_sign=stress_sign)
+    return fit_linear_response(
+        strains,
+        converted,
+        allowed_basis=allowed_basis,
+        sample_weights=sample_weights,
+        svd_cutoff=svd_cutoff,
     )

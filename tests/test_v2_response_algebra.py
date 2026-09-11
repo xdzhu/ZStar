@@ -5,6 +5,8 @@ import pytest
 
 from zstar.v2 import (
     central_difference,
+    convert_stress_sign,
+    fit_elastic_response,
     fit_linear_response,
     internal_strain_response,
     intertwiner_basis,
@@ -13,6 +15,67 @@ from zstar.v2 import (
     relaxed_elastic,
     relaxed_piezoelectric,
 )
+
+
+def test_stress_sign_conversion_rejects_backend_raw_and_flips_known_signs():
+    stress = np.array([[1.0, -2.0], [3.0, 4.0]])
+    np.testing.assert_allclose(
+        convert_stress_sign(stress, from_sign="compression-positive"), -stress
+    )
+    np.testing.assert_allclose(
+        convert_stress_sign(stress, from_sign="tension-positive"), stress
+    )
+    with pytest.raises(ValueError, match="unknown stress sign"):
+        convert_stress_sign(stress, from_sign="backend-raw")
+
+
+def test_fit_elastic_response_uses_reference_and_reports_rank():
+    strains = np.array(
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.02, 0.0, 0.0, 0.0, 0.0],
+            [0.01, 0.02, 0.0, 0.0, 0.0, 0.0],
+        ]
+    )
+    expected = np.diag([100.0, 200.0, 300.0, 40.0, 50.0, 60.0])
+    residual_stress = np.array([2.0, -1.0, 0.5, 0.0, 0.0, 0.0])
+    observations = residual_stress + strains @ expected.T
+    result = fit_elastic_response(
+        strains,
+        observations,
+        reference_stress=residual_stress,
+    )
+    np.testing.assert_allclose(result.matrix[:2, :2], expected[:2, :2], atol=1.0e-12)
+    assert result.input_rank == 2
+    assert result.fit_rank == 12
+    assert result.allowed_rank == 36
+    assert not result.complete
+    assert result.residual_max < 1.0e-12
+
+
+def test_fit_elastic_response_converts_compression_positive_tensor_stress():
+    strains = np.array([[0.0] * 6, [0.01, 0.0, 0.0, 0.0, 0.0, 0.0]])
+    expected = np.diag([100.0, 80.0, 70.0, 40.0, 50.0, 60.0])
+    tension_stress = strains @ expected.T
+    compression_positive = -np.asarray(
+        [
+            np.array(
+                [
+                    [row[0], row[5], row[4]],
+                    [row[5], row[1], row[3]],
+                    [row[4], row[3], row[2]],
+                ]
+            )
+            for row in tension_stress
+        ]
+    )
+    result = fit_elastic_response(
+        strains,
+        compression_positive,
+        stress_sign="compression-positive",
+    )
+    np.testing.assert_allclose(result.matrix[:, 0], expected[:, 0])
 
 
 def test_actual_serialized_vectors_are_used_for_central_difference():

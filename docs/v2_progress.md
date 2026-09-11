@@ -13,10 +13,13 @@
    `.zstar/v2` 原子替换状态/ensemble 原型；这些仍需评审后再冻结。
 4. ABACUS force/stress 输出解析已接入 draft `ResponseDocument`，真实 smoke 结果已
    成功回读，见 [`v2_abacus_smoke_20260912.md`](v2_abacus_smoke_20260912.md)。
+5. 已增加显式 stress-sign 转换和 `fit_elastic_response` draft API：未知的
+   `backend-raw` 符号会被拒绝，拟合使用实际序列化应变并返回 rank/residual。
 
 ## 证据状态
 
-* v1 与现有工作区测试：`420 passed`（包含当前未提交的 v1/声子谱改动以及 v2 draft tests）。
+* 最近一次完整回归为 `426 passed, 1177 warnings`（包含当前未提交的 v1/声子谱改动
+  以及 v2 draft tests）；警告均为现有依赖的弃用提示，没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
@@ -24,9 +27,9 @@
 
 ## 资源状态
 
-PBS 只读检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别被当前用户的
-40 核长时任务占用，节点负载接近空闲但不能视为可随意复用。未在这些作业中注入新计算，
-避免破坏既有作业的资源/计费边界。
+PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当前用户的
+40 核占位作业持有。用户已明确授权在这些节点上直接运行 v2；后续仍须每个节点不
+超过 40 核、先做 smoke、记录 MPI/OpenMP/wall time，并避免修改占位作业本身。
 
 ## 当前门控
 
@@ -39,6 +42,6 @@ PBS 只读检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别�
 
 1. 评审并冻结 draft schema 的字段语义、单位注册表、边界条件和错误契约；
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
-3. 检查 `cu24–cu26` 既有作业是否结束或由用户明确释放一个作业环境；
-4. 完成 cubic BaTiO3 六分量、多幅度 clamped-ion 任务，记录输入哈希、SCF、wall time 和日志；
-5. 先解析 ABACUS stress 符号/单位，再开始 relaxed-ion 应变任务和独立后端对照。
+3. 完成 cubic BaTiO3 六分量、多幅度 clamped-ion 任务，记录输入哈希、SCF、wall time 和日志；
+4. 通过 ABACUS 输出/文档和独立小算例确认 stress 符号/单位，再开始 relaxed-ion 应变任务；
+5. 以独立后端或高精度参考结果核对完整 C 矩阵，之后才进入正式压电/弹性 CLI 设计。
