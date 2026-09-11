@@ -218,3 +218,27 @@ def test_collect_abacus_strain_response_rejects_missing_polarization_mapping(tmp
     ).write(root / "ensemble.json")
     with pytest.raises(ValueError, match="missing mappings"):
         collect_abacus_strain_response(root, polarization_stages={})
+
+
+def test_collect_abacus_strain_response_rejects_low_dimensional_berry_without_normalization(tmp_path):
+    root = tmp_path / "ensemble"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        dimensionality=2,
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    polarization = {"reference": _polarization_triplet(tmp_path / "polar" / "reference", (0.0, 0.0, 0.0))}
+    for stage in stages:
+        polarization[stage.stage_id] = _polarization_triplet(
+            tmp_path / "polar" / stage.stage_id,
+            (0.1, 0.2, 0.3),
+        )
+    with pytest.raises(ValueError, match="dimensionality=3"):
+        collect_abacus_strain_response(root, polarization_stages=polarization)

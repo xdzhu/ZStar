@@ -52,6 +52,9 @@
 18. `collect_abacus_strain_response` 现支持显式 `polarization_stages` 映射，将
     triplet 的晶格方向标量、量子和可选 Cartesian directional tuple 写入 v2 schema；
     未提供映射时 force/stress/energy 旧行为保持不变。
+19. 已加入低维安全门：`dimensionality < 3` 的 ABACUS Berry 极化不会被按三维
+    `C/m^2` 静默收集；在 sheet/line 归一化、真空依赖和边界条件明确前，collector
+    给出可操作的失败提示。对应 failure-matrix 测试已加入。
 
 ## 证据状态
 

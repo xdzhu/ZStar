@@ -80,6 +80,12 @@ metadata 唯一解释；不允许匿名数组。
 所有方向都提供 tuple 时才生成；缺失数据不补零。branch matching 仍是独立的
 后处理步骤，不能从这三个 quantity 自动推断自发极化。
 
+当前 collector 对 `dimensionality < 3` 的 Berry 极化请求明确拒绝。ABACUS 的原始
+`C/m^2` 值按三维晶胞体积归一化；二维 slab 还必须乘以明确的非周期长度得到
+sheet polarization，且该长度/表面边界条件不能由通用 collector 猜测。一维和
+分子体系同理需要 line/dipole 规范。低维归一化接口在理论和独立验证完成前保持
+未实现，不得把真空依赖的数值写成稳定本征响应。
+
 ## 4. Task graph 和恢复
 
 v2 采用 reference-first、serial-resumable 的图：

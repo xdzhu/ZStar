@@ -213,6 +213,13 @@ def collect_abacus_strain_response(
         )
     polarization_samples: list[PolarizationSample] = []
     if polarization_stages is not None:
+        if dimensions.value != 3:
+            raise ValueError(
+                "ABACUS Berry polarization collection currently requires "
+                "dimensionality=3; for 2D/1D systems the raw C/m^2 output "
+                "depends on the non-periodic cell length and must be converted "
+                "to an explicit sheet/line normalization before collection"
+            )
         missing = [name for name in stage_names if name not in polarization_stages]
         if missing:
             raise ValueError(
