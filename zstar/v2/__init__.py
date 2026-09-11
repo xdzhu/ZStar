@@ -8,6 +8,7 @@ from .fit import (
     central_difference,
     fit_elastic_response,
     fit_linear_response,
+    fit_piezoelectric_ensemble,
     fit_piezoelectric_response,
 )
 from .mechanical import (
@@ -99,6 +100,7 @@ __all__ = [
     "fit_linear_response",
     "fit_elastic_response",
     "fit_piezoelectric_response",
+    "fit_piezoelectric_ensemble",
     "intertwiner_basis",
     "intertwiner_constraint_matrix",
     "intertwining_residual",

@@ -8,6 +8,7 @@ from typing import Iterable
 import numpy as np
 
 from .mechanical import convert_stress_sign, stress_tensor_to_voigt
+from .polarization import MatchedPolarizationEnsemble
 from .symmetry import IntertwinerBasis
 
 
@@ -246,6 +247,53 @@ def fit_piezoelectric_response(
     return fit_linear_response(
         strains,
         polarizations - reference,
+        allowed_basis=allowed_basis,
+        sample_weights=sample_weights,
+        svd_cutoff=svd_cutoff,
+    )
+
+
+def fit_piezoelectric_ensemble(
+    ensemble: MatchedPolarizationEnsemble,
+    *,
+    reference_strain_tolerance: float = 1.0e-12,
+    residual_tolerance: float | None = None,
+    allowed_basis: IntertwinerBasis | None = None,
+    sample_weights: Iterable[float] | None = None,
+    svd_cutoff: float | None = None,
+) -> LinearFitResult:
+    """Fit ``e`` directly from a reference-matched polarization ensemble.
+
+    The selected reference stage must represent zero strain within
+    ``reference_strain_tolerance`` because this draft fit has no intercept.
+    ``residual_tolerance`` is an explicit guard against fitting a branch jump or
+    an inconsistent Cartesian transformation as if it were a linear response.
+    """
+
+    if not isinstance(ensemble, MatchedPolarizationEnsemble):
+        raise TypeError("ensemble must be a MatchedPolarizationEnsemble")
+    tolerance = float(reference_strain_tolerance)
+    if not np.isfinite(tolerance) or tolerance < 0.0:
+        raise ValueError("reference_strain_tolerance must be finite and non-negative")
+    if np.linalg.norm(ensemble.actual_strains[ensemble.reference_index]) > tolerance:
+        raise ValueError(
+            "reference stage strain is not zero within reference_strain_tolerance; "
+            "fit a path with a zero-strain reference or use an intercept-aware model"
+        )
+    if residual_tolerance is not None:
+        limit = float(residual_tolerance)
+        if not np.isfinite(limit) or limit < 0.0:
+            raise ValueError("residual_tolerance must be finite and non-negative")
+        if np.any(ensemble.residuals > limit):
+            raise ValueError(
+                "polarization ensemble residual exceeds residual_tolerance; "
+                "inspect branch matching before fitting"
+            )
+    reference = ensemble.matched_values[ensemble.reference_index]
+    return fit_piezoelectric_response(
+        ensemble.actual_strains,
+        ensemble.matched_values,
+        reference_polarization=reference,
         allowed_basis=allowed_basis,
         sample_weights=sample_weights,
         svd_cutoff=svd_cutoff,

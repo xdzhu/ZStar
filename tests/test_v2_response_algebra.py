@@ -8,6 +8,7 @@ from zstar.v2 import (
     convert_stress_sign,
     fit_elastic_response,
     fit_linear_response,
+    fit_piezoelectric_ensemble,
     fit_piezoelectric_response,
     internal_strain_response,
     intertwiner_basis,
@@ -15,6 +16,7 @@ from zstar.v2 import (
     project_intertwiner,
     relaxed_elastic,
     relaxed_piezoelectric,
+    match_polarization_ensemble,
 )
 
 
@@ -118,6 +120,40 @@ def test_fit_piezoelectric_response_rejects_invalid_shapes_and_reference():
             [[0.0, 0.0, 0.0]],
             reference_polarization=[0.0, 0.0],
         )
+
+
+def test_fit_piezoelectric_ensemble_connects_branch_matching_to_fit():
+    strains = np.array(
+        [
+            [0.0] * 6,
+            [0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [-0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
+    )
+    expected = np.zeros((3, 6))
+    expected[0, 0] = 1.2
+    expected[1, 0] = -0.4
+    reference = np.array([0.4, -0.2, 0.1])
+    wrapped = reference + strains @ expected.T
+    wrapped[1] += [10.0, -20.0, 30.0]
+    wrapped[2] += [-10.0, 20.0, -30.0]
+    ensemble = match_polarization_ensemble(strains, wrapped, [10.0, 20.0, 30.0])
+    # The residual is the physical reference-to-stage mismatch after branch
+    # shifts, so it may be non-zero even for a valid response.
+    result = fit_piezoelectric_ensemble(ensemble, residual_tolerance=0.1)
+    np.testing.assert_allclose(result.matrix[:, 0], expected[:, 0], atol=1.0e-12)
+    assert result.residual_max < 1.0e-12
+
+    nonzero_reference = match_polarization_ensemble(
+        strains + np.array([0.1, 0, 0, 0, 0, 0]),
+        wrapped,
+        [10.0, 20.0, 30.0],
+    )
+    with pytest.raises(ValueError, match="reference stage strain is not zero"):
+        fit_piezoelectric_ensemble(nonzero_reference)
+
+    with pytest.raises(ValueError, match="residual_tolerance"):
+        fit_piezoelectric_ensemble(ensemble, residual_tolerance=-1.0)
 
 
 def test_actual_serialized_vectors_are_used_for_central_difference():

@@ -32,10 +32,13 @@
 11. 已加入 `match_polarization_ensemble` 和 `MatchedPolarizationEnsemble`，将
     非连续的 `reference, +η, -η` 样本相对于 reference 做 branch matching，保存
     实际应变、量子基底、branch shift 和 residual；尚未连接正式应变 Berry 生产任务。
+12. 已加入 `fit_piezoelectric_ensemble` 薄封装，将 branch-matched ensemble 接到
+    raw e 拟合；它检查零应变 reference，并允许用户显式设置 residual 阈值，不把
+    合法的物理 ΔP 默认判为错误。
 
 ## 证据状态
 
-* 本阶段全量回归为 `451 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+* 本阶段全量回归为 `452 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
   v2 draft tests）；Berry 极化/ensemble 定向测试为 `15 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。
