@@ -93,4 +93,3 @@ def test_collect_abacus_strain_response_builds_v2_document(tmp_path):
     assert document.quantity("forces").shape == (3, 5, 3)
     assert document.quantity("stress_raw").unit == "kbar"
     assert document.metadata["polarization_collected"] is False
-

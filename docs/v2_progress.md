@@ -11,6 +11,8 @@
    该 API 与 v1 `zstar-response` 1.0 隔离。
 3. 当前工作树又加入结构级 `spglib` 表示、工程 Voigt 应变表示和
    `.zstar/v2` 原子替换状态/ensemble 原型；这些仍需评审后再冻结。
+4. ABACUS force/stress 输出解析已接入 draft `ResponseDocument`，真实 smoke 结果已
+   成功回读，见 [`v2_abacus_smoke_20260912.md`](v2_abacus_smoke_20260912.md)。
 
 ## 证据状态
 
