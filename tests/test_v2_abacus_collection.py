@@ -69,6 +69,23 @@ def test_collect_abacus_stage_rejects_missing_stress(tmp_path):
         collect_abacus_stage(stage)
 
 
+def test_collect_abacus_stage_rejects_nonconverged_scf(tmp_path):
+    stage = tmp_path / "reference"
+    _stage(stage)
+    log = next((stage / "OUT.POLAR").glob("running_scf.log"))
+    log.write_text(log.read_text(encoding="utf-8").replace("charge density convergence is achieved\n", ""), encoding="utf-8")
+    with pytest.raises(ValueError, match="not marked converged"):
+        collect_abacus_stage(stage)
+
+
+def test_collect_abacus_stage_rejects_invalid_timing_json(tmp_path):
+    stage = tmp_path / "reference"
+    _stage(stage)
+    (stage / "time.json").write_text("{not-json", encoding="utf-8")
+    with pytest.raises(ValueError, match="Invalid ABACUS time.json"):
+        collect_abacus_stage(stage)
+
+
 def test_collect_abacus_strain_response_builds_v2_document(tmp_path):
     root = tmp_path / "ensemble"
     _stage(root / "reference")
@@ -93,3 +110,15 @@ def test_collect_abacus_strain_response_builds_v2_document(tmp_path):
     assert document.quantity("forces").shape == (3, 5, 3)
     assert document.quantity("stress_raw").unit == "kbar"
     assert document.metadata["polarization_collected"] is False
+
+
+def test_collect_abacus_strain_response_rejects_declared_missing_stage(tmp_path):
+    root = tmp_path / "ensemble"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=stages,
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match="running_scf.log"):
+        collect_abacus_strain_response(root)
