@@ -8,6 +8,7 @@ from zstar.v2 import (
     convert_stress_sign,
     fit_elastic_response,
     fit_linear_response,
+    fit_piezoelectric_response,
     internal_strain_response,
     intertwiner_basis,
     intertwining_residual,
@@ -76,6 +77,47 @@ def test_fit_elastic_response_converts_compression_positive_tensor_stress():
         stress_sign="compression-positive",
     )
     np.testing.assert_allclose(result.matrix[:, 0], expected[:, 0])
+
+
+def test_fit_piezoelectric_response_requires_branch_matched_si_polarization():
+    strains = np.array(
+        [
+            [0.0] * 6,
+            [0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.02, 0.0, 0.0, 0.0, 0.0],
+            [0.01, 0.02, 0.0, 0.0, 0.0, 0.0],
+        ]
+    )
+    expected = np.zeros((3, 6))
+    expected[0, 0] = 1.2
+    expected[1, 1] = -0.7
+    expected[2, 0] = 0.3
+    reference = np.array([0.4, -0.2, 0.1])
+    observations = reference + strains @ expected.T
+    result = fit_piezoelectric_response(
+        strains,
+        observations,
+        reference_polarization=reference,
+    )
+    np.testing.assert_allclose(result.matrix[:, :2], expected[:, :2], atol=1.0e-12)
+    assert result.input_rank == 2
+    assert result.fit_rank == 6
+    assert result.allowed_rank == 18
+    assert not result.complete
+    assert result.residual_max < 1.0e-12
+
+
+def test_fit_piezoelectric_response_rejects_invalid_shapes_and_reference():
+    with pytest.raises(ValueError, match=r"shape \(samples, 6\)"):
+        fit_piezoelectric_response([[0.0] * 5], [[0.0, 0.0, 0.0]])
+    with pytest.raises(ValueError, match=r"shape \(samples, 3\)"):
+        fit_piezoelectric_response([[0.0] * 6], [[0.0, 0.0]])
+    with pytest.raises(ValueError, match="reference_polarization"):
+        fit_piezoelectric_response(
+            [[0.0] * 6],
+            [[0.0, 0.0, 0.0]],
+            reference_polarization=[0.0, 0.0],
+        )
 
 
 def test_actual_serialized_vectors_are_used_for_central_difference():

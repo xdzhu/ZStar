@@ -3,7 +3,13 @@
 from .algebra import internal_strain_response, relaxed_elastic, relaxed_piezoelectric
 from .abacus import collect_abacus_stage, collect_abacus_strain_response
 from .ensemble import PerturbationStage, ResponseEnsemble, V2StateStore, plan_central_stages
-from .fit import LinearFitResult, central_difference, fit_elastic_response, fit_linear_response
+from .fit import (
+    LinearFitResult,
+    central_difference,
+    fit_elastic_response,
+    fit_linear_response,
+    fit_piezoelectric_response,
+)
 from .mechanical import (
     ENGINEERING_VOIGT,
     convert_stress_sign,
@@ -87,6 +93,7 @@ __all__ = [
     "convert_values",
     "fit_linear_response",
     "fit_elastic_response",
+    "fit_piezoelectric_response",
     "intertwiner_basis",
     "intertwiner_constraint_matrix",
     "intertwining_residual",

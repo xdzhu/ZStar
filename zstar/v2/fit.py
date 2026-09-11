@@ -199,3 +199,54 @@ def fit_elastic_response(
         sample_weights=sample_weights,
         svd_cutoff=svd_cutoff,
     )
+
+
+def fit_piezoelectric_response(
+    actual_strains: Iterable[Iterable[float]],
+    polarization_observations: np.ndarray | Iterable[object],
+    *,
+    reference_polarization: np.ndarray | Iterable[float] | None = None,
+    allowed_basis: IntertwinerBasis | None = None,
+    sample_weights: Iterable[float] | None = None,
+    svd_cutoff: float | None = None,
+) -> LinearFitResult:
+    """Fit a branch-matched polarization response ``ΔP = e η``.
+
+    ``polarization_observations`` must already be expressed in one continuous
+    Berry branch and in C/m².  Branch matching is deliberately kept separate
+    from this numerical fit; wrapped values or mixed units must not be passed
+    here.  The returned matrix has polarization-axis by engineering-Voigt-axis
+    order.  This draft reports the direct derivative only; it does not apply
+    the proper/improper geometric correction or claim a relaxed-ion result.
+    """
+
+    strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
+    polarizations = np.asarray(tuple(tuple(row) for row in polarization_observations), dtype=float)
+    if strains.ndim != 2 or strains.shape[1] != 6:
+        raise ValueError(f"actual_strains must have shape (samples, 6); got {strains.shape}")
+    if polarizations.ndim != 2 or polarizations.shape[1] != 3:
+        raise ValueError(
+            "polarization_observations must have shape (samples, 3); "
+            f"got {polarizations.shape}"
+        )
+    if strains.shape[0] != polarizations.shape[0]:
+        raise ValueError(
+            "strain/polarization sample counts differ: "
+            f"{strains.shape[0]} and {polarizations.shape[0]}"
+        )
+    reference = (
+        np.zeros(3, dtype=float)
+        if reference_polarization is None
+        else np.asarray(reference_polarization, dtype=float)
+    )
+    if reference.shape != (3,) or not np.all(np.isfinite(reference)):
+        raise ValueError("reference_polarization must have shape (3,) and be finite")
+    if not np.all(np.isfinite(strains)) or not np.all(np.isfinite(polarizations)):
+        raise ValueError("strain and polarization observations must be finite")
+    return fit_linear_response(
+        strains,
+        polarizations - reference,
+        allowed_basis=allowed_basis,
+        sample_weights=sample_weights,
+        svd_cutoff=svd_cutoff,
+    )
