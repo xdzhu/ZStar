@@ -35,6 +35,7 @@ from .structure import (
     polarization_representation,
     strain_representation,
 )
+from .strain import actual_strain, apply_strain, prepare_abacus_strain_ensemble
 from .units import EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
 
 __all__ = [
@@ -57,7 +58,9 @@ __all__ = [
     "V2_SCHEMA_VERSION",
     "central_difference",
     "allowed_response_basis",
+    "actual_strain",
     "analyze_space_group",
+    "apply_strain",
     "convert_dielectric",
     "convert_values",
     "fit_linear_response",
@@ -69,6 +72,7 @@ __all__ = [
     "plan_central_stages",
     "displacement_representation",
     "polarization_representation",
+    "prepare_abacus_strain_ensemble",
     "project_intertwiner",
     "relaxed_elastic",
     "relaxed_piezoelectric",
