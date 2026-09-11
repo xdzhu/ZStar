@@ -26,11 +26,14 @@
 9. 已加入 `fit_piezoelectric_response` draft API：只接受同一连续 Berry branch、
    C/m² 极化和实际工程 Voigt 应变，返回 e 矩阵及 rank/residual；proper/improper
    几何修正、relaxed-ion 贡献和张量单位封装仍未冻结。
+10. 已加入严格的 `collect_abacus_polarization_triplet`：按 `gdir=1,2,3` 组织
+    三个独立 NSCF 目录，拒绝缺方向、重复方向和重复目录，并保留 scalar 与
+    Cartesian tuple 的区别，供后续应变路径组装。
 
 ## 证据状态
 
-* 本阶段全量回归为 `447 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
-  v2 draft tests）；其中 Berry 定向测试为 `11 passed`。警告均为现有依赖的弃用提示，
+* 本阶段全量回归为 `449 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+  v2 draft tests）；其中 Berry 定向测试为 `13 passed`。警告均为现有依赖的弃用提示，
   没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。

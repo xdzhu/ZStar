@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from itertools import product
 from pathlib import Path
 import re
-from typing import Iterable, Sequence
+from typing import Iterable, Mapping, Sequence
 
 import numpy as np
 
@@ -241,6 +241,7 @@ class PolarizationSample:
     unit: str = "C/m^2"
     logs: tuple[str, str, str] = ("", "", "")
     raw_units: tuple[str, str, str] = ("", "", "")
+    cartesian_values: np.ndarray | None = None
 
     def __post_init__(self) -> None:
         values = _finite_vector(self.values, "values")
@@ -249,6 +250,11 @@ class PolarizationSample:
             raise ValueError("polarization quanta must be positive")
         if len(self.axes) != 3 or len(set(self.axes)) != 3:
             raise ValueError("polarization axes must contain three distinct labels")
+        if self.cartesian_values is not None:
+            cartesian = np.asarray(self.cartesian_values, dtype=float)
+            if cartesian.shape != (3, 3) or not np.all(np.isfinite(cartesian)):
+                raise ValueError("cartesian_values must be a finite array with shape (3, 3)")
+            object.__setattr__(self, "cartesian_values", cartesian)
         object.__setattr__(self, "values", values)
         object.__setattr__(self, "quanta", quanta)
 
@@ -270,11 +276,82 @@ def collect_abacus_polarization_stage(stage: str | Path) -> PolarizationSample:
         components.append(component)
         logs.append(str(log))
         raw_units.append(component.raw_unit)
+    cartesian_values = (
+        np.asarray([component.cartesian_value for component in components], dtype=float)
+        if all(component.cartesian_value is not None for component in components)
+        else None
+    )
     return PolarizationSample(
         values=np.asarray([component.value for component in components]),
         quanta=np.asarray([component.quantum for component in components]),
         logs=tuple(logs),
         raw_units=tuple(raw_units),
+        cartesian_values=cartesian_values,
+    )
+
+
+def collect_abacus_polarization_triplet(
+    stages: Mapping[int | str, str | Path] | Iterable[str | Path],
+) -> PolarizationSample:
+    """Collect one component from each ABACUS ``gdir`` direction.
+
+    ``stages`` may be a mapping keyed by ``1, 2, 3`` (or ``a, b, c``), or an
+    iterable of three stage directories whose ``INPUT`` files declare ``gdir``.
+    The result is ordered by lattice direction ``a, b, c`` and keeps the
+    optional Cartesian tuples separately from the scalar directional values.
+    Missing, duplicate, or ambiguous directions are errors rather than an
+    implicit ordering convention.
+    """
+
+    if isinstance(stages, Mapping):
+        if len(stages) != 3:
+            raise ValueError("polarization triplet mapping must contain exactly three stages")
+        normalized: dict[int, Path] = {}
+        for key, stage in stages.items():
+            if isinstance(key, str):
+                label = key.lower()
+                if label not in {"a", "b", "c"}:
+                    raise ValueError(f"unsupported polarization direction key {key!r}")
+                direction = {"a": 1, "b": 2, "c": 3}[label]
+            else:
+                direction = int(key)
+            directory = Path(stage).resolve()
+            if direction not in {1, 2, 3} or direction in normalized:
+                raise ValueError("polarization triplet mapping must identify gdir 1, 2, and 3 once each")
+            if directory in normalized.values():
+                raise ValueError("polarization triplet mapping must use three distinct stage directories")
+            normalized[direction] = directory
+        if set(normalized) != {1, 2, 3}:
+            raise ValueError("polarization triplet mapping must identify gdir 1, 2, and 3")
+    else:
+        directories = tuple(Path(stage) for stage in stages)
+        if len(directories) != 3:
+            raise ValueError("polarization triplet iterable must contain exactly three stages")
+        normalized = {}
+        for directory in directories:
+            direction = collect_abacus_polarization_component(directory).gdir
+            if direction is None or direction in normalized:
+                raise ValueError("polarization triplet stages must have unique gdir 1, 2, and 3")
+            normalized[direction] = directory
+
+    components = []
+    logs = []
+    for index in (1, 2, 3):
+        directory = Path(normalized[index]).resolve()
+        log = _find_single_abacus_polarization_log(directory)
+        components.append(collect_abacus_polarization_component(directory, gdir=index))
+        logs.append(str(log))
+    cartesian_values = (
+        np.asarray([component.cartesian_value for component in components], dtype=float)
+        if all(component.cartesian_value is not None for component in components)
+        else None
+    )
+    return PolarizationSample(
+        values=np.asarray([component.value for component in components], dtype=float),
+        quanta=np.asarray([component.quantum for component in components], dtype=float),
+        logs=tuple(logs),
+        raw_units=tuple(component.raw_unit for component in components),
+        cartesian_values=cartesian_values,
     )
 
 

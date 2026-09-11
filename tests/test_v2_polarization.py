@@ -10,6 +10,7 @@ from zstar.v2 import (
     ELEMENTARY_CHARGE,
     collect_abacus_polarization_component,
     collect_abacus_polarization_stage,
+    collect_abacus_polarization_triplet,
     match_polarization_branch,
     parse_abacus_berry_polarization,
     unwrap_polarization_path,
@@ -104,6 +105,44 @@ def test_collect_abacus_polarization_component_reads_realistic_single_log(tmp_pa
     # The parser must prefer the explicit SI record when ABACUS emits both
     # the internal ``(e/Omega).bohr`` line and the converted C/m^2 line.
     np.testing.assert_allclose(component.value, 0.8906925)
+
+
+def test_collect_abacus_polarization_triplet_orders_by_declared_gdir(tmp_path):
+    stages = {}
+    for direction, value in ((1, 1.0), (2, 2.0), (3, 3.0)):
+        stage = tmp_path / f"gdir-{direction}"
+        output = stage / "OUT.POLAR"
+        output.mkdir(parents=True)
+        (stage / "INPUT").write_text(f"gdir {direction}\n", encoding="utf-8")
+        vector = [0.0, 0.0, 0.0]
+        vector[direction - 1] = value
+        (output / "running_nscf.log").write_text(
+            f"P = {value} (mod 10) ({vector[0]}, {vector[1]}, {vector[2]}) C/m^2\n",
+            encoding="utf-8",
+        )
+        stages[direction] = stage
+    sample = collect_abacus_polarization_triplet({3: stages[3], 1: stages[1], 2: stages[2]})
+    np.testing.assert_allclose(sample.values, [1.0, 2.0, 3.0])
+    np.testing.assert_allclose(sample.cartesian_values, np.diag([1.0, 2.0, 3.0]))
+    assert all(Path(path).is_file() for path in sample.logs)
+
+
+def test_collect_abacus_polarization_triplet_rejects_missing_or_duplicate_gdir(tmp_path):
+    stages = []
+    for direction in (1, 1, 2):
+        stage = tmp_path / f"duplicate-{len(stages)}"
+        output = stage / "OUT.POLAR"
+        output.mkdir(parents=True)
+        (stage / "INPUT").write_text(f"gdir {direction}\n", encoding="utf-8")
+        (output / "running_nscf.log").write_text(
+            "P = 0 (mod 1) (0, 0, 0) C/m^2\n",
+            encoding="utf-8",
+        )
+        stages.append(stage)
+    with pytest.raises(ValueError, match="unique gdir"):
+        collect_abacus_polarization_triplet(stages)
+    with pytest.raises(ValueError, match="three distinct stage directories"):
+        collect_abacus_polarization_triplet({1: stages[0], 2: stages[2], 3: stages[2]})
 
 
 def test_branch_matching_returns_integer_shifts_and_delta():
