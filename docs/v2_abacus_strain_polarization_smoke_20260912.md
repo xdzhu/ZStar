@@ -70,4 +70,3 @@ output_kind="polarization")` 的允许秩为 0。将匹配结果交给
 本审计没有计算 relaxed-ion e、内部应变贡献、proper 修正或非中心对称材料的非零
 响应。下一步必须在 tetragonal/hexagonal 极性结构中重复相同链条，并用独立后端或
 可靠文献数据核对张量数值。
-
