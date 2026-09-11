@@ -15,10 +15,12 @@
    成功回读，见 [`v2_abacus_smoke_20260912.md`](v2_abacus_smoke_20260912.md)。
 5. 已增加显式 stress-sign 转换和 `fit_elastic_response` draft API：未知的
    `backend-raw` 符号会被拒绝，拟合使用实际序列化应变并返回 rank/residual。
+6. 已在 cu24–cu26 完成 cubic BaTiO₃ 六分量、两幅度 clamped-ion 试验（25 阶段），
+   结果与审计限制见 [`v2_abacus_multiamp_20260912.md`](v2_abacus_multiamp_20260912.md)。
 
 ## 证据状态
 
-* 最近一次完整回归为 `426 passed, 1177 warnings`（包含当前未提交的 v1/声子谱改动
+* 最近一次完整回归为 `432 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动
   以及 v2 draft tests）；警告均为现有依赖的弃用提示，没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
@@ -35,8 +37,8 @@ PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当�
 
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
-* **Gate C：**前置 smoke 已通过；完整 Gate C 仍未满足，尚需多分量/多幅度、极化收集、
-  relaxed-ion 和独立后端核对。
+* **Gate C：**六分量/多幅度 force-stress 数据收集已通过；完整 Gate C 仍未满足，尚需
+  stress sign/单位收敛确认、极化收集、relaxed-ion 和独立后端核对。
 
 ## 下一步
 
