@@ -1,0 +1,203 @@
+# ZStar v2 文献与软件调研（第一轮）
+
+**状态：研究基线，不是已实现功能声明**
+**分支：`zstar-v2-development`**
+**核查日期：2026-09-12（Asia/Shanghai）**
+
+本文件是 v2 第一轮的调研基线。它只回答“哪些理论和软件事实已经有依据、哪些
+问题仍需验证、下一阶段怎样验证”，不把 roadmap 写成稳定 API，也不改变 v1 的
+方法、接口或论文。关键论文的题目、作者、期刊、年份、DOI 和可访问链接同时收录
+在 [`v2_literature_sources.bib`](v2_literature_sources.bib)。
+
+## 1. 调研方法和边界
+
+采用以下证据优先级：
+
+1. 原始论文和权威综述（APS、AIP、Elsevier、Nature、同行评议期刊）；
+2. 软件的官方手册/官方 wiki（用于核对软件能力，不作为物理理论的唯一来源）；
+3. 代码仓库或版本化输入输出（用于确认 ZStar v1 的实际行为）；
+4. 搜索结果摘要只用于发现条目，未作为最终理论证据。
+
+DOI 通过出版社 DOI 页面或 Crossref/出版社元数据交叉核对；软件能力以官方文档
+的当前页面为准，并要求在运行时再次检查版本。由于软件版本会变化，本文的能力矩阵
+不是永久兼容承诺。
+
+明确排除：没有把单个材料的数值当成普适理论；没有把有限温、flexoelectricity、
+共振 Raman 或相翻转的研究性代码描述为 v2 稳定功能；没有把 VASP/ABINIT 文档中
+“可计算”直接解释为 ZStar 已经实现。
+
+## 2. 理论主线的证据链
+
+### 2.1 现代极化、BEC、介电和 Gamma 声子
+
+King-Smith 与 Vanderbilt 建立了绝热变化下极化差的 Berry-phase 表达式，并以
+GaAs 压电张量为例；Resta 的综述说明晶体绝对极化是多值量，物理可观测量是参考态
+之间的差分或导数。这两点决定 v2 必须保存 polarization branch、参考结构和路径，
+不能把两个未经 branch matching 的极化数直接相减。
+
+Gonze 与 Lee 从总能量对原子位移、电场的二阶导数统一得到动力学矩阵、BEC、电子
+介电张量和力常数；这正是 v1 Unified BEC/Gamma-force 结果可以作为 v2 基础的理论
+原因。Baroni 等综述进一步将应变响应、宏观电场和高阶响应放入 DFPT 的同一框架。
+Ghosez 等说明 BEC 不是静态电荷，而是位移引起的宏观极化/电场引起的力响应，且可
+通过 Wannier 中心变化理解其异常值。
+
+因此，v2 的第一性原理数据模型应以一个带边界条件的二阶响应块为核心：
+
+```text
+                 atomic u        strain eta        electric E
+atomic u         Phi (IFC)       Gamma/Lambda       Z* (BEC)
+strain eta       Gamma^T         Omega C           e
+electric E       Z*^T            e^T               -Omega epsilon
+```
+
+其中不同块的计算扰动并不相同：v1 的位移集合足以同时拟合 BEC 和 Gamma 力常数，
+但不能凭空产生应变列或电场列；压电、弹性和内应变至少要增加 homogeneous-strain
+任务，电子介电则需要电场 DFPT/有限场或现有 PYATB 电子响应。
+
+### 2.2 压电张量、弹性张量和边界条件
+
+Vanderbilt 的 proper-piezoelectric 论文证明，Berry-phase 极化的多值性使直接对
+“绝对极化”做有限差分会产生 branch-dependent 的 improper 响应；实验可比较的
+proper 响应必须对晶胞形变和 Berry branch 一并处理。Wu、Vanderbilt、Hamann 系列
+工作把位移、应变和电场视为统一的能量扰动，明确指出不同电学/机械边界条件会给出
+不同的弹性、介电和压电量。Hamann 等的 metric-tensor formulation 给出 strain
+DFPT 和 internal-strain terms 的一致实现路径。
+
+对 v2，必须显式区分：
+
+* `e^(0)`：clamped-ion（固定内部坐标）的 proper 压电张量；
+* `e`：relaxed-ion（内部坐标随应变弛豫）的张量；
+* `C^E`：固定宏观电场的弹性张量；`C^D`：固定电位移的弹性张量；
+* `epsilon^S`：固定应变的介电张量；`epsilon^T`：固定应力的介电张量。
+
+工程应变和 tensorial shear 的因子 2 是最常见的接口错误之一。v2 预定采用
+`eta_V=(eta_xx,eta_yy,eta_zz,2 eta_yz,2 eta_xz,2 eta_xy)`，并在每条记录中写明
+Voigt/Mandel 约定；不允许用“6 个匿名数”传递应变。
+
+### 2.3 有限差分、有限场和 DFPT
+
+Phonopy 官方 formulation 将有限位移力常数写成位移/力线性拟合并提供空间群、平移
+和置换对称化；其 Python API 规定 displacement dataset、force constants 的轴顺序
+和对称化行为。VASP 官方线性响应文档明确：`LEPSILON`/DFPT、`LCALCEPS`/有限场、
+`IBRION=5/6` 应变有限差分和 `IBRION=7/8` DFPT 的能力不同，且 VASP 当前没有用
+`IBRION=7/8` 直接得到弹性应变响应的实现。ABINIT 的 `anaddb`/elastic 文档则明确
+要求 internal strain 和 relaxed elastic tensor 才能构造 d、g、h。
+
+研究结论是：v2 的 calculator-neutral 层只规定“扰动、观测、单位、边界条件和误差”，
+不假设所有 calculator 都支持同一 perturbation。backend resolver 必须返回能力
+矩阵，并在缺能力时给出可执行的替代方案或明确失败。
+
+### 2.4 铁电相、极化分支和翻转
+
+Berry polarization 本质上只在 polarization quantum 意义下确定。Bonini、Vanderbilt
+和 Rabe 的 Berry-flux diagonalization 通过把 Berry phase 变化分解为小于 `2 pi` 的
+连续增量，说明只凭端点也可在特定“最小演化”假设下选择 branch，但真实实验 switching
+路径可能包含成核、畴壁和多个鞍点。HfO2 的 lattice-mode analysis 进一步展示同一
+极性端点可有多条路径，且反极性/区边模式可能必须共同翻转。因此 v2 phase/switching
+模块必须保存原子对应关系、结构插值、每个 image 的 band gap/对称性/能量和 branch
+选择；“两个结构的极化差”不是完整翻转功能。
+
+### 2.5 有限温响应和外部 ML/q-NEP 接口
+
+Zhong、Vanderbilt、Rabe 以及 Waghmare、Rabe 的 effective-Hamiltonian 工作表明，
+有限温相变需要局域极化模式、应变、短程/长程相互作用和由第一性原理拟合的能量面，
+再用 Monte Carlo/MD 采样；不是在 0 K BEC 上加一个温度标签。Behler–Parrinello 和
+Deep Potential 说明 ML 势可把第一性原理能量/力扩展到大规模 MD，但极化、电场和长程
+库仑响应需额外的带电/动态电荷模型。因而 v2 只应优先提供统一的能量、力、应力、
+极化、BEC 数据导出/回读和统计分析接口；训练平台保持外部工具边界。qNEP 的动态电荷
+工作可作为后续接口核查对象，但不作为 v2 第一阶段依赖。
+
+有限温结果必须报告：采样长度、平衡段、自相关时间、有效样本数、温度/压力控制、
+统计置信区间，并把 DFT 误差与采样误差分开。
+
+### 2.6 Flexoelectricity
+
+Tagantsev 的经典理论指出 flexoelectricity 与 piezoelectricity 在表面贡献、声波和
+静态应变梯度极限上并不等价。Stengel 的 DFPT 工作以长波声学声子为基本扰动，在
+`q` 的二阶展开中得到 flexoelectric tensor，并明确“零宏观场”规范和表面终止会影响
+可比较的数值。Stengel–Vanderbilt 综述将 bulk、surface、open-circuit 边界和 bending
+film 统一讨论。
+
+因此 flexo 在 v2 先做 feasibility study：确定 acoustic-phonon long-wave limit、
+电子/离子分量、规范、表面与 slab 真空收敛后再决定代码；直接用大超胞的应变梯度
+差分代替长波极限是不被接受的快捷方案。
+
+### 2.7 共振 Raman
+
+Albrecht 从 Kramers–Heisenberg–Dirac/Herzberg–Teller 展开说明共振 Raman 振幅依赖
+电子激发态、跃迁偶极和声子坐标导数；这不是在非共振 Raman 中换一个展宽或频率窗口。
+Lazzeri–Mauri 的非共振 DFT Raman 只需电子密度矩阵对均匀电场的二阶导数；Venezuela、
+Lazzeri、Mauri 的双共振 graphene 计算则显式包含电子-光子、电子-声子、缺陷矩阵元
+和电子展宽。v2 因此必须先获得频率依赖复极化率/介电函数、带间跃迁和矩阵元，并记录
+光子能量、展宽、偏振和可能的多声子过程；在此之前不提供 `zstar spectra resonant`。
+
+## 3. 软件能力核查（用于路线选择）
+
+以下矩阵是“官方软件能力 + 当前 ZStar v1 实际接口”的交集判断。`✓` 表示已有
+可核查路径，`△` 表示软件有相关能力但 ZStar v2 尚未接入或需边界条件验证，`—`
+表示本轮不应假设支持。
+
+| 后端/工具 | BEC/介电 | Gamma/IFC | homogeneous strain / elastic | internal strain | finite field | Raman | v2 角色 |
+|---|---:|---:|---:|---:|---:|---:|---|
+| ABACUS + PYATB（当前 v1） | ✓ | ✓ | △ | △ | △ | ✓（非共振） | v2 首要验证后端；先做有限差分适配 |
+| VASP | ✓ `LEPSILON`/`LCALCEPS` | ✓ | ✓ 有限差分；DFPT strain 受限 | ✓ | ✓ | △（非共振/模式差分） | 作为交叉验证，逐项声明功能 |
+| CP2K | ✓（分子与部分周期） | ✓ | △ | △ | △ | ✓ 原生分子谱 | 先保留既有 BEC/谱接口 |
+| Quantum ESPRESSO | ✓ DFPT/PHonon | ✓ | △（需 `q2r`/`matdyn` 与响应模块） | △ | △ | ✓（PH/epsilon 路径） | 待能力探测后接入 |
+| ABINIT + anaddb | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | 重要独立参考；不是 v2 默认后端 |
+| Phonopy | 读取 BEC/介电、IFC、对称化 | ✓ | — | — | — | 非电子响应 | calculator-neutral 后处理和对称性参考 |
+
+官方能力来源：
+
+* [VASP linear response](https://vasp.at/wiki/Linear_response)、[Born effective charges](https://vasp.at/wiki/index.php/Born_effective_charges) 和 [electric-field response](https://vasp.at/wiki/Electric_field_response_from_density-functional_perturbation_theory)；
+* [Phonopy formulation](https://phonopy.github.io/phonopy/formulation.html) 与 [Python API](https://phonopy.github.io/phonopy/phonopy-module.html)；
+* [ABINIT elastic tutorial](https://docs.abinit.org/tutorial/elastic/)、[Elastic topic](https://docs.abinit.org/topics/Elastic/) 和 [`anaddb` 的 piezo flags](https://docs.abinit.org/variables/anaddb/)；
+* [Quantum ESPRESSO PHonon developer manual](https://www.quantum-espresso.org/wp-content/uploads/2022/03/ph_developer_man.pdf)；
+* [ABACUS 官方文档](https://abacus.deepmodeling.com/)；PYATB 的实际命令/输出还必须由运行时能力探测确认。
+
+软件文档的用途是核对输入标签、输出位置和限制；压电、弹性、内应变的定义仍以
+原始论文和统一理论文档 [`v2_theory.md`](v2_theory.md) 为准。
+
+## 4. 调研问题拆分和待核查项
+
+| 问题 | 已知依据 | v2 设计决策 | 进入实现前的证据门 |
+|---|---|---|---|
+| BEC 与 Gamma IFC 是否共用任务 | Gonze–Lee；v1 Unified 实际输出 | 共用位移响应，但应变/电场另列 | 三个扰动幅度、ASR、互易性和独立后端对照 |
+| e 的 proper/improper | Vanderbilt 2000 | 保存 branch、晶胞体积/旋转修正和约定 | 立方/极性材料与文献张量对照 |
+| e/d/g/h 转换 | Wu–Vanderbilt–Hamann；ABINIT anaddb | 从同一热力学势生成带边界标签的矩阵 | 数值互逆、正定性、单位回算 |
+| C 的 relaxed-ion 修正 | Hamann 2005 | `C0 - Lambda^T Phi Lambda/Omega` 并保留 C0 | Hessian 可逆性、声学零模处理 |
+| 任意空间群 | spglib/Phonopy + intertwiner 线性代数 | 以表示矩阵和秩判据，不以材料特例硬编码 | P1/Pnma/P6mm/P4mm/cubic 五类测试 |
+| 低维归一化 | Resta；现有 v1 `response_conventions.md` | 周期/开放方向分别声明；不把真空稀释量叫本征量 | 真空厚度扫描和边界条件审计 |
+| switching branch | King-Smith–Vanderbilt；Bonini 2020 | 端点+插值+连续 branch matching | 每个 image 绝缘性和 polarization quantum |
+| finite-T | Zhong–Vanderbilt–Rabe；MLIP 文献 | 只做数据接口和回读，不内置训练平台 | 统计误差/自相关/温度收敛协议 |
+| flexo | Tagantsev；Stengel | 先可行性研究，不提前定义稳定 schema | 长波、表面规范和 slab 极限一致 |
+| resonant Raman | Albrecht；Venezuela–Lazzeri–Mauri | 先频率依赖电子响应接口研究 | 与已验证电子结构/矩阵元交叉检查 |
+
+## 5. 分阶段调研计划
+
+1. **冻结 v1 基线**：保存本分支起点的 commit、测试结果、现有案例清单和脏工作区
+   说明；任何 v2 文件都不得改变现有导入或 CLI 行为。
+2. **理论闭环**：完成 [`v2_theory.md`](v2_theory.md)，逐项给出变量、边界、单位、
+   轴顺序、proper 修正和失败条件。
+3. **对称性算法闭环**：完成 [`v2_symmetry_reduction.md`](v2_symmetry_reduction.md)，
+   先用解析/合成响应做 rank/residual 验证，再接真实 calculator。
+4. **响应 schema 评审**：在实现前冻结 dataclass/JSON schema 草案，提供 v1 adapter；
+   不修改现有 `zstar-response` 1.0 文件。
+5. **最小机电原型**：只在 Python API 稳定后设计 `piezo`/`elastic` CLI；先以 ABACUS
+   小胞 smoke test 验证应变生成、收集和断点状态。
+6. **交叉验证**：用 VASP 或 ABINIT 的独立结果核对 tensor、单位和边界条件；记录输入、
+   任务数、SCF、core-hours、wall time、最大误差和 residual。
+7. **研究性路线**：phase/switching、finite-T、flexo、resonant Raman 分别过理论和
+   证据门，未通过前只保留 roadmap。
+
+## 6. 当前结论（第一轮）
+
+* v1 Unified BEC + Gamma force workflow 可以作为 v2 的响应基础；不需要、也不应在
+  v2 重新发明一套位移/力常数框架。
+* 压电、弹性和内应变在理论上能与 BEC/IFC 放进同一二阶响应块，但必须增加应变
+  扰动，并显式区分 clamped-ion、relaxed-ion 和电学边界。
+* 任意空间群的安全抽象是“群表示下的线性约束 + 观测矩阵秩/残差”，而不是固定
+  cubic/tetragonal 分量表。
+* 2D/1D/slab/molecule 的响应不能自动继承 3D bulk 公式；开放方向、真空、表面和
+  分子非周期性必须在 schema 中成为一等元数据。
+* 有限温、flexoelectricity、相翻转和共振 Raman 均不满足“改几个 CLI 参数即可
+  稳定实现”的条件，本轮只完成理论拆分和验证门设计。

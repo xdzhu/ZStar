@@ -1,0 +1,240 @@
+# ZStar v2 统一响应理论（第一轮）
+
+**状态：推导基线；未构成稳定 API 或已验证计算功能**
+**分支：`zstar-v2-development`**
+**对应调研：** [`v2_literature_review.md`](v2_literature_review.md)
+
+本文把 ZStar v1 已完成的 polarization/BEC/Gamma-force/介电链条放进一个可扩展的
+线性响应记号，并明确哪些块可以复用同一组第一性原理任务、哪些块必须增加扰动。
+所有导数均在参考结构、坐标和边界条件明确后理解；晶体极化是 Berry branch
+意义下的多值量，实际代码必须保存 branch 和 reference。
+
+## 1. 记号、坐标和热力学势
+
+* Cartesian 坐标用右手系 `x,y,z`；晶格矩阵的行向量为 \({\bf a}_1,{\bf a}_2,{\bf a}_3\)。
+  原子位移 \(u_{i\beta}\) 是原子 *i* 的 Cartesian 位移，单位 m（实现中可用 Å，
+  但在 schema 中必须写换算）。
+* 原子索引 `i,j=1..N`，Cartesian 索引 `alpha,beta,gamma=x,y,z`。
+* 应变采用小应变对称张量 \(\eta_{\alpha\beta}=\eta_{\beta\alpha}\)。对外接口
+  预定工程 Voigt 向量
+  \[
+  \eta_V=(\eta_{xx},\eta_{yy},\eta_{zz},2\eta_{yz},2\eta_{xz},2\eta_{xy}),
+  \]
+  应力向量为 \(\sigma_V=(\sigma_{xx},\sigma_{yy},\sigma_{zz},\sigma_{yz},\sigma_{xz},\sigma_{xy})\)。
+  这样 \(\sigma: \eta=\sigma_V^T\eta_V\)。任何 tensorial-shear 或 Mandel 约定
+  都必须在记录中显式标出，不能只保存 6 个数。
+* \(\Omega\) 是参考晶胞体积，
+  \(q_e>0\) 是元电荷；\(P\) 单位 C m\(^{-2}\)，
+  \(\mathcal E\) 单位 V m\(^{-1}\)，\(F\) 单位 N，
+  \(\sigma\) 和 \(C\) 单位 Pa。
+* 在零宏观场附近使用电焓
+  \[
+  \mathcal H(u,\eta,\mathcal E)=E_{\rm BO}(u,\eta)-\Omega\mathcal E_\alpha P_\alpha(u,\eta,\mathcal E).
+  \]
+  电子介电的二阶项包含在 \(P(\mathcal E)\) 中。导数下标 `E`、`D`、`eta`、`sigma`
+  分别表示固定宏观电场、电位移、应变或应力；`u` 表示固定内部坐标。
+
+## 2. BEC（Born effective charge）
+
+定义为
+\[
+Z^{*}_{i,\alpha\beta}
+ =\frac{\Omega}{q_e}
+  \left.\frac{\partial P_\alpha}{\partial u_{i\beta}}\right|_{\mathcal E,\eta}
+ =\frac{1}{q_e}
+  \left.\frac{\partial F_{i\beta}}{\partial \mathcal E_\alpha}\right|_{u,\eta}.
+\]
+
+第二个等式来自 \(F_{i\beta}=-\partial \mathcal H/\partial u_{i\beta}\) 和 Maxwell
+互易关系。\(Z^*\) 的数值单位为 \(q_e\)（通常写作 `e`），第一指标是极化/电场
+方向，第二指标是原子位移/力方向；若后端输出相反顺序，adapter 必须记录轴变换。
+
+位移必须是单个原子、单个 Cartesian 向量，且保存实际序列化后的 \(\Delta u\)，不
+用名义步长替代。电中性晶体满足 acoustic sum rule
+\(\sum_i Z^*_{i,\alpha\beta}=0\)，但数值输出应同时保留 raw 和投影后结果。
+
+### 2.1 周期性和低维边界
+
+在 3D bulk，Berry polarization 和上式使用完整 \(\Omega\)。在 2D slab，周期方向
+设为 \(x,y\)，真空法向为 \(z\)：
+
+* 周期方向可定义 sheet polarization \(P^{2D}_{\alpha}=L_zP^{3D}_{\alpha}\)，
+  单位 C m\(^{-1}\)，并用面积 \(A\) 写成
+  \(Z^*=A/q_e\,\partial P^{2D}/\partial u\)，与体积表达式等价；
+* 面外偶极必须由实空间电荷密度（或等价的开放边界方法）得到，不能把含任意真空
+  高度的 Berry 体极化直接当成 intrinsic 面外响应；
+* `dimensionality=2` 时电场、应变和应力的开放方向必须在边界元数据中注明。
+
+在 1D wire，周期轴为 \(z\)，横截面积 \(A_\perp\) 只是归一化参考：
+\(P^{1D}_z=A_\perp P^{3D}_z\) 的单位是 C，横向 dipole/force 响应需用开放边界
+电荷密度；不能使用真空稀释的横向 Berry 值。对分子（`dim=0`），没有晶体周期
+polarization quantum；可定义的是原子极化张量 APT（单位 e）和分子偶极/极化率，
+不能把 APT 命名为周期晶体 BEC，也不能自动定义 bulk e 或 C。
+
+## 3. 压电张量与应变诱导极化
+
+固定内部坐标的 proper 压电张量为
+\[
+e^{(0)}_{\alpha\mu}
+ =\left.\frac{\partial P_\alpha}{\partial \eta_\mu}\right|_{u,\mathcal E},
+\]
+单位 C m\(^{-2}\)。\(\mu\) 是上述工程 Voigt 分量；例如
+\(e_{\alpha 4}=\partial P_\alpha/\partial(2\eta_{yz})\)。
+
+Berry 极化的直接有限差分会混入晶胞体积变化、坐标旋转和 polarization quantum 的
+branch 选择，得到的是 improper quantity。v2 的 `proper` 结果必须：
+
+1. 以同一 reference cell 和连续 Berry branch 比较 \(P(+\eta)\) 与 \(P(-\eta)\)；
+2. 记录形变矩阵 \(h'=(I+\eta)h\) 和取向变换；
+3. 按 Vanderbilt 的 proper 定义从几何项中扣除/保留所需修正；
+4. 在输出中同时给出 raw/improper、proper、branch quantum 和修正项。
+
+内部弛豫后，
+\[
+e_{\alpha\mu}=e^{(0)}_{\alpha\mu}
+ +\frac{q_e}{\Omega}
+  \sum_{i\beta}Z^{*}_{i,\alpha\beta}\Lambda_{i\beta\mu},
+\]
+其中 \(\Lambda\) 在下一节定义。第一项是 electronic/clamped-ion（若离子固定），
+第二项是 internal-relaxation contribution；两项必须分别保存。
+
+## 4. 弹性张量、柔顺和机械稳定性
+
+固定电场和内部坐标的弹性张量为
+\[
+C^{\mathcal E,(0)}_{\mu\nu}
+ =\left.\frac{\partial \sigma_\mu}{\partial \eta_\nu}\right|_{\mathcal E,u}
+ =\frac{1}{\Omega}
+  \left.\frac{\partial^2\mathcal H}{\partial \eta_\mu\partial \eta_\nu}\right|_{\mathcal E,u}.
+\]
+
+这里的拉伸应力正号约定为拉伸；若 calculator 输出压缩为正，adapter 必须乘以 -1
+并在 provenance 中记录。\(C\) 在能量二阶导数近似下应满足
+\(C_{\mu\nu}=C_{\nu\mu}\)；柔顺矩阵 \(S^\mathcal E=(C^\mathcal E)^{-1}\)
+单位 Pa\(^{-1}\)，应在投影声学零模/固定边界后求逆。
+
+机械稳定性检查至少包括：对称化前后最大违例、对称/反对称特征值、最小特征值、
+条件数和适用的晶系 Born 稳定性不等式。2D 只对面内应变子空间给出 intrinsic 稳定性；
+slab 法向和分子体系不得自动套用 3D bulk 判据。
+
+## 5. 内应变响应及 relaxed-ion 修正
+
+定义内部原子在固定外部应变、零内部力条件下的响应：
+\[
+\Lambda_{i\beta\mu}
+ =\left.\frac{\partial u_{i\beta}}{\partial \eta_\mu}\right|_{F=0,\mathcal E}.
+\]
+
+令
+\[
+\Phi_{i\beta,j\gamma}=\frac{\partial^2E_{\rm BO}}
+ {\partial u_{i\beta}\partial u_{j\gamma}},\qquad
+\Gamma_{i\beta,\mu}=\frac{\partial^2E_{\rm BO}}
+ {\partial u_{i\beta}\partial \eta_\mu}.
+\]
+平衡条件给出
+\[
+\Phi\,u+\Gamma\,\eta=0,\qquad
+\Lambda=-\Phi^{+}\Gamma,
+\]
+其中 \(\Phi^+\) 是在去除平移声学零模后的伪逆。代入极化和应力展开得到
+\[
+e=e^{(0)}+\frac{q_e}{\Omega}Z^*\Lambda,
+\qquad
+C^{\mathcal E}=C^{\mathcal E,(0)}
+ -\frac{1}{\Omega}\Gamma^T\Phi^+\Gamma
+ =C^{\mathcal E,(0)}-\frac{1}{\Omega}\Lambda^T\Phi\Lambda.
+\]
+
+因此，relaxed-ion 不是“重新命名 clamped-ion”，而是由 BEC、Gamma IFC、
+internal-strain coupling 和 homogeneous-strain response 联合构成。实现时必须保留
+固定内部坐标的结构和每个弛豫结构的收敛力阈值。
+
+## 6. e、d、g、h 的热力学关系
+
+以下采用应力 \(T\)、应变 \(S\)、电场 \(E\)、电位移 \(D\) 的矩阵形式，
+并以单位体积能量为势：
+\[
+T=C^E S-e^T E,\qquad D=eS+\epsilon^S E.
+\]
+这里的 \(S\) 是 strain，不是柔顺矩阵；柔顺矩阵记为 \(s^E=(C^E)^{-1}\)。
+对应的四种压电矩阵定义和单位为：
+
+| 符号 | 定义（本项目约定） | SI 单位 |
+|---|---|---|
+| \(e\) | \( (\partial D/\partial S)_E=-(\partial T/\partial E)_S\) | C m\(^{-2}\) |
+| \(d\) | \( (\partial D/\partial T)_E=(\partial S/\partial E)_T=e s^E\) | C N\(^{-1}=m V^{-1}\) |
+| \(g\) | \( -(\partial E/\partial T)_D=(\partial S/\partial D)_T=(\epsilon^T)^{-1}d\) | V m N\(^{-1}\) |
+| \(h\) | \( -(\partial E/\partial S)_D=-(\partial T/\partial D)_S=(\epsilon^S)^{-1}e\) | V m\(^{-1}\) |
+
+在绝对介电张量（F m\(^{-1}\)）下，互换关系为
+\[
+e=dC^E,\qquad d=\epsilon^T g,\qquad h=gC^D,\qquad e=h\epsilon^S,
+\]
+\[
+\epsilon^T=\epsilon^S+e\,s^E e^T,
+\qquad
+C^D=C^E+e^T(\epsilon^S)^{-1}e.
+\]
+若代码保存相对介电常数 \(\epsilon_r\)，转换为绝对量时必须显式乘 \(\epsilon_0\)。
+文献有转置、应力正号和 engineering-shear 因子差异；v2 schema 要保存
+`matrix_axes`, `voigt_convention`, `stress_sign`, `electric_boundary`
+和 `mechanical_boundary`，并提供 round-trip 检查，而不是猜测约定。
+
+## 7. BEC、力常数、介电与压电的响应重建关系
+
+在同一参考点将 \(\mathcal H\) 二阶展开，位移、应变、电场的混合块可用下表表示。
+矩阵的数值因位移用 m/Å、极化用 SI/eÅ 而有单位因子，故实现应由带单位的导数对象
+生成，而不是复制一个无量纲的匿名 block matrix：
+
+| 扰动对 | 二阶导数/响应块 | 由何种观测得到 |
+|---|---|---|
+| `u-u` | \(\Phi_{i\beta,j\gamma}=\partial^2E/\partial u_i\partial u_j\) | force 对 displacement |
+| `eta-u` | \(\Gamma_{i\beta,\mu}=\partial^2E/\partial u_i\partial\eta_\mu\) | strain 下 force 或 relaxed displacement |
+| `E-u` | \(q_e Z^* = \Omega\,\partial P/\partial u\) | polarization 对 displacement（或 force 对 E） |
+| `eta-eta` | \(\Omega C^{(0)}=\partial^2E/\partial\eta^2\) | stress 对 strain 或能量曲率 |
+| `E-eta` | \(\Omega e^{(0)}=\Omega\,\partial P/\partial\eta\) | polarization 对 strain（或 stress 对 E） |
+| `E-E` | \(\Omega\epsilon^u=\partial^2(-\mathcal H)/\partial E^2\) | finite-field/DFPT electronic response |
+
+这组块可组成同一“响应重建体系”，但并不意味着一组 stage 足以得到全部块：
+v1 位移/力/极化 ensemble 只能覆盖 `u-u` 和 `E-u`，应变 stage 才能覆盖 `eta-*`，
+而电子 `E-E` 还需要电场响应。
+
+所以 v1 Unified 位移/力/极化集合可以一次拟合 BEC 与 Gamma IFC，并由同一 Gamma
+IFC+BEC 进入谐性晶格介电响应和 LO--TO/NAC；要获得 e、C、Lambda 必须新增 strain
+任务，要获得 \(\epsilon^u\) 则要有电子电场 DFPT/有限场或相容的 PYATB 结果。任何
+缺少混合块的“响应重建”都必须标记 incomplete，而不是填零。
+
+## 8. 有限差分精度和实际扰动向量
+
+对任意参数向量 \(x\) 和观测 \(y(x)\)，单方向中心差分为
+\[
+\frac{\partial y}{\partial x_a}
+ \approx \frac{y(x+\Delta x_+)-y(x+\Delta x_-)}
+ {\Delta x_+-\Delta x_-},
+\]
+其中分母是实际序列化的标量；向量扰动集合 \(U\) 用最小二乘重建
+\[
+J=\arg\min_J\|UJ-Y\|_W,
+\qquad
+\operatorname{rank}(U)=n_\text{allowed}.
+\]
+单边差分截断误差 \(O(h)\)，中心差分截断误差 \(O(h^2)\)；舍入/SCF 噪声约按
+\(O(\varepsilon_\text{num}/h)\) 放大。每个响应至少做三个幅度（例如
+`0.5h, h, 2h`）并报告斜率、条件数和 residual；SCF 未收敛、Berry branch 跳变或
+弛豫不完整时不能把差分误差归因于物理非线性。
+
+正负扰动和对称补全应使用真实 \(\Delta u\)、\(\Delta\eta\)；名义 `distance`
+只作为生成建议，不能作为后处理分母。应变 clamped-ion 固定分数坐标，relaxed-ion
+在每个 ± strain 重新弛豫内部坐标并检查残余力。
+
+## 9. 适用性边界
+
+* 金属或带隙为零时，静态 Berry polarization、BEC 和常规绝缘体 DFPT 不能直接套用；
+  任务应在 preflight 阶段失败并指出需使用金属线性响应/有限频率方案。
+* 低对称、极性和微小对称破缺结构必须以实际空间群和 tolerance 为准；不能按化学
+  经验把原子视为等价。
+* 2D/1D 的 intrinsic sheet/line 归一化与 bulk 介电张量不同；真空高度、表面偶极、
+  开放方向边界是结果的一部分。
+* 分子可以有 APT、力常数、分子极化率和 Raman 响应，但没有周期晶体 polarization
+  quantum、bulk piezoelectric e/d/g/h 或 bulk elastic C 的自动定义。
