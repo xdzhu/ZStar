@@ -81,6 +81,106 @@ def _set_input_parameter(path: Path, key: str, value: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+def _read_input_parameter(path: Path, key: str) -> str | None:
+    if not path.is_file():
+        return None
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        fields = line.split("#", 1)[0].split()
+        if len(fields) >= 2 and fields[0].lower() == key.lower():
+            return fields[1]
+    return None
+
+
+def prepare_abacus_berry_stages(
+    source_scf_stage: str | Path,
+    output: str | Path,
+    *,
+    gdirs: Iterable[int] = (1, 2, 3),
+    symmetry: str = "0",
+) -> dict:
+    """Prepare independent ABACUS Berry NSCF stages from one SCF stage.
+
+    The source stage must contain ``INPUT``, ``STRU``, ``KPT`` and the charge
+    restart referenced by its ``suffix`` (normally
+    ``OUT.<suffix>/POLAR-CHARGE-DENSITY.restart``).  This function only copies
+    inputs and writes a manifest; it never launches ABACUS.  Each generated
+    stage is self-contained and uses the source restart through
+    ``init_chg file``/``read_file_dir``.
+    """
+
+    source = Path(source_scf_stage).expanduser().resolve()
+    target = Path(output).expanduser().resolve()
+    if not source.is_dir():
+        raise FileNotFoundError(f"ABACUS SCF stage does not exist: {source}")
+    if target.exists() and any(target.iterdir()):
+        raise FileExistsError(f"Berry stage output is not empty: {target}")
+    input_source = source / "INPUT"
+    structure_source = source / "STRU"
+    kpt_source = source / "KPT"
+    for required in (input_source, structure_source, kpt_source):
+        if not required.is_file():
+            raise FileNotFoundError(f"ABACUS Berry preparation requires {required}")
+    if not str(symmetry).strip():
+        raise ValueError("symmetry value must not be empty")
+    directions = tuple(int(value) for value in gdirs)
+    if len(directions) == 0 or len(set(directions)) != len(directions) or any(value not in {1, 2, 3} for value in directions):
+        raise ValueError("gdirs must contain distinct values chosen from 1, 2, and 3")
+    suffix = _read_input_parameter(input_source, "suffix")
+    if suffix is None or not suffix.strip():
+        candidates = sorted(source.glob("OUT.*/POLAR-CHARGE-DENSITY.restart"))
+        if not candidates:
+            raise FileNotFoundError(
+                "ABACUS Berry preparation requires a source "
+                "charge restart at OUT.<suffix>/POLAR-CHARGE-DENSITY.restart"
+            )
+        if len(candidates) != 1:
+            raise ValueError("cannot identify a unique source OUT.<suffix>/POLAR-CHARGE-DENSITY.restart")
+        out_dir = candidates[0].parent
+        suffix = out_dir.name[4:] if out_dir.name.startswith("OUT.") else out_dir.name
+    restart_source = source / f"OUT.{suffix}" / "POLAR-CHARGE-DENSITY.restart"
+    if not restart_source.is_file():
+        raise FileNotFoundError(
+            "ABACUS Berry preparation requires charge restart "
+            f"{restart_source}; complete the SCF stage with the matching suffix first"
+        )
+
+    target.mkdir(parents=True, exist_ok=True)
+    prepared: dict[int, str] = {}
+    for direction in directions:
+        stage = target / f"gdir-{direction}"
+        stage.mkdir()
+        for source_file, destination_name in (
+            (input_source, "INPUT"),
+            (structure_source, "STRU"),
+            (kpt_source, "KPT"),
+        ):
+            shutil.copy2(source_file, stage / destination_name)
+        for asset in source.iterdir():
+            if asset.is_file() and asset.suffix.lower() in {".upf", ".orb", ".upf.gz", ".orb.gz"}:
+                shutil.copy2(asset, stage / asset.name)
+        output_dir = stage / f"OUT.{suffix}"
+        output_dir.mkdir()
+        shutil.copy2(restart_source, output_dir / restart_source.name)
+        _set_input_parameter(stage / "INPUT", "calculation", "nscf")
+        _set_input_parameter(stage / "INPUT", "init_chg", "file")
+        _set_input_parameter(stage / "INPUT", "read_file_dir", f"OUT.{suffix}/")
+        _set_input_parameter(stage / "INPUT", "berry_phase", "1")
+        _set_input_parameter(stage / "INPUT", "gdir", str(direction))
+        _set_input_parameter(stage / "INPUT", "symmetry", str(symmetry))
+        prepared[direction] = str(stage)
+    manifest = {
+        "schema": "zstar-v2-abacus-berry-preparation",
+        "schema_version": "0.1",
+        "source_stage": source.name,
+        "suffix": suffix,
+        "gdirs": list(directions),
+        "stages": prepared,
+        "executed": False,
+    }
+    (target / "berry_ensemble.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return {"root": str(target), "stages": prepared, "suffix": suffix, "manifest": str(target / "berry_ensemble.json")}
+
+
 def prepare_abacus_strain_ensemble(
     root: str | Path,
     *,

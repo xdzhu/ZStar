@@ -49,6 +49,12 @@ core-hours）。每阶段均以 `exit_code=2` 记录 ABACUS 正常完成的返�
 `[-0.0, 0.0, -0.0] C/m²` 和三个 `2.0199409 C/m²` 量子；三条日志路径也被
 保留。这验证了目录枚举顺序不会偷偷成为坐标约定。
 
+此外，针对多幅度应变审计的 `reference` SCF stage 运行了
+`prepare_abacus_berry_stages` dry-run，生成 `gdir-1/2/3` 三个目录；每个目录都
+包含独立 `INPUT/STRU/KPT`、赝势/轨道和 `OUT.POLAR/POLAR-CHARGE-DENSITY.restart`，
+并在 manifest 中记录 `executed=false`。这只是任务准备审计，尚未运行应变 Berry
+生产阶段。
+
 解析器 `zstar.v2.polarization` 的约束为：
 
 1. 直接 `C/m²` 记录优先于内部单位记录，避免把 `(e/Omega).bohr` 中的 `Omega`

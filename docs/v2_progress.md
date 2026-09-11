@@ -35,10 +35,13 @@
 12. 已加入 `fit_piezoelectric_ensemble` 薄封装，将 branch-matched ensemble 接到
     raw e 拟合；它检查零应变 reference，并允许用户显式设置 residual 阈值，不把
     合法的物理 ΔP 默认判为错误。
+13. 已加入 `prepare_abacus_berry_stages` dry-run：从已完成的 SCF stage 复制
+    `STRU/KPT/赝势/轨道/charge restart`，生成三个独立 NSCF `gdir` 目录和 manifest，
+    明确写入 `init_chg/read_file_dir/berry_phase/symmetry`，但不执行 ABACUS。
 
 ## 证据状态
 
-* 本阶段全量回归为 `452 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+* 本阶段全量回归为 `454 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
   v2 draft tests）；Berry 极化/ensemble 定向测试为 `15 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。

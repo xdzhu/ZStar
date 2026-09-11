@@ -44,7 +44,7 @@ from .structure import (
     polarization_representation,
     strain_representation,
 )
-from .strain import actual_strain, apply_strain, prepare_abacus_strain_ensemble
+from .strain import actual_strain, apply_strain, prepare_abacus_berry_stages, prepare_abacus_strain_ensemble
 from .polarization import (
     BranchMatch,
     MatchedPolarizationEnsemble,
@@ -112,6 +112,7 @@ __all__ = [
     "displacement_representation",
     "polarization_representation",
     "prepare_abacus_strain_ensemble",
+    "prepare_abacus_berry_stages",
     "parse_abacus_berry_polarization",
     "project_intertwiner",
     "relaxed_elastic",
