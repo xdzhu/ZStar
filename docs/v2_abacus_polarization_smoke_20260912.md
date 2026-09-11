@@ -44,6 +44,11 @@ ABACUS 官方 Berry 文档要求先有 SCF 电荷，再以 `calculation nscf`、
 core-hours）。每阶段均以 `exit_code=2` 记录 ABACUS 正常完成的返回码，同时
 保存了输入、`running_scf.log`、`running_nscf.log` 和 charge restart。
 
+将本地目录按故意打乱的顺序 `polar-c, polar-a, polar-b` 交给
+`collect_abacus_polarization_triplet` 后，collector 仍按 `gdir=1,2,3` 返回
+`[-0.0, 0.0, -0.0] C/m²` 和三个 `2.0199409 C/m²` 量子；三条日志路径也被
+保留。这验证了目录枚举顺序不会偷偷成为坐标约定。
+
 解析器 `zstar.v2.polarization` 的约束为：
 
 1. 直接 `C/m²` 记录优先于内部单位记录，避免把 `(e/Omega).bohr` 中的 `Omega`
