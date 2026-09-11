@@ -55,6 +55,11 @@
 19. 已加入低维安全门：`dimensionality < 3` 的 ABACUS Berry 极化不会被按三维
     `C/m^2` 静默收集；在 sheet/line 归一化、真空依赖和边界条件明确前，collector
     给出可操作的失败提示。对应 failure-matrix 测试已加入。
+20. 已在人为构造的非中心对称 tetragonal BaTiO₃ (`P4mm`) 上完成 3 个 SCF + 9 个
+    Berry NSCF 的小规模链路 smoke。reference 极化约 `0.348069 C/m²`，但只采样
+    `eta_xx` 正负对，允许秩 3 而拟合秩 1，故 `complete=False`，没有把欠定 fit 写成
+    压电材料结论。详细输入哈希、节点计时和失败门见
+    [`v2_abacus_tetragonal_piezo_smoke_20260912.md`](v2_abacus_tetragonal_piezo_smoke_20260912.md)。
 
 ## 证据状态
 
@@ -77,8 +82,9 @@ PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当�
 
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
-* **Gate C：**六分量/多幅度 force-stress/energy 数据收集已通过；完整 Gate C 仍未满足，
-  尚需 stress sign/单位和能量曲率收敛确认、极化收集、relaxed-ion 和独立后端核对。
+* **Gate C：**六分量/多幅度 force-stress/energy 数据收集已通过；极化 collector 和
+  非中心对称 smoke 已接通，但完整 Gate C 仍未满足，尚需 stress sign/单位和能量
+  曲率收敛确认、允许子空间完备的非零 e、relaxed-ion 和独立后端核对。
 
 ## 下一步
 
@@ -87,5 +93,6 @@ PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当�
 3. 完成 cubic BaTiO3 六分量、多幅度 clamped-ion 任务，记录输入哈希、SCF、wall time 和日志；
 4. 通过 ABACUS 输出/文档和独立小算例确认 stress 符号/单位；随后增加带应变的
    Berry 阶段，再开始 relaxed-ion 应变任务；
-5. 在 branch-matched 极化数据上验证 draft e 拟合，再以独立后端或高精度参考结果
-   核对完整 C 矩阵和 proper e 张量，之后才进入正式压电/弹性 CLI 设计。
+5. 在 `P4mm` 允许子空间完备的 branch-matched 极化数据上验证 draft e 拟合，再以
+   独立后端或高精度参考结果核对完整 C 矩阵和 proper e 张量，之后才进入正式
+   压电/弹性 CLI 设计。
