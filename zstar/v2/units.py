@@ -8,6 +8,7 @@ import numpy as np
 
 
 ELEMENTARY_CHARGE = 1.602176634e-19  # C, exact SI definition
+BOHR_RADIUS = 5.29177210903e-11  # m, CODATA 2018 value used by the draft API
 EPSILON_0 = 8.8541878128e-12  # F m^-1, CODATA value used by the draft API
 
 

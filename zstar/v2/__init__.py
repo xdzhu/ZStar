@@ -38,10 +38,22 @@ from .structure import (
     strain_representation,
 )
 from .strain import actual_strain, apply_strain, prepare_abacus_strain_ensemble
-from .units import EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
+from .polarization import (
+    BranchMatch,
+    PolarizationComponent,
+    PolarizationPath,
+    PolarizationSample,
+    collect_abacus_polarization_component,
+    collect_abacus_polarization_stage,
+    match_polarization_branch,
+    parse_abacus_berry_polarization,
+    unwrap_polarization_path,
+)
+from .units import BOHR_RADIUS, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
 
 __all__ = [
     "BoundaryConditions",
+    "BOHR_RADIUS",
     "ENGINEERING_VOIGT",
     "EPSILON_0",
     "ELEMENTARY_CHARGE",
@@ -56,8 +68,14 @@ __all__ = [
     "TensorQuantity",
     "UnitConversionError",
     "V2StateStore",
+    "BranchMatch",
+    "PolarizationComponent",
+    "PolarizationPath",
+    "PolarizationSample",
     "collect_abacus_stage",
     "collect_abacus_strain_response",
+    "collect_abacus_polarization_stage",
+    "collect_abacus_polarization_component",
     "V2_SCHEMA_NAME",
     "V2_SCHEMA_VERSION",
     "central_difference",
@@ -74,10 +92,12 @@ __all__ = [
     "intertwining_residual",
     "internal_strain_response",
     "mechanical_stability",
+    "match_polarization_branch",
     "plan_central_stages",
     "displacement_representation",
     "polarization_representation",
     "prepare_abacus_strain_ensemble",
+    "parse_abacus_berry_polarization",
     "project_intertwiner",
     "relaxed_elastic",
     "relaxed_piezoelectric",
@@ -87,4 +107,5 @@ __all__ = [
     "strain_representation",
     "voigt_to_strain_tensor",
     "voigt_to_stress_tensor",
+    "unwrap_polarization_path",
 ]

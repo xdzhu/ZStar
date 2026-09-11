@@ -19,11 +19,16 @@
    结果与审计限制见 [`v2_abacus_multiamp_20260912.md`](v2_abacus_multiamp_20260912.md)。
 7. collector 已在日志存在 `FINAL_ETOT_IS` 时保存 stage energy；本轮能量二阶曲率与
    stress 拟合仍有幅度依赖，尚不能作为最终弹性结果。
+8. 已加入 draft Berry 极化 parser、极化量子单位归一化、非正交/低维 branch matcher
+   和路径展开诊断；已用 ABACUS NSCF `gdir=1,2,3` 参考结构 smoke 回读验证，详见
+   [`v2_abacus_polarization_smoke_20260912.md`](v2_abacus_polarization_smoke_20260912.md)。
+   这仍不是压电结果：尚未加入应变 Berry 对、proper 修正或独立后端核对。
 
 ## 证据状态
 
-* 最近一次完整回归为 `434 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动
-  以及 v2 draft tests）；警告均为现有依赖的弃用提示，没有失败。
+* 本阶段全量回归为 `444 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+  v2 draft tests）；其中 Berry 定向测试为 `9 passed`。警告均为现有依赖的弃用提示，
+  没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
@@ -47,5 +52,7 @@ PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当�
 1. 评审并冻结 draft schema 的字段语义、单位注册表、边界条件和错误契约；
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
 3. 完成 cubic BaTiO3 六分量、多幅度 clamped-ion 任务，记录输入哈希、SCF、wall time 和日志；
-4. 通过 ABACUS 输出/文档和独立小算例确认 stress 符号/单位，再开始 relaxed-ion 应变任务；
-5. 以独立后端或高精度参考结果核对完整 C 矩阵，之后才进入正式压电/弹性 CLI 设计。
+4. 通过 ABACUS 输出/文档和独立小算例确认 stress 符号/单位；随后增加带应变的
+   Berry 阶段，再开始 relaxed-ion 应变任务；
+5. 以独立后端或高精度参考结果核对完整 C 矩阵和 proper e 张量，之后才进入正式
+   压电/弹性 CLI 设计。

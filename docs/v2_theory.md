@@ -89,6 +89,25 @@ branch 选择，得到的是 improper quantity。v2 的 `proper` 结果必须：
 3. 按 Vanderbilt 的 proper 定义从几何项中扣除/保留所需修正；
 4. 在输出中同时给出 raw/improper、proper、branch quantum 和修正项。
 
+### 3.1 极化分支的连续匹配
+
+ABACUS Berry 输出的单个方向是包裹值，不能直接相减。令 \(\mathbf Q\) 的列为周期方向
+的 polarization quantum，给定路径上一个已经展开的参考值
+\(\mathbf P_{\mathrm{ref}}\) 和新输出 \(\mathbf P_{\mathrm{wrap}}\)，v2 选择
+
+\[
+ \mathbf n^*=\underset{\mathbf n\in\mathbb Z^{N_p}}{\operatorname{argmin}}
+ \lVert \mathbf P_{\mathrm{ref}}-(\mathbf P_{\mathrm{wrap}}+\mathbf Q\mathbf n)\rVert_2,
+ \qquad \mathbf P_{\mathrm{match}}=\mathbf P_{\mathrm{wrap}}+\mathbf Q\mathbf n^* .
+\]
+
+实现允许 \(\mathbf Q\) 为非正交的 3×3 基底，也允许 2D/1D 的 3×(N_p) 基底；开放方向
+不参与整数平移，无法由量子消除的部分作为 residual 返回。路径展开逐点以上一个
+已展开值为参考，记录整数 `branch_shift` 和 residual；超过用户给定阈值时失败，
+而不是静默跨越 branch jump。当前代码的 ABACUS parser 只负责值/量子/原始单位，
+`match_polarization_branch` 和 `unwrap_polarization_path` 才负责连续性，因此仍不
+自动声称自发极化或翻转路径成立。
+
 内部弛豫后，
 \[
 e_{\alpha\mu}=e^{(0)}_{\alpha\mu}
