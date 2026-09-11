@@ -70,3 +70,20 @@ output_kind="polarization")` 的允许秩为 0。将匹配结果交给
 本审计没有计算 relaxed-ion e、内部应变贡献、proper 修正或非中心对称材料的非零
 响应。下一步必须在 tetragonal/hexagonal 极性结构中重复相同链条，并用独立后端或
 可靠文献数据核对张量数值。
+
+## response schema 回读
+
+将 reference 与 `strain-001±` 的 force/stress/energy 目录和三方向 Berry 目录通过
+显式 `polarization_stages` 映射交给 `collect_abacus_strain_response`，成功生成
+`zstar-v2-response` 0.1 草稿文档。文档包含：
+
+* `strain_vector` `(3, 6)`、`forces` `(3, 5, 3)`、`stress_raw` `(3, 3, 3)` 和
+  `energy` `(3,)`；
+* `polarization_gdir`、`polarization_quantum` `(3, 3)`，以及完整的
+  `polarization_cartesian_directional` `(3, 3, 3)`；
+* `polarization_collected=true`、`polarization_cartesian_collected=true`，每个量的
+  单位/轴/后端/日志 provenance。
+
+该回读使用 JSON 中的字符串 gdir 键（`"1"`、`"2"`、`"3"`），并已加入回归测试。
+低维 ensemble 即使有同样的日志映射也会被明确拒绝，直到 sheet/line 归一化和边界
+条件接口完成。

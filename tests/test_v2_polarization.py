@@ -147,6 +147,24 @@ def test_collect_abacus_polarization_triplet_rejects_missing_or_duplicate_gdir(t
         collect_abacus_polarization_triplet({1: stages[0], 2: stages[2], 3: stages[2]})
 
 
+def test_collect_abacus_polarization_triplet_accepts_string_numeric_keys_from_json(tmp_path):
+    stages = {}
+    for direction, value in ((1, 1.0), (2, 2.0), (3, 3.0)):
+        stage = tmp_path / f"json-gdir-{direction}"
+        output = stage / "OUT.POLAR"
+        output.mkdir(parents=True)
+        (stage / "INPUT").write_text(f"gdir {direction}\n", encoding="utf-8")
+        vector = [0.0, 0.0, 0.0]
+        vector[direction - 1] = value
+        (output / "running_nscf.log").write_text(
+            f"P = {value} (mod 10) ({vector[0]}, {vector[1]}, {vector[2]}) C/m^2\n",
+            encoding="utf-8",
+        )
+        stages[direction] = stage
+    sample = collect_abacus_polarization_triplet({str(key): value for key, value in stages.items()})
+    np.testing.assert_allclose(sample.values, [1.0, 2.0, 3.0])
+
+
 def test_branch_matching_returns_integer_shifts_and_delta():
     match = match_polarization_branch(
         [1.0, 2.0, 3.0],

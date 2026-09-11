@@ -310,9 +310,12 @@ def collect_abacus_polarization_triplet(
         for key, stage in stages.items():
             if isinstance(key, str):
                 label = key.lower()
-                if label not in {"a", "b", "c"}:
+                if label in {"1", "2", "3"}:
+                    direction = int(label)
+                elif label in {"a", "b", "c"}:
+                    direction = {"a": 1, "b": 2, "c": 3}[label]
+                else:
                     raise ValueError(f"unsupported polarization direction key {key!r}")
-                direction = {"a": 1, "b": 2, "c": 3}[label]
             else:
                 direction = int(key)
             directory = Path(stage).resolve()
