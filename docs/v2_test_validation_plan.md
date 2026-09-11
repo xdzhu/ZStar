@@ -47,8 +47,9 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 
 ### 1.6 v1 回归
 
-每次 v2 提交运行当前完整 suite，并固定基线：`394 passed`（当前工作区，含 1114 个
-依赖弃用警告）。测试必须验证 v1 canonical CLI、`response.json` 1.0、Unified
+每次 v2 提交运行当前完整 suite。第一轮冻结记录为 `394 passed`；随着工作区已有的
+声子谱回归和 v2 draft tests 加入，本阶段实测为 `447 passed, 1252 warnings`。测试
+必须验证 v1 canonical CLI、`response.json` 1.0、Unified
 `shared_response.json`、旧案例和旧命令 alias 没有行为变化；v2 新 schema 不能让 v1
 reader 接触到未知字段后崩溃。
 
@@ -88,13 +89,16 @@ separate_control_cost, v2_cost, efficiency_ratio
 
 ## 4. 计算资源和提交门
 
-本轮不访问 235、不提交 cu20/cu23/cu24/cu25/cu26 任务。进入小规模验证阶段后：
+小规模验证阶段已按用户授权通过 235 的跳板直接使用 cu24–cu26；没有修改或抢占
+用户的 PBS 占位作业。后续任务仍必须：
 
-1. 先查询这些节点的当前队列和负载，只选明确空闲且不抢占他人任务的节点；
+1. 先查询这些节点的当前队列和负载，只选明确可用且不抢占他人任务的节点；
 2. 单 stage smoke test 通过后再扩展 ± strain/relaxation；
 3. 每个任务记录节点、核数、MPI/OpenMP、开始/结束时间和日志；
 4. 使用 `.zstar/v2/` 状态断点续算，失败保留输入/日志，不盲目重复提交；
-5. 结果同步到案例 `provenance.json`，临时目录和大缓存不入 Git。
+5. 结果同步到案例 `provenance.json`，临时目录和大缓存不入 Git。已有 ABACUS
+   force/stress/energy 多幅度审计和 Berry NSCF smoke 分别记录于
+   `v2_abacus_multiamp_20260912.md` 与 `v2_abacus_polarization_smoke_20260912.md`。
 
 ## 5. 阶段性验收门
 
