@@ -43,6 +43,12 @@
     CRLF 包装返回码单独保留，未与 ABACUS 状态混淆。
 15. 已修正 Berry preparation manifest 的可迁移性：JSON 只保存相对 `gdir-*` 路径，
     返回对象才提供当前机器的绝对路径；同时支持 `.upf/.orb` 及其 gzip 资产。
+16. 已完成 cubic BaTiO₃ 的 reference、`strain-001±` 共 9 个 Berry NSCF 阶段，
+    并用 triplet collection → reference branch matching → 对称性约束 e fit 串联审计；
+    结果为 `Pm-3m` 禁止的零 e，完整记录见
+    [`v2_abacus_strain_polarization_smoke_20260912.md`](v2_abacus_strain_polarization_smoke_20260912.md)。
+17. 上述 9 阶段全量回归保持 `454 passed, 1252 warnings`；准备目录、远端原始日志、
+    parser 输出和对称性 fit 诊断均已保留，尚未把该零响应提升为一般材料压电结论。
 
 ## 证据状态
 
