@@ -50,7 +50,7 @@ core-hours）。每阶段均以 `exit_code=2` 记录 ABACUS 正常完成的返�
    误当作常数；
 2. 只有在日志提供正的 `Volume (Bohr^3)` 时才转换 `(e/Omega).bohr`；
 3. 解析结果保留 wrapped value、quantum、原始单位和 `gdir`，不自动选择铁电
-   branch；
+   branch；若日志带有括号中的 Cartesian 三元组，也同时保留该三元组及其单位换算；
 4. branch 连续性由单独的 `match_polarization_branch`/
    `unwrap_polarization_path` 完成，并可在非周期方向上报告 residual。
 

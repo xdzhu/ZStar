@@ -3,7 +3,10 @@
 The parser deliberately returns wrapped values and quanta separately.  A
 polarization difference is only physical after a branch has been matched
 along a continuous path; no function in this module silently chooses a
-ferroelectric branch or zero-fills a missing component.
+ferroelectric branch or zero-fills a missing component.  ABACUS's scalar
+``gdir`` value and optional Cartesian tuple are retained separately because a
+non-orthogonal cell needs an explicit coordinate transformation before a
+Cartesian response tensor can be reconstructed.
 """
 
 from __future__ import annotations
@@ -22,7 +25,7 @@ from .units import BOHR_RADIUS, ELEMENTARY_CHARGE
 _NUMBER = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[EeDd][-+]?\d+)?"
 _POLARIZATION_PATTERN = re.compile(
     rf"\bP\s*=\s*({_NUMBER})\s*\(\s*mod\s*({_NUMBER})\s*\)\s*"
-    rf"(?:\(\s*[-+0-9.,EeDd\s]+\)\s*)?"
+    rf"(?:\(\s*([-+0-9.,EeDd\s]+)\)\s*)?"
     rf"(C\s*/\s*m(?:\^?2|²)|e\s*/\s*bohr(?:\^?2|²)|"
     rf"\(\s*e\s*/\s*(?:Omega|Ω)\s*\)\s*\.\s*bohr|"
     rf"e\s*/\s*\(\s*(?:Omega|Ω)\s*\)\s*\.\s*bohr|"
@@ -67,13 +70,14 @@ def _polarization_factor(raw_unit: str, *, volume_bohr3: float | None = None) ->
 
 @dataclass(frozen=True)
 class PolarizationComponent:
-    """One scalar Berry-polarization component and its branch quantum."""
+    """One scalar Berry component, branch quantum, and optional Cartesian tuple."""
 
     value: float
     quantum: float
     unit: str = "C/m^2"
     raw_unit: str = "C/m^2"
     gdir: int | None = None
+    cartesian_value: np.ndarray | None = None
 
     def __post_init__(self) -> None:
         if not np.isfinite(float(self.value)) or not np.isfinite(float(self.quantum)):
@@ -82,6 +86,9 @@ class PolarizationComponent:
             raise ValueError("polarization quantum must be positive")
         if self.gdir is not None and int(self.gdir) not in {1, 2, 3}:
             raise ValueError("gdir must be 1, 2, 3, or None")
+        if self.cartesian_value is not None:
+            vector = _finite_vector(self.cartesian_value, "cartesian_value")
+            object.__setattr__(self, "cartesian_value", vector)
 
 
 def parse_abacus_berry_polarization(
@@ -101,7 +108,7 @@ def parse_abacus_berry_polarization(
     if not matches:
         raise ValueError("ABACUS output does not contain a Berry polarization record")
     def priority(match: re.Match[str]) -> tuple[int, int]:
-        unit = _normalized_polarization_unit(match.group(3))
+        unit = _normalized_polarization_unit(match.group(4))
         if unit in {"c/m^2", "c/m2"}:
             rank = 0
         elif unit in {"e/bohr^2", "e/bohr2"}:
@@ -113,13 +120,32 @@ def parse_abacus_berry_polarization(
     match = min(matches, key=priority)
     value = float(match.group(1).replace("D", "E").replace("d", "e"))
     quantum = float(match.group(2).replace("D", "E").replace("d", "e"))
-    raw_unit = match.group(3)
+    raw_unit = match.group(4)
     factor = _polarization_factor(raw_unit, volume_bohr3=volume_bohr3)
     value *= factor
     quantum *= factor
     if not np.isfinite(value) or not np.isfinite(quantum) or quantum <= 0.0:
         raise ValueError("Berry polarization value and quantum must be finite with positive quantum")
-    return PolarizationComponent(value=value, quantum=quantum, raw_unit=raw_unit)
+    cartesian_value = None
+    if match.group(3) is not None:
+        fields = re.split(r"[,\s]+", match.group(3).strip())
+        if len(fields) != 3:
+            raise ValueError("ABACUS Berry polarization Cartesian tuple must contain three values")
+        try:
+            cartesian_value = np.asarray(
+                [float(field.replace("D", "E").replace("d", "e")) for field in fields],
+                dtype=float,
+            ) * factor
+        except ValueError as exc:
+            raise ValueError("ABACUS Berry polarization Cartesian tuple is not numeric") from exc
+        if not np.all(np.isfinite(cartesian_value)):
+            raise ValueError("ABACUS Berry polarization Cartesian tuple must be finite")
+    return PolarizationComponent(
+        value=value,
+        quantum=quantum,
+        raw_unit=raw_unit,
+        cartesian_value=cartesian_value,
+    )
 
 
 def _find_abacus_polarization_log(stage: Path, axis: str) -> Path:
@@ -196,12 +222,18 @@ def collect_abacus_polarization_component(
         unit=component.unit,
         raw_unit=component.raw_unit,
         gdir=direction,
+        cartesian_value=component.cartesian_value,
     )
 
 
 @dataclass(frozen=True)
 class PolarizationSample:
-    """Three lattice-axis components, all normalized to C/m²."""
+    """Three lattice-axis scalar components, all normalized to C/m².
+
+    This container does not imply that the three scalars form a Cartesian
+    vector for a non-orthogonal cell; use ``PolarizationComponent``'s retained
+    Cartesian tuples and an explicit lattice transformation for that case.
+    """
 
     values: np.ndarray
     quanta: np.ndarray

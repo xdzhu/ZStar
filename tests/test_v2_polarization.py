@@ -23,6 +23,7 @@ def test_parse_abacus_berry_polarization_normalizes_supported_units():
     assert component.unit == "C/m^2"
     assert component.raw_unit == "C/m^2"
     np.testing.assert_allclose([component.value, component.quantum], [1.25, 3.5])
+    np.testing.assert_allclose(component.cartesian_value, [1.25, 0.0, 0.0])
 
     component = parse_abacus_berry_polarization(
         "P = 2 (mod 4) (2, 0, 0) e/bohr^2"
@@ -99,6 +100,7 @@ def test_collect_abacus_polarization_component_reads_realistic_single_log(tmp_pa
     component = collect_abacus_polarization_component(tmp_path)
     assert component.gdir == 3
     assert component.raw_unit == "C/m^2"
+    np.testing.assert_allclose(component.cartesian_value, [0.0, 0.0, 0.8906925])
     # The parser must prefer the explicit SI record when ABACUS emits both
     # the internal ``(e/Omega).bohr`` line and the converted C/m^2 line.
     np.testing.assert_allclose(component.value, 0.8906925)
@@ -114,6 +116,25 @@ def test_branch_matching_returns_integer_shifts_and_delta():
     np.testing.assert_array_equal(match.branch_shift, [-1, 1, -1])
     np.testing.assert_allclose(match.delta, [0.0, 0.0, 0.0])
     assert match.residual == 0.0
+
+
+def test_branch_matching_handles_nonorthogonal_quantum_basis():
+    quantum = np.array(
+        [
+            [2.0, 1.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.0, 0.0, 3.0],
+        ]
+    )
+    wrapped = quantum @ np.array([1.0, -1.0, 2.0])
+    match = match_polarization_branch(
+        [0.0, 0.0, 0.0],
+        wrapped,
+        quantum,
+    )
+    np.testing.assert_allclose(match.matched, [0.0, 0.0, 0.0])
+    np.testing.assert_array_equal(match.branch_shift, [-1, 1, -2])
+    np.testing.assert_allclose(match.residual, 0.0)
 
 
 def test_branch_matching_does_not_shift_nonperiodic_components():

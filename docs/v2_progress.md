@@ -29,7 +29,7 @@
 
 ## 证据状态
 
-* 本阶段全量回归为 `446 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+* 本阶段全量回归为 `447 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
   v2 draft tests）；其中 Berry 定向测试为 `9 passed`。警告均为现有依赖的弃用提示，
   没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
