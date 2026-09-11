@@ -63,8 +63,8 @@
 
 ## 证据状态
 
-* 本阶段全量回归为 `456 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
-  v2 draft tests）；Berry 极化/ensemble 定向测试为 `15 passed`。警告均为现有依赖的
+* 本阶段全量回归为 `460 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+    v2 draft tests）；Berry 极化/ensemble 定向测试为 `17 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
