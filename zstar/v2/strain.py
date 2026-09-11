@@ -6,6 +6,7 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 from typing import Iterable
 
@@ -62,6 +63,22 @@ def _report_dict(report) -> dict:
         "operation_count": report.operation_count,
         "diagnostics": report.diagnostics,
     }
+
+
+def _set_input_parameter(path: Path, key: str, value: str) -> None:
+    """Enable a required ABACUS observable in a private stage input copy."""
+
+    text = path.read_text(encoding="utf-8")
+    pattern = re.compile(rf"(?m)^([ \t]*){re.escape(key)}(?:[ \t]+.*)?$")
+    match = pattern.search(text)
+    if match:
+        text = pattern.sub(f"{match.group(1)}{key:<20}{value}", text, count=1)
+    else:
+        lines = text.splitlines()
+        insert_at = 1 if lines and lines[0].strip() == "INPUT_PARAMETERS" else 0
+        lines.insert(insert_at, f"{key:<20}{value}")
+        text = "\n".join(lines) + ("\n" if text.endswith("\n") else "")
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def prepare_abacus_strain_ensemble(
@@ -134,6 +151,9 @@ def prepare_abacus_strain_ensemble(
     for candidate, destination in ((input_source, reference_dir / input_name), (kpt_source, reference_dir / "KPT")):
         if candidate is not None and candidate.is_file():
             shutil.copy2(candidate, destination)
+    if (reference_dir / input_name).is_file():
+        _set_input_parameter(reference_dir / input_name, "cal_force", "1")
+        _set_input_parameter(reference_dir / input_name, "cal_stress", "1")
     prepared = prepare_stru_assets(
         reference_dir / "STRU",
         pp_dir=pp_dir,
@@ -155,6 +175,9 @@ def prepare_abacus_strain_ensemble(
         write_structure(source, stage_dir / "STRU", strained_atoms)
         if input_source is not None and input_source.is_file():
             shutil.copy2(input_source, stage_dir / input_name)
+        if (stage_dir / input_name).is_file():
+            _set_input_parameter(stage_dir / input_name, "cal_force", "1")
+            _set_input_parameter(stage_dir / input_name, "cal_stress", "1")
         if kpt_source.is_file():
             shutil.copy2(kpt_source, stage_dir / "KPT")
         prepared = prepare_stru_assets(

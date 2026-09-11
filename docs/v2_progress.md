@@ -14,10 +14,11 @@
 
 ## 证据状态
 
-* v1 与现有工作区测试：`417 passed`（包含当前未提交的 v1/声子谱改动以及 v2 draft tests）。
+* v1 与现有工作区测试：`420 passed`（包含当前未提交的 v1/声子谱改动以及 v2 draft tests）。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
-* 本阶段没有提交 ABACUS/VASP/QE 任务，没有访问 235 计算队列，也没有发布。
+* 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
+  一组三阶段 ABACUS smoke，详细记录见 [`v2_abacus_smoke_20260912.md`](v2_abacus_smoke_20260912.md)。
 
 ## 资源状态
 
@@ -29,12 +30,13 @@ PBS 只读检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别�
 
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
-* **Gate C：**未开始；必须先完成单 stage ABACUS smoke test，再扩展 ± strain 与 relaxation。
+* **Gate C：**前置 smoke 已通过；完整 Gate C 仍未满足，尚需多分量/多幅度、极化收集、
+  relaxed-ion 和独立后端核对。
 
 ## 下一步
 
 1. 评审并冻结 draft schema 的字段语义、单位注册表、边界条件和错误契约；
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
 3. 检查 `cu24–cu26` 既有作业是否结束或由用户明确释放一个作业环境；
-4. 在明确可用的单个 40 核环境运行 cubic BaTiO3 单 stage smoke test，记录输入哈希、SCF、wall time 和日志；
-5. smoke test 通过后才开始 clamped-ion/relaxed-ion 应变任务。
+4. 完成 cubic BaTiO3 六分量、多幅度 clamped-ion 任务，记录输入哈希、SCF、wall time 和日志；
+5. 先解析 ABACUS stress 符号/单位，再开始 relaxed-ion 应变任务和独立后端对照。

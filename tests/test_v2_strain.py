@@ -46,6 +46,9 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     assert all(stage.actual_vector is not None for stage in ensemble.stages)
     assert (tmp_path / "strain" / "reference" / "STRU").is_file()
     assert (tmp_path / "strain" / "reference" / "INPUT").is_file()
+    input_text = (tmp_path / "strain" / "reference" / "INPUT").read_text()
+    assert "cal_force           1" in input_text
+    assert "cal_stress          1" in input_text
     assert (tmp_path / "strain" / "ensemble.json").is_file()
     assert (tmp_path / "strain" / "symmetry.json").is_file()
     assert all((tmp_path / "strain" / stage.stage_id / "STRU").is_file() for stage in ensemble.stages)
