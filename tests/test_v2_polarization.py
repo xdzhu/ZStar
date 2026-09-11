@@ -8,10 +8,12 @@ import pytest
 from zstar.v2 import (
     BOHR_RADIUS,
     ELEMENTARY_CHARGE,
+    MatchedPolarizationEnsemble,
     collect_abacus_polarization_component,
     collect_abacus_polarization_stage,
     collect_abacus_polarization_triplet,
     match_polarization_branch,
+    match_polarization_ensemble,
     parse_abacus_berry_polarization,
     unwrap_polarization_path,
 )
@@ -192,6 +194,40 @@ def test_branch_matching_does_not_shift_nonperiodic_components():
             [10.0, 20.0, 30.0],
             periodic_axes=("x", "y"),
             max_residual=1.0,
+        )
+
+
+def test_match_polarization_ensemble_matches_each_stage_to_reference():
+    strains = [
+        [0.0] * 6,
+        [0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+    ]
+    wrapped = [
+        [1.0, 2.0, 3.0],
+        [11.0, -18.0, 33.0],
+        [-9.0, 22.0, -27.0],
+    ]
+    matched = match_polarization_ensemble(strains, wrapped, [10.0, 20.0, 30.0])
+    assert isinstance(matched, MatchedPolarizationEnsemble)
+    np.testing.assert_allclose(matched.actual_strains, strains)
+    np.testing.assert_allclose(matched.matched_values, np.tile([1.0, 2.0, 3.0], (3, 1)))
+    np.testing.assert_array_equal(matched.branch_shifts, [[0, 0, 0], [-1, 1, -1], [1, -1, 1]])
+    np.testing.assert_allclose(matched.residuals, 0.0)
+    np.testing.assert_allclose(matched.quantum_vectors[1], np.diag([10.0, 20.0, 30.0]))
+
+
+def test_match_polarization_ensemble_rejects_incomplete_or_large_residual_data():
+    with pytest.raises(ValueError, match="non-empty finite array"):
+        match_polarization_ensemble([], [], [1.0, 1.0, 1.0])
+    with pytest.raises(ValueError, match="quantum_vectors must have shape"):
+        match_polarization_ensemble([[0.0] * 6], [[0.0, 0.0, 0.0]], [[1.0, 1.0]])
+    with pytest.raises(ValueError, match="exceeds max_residual"):
+        match_polarization_ensemble(
+            [[0.0] * 6, [0.01, 0.0, 0.0, 0.0, 0.0, 0.0]],
+            [[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
+            [10.0, 10.0, 10.0],
+            max_residual=0.5,
         )
 
 

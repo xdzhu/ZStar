@@ -108,6 +108,11 @@ ABACUS Berry 输出的单个方向是包裹值，不能直接相减。令 \(\mat
 `match_polarization_branch` 和 `unwrap_polarization_path` 才负责连续性，因此仍不
 自动声称自发极化或翻转路径成立。
 
+应变有限差分 ensemble 通常按 `reference, +η, -η` 排列，并不是连续的结构路径。
+因此 `match_polarization_ensemble` 将每个样本直接匹配到指定 reference 的已选分支，
+同时保存实际应变、整数 branch shift 和 residual；它要求输入已经转换为统一的
+Cartesian 极化分量，不能把 `gdir=1,2,3` 的三个标量按文件顺序当作 Cartesian 向量。
+
 内部弛豫后，
 \[
 e_{\alpha\mu}=e^{(0)}_{\alpha\mu}

@@ -29,11 +29,15 @@
 10. 已加入严格的 `collect_abacus_polarization_triplet`：按 `gdir=1,2,3` 组织
     三个独立 NSCF 目录，拒绝缺方向、重复方向和重复目录，并保留 scalar 与
     Cartesian tuple 的区别，供后续应变路径组装。
+11. 已加入 `match_polarization_ensemble` 和 `MatchedPolarizationEnsemble`，将
+    非连续的 `reference, +η, -η` 样本相对于 reference 做 branch matching，保存
+    实际应变、量子基底、branch shift 和 residual；尚未连接正式应变 Berry 生产任务。
 
 ## 证据状态
 
-* 本阶段全量回归为 `449 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
-  v2 draft tests）；其中 Berry 定向测试为 `13 passed`。警告均为现有依赖的弃用提示，
+* 本阶段全量回归为 `451 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
+  v2 draft tests）；Berry 极化/ensemble 定向测试为 `15 passed`。警告均为现有依赖的
+  弃用提示，
   没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。

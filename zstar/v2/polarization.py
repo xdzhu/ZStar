@@ -476,6 +476,142 @@ class PolarizationPath:
         object.__setattr__(self, "residuals", residuals)
 
 
+@dataclass(frozen=True)
+class MatchedPolarizationEnsemble:
+    """Reference-matched Cartesian polarization observations over strain stages."""
+
+    actual_strains: np.ndarray
+    wrapped_values: np.ndarray
+    matched_values: np.ndarray
+    branch_shifts: np.ndarray
+    residuals: np.ndarray
+    quantum_vectors: np.ndarray
+    reference_index: int = 0
+    periodic_axes: tuple[int, ...] = (0, 1, 2)
+
+    def __post_init__(self) -> None:
+        strains = np.asarray(self.actual_strains, dtype=float)
+        wrapped = np.asarray(self.wrapped_values, dtype=float)
+        matched = np.asarray(self.matched_values, dtype=float)
+        shifts = np.asarray(self.branch_shifts, dtype=int)
+        residuals = np.asarray(self.residuals, dtype=float)
+        quantum = np.asarray(self.quantum_vectors, dtype=float)
+        if strains.ndim != 2 or strains.shape[1] != 6 or not np.all(np.isfinite(strains)):
+            raise ValueError("actual_strains must have shape (samples, 6) and be finite")
+        samples = strains.shape[0]
+        for name, value in (("wrapped_values", wrapped), ("matched_values", matched), ("branch_shifts", shifts)):
+            if value.shape != (samples, 3):
+                raise ValueError(f"{name} must have shape ({samples}, 3)")
+        if not np.all(np.isfinite(wrapped)) or not np.all(np.isfinite(matched)):
+            raise ValueError("polarization values must be finite")
+        if residuals.shape != (samples,) or not np.all(np.isfinite(residuals)) or np.any(residuals < 0.0):
+            raise ValueError("residuals must be finite, non-negative and match the sample count")
+        if quantum.shape != (samples, 3, 3) or not np.all(np.isfinite(quantum)):
+            raise ValueError("quantum_vectors must have shape (samples, 3, 3) and be finite")
+        reference_index = int(self.reference_index)
+        if reference_index < 0 or reference_index >= samples:
+            raise ValueError("reference_index is outside the polarization ensemble")
+        periodic_axes = tuple(int(axis) for axis in self.periodic_axes)
+        if len(set(periodic_axes)) != len(periodic_axes) or any(axis not in {0, 1, 2} for axis in periodic_axes):
+            raise ValueError("periodic_axes must contain distinct Cartesian indices 0, 1, and/or 2")
+        object.__setattr__(self, "actual_strains", strains)
+        object.__setattr__(self, "wrapped_values", wrapped)
+        object.__setattr__(self, "matched_values", matched)
+        object.__setattr__(self, "branch_shifts", shifts)
+        object.__setattr__(self, "residuals", residuals)
+        object.__setattr__(self, "quantum_vectors", quantum)
+        object.__setattr__(self, "reference_index", reference_index)
+        object.__setattr__(self, "periodic_axes", periodic_axes)
+
+
+def _ensemble_quantum_matrices(
+    quantum_vectors: np.ndarray | Iterable[float],
+    samples: int,
+) -> np.ndarray:
+    array = np.asarray(quantum_vectors, dtype=float)
+    if array.shape == (3,):
+        matrix = np.diag(array)[None, :, :]
+    elif array.shape == (3, 3):
+        matrix = array[None, :, :]
+    elif array.shape == (samples, 3):
+        matrix = np.asarray([np.diag(row) for row in array], dtype=float)
+    elif array.shape == (samples, 3, 3):
+        matrix = array
+    else:
+        raise ValueError(
+            "quantum_vectors must have shape (3,), (3, 3), (samples, 3), "
+            f"or (samples, 3, 3); got {array.shape}"
+        )
+    if matrix.shape[0] == 1:
+        matrix = np.repeat(matrix, samples, axis=0)
+    if not np.all(np.isfinite(matrix)):
+        raise ValueError("quantum_vectors contains non-finite values")
+    return matrix
+
+
+def match_polarization_ensemble(
+    actual_strains: Iterable[Iterable[float]],
+    wrapped_values: Iterable[Iterable[float]],
+    quantum_vectors: np.ndarray | Iterable[float],
+    *,
+    reference_index: int = 0,
+    periodic_axes: Sequence[str | int] | None = None,
+    search_radius: int = 1,
+    max_residual: float | None = None,
+) -> MatchedPolarizationEnsemble:
+    """Match independent strain-stage polarizations to one reference branch.
+
+    Unlike :func:`unwrap_polarization_path`, each stage is matched directly to
+    the selected reference, which is appropriate for a ``reference, +η, -η``
+    finite-difference ensemble whose directory order is not a continuous path.
+    The input polarization values must already be Cartesian and in one unit.
+    """
+
+    strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
+    wrapped = np.asarray(tuple(tuple(row) for row in wrapped_values), dtype=float)
+    if strains.ndim != 2 or strains.shape[1] != 6 or strains.shape[0] == 0 or not np.all(np.isfinite(strains)):
+        raise ValueError("actual_strains must be a non-empty finite array with shape (samples, 6)")
+    if wrapped.shape != (strains.shape[0], 3) or not np.all(np.isfinite(wrapped)):
+        raise ValueError("wrapped_values must have shape (samples, 3) and be finite")
+    index = int(reference_index)
+    if index < 0 or index >= strains.shape[0]:
+        raise ValueError("reference_index is outside the polarization ensemble")
+    matrices = _ensemble_quantum_matrices(quantum_vectors, strains.shape[0])
+    axes = _active_axes(periodic_axes)
+    reference = wrapped[index]
+    matched = np.empty_like(wrapped)
+    shifts = np.zeros_like(wrapped, dtype=int)
+    residuals = np.zeros(strains.shape[0], dtype=float)
+    matched[index] = reference
+    for sample in range(strains.shape[0]):
+        if sample == index:
+            continue
+        result = match_polarization_branch(
+            reference,
+            wrapped[sample],
+            matrices[sample],
+            periodic_axes=axes,
+            search_radius=search_radius,
+        )
+        matched[sample] = result.matched
+        shifts[sample] = result.branch_shift
+        residuals[sample] = result.residual
+        if max_residual is not None and result.residual > float(max_residual):
+            raise ValueError(
+                f"polarization branch residual {result.residual:g} exceeds max_residual {max_residual:g}"
+            )
+    return MatchedPolarizationEnsemble(
+        actual_strains=strains,
+        wrapped_values=wrapped,
+        matched_values=matched,
+        branch_shifts=shifts,
+        residuals=residuals,
+        quantum_vectors=matrices,
+        reference_index=index,
+        periodic_axes=axes,
+    )
+
+
 def unwrap_polarization_path(
     wrapped_values: Iterable[Iterable[float]],
     quantum_vectors: np.ndarray | Iterable[float],
