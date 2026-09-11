@@ -2,7 +2,8 @@
 
 **目标：**在不改变 v1 Unified 框架的前提下，扩展为 calculator-neutral 的
 electromechanical/higher-order response 平台。本文是设计冻结前的架构草案，不是
-实现承诺。
+实现承诺。当前已在 `zstar/v2/` 落地 draft-only 的 model、units、Voigt、代数、
+intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成稳定 API。
 
 ## 1. 分层原则
 
@@ -28,16 +29,16 @@ electromechanical/higher-order response 平台。本文是设计冻结前的架�
 
 ## 2. 推荐模块边界（实现阶段）
 
-建议新增 `zstar/v2/` 命名空间，第一轮不创建代码：
+建议继续扩展 `zstar/v2/` 命名空间；当前已实现的研究原型边界如下：
 
 | 模块 | 责任 | 明确不负责 |
 |---|---|---|
-| `model.py` | 带单位的 quantity、tensor、boundary、provenance dataclass | calculator 解析 |
-| `symmetry.py` | 空间群/点群表示、原子/应变 orbit、intertwiner basis | SCF 运行 |
-| `finite_difference.py` | 实际向量、中心/单边差分、步长扫描和拟合 | 选择物理公式 |
-| `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换 | 生成结构文件 |
-| `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查 | 计算电子响应 |
-| `ensemble.py` | 联合 polarization/force/stress/displacement task graph | 具体命令行 |
+| `model.py` | 带单位的 quantity、tensor、boundary、provenance dataclass（draft 已实现） | calculator 解析 |
+| `symmetry.py` | 空间群/点群表示、原子/应变 orbit、intertwiner basis（draft 已实现） | SCF 运行 |
+| `finite_difference.py` | 实际向量、中心/单边差分、步长扫描和拟合（当前由 `fit.py` 提供） | 选择物理公式 |
+| `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换（draft 已实现） | 生成结构文件 |
+| `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |
+| `ensemble.py` | 联合 polarization/force/stress/displacement task graph、v2 状态（draft 已实现） | 具体命令行 |
 | `backends/abacus.py` | 调用既有 ABACUS/PYATB adapter 并收集输出 | 修改 ABACUS |
 | `backends/{vasp,cp2k,qe,abinit}.py` | 能力声明和后续交叉验证 | 假设未验证能力 |
 | `phase.py` | 参考相配对、插值、branch matching、路径检查 | 默认执行 NEB |
@@ -111,7 +112,7 @@ ABACUS 优先接入既有 `shared_abacus.py`/PYATB；VASP/CP2K/QE/ABINIT 只有�
 
 第一轮不增加 CLI。后续顺序必须是：
 
-1. Python API + dataclass + 合成响应测试；
+1. Python API + dataclass + 合成响应测试（已开始，仍属研究 API）；
 2. ABACUS dry-run/小规模 smoke test；
 3. 断点/失败/单位/rank 回归；
 4. 再设计 `zstar piezo pre/run/stat/post` 和 `zstar elastic ...`；

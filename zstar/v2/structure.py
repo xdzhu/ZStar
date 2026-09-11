@@ -1,0 +1,286 @@
+"""Structure-level space-group analysis for the ZStar v2 symmetry engine."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Iterable
+
+import numpy as np
+
+from ..dimensions import DimensionSpec
+from .mechanical import strain_tensor_to_voigt, voigt_to_strain_tensor
+from .symmetry import intertwiner_basis
+
+try:
+    import spglib
+except Exception:  # pragma: no cover - dependency is declared by the package
+    spglib = None
+
+
+def _array(value: object, shape: tuple[int, ...], name: str) -> np.ndarray:
+    array = np.asarray(value, dtype=float)
+    if array.shape != shape:
+        raise ValueError(f"{name} must have shape {shape}; got {array.shape}")
+    if not np.all(np.isfinite(array)):
+        raise ValueError(f"{name} contains non-finite values")
+    return array
+
+
+@dataclass(frozen=True)
+class StructureSpec:
+    """Minimal calculator-neutral periodic structure description."""
+
+    lattice: np.ndarray
+    fractional_positions: np.ndarray
+    symbols: tuple[str, ...]
+    dimensionality: DimensionSpec = DimensionSpec(3)
+
+    def __post_init__(self) -> None:
+        lattice = _array(self.lattice, (3, 3), "lattice")
+        positions = np.asarray(self.fractional_positions, dtype=float)
+        if positions.ndim != 2 or positions.shape[1] != 3 or positions.shape[0] == 0:
+            raise ValueError(f"fractional_positions must have shape (natom, 3); got {positions.shape}")
+        if not np.all(np.isfinite(positions)):
+            raise ValueError("fractional_positions contains non-finite values")
+        symbols = tuple(str(symbol) for symbol in self.symbols)
+        if len(symbols) != positions.shape[0] or any(not symbol.strip() for symbol in symbols):
+            raise ValueError("symbols must contain one non-empty label per atom")
+        if abs(float(np.linalg.det(lattice))) <= 1.0e-14:
+            raise ValueError("lattice must be non-singular")
+        object.__setattr__(self, "lattice", lattice)
+        object.__setattr__(self, "fractional_positions", positions % 1.0)
+        object.__setattr__(self, "symbols", symbols)
+
+    @property
+    def atom_count(self) -> int:
+        return len(self.symbols)
+
+    def spglib_cell(self) -> tuple[np.ndarray, np.ndarray, list[int]]:
+        type_ids: dict[str, int] = {}
+        numbers: list[int] = []
+        for symbol in self.symbols:
+            type_ids.setdefault(symbol, len(type_ids) + 1)
+            numbers.append(type_ids[symbol])
+        return self.lattice, self.fractional_positions, numbers
+
+
+@dataclass(frozen=True)
+class SpaceGroupOperation:
+    rotation_fractional: np.ndarray
+    translation_fractional: np.ndarray
+    rotation_cartesian: np.ndarray
+    permutation: tuple[int, ...]
+
+
+@dataclass(frozen=True)
+class SpaceGroupReport:
+    status: str
+    symprec: float
+    space_group: str | None
+    hall_number: int | None
+    equivalent_atoms: tuple[int, ...]
+    representatives: tuple[int, ...]
+    operations: tuple[SpaceGroupOperation, ...]
+    diagnostics: dict[str, object]
+
+    @property
+    def atom_count(self) -> int:
+        return len(self.equivalent_atoms)
+
+    @property
+    def operation_count(self) -> int:
+        return len(self.operations)
+
+
+def _dataset_value(dataset: object, name: str):
+    return getattr(dataset, name) if hasattr(dataset, name) else dataset[name]
+
+
+def _wrapped_distance(first: np.ndarray, second: np.ndarray, lattice: np.ndarray) -> float:
+    delta = (first - second + 0.5) % 1.0 - 0.5
+    return float(np.linalg.norm(delta @ lattice))
+
+
+def _operation_permutation(
+    structure: StructureSpec,
+    rotation: np.ndarray,
+    translation: np.ndarray,
+    tolerance: float,
+) -> tuple[int, ...] | None:
+    transformed = (structure.fractional_positions @ rotation.T + translation) % 1.0
+    permutation: list[int] = []
+    used: set[int] = set()
+    for index, position in enumerate(transformed):
+        candidates = [
+            target
+            for target, symbol in enumerate(structure.symbols)
+            if symbol == structure.symbols[index] and target not in used
+        ]
+        if not candidates:
+            return None
+        target = min(candidates, key=lambda item: _wrapped_distance(position, structure.fractional_positions[item], structure.lattice))
+        if _wrapped_distance(position, structure.fractional_positions[target], structure.lattice) > tolerance:
+            return None
+        permutation.append(target)
+        used.add(target)
+    return tuple(permutation)
+
+
+def _boundary_compatible(rotation: np.ndarray, dimensionality: DimensionSpec, tolerance: float = 1.0e-7) -> bool:
+    periodic = {"xyz".index(axis) for axis in dimensionality.periodic_axes}
+    open_axes = set(range(3)) - periodic
+    if not open_axes or not periodic:
+        return True
+    for periodic_axis in periodic:
+        for open_axis in open_axes:
+            if abs(float(rotation[periodic_axis, open_axis])) > tolerance:
+                return False
+            if abs(float(rotation[open_axis, periodic_axis])) > tolerance:
+                return False
+    return True
+
+
+def analyze_space_group(
+    structure: StructureSpec,
+    *,
+    symprec_grid: Iterable[float] = (1.0e-5, 1.0e-4, 1.0e-3),
+) -> SpaceGroupReport:
+    """Identify a stable space group and validate it against dimensionality."""
+
+    if structure.dimensionality.value == 0:
+        identity = SpaceGroupOperation(
+            rotation_fractional=np.eye(3),
+            translation_fractional=np.zeros(3),
+            rotation_cartesian=np.eye(3),
+            permutation=tuple(range(structure.atom_count)),
+        )
+        return SpaceGroupReport(
+            status="molecular-no-periodic-symmetry",
+            symprec=0.0,
+            space_group=None,
+            hall_number=None,
+            equivalent_atoms=tuple(range(structure.atom_count)),
+            representatives=tuple(range(structure.atom_count)),
+            operations=(identity,),
+            diagnostics={"periodic_reduction": False},
+        )
+    if spglib is None:
+        raise RuntimeError("spglib is required for periodic v2 symmetry analysis")
+    candidates = []
+    for value in symprec_grid:
+        tolerance = float(value)
+        if not np.isfinite(tolerance) or tolerance <= 0.0:
+            raise ValueError("symprec_grid values must be finite and positive")
+        dataset = spglib.get_symmetry_dataset(structure.spglib_cell(), symprec=tolerance)
+        if dataset is None:
+            continue
+        rotations = np.asarray(_dataset_value(dataset, "rotations"), dtype=int)
+        translations = np.asarray(_dataset_value(dataset, "translations"), dtype=float)
+        operations: list[SpaceGroupOperation] = []
+        cartesian_basis = structure.lattice.T
+        inverse_basis = np.linalg.inv(cartesian_basis)
+        for rotation, translation in zip(rotations, translations):
+            permutation = _operation_permutation(structure, rotation, translation, max(tolerance * 2.0, 1.0e-7))
+            if permutation is None:
+                continue
+            rotation_cartesian = cartesian_basis @ rotation @ inverse_basis
+            if not _boundary_compatible(rotation_cartesian, structure.dimensionality):
+                continue
+            operations.append(SpaceGroupOperation(rotation, translation, rotation_cartesian, permutation))
+        equivalent = tuple(int(value) for value in _dataset_value(dataset, "equivalent_atoms"))
+        candidates.append((
+            tolerance,
+            str(_dataset_value(dataset, "international")),
+            int(_dataset_value(dataset, "hall_number")),
+            equivalent,
+            tuple(operations),
+        ))
+    if not candidates:
+        return SpaceGroupReport(
+            status="symmetry_untrusted",
+            symprec=0.0,
+            space_group=None,
+            hall_number=None,
+            equivalent_atoms=tuple(range(structure.atom_count)),
+            representatives=tuple(range(structure.atom_count)),
+            operations=(),
+            diagnostics={"reason": "spglib returned no stable dataset"},
+        )
+    # Prefer the tightest tolerance that agrees with at least one other candidate.
+    signatures = {(item[1], item[2], item[3], len(item[4])) for item in candidates}
+    best = min(candidates, key=lambda item: item[0])
+    best_signature = (best[1], best[2], best[3], len(best[4]))
+    stable = len(signatures) == 1 or any(
+        (item[1], item[2], item[3], len(item[4])) == best_signature
+        for item in candidates
+        if item is not best
+    )
+    equivalent = best[3]
+    representatives = tuple(index for index, representative in enumerate(equivalent) if representative == index)
+    status = "stable" if stable and best[4] else "symmetry_untrusted"
+    return SpaceGroupReport(
+        status=status,
+        symprec=best[0],
+        space_group=best[1],
+        hall_number=best[2],
+        equivalent_atoms=equivalent,
+        representatives=representatives,
+        operations=best[4],
+        diagnostics={
+            "candidate_count": len(candidates),
+            "candidate_signatures": [
+                {"symprec": item[0], "space_group": item[1], "hall_number": item[2], "operation_count": len(item[4])}
+                for item in candidates
+            ],
+            "boundary_compatible_operations": len(best[4]),
+        },
+    )
+
+
+def displacement_representation(report: SpaceGroupReport, operation_index: int) -> np.ndarray:
+    """Build the atom-Cartesian displacement representation for one operation."""
+
+    operation = report.operations[int(operation_index)]
+    size = 3 * report.atom_count
+    matrix = np.zeros((size, size), dtype=float)
+    for source, target in enumerate(operation.permutation):
+        matrix[3 * target : 3 * target + 3, 3 * source : 3 * source + 3] = operation.rotation_cartesian
+    return matrix
+
+
+def polarization_representation(report: SpaceGroupReport, operation_index: int) -> np.ndarray:
+    return np.asarray(report.operations[int(operation_index)].rotation_cartesian, dtype=float)
+
+
+def strain_representation(report: SpaceGroupReport, operation_index: int) -> np.ndarray:
+    """Build the 6x6 engineering-Voigt representation from Cartesian rotation."""
+
+    rotation = report.operations[int(operation_index)].rotation_cartesian
+    matrix = np.zeros((6, 6), dtype=float)
+    for column in range(6):
+        transformed = rotation @ voigt_to_strain_tensor(np.eye(6)[column]) @ rotation.T
+        matrix[:, column] = strain_tensor_to_voigt(transformed)
+    return matrix
+
+
+def allowed_response_basis(
+    report: SpaceGroupReport,
+    *,
+    input_kind: str,
+    output_kind: str,
+):
+    """Return an intertwiner basis for displacement/polarization/strain axes."""
+
+    if not report.operations:
+        raise ValueError("cannot build a symmetry basis without operations")
+    builders = {
+        "displacement": lambda index: displacement_representation(report, index),
+        "polarization": lambda index: polarization_representation(report, index),
+        "strain": lambda index: strain_representation(report, index),
+    }
+    if input_kind not in builders or output_kind not in builders:
+        raise ValueError("input_kind and output_kind must be displacement, polarization or strain")
+    return intertwiner_basis(
+        tuple(builders[input_kind](index) for index in range(report.operation_count)),
+        tuple(builders[output_kind](index) for index in range(report.operation_count)),
+    )

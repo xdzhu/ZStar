@@ -99,7 +99,9 @@ separate_control_cost, v2_cost, efficiency_ratio
 ## 5. 阶段性验收门
 
 * **A（本轮）**：文献、理论、对称方案、架构和测试计划完成；无大计算；满足。
-* **B**：所有 synthetic symmetry/units/rank/residual/failure tests 通过，v1 回归全绿。
+* **B**：所有 synthetic symmetry/units/rank/residual/failure tests 通过，v1 回归全绿；
+  当前 draft model/algebra/structure/ensemble 测试已通过，但 schema 评审和 failure
+  contract 仍未冻结，因此只记为 **B-in-progress**。
 * **C**：ABACUS 两个晶系的 clamped-ion/relaxed-ion smoke + 步长扫描通过，schema
   和 provenance 完整。
 * **D**：至少 cubic、tetragonal、hexagonal、orthorhombic/低对称、2D 五类真实验证，
