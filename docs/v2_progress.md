@@ -41,6 +41,8 @@
 14. 已将该 dry-run 生成的 `gdir-3` 目录在 cu26 做单阶段实跑：ABACUS 原始
     `exit_code=0`、wall time 57.40 s，Berry parser 回读成功；外层 Windows→SSH
     CRLF 包装返回码单独保留，未与 ABACUS 状态混淆。
+15. 已修正 Berry preparation manifest 的可迁移性：JSON 只保存相对 `gdir-*` 路径，
+    返回对象才提供当前机器的绝对路径；同时支持 `.upf/.orb` 及其 gzip 资产。
 
 ## 证据状态
 

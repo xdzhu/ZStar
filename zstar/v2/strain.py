@@ -156,7 +156,7 @@ def prepare_abacus_berry_stages(
         ):
             shutil.copy2(source_file, stage / destination_name)
         for asset in source.iterdir():
-            if asset.is_file() and asset.suffix.lower() in {".upf", ".orb", ".upf.gz", ".orb.gz"}:
+            if asset.is_file() and asset.name.lower().endswith((".upf", ".orb", ".upf.gz", ".orb.gz")):
                 shutil.copy2(asset, stage / asset.name)
         output_dir = stage / f"OUT.{suffix}"
         output_dir.mkdir()
@@ -174,7 +174,7 @@ def prepare_abacus_berry_stages(
         "source_stage": source.name,
         "suffix": suffix,
         "gdirs": list(directions),
-        "stages": prepared,
+        "stages": {str(direction): f"gdir-{direction}" for direction in directions},
         "executed": False,
     }
     (target / "berry_ensemble.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

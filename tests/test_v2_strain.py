@@ -67,6 +67,8 @@ def test_abacus_berry_preparation_copies_restart_and_sets_nscf_inputs(tmp_path):
     (source / "KPT").write_text("K_POINTS\n", encoding="utf-8")
     (source / "H.upf").write_text("pseudo\n", encoding="utf-8")
     (source / "H.orb").write_text("orbital\n", encoding="utf-8")
+    (source / "H.upf.gz").write_text("compressed pseudo\n", encoding="utf-8")
+    (source / "H.orb.gz").write_text("compressed orbital\n", encoding="utf-8")
     (source / "OUT.POLAR" / "POLAR-CHARGE-DENSITY.restart").write_text("restart\n", encoding="utf-8")
 
     result = prepare_abacus_berry_stages(source, tmp_path / "berry", gdirs=(3, 1, 2))
@@ -83,8 +85,13 @@ def test_abacus_berry_preparation_copies_restart_and_sets_nscf_inputs(tmp_path):
         assert "symmetry            0" in text
         assert (stage / "H.upf").is_file()
         assert (stage / "H.orb").is_file()
+        assert (stage / "H.upf.gz").is_file()
+        assert (stage / "H.orb.gz").is_file()
         assert (stage / "OUT.POLAR" / "POLAR-CHARGE-DENSITY.restart").is_file()
-    assert '"executed": false' in (tmp_path / "berry" / "berry_ensemble.json").read_text()
+    manifest = (tmp_path / "berry" / "berry_ensemble.json").read_text()
+    assert '"executed": false' in manifest
+    assert str(tmp_path) not in manifest
+    assert '"3": "gdir-3"' in manifest
 
 
 def test_abacus_berry_preparation_rejects_missing_restart_and_nonempty_output(tmp_path):
