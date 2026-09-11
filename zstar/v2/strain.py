@@ -129,8 +129,9 @@ def prepare_abacus_strain_ensemble(
         (candidate for candidate in (source.parent / "INPUT-scf", source.parent / "INPUT") if candidate.is_file()),
         None,
     )
+    input_name = "INPUT" if input_source is not None and input_source.name.upper() == "INPUT" else "INPUT-scf"
     kpt_source = Path(kpt_template).expanduser().resolve() if kpt_template else (source.parent / "KPT")
-    for candidate, destination in ((input_source, reference_dir / "INPUT-scf"), (kpt_source, reference_dir / "KPT")):
+    for candidate, destination in ((input_source, reference_dir / input_name), (kpt_source, reference_dir / "KPT")):
         if candidate is not None and candidate.is_file():
             shutil.copy2(candidate, destination)
     prepared = prepare_stru_assets(
@@ -153,7 +154,7 @@ def prepare_abacus_strain_ensemble(
         strained_atoms.cell = np.asarray(atoms.cell) @ (np.eye(3) + voigt_to_strain_tensor(eta)).T
         write_structure(source, stage_dir / "STRU", strained_atoms)
         if input_source is not None and input_source.is_file():
-            shutil.copy2(input_source, stage_dir / "INPUT-scf")
+            shutil.copy2(input_source, stage_dir / input_name)
         if kpt_source.is_file():
             shutil.copy2(kpt_source, stage_dir / "KPT")
         prepared = prepare_stru_assets(
