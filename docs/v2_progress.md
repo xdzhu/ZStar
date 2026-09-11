@@ -17,6 +17,8 @@
    `backend-raw` 符号会被拒绝，拟合使用实际序列化应变并返回 rank/residual。
 6. 已在 cu24–cu26 完成 cubic BaTiO₃ 六分量、两幅度 clamped-ion 试验（25 阶段），
    结果与审计限制见 [`v2_abacus_multiamp_20260912.md`](v2_abacus_multiamp_20260912.md)。
+7. collector 已在日志存在 `FINAL_ETOT_IS` 时保存 stage energy；本轮能量二阶曲率与
+   stress 拟合仍有幅度依赖，尚不能作为最终弹性结果。
 
 ## 证据状态
 
@@ -37,8 +39,8 @@ PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当�
 
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
-* **Gate C：**六分量/多幅度 force-stress 数据收集已通过；完整 Gate C 仍未满足，尚需
-  stress sign/单位收敛确认、极化收集、relaxed-ion 和独立后端核对。
+* **Gate C：**六分量/多幅度 force-stress/energy 数据收集已通过；完整 Gate C 仍未满足，
+  尚需 stress sign/单位和能量曲率收敛确认、极化收集、relaxed-ion 和独立后端核对。
 
 ## 下一步
 

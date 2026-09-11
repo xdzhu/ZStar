@@ -64,6 +64,19 @@ def _parse_stress(text: str) -> np.ndarray:
     raise ValueError(f"Expected a 3x3 stress block after TOTAL-STRESS (KBAR); found {len(rows)} rows")
 
 
+def _parse_energy(text: str) -> float | None:
+    """Return the final total energy when ABACUS emitted it."""
+
+    number = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[EeDd][-+]?\d+)?"
+    matches = re.findall(rf"!?FINAL_ETOT_IS\s+({number})\s+eV", text, flags=re.IGNORECASE)
+    if not matches:
+        return None
+    value = float(matches[-1].replace("D", "E").replace("d", "e"))
+    if not np.isfinite(value):
+        raise ValueError("ABACUS final energy is not finite")
+    return value
+
+
 def _input_parameters(path: Path) -> dict[str, str]:
     if not path.is_file():
         return {}
@@ -89,6 +102,7 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         count = len(structure)
     forces = _parse_forces(text, int(count))
     stress = _parse_stress(text)
+    energy = _parse_energy(text)
     timing: dict[str, Any] = {}
     timing_path = directory / "time.json"
     if timing_path.is_file():
@@ -102,6 +116,8 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         "stress": stress,
         "stress_unit": "kbar",
         "force_unit": "eV/angstrom",
+        "energy": energy,
+        "energy_unit": "eV",
         "scf_converged": True,
         "scf_iterations": int(text.count("E_Harris")),
         "timing": timing,
@@ -129,7 +145,7 @@ def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
         stage_names.append(stage.stage_id)
     dimensions = DimensionSpec(ensemble.dimensionality)
     stress_boundary = BoundaryConditions(electric="E", mechanical="strain", stress_sign="backend-raw")
-    quantities = (
+    quantities = [
         TensorQuantity(
             name="strain_vector",
             values=np.asarray(stage_vectors),
@@ -167,7 +183,23 @@ def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
             backend="abacus",
             provenance={"stage_names": stage_names, "sign_convention": "backend-raw"},
         ),
-    )
+    ]
+    energies = [record["energy"] for record in records]
+    if all(value is not None for value in energies):
+        quantities.append(
+            TensorQuantity(
+                name="energy",
+                values=np.asarray(energies, dtype=float),
+                unit="eV",
+                axes=("stage",),
+                boundary_conditions=stress_boundary,
+                periodic_axes=dimensions.periodic_axes,
+                normalization="total_cell",
+                source="abacus_output",
+                backend="abacus",
+                provenance={"stage_names": stage_names},
+            )
+        )
     first_parameters = records[0]["input_parameters"]
     provenance = {
         "reference_hash": ensemble.reference_hash,
@@ -178,6 +210,7 @@ def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
                 "log": record["log"],
                 "scf_converged": record["scf_converged"],
                 "scf_iterations": record["scf_iterations"],
+                "energy": record["energy"],
                 "timing": record["timing"],
             }
             for name, record in zip(stage_names, records)
@@ -186,7 +219,7 @@ def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
     return ResponseDocument(
         backend="abacus",
         dimensionality=dimensions,
-        quantities=quantities,
+        quantities=tuple(quantities),
         provenance=provenance,
         structure={
             "lattice_angstrom": reference_structure.cell.tolist(),
@@ -197,5 +230,9 @@ def collect_abacus_strain_response(root: str | Path) -> ResponseDocument:
         functional=first_parameters.get("dft_functional", ""),
         convergence={key: value for key, value in first_parameters.items() if key in {"scf_thr", "scf_nmax"}},
         restart_state={"ensemble": str(base / "ensemble.json")},
-        metadata={"stage_count": len(records), "polarization_collected": False},
+        metadata={
+            "stage_count": len(records),
+            "polarization_collected": False,
+            "energy_collected": all(value is not None for value in energies),
+        },
     )
