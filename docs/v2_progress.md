@@ -106,9 +106,16 @@
     该张量拟合为 Cartesian Λ 的扁平化线性结果；不自动施加声学平移规范，也不把
     尚未实跑的 relaxed-ion 数据误标为正式响应。
 
+29. 在独立远端 scratch `/home/zhuxd/zstar-v2-tbto-relaxed40-20260912` 启动真实
+    `40 MPI × 1 OpenMP` relaxed-ion 应变任务。reference SCF 已完成；cu24、cu25、
+    cu26 采用可恢复的 stage runner。早期手动 smoke 与批处理 runner 曾在
+    `strain-001-` 发生同目录并发，已终止双方、把冲突输出移入
+    `OUT.POLAR.duplicate-aborted-20260912-1130` 并安排干净重跑；该阶段及其冲突日志
+    不会进入结果摘要。
+
 ## 证据状态
 
-* 本阶段全量回归为 `480 passed, 1385 warnings`（包含当前工作树的 v1/声子谱改动以及
+* 本阶段全量回归为 `481 passed, 1385 warnings`（包含当前工作树的 v1/声子谱改动以及
     v2 draft tests）；v2 极化/ABACUS collector 定向测试为 `35 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。
@@ -129,16 +136,18 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
 * **Gate C：**六分量/多幅度 force-stress/energy 数据收集、单次 PYATB 三方向极化
-  collector 和内部位移拟合接口已接通；完整 Gate C 仍未满足，尚需 stress sign/单位
-  和能量曲率收敛确认、允许子空间完备的非零 e、真实 relaxed-ion Λ 数据和独立后端核对。
+  collector 和内部位移拟合接口已接通；真实 relaxed-ion runner 已启动但尚未完成，
+  完整 Gate C 仍未满足，尚需 stress sign/单位和能量曲率收敛确认、允许子空间完备的
+  非零 e、无并发污染的 relaxed-ion Λ 数据和独立后端核对。
 
 ## 下一步
 
 1. 评审并冻结 draft schema 的字段语义、单位注册表、边界条件和错误契约；
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
-3. 完成 cubic BaTiO3 六分量、多幅度 clamped-ion 任务，记录输入哈希、SCF、wall time 和日志；
-4. 通过 ABACUS 输出/文档和独立小算例确认 stress 符号/单位；随后增加带应变的
-   Berry 阶段，再开始 relaxed-ion 应变任务；
+3. 完成当前 P4mm relaxed-ion 六分量、多幅度任务，逐 stage 检查 ionic convergence、
+   `STRU_ION_D` 和无并发污染，并记录输入哈希、SCF、wall time 和日志；
+4. 在同一批最终结构上运行每几何一次的 PYATB 三方向极化，执行 branch matching，
+   拟合内部位移 Λ 和 relaxed-ion `e`，并单独审计 stress 符号/单位；
 5. 在 `P4mm` 允许子空间完备的 branch-matched 极化数据上验证 draft e 拟合，再以
    独立后端或高精度参考结果核对完整 C 矩阵和 proper e 张量，之后才进入正式
    压电/弹性 CLI 设计。

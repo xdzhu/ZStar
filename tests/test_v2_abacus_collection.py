@@ -138,6 +138,15 @@ def test_collect_abacus_stage_accepts_relax_log_and_marks_ionic_convergence(tmp_
     assert record["relaxed_structure"] is not None
 
 
+def test_collect_abacus_stage_rejects_unconverged_relax_log(tmp_path):
+    stage = tmp_path / "relaxed-unconverged"
+    _stage(stage, relaxed=True)
+    log = stage / "OUT.POLAR" / "running_relax.log"
+    log.write_text(log.read_text(encoding="utf-8").replace("Relaxation is converged!", "Relaxation is not converged yet!"), encoding="utf-8")
+    with pytest.raises(ValueError, match="ionic relaxation is not marked converged"):
+        collect_abacus_stage(stage)
+
+
 def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path):
     root = tmp_path / "relaxed-ensemble"
     _stage(root / "reference")

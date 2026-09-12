@@ -115,6 +115,13 @@ def _relaxed_structure_path(stage: Path, log: Path) -> Path | None:
     return candidates[0] if candidates else None
 
 
+def _input_structure_path(stage: Path) -> Path:
+    """Return the pre-relaxation structure when PYATB uses the final ``STRU``."""
+
+    preserved = stage / "STRU_INITIAL"
+    return preserved if preserved.is_file() else stage / "STRU"
+
+
 def _input_parameters(path: Path) -> dict[str, str]:
     if not path.is_file():
         return {}
@@ -134,9 +141,13 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     text = log.read_text(encoding="utf-8", errors="replace")
     charge_converged = "charge density convergence is achieved" in text
     ionic_converged = bool(re.search(r"relaxation is converged", text, flags=re.IGNORECASE))
+    is_relax_log = "relax" in log.name.lower()
+    if is_relax_log and not ionic_converged:
+        raise ValueError(f"ABACUS ionic relaxation is not marked converged in {log}")
     if not charge_converged and not ionic_converged:
         raise ValueError(f"ABACUS SCF is not marked converged in {log}")
-    structure = read_structure(directory / "STRU")
+    input_structure_path = _input_structure_path(directory)
+    structure = read_structure(input_structure_path)
     count = structure.natoms if natoms is None and hasattr(structure, "natoms") else natoms
     if count is None:
         count = len(structure)
@@ -146,7 +157,7 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         relaxed_structure = read_structure(relaxed_path)
         if relaxed_structure.symbols != structure.symbols:
             raise ValueError(
-                f"ABACUS relaxed structure atom ordering differs between {directory / 'STRU'} "
+                f"ABACUS relaxed structure atom ordering differs between {input_structure_path} "
                 f"and {relaxed_path}"
             )
         if len(relaxed_structure) != int(count):
@@ -180,6 +191,7 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         "log": str(log),
         "relaxed_structure": relaxed_structure,
         "relaxed_structure_path": str(relaxed_path) if relaxed_path is not None else None,
+        "input_structure_path": str(input_structure_path),
     }
 
 
@@ -287,7 +299,7 @@ def collect_abacus_strain_response(
                 displacement_rows.append(np.zeros((natoms, 3), dtype=float))
                 relaxed_paths.append("")
                 continue
-            initial = read_structure(stage_path / "STRU")
+            initial = read_structure(_input_structure_path(stage_path))
             relaxed = record.get("relaxed_structure")
             relaxed_path = record.get("relaxed_structure_path")
             if relaxed is None or not relaxed_path:
@@ -429,6 +441,7 @@ def collect_abacus_strain_response(
                 "scf_converged": record["scf_converged"],
                 "ionic_relaxation_converged": record["ionic_relaxation_converged"],
                 "relaxed_structure_path": record["relaxed_structure_path"],
+                "input_structure_path": record["input_structure_path"],
                 "scf_iterations": record["scf_iterations"],
                 "energy": record["energy"],
                 "timing": record["timing"],
