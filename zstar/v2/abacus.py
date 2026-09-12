@@ -246,7 +246,31 @@ def collect_abacus_strain_response(
     stage_vectors = [np.zeros(6, dtype=float)]
     stage_names = ["reference"]
     for stage in ensemble.stages:
-        records.append(collect_abacus_stage(base / stage.stage_id, natoms=natoms))
+        stage_path = base / stage.stage_id
+        # A strain response is defined from one common reference internal
+        # coordinate set.  In particular, relaxed-ion stages must not carry
+        # stale coordinates from a previous strain relaxation: that creates a
+        # finite midpoint offset which can masquerade as a piezoelectric
+        # signal.  ``STRU_INITIAL`` is the immutable serialized input when it
+        # exists; compare wrapped fractional coordinates before fitting.
+        records.append(collect_abacus_stage(stage_path, natoms=natoms))
+        initial = read_structure(_input_structure_path(stage_path))
+        if initial.symbols != reference_structure.symbols:
+            raise ValueError(
+                f"stage {stage.stage_id} atom ordering differs from reference; "
+                "regenerate the ensemble from one reference structure"
+            )
+        delta_fractional = np.asarray(initial.scaled_positions, dtype=float) - np.asarray(
+            reference_structure.scaled_positions, dtype=float
+        )
+        delta_fractional -= np.rint(delta_fractional)
+        coordinate_error = float(np.max(np.abs(delta_fractional)))
+        if coordinate_error > 1.0e-8:
+            raise ValueError(
+                f"stage {stage.stage_id} initial fractional coordinates differ from reference "
+                f"by {coordinate_error:.6g}; regenerate the stage from the equilibrated "
+                "reference structure before fitting"
+            )
         if stage.actual_vector is None:
             raise ValueError(f"Stage {stage.stage_id} has no actual serialized strain vector")
         stage_vectors.append(np.asarray(stage.actual_vector, dtype=float))

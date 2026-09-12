@@ -209,6 +209,30 @@ def test_collect_abacus_strain_response_rejects_unrelaxed_reference(tmp_path):
         collect_abacus_strain_response(root)
 
 
+def test_collect_abacus_strain_response_rejects_stale_stage_coordinates(tmp_path):
+    root = tmp_path / "relaxed-stale-stage"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id, relaxed=True)
+    shutil.copy2(root / stages[0].stage_id / "STRU", root / stages[0].stage_id / "STRU_INITIAL")
+    stale = read_structure(root / stages[0].stage_id / "STRU_INITIAL")
+    scaled_positions = np.asarray(stale.scaled_positions, dtype=float)
+    scaled_positions[0, 2] += 1.0e-5
+    stale.scaled_positions = scaled_positions
+    write_structure(root / stages[0].stage_id / "STRU_INITIAL", root / stages[0].stage_id / "STRU_INITIAL", stale)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        metadata={"ion_relaxation": "relaxed-ion", "force_thr_ev": 1.0e-3},
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match="initial fractional coordinates differ from reference"):
+        collect_abacus_strain_response(root)
+
+
 def test_collect_abacus_strain_response_rejects_relaxed_stage_without_final_structure(tmp_path):
     root = tmp_path / "relaxed-missing"
     _stage(root / "reference")
