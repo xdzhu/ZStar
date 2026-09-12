@@ -229,6 +229,28 @@
     离子收敛误差确实进入响应误差预算。当前用同一 `force_thr_ev=1e-4` 重算平衡
     ±`5e-4`，之后再判断是否需要更严格的物理模型或停止在审计阶段。
 
+48. 对 balanced/tight 目录做字节级 provenance 复核后发现，其 `STRU_INITIAL` 原子
+    坐标仍来自旧的应变弛豫结果，未严格等于平衡 reference；这些斜率全部降级为失败
+    诊断，不再作为物理收敛证据。随后以 `force_thr_ev=1e-5` 重新弛豫 fixed-cell
+    reference（cu17，40 MPI，639 s），最大力降至 `4e-6 eV/Angstrom`，极化为
+    `P_c=0.39517389498898037 C/m^2`。
+
+49. 使用该高精度 reference 坐标重建 `eta_xx=±5e-4`（cu24/cu25，40 MPI，663/668 s，
+    `force_thr_ev=1e-4`）。最终最大力为 `4.1e-5/3.8e-5 eV/Angstrom`，中心斜率
+    `dP_c/deta_xx=0.0159989367 C/m^2`，中点偏移 `2.409e-6 C/m^2`。
+
+50. 同一 reference 的 `eta_xx=±2.5e-4`（cu24/cu25，40 MPI）最终最大力为
+    `1.6e-5/1.5e-5 eV/Angstrom`，中心斜率 `dP_c/deta_xx=0.0156429208 C/m^2`，
+    中点偏移 `7.785e-7 C/m^2`。两幅度斜率相差约 2.2%，说明该审计几何的
+    `P(eta_xx)` 已达到初步幅度收敛，但仍不能代替完整张量验证。
+
+51. 针对“SCF 精度是否限制离子力”的疑问，在完全相同的 tight-reference 几何上做
+    了 `scf_thr=1e-8`（cu17，115 s）与 `1e-10`（cu26，129 s）单点对照，均为 40 MPI。
+    最大力分别约 `2.34e-6` 与 `3.46e-6 eV/Angstrom`；PYATB 极化差为
+    `(1.73e-14, 1.80e-14, 3.65e-9) C/m^2`，远小于当前应变差分误差。基于此，
+    暂不把全部生产任务盲目提高到 `1e-10`；如后续体系出现 SCF 力噪声，再按同样的
+    paired audit 决定。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `475 passed, 1122 warnings`（本地 editable install
@@ -252,18 +274,18 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
-* **Gate C：**阻塞。collector、单次 PYATB 三方向路径和内部位移拟合接口已接通，
-  但多幅度 audit 暴露出 formal reference 未达到离子平衡，导致 relaxed-ion 极化
-  差分不收敛。必须先完成独立 reference relaxation，再重建应变点并确认
-  stress sign/单位、能量曲率、允许子空间、Λ 和独立后端核对；当前不得报告材料
-  响应常数。
+* **Gate C：**仍阻塞。collector、单次 PYATB 三方向路径和内部位移拟合接口已接通；
+  tight reference 周围的 `eta_xx` 多幅度差分已初步收敛，且 `1e-8`/`1e-10` SCF
+  对照显示当前几何中 SCF 误差不是主导项。但在报告材料响应常数前，仍必须完成六个
+  应变分量的允许子空间/秩检查、stress 符号与单位、能量曲率、Λ 重建和独立后端核对。
 
 ## 下一步
 
 1. 评审并冻结 draft schema 的字段语义、单位注册表、边界条件和错误契约；
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
-3. 完成 cu17 reference relaxation，核对最终力、应力、空间群、能量和结构对应关系；
-4. 以平衡 reference 重建至少 `eta_xx` 的 ±多幅度点，逐 stage 检查 ionic
+3. 对 tight reference 核对最终力、应力、空间群、能量和结构对应关系，并保留
+   `1e-8`/`1e-10` SCF paired-audit 证据；
+4. 将已通过的 `eta_xx` 多幅度审计扩展到其余应变分量，逐 stage 检查 ionic
    convergence、`STRU_ION_D`、实际应变、分支残差和中点一致性；
 5. 只有多幅度差分收敛后，才扩展到六分量、Λ、relaxed-ion `e`/`C`，并单独审计
    stress 符号/单位和机械稳定性；

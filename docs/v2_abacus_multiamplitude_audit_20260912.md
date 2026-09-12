@@ -134,8 +134,16 @@ is not yet a convergence proof: the midpoint c offset is finite and the
 balanced ±5e-4 pair is still running.  No response tensor is promoted until
 the amplitude comparison is complete.
 
-The balanced ±5e-4 pair subsequently converged (five and six ionic steps,
-respectively).  Its PYATB values are:
+**Geometry-provenance correction.**  A later byte-level audit found that the
+`STRU_INITIAL` files in this balanced/tight series still carried the old
+strain-relaxed internal coordinates rather than the equilibrated reference
+coordinates.  The cells had the intended strains, but the starting internal
+coordinates differed by about `1e-5` in fractional units.  Those runs are
+therefore retained only as diagnostic evidence and are superseded below; none
+of their slopes is used as a material response.
+
+The previously labeled balanced ±5e-4 pair subsequently converged (five and
+six ionic steps, respectively).  Its PYATB values were:
 
 ```text
 balanced -5e-4: (6.4821125358785923e-08, 5.9510018144139882e-08,
@@ -163,8 +171,8 @@ The balanced `±1e-3` pair is complete, but a tighter `force_thr_ev=1e-4`
 nonlinearity.  Until that comparison is made, the correct status remains
 “algorithm audit blocked”.
 
-The tight ±2.5e-4 pair converged to maximum forces `6.9e-5` and `6.7e-5
-eV/Angstrom`.  The PYATB values are:
+The previously labeled tight ±2.5e-4 pair converged to maximum forces `6.9e-5`
+and `6.7e-5 eV/Angstrom`.  The PYATB values were:
 
 ```text
 tight -2.5e-4: (6.7414277063059204e-08, 5.9259598491561052e-08,
@@ -173,7 +181,87 @@ tight +2.5e-4: (7.2839502300388326e-08, 5.9566599934170212e-08,
                  3.9519489232006028e-01) C/m^2
 ```
 
-The corresponding c derivative is approximately `0.02186 C/m^2`, between the
-previous loose-threshold ±2.5e-4 and ±5e-4 values.  This confirms that force
-convergence is a material part of the error budget; the ±5e-4 tight pair is
-being recomputed before any linear-response decision.
+The corresponding c derivative was approximately `0.02186 C/m^2`, between the
+previous loose-threshold ±2.5e-4 and ±5e-4 values.  Because these directories
+also used the stale internal-coordinate provenance, this comparison is not a
+physical convergence result.
+
+### Tight-reference rerun
+
+To remove both sources of bias, the fixed-cell reference was relaxed again at
+`force_thr_ev=1e-5` with `scf_thr=1e-8` and 40 MPI ranks.  It reached maximum
+force `4e-6 eV/Angstrom` in 639 s.  One PYATB run on that final structure gave
+
+```text
+P_ref_tight = (7.0412637142603995e-08, 5.9921365322784574e-08,
+               3.9517389498898037e-01) C/m^2
+```
+
+New ±5e-4 stages were generated with exactly this reference coordinate set,
+the serialized cells were checked, and each stage used `force_thr_ev=1e-4`.
+The final force residuals were `4.1e-5` and `3.8e-5 eV/Angstrom`; one PYATB
+run per geometry gave
+
+```text
+ref2 -5e-4: (6.5281396392918726e-08, 5.9770030118344904e-08,
+              3.9516830487328963e-01) C/m^2
+ref2 +5e-4: (7.6547520848236592e-08, 5.9706773500892990e-08,
+              3.9518430381022912e-01) C/m^2
+```
+
+Using the actual serialized strains `-5.0000002056e-4` and
+`+4.9999999409e-4`,
+
+```text
+dP/deta_xx = (1.12661243e-05, -6.32566165e-08, 1.59989367e-02) C/m^2
+midpoint(reference-subtracted) = (5.02e-10, -1.83e-10, 2.409e-06) C/m^2
+```
+
+The same tight-reference construction was repeated at ±2.5e-4.  The final
+force residuals were `1.6e-5` and `1.5e-5 eV/Angstrom`; the PYATB values were
+
+```text
+ref2 -2.5e-4: (6.7595660032537516e-08, 5.9460527138700451e-08,
+                3.9517076276840774e-01) C/m^2
+ref2 +2.5e-4: (7.2455969387483921e-08, 5.8917281937069007e-08,
+                3.9517858422843849e-01) C/m^2
+```
+
+With actual serialized strains `-2.499999999998e-4` and
+`+2.499999776054e-4`,
+
+```text
+dP/deta_xx = (9.72061915e-06, -1.08649045e-06, 1.56429208e-02) C/m^2
+midpoint(reference-subtracted) = (-3.87e-10, -7.32e-10, 7.785e-07) C/m^2
+```
+
+The c slopes differ by about 2.2%, while both midpoint offsets are below
+`3e-6 C/m^2`.  This is the first internally consistent amplitude check; it
+supports a converged `P(eta_xx)` slope for this audit geometry, but it is not
+yet a promoted material tensor until the remaining symmetry, stress, unit and
+independent-backend checks are complete.
+
+### SCF-threshold paired audit
+
+To test whether the SCF threshold was limiting the ionic-force accuracy, two
+fixed-geometry single-point calculations were run on the same tight-reference
+structure, both with 40 MPI ranks and identical settings apart from
+`scf_thr`.  The `1e-8` and `1e-10` jobs took 115 s and 129 s, respectively.  The
+largest force components were `2.34e-6` and `3.46e-6 eV/Angstrom`; the latter is
+not smaller, so the observed force difference is below the numerical noise of
+this comparison rather than evidence that `1e-8` is insufficient.
+
+One PYATB run per geometry gave
+
+```text
+P(1e-8)  = (7.0379899249822762e-08, 5.9888627603100969e-08,
+            3.9517389583268531e-01) C/m^2
+P(1e-10) = (7.0379881935181222e-08, 5.9888609555555952e-08,
+            3.9517389948059312e-01) C/m^2
+delta    = (-1.73e-14, -1.80e-14, 3.65e-09) C/m^2
+```
+
+The polarization change is many orders of magnitude below the current
+`P(eta_xx)` finite-difference error.  `scf_thr=1e-8` is therefore retained for
+the present audit; a future material or basis set can trigger the same paired
+test before changing the production threshold.
