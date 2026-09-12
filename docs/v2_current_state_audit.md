@@ -13,8 +13,9 @@
   `zstar/raman_response.py`、`zstar/unified_spectra.py`）以及未跟踪的
   `.codex-finalizer-hzo-bec/`。这些内容属于既有工作区状态，本轮不清理、不覆盖、不
   纳入 v2 提交。
-* 本轮只新增 `docs/v2_*` 研究文档，不改变已有 Python、CLI、README、案例或论文。
-* 没有提交 PyPI、GitHub release、远程计算任务，也没有合并到 `main`。
+* 本分支随后只增加了隔离在 `zstar/v2/` 下的 draft-only model、units、代数、对称性、
+  ensemble 和 ABACUS collector；没有改变 v1 Python/CLI、README、案例或正式论文。
+* 已在用户授权节点完成研究审计，但没有提交 PyPI、GitHub release 或合并到 `main`。
 
 ## 2. v1 能力边界
 
@@ -30,8 +31,8 @@
 
 当前 `BackendRegistry` 的内建后端为 `abacus`、`cp2k`、`phonopy`、`qe`、`vasp`。
 它已经能声明 structure/forces/band_gap/polarization/density/dipole/APT/BEC/dielectric/
-gamma/IR/Raman，但尚未有稳定的 `strain`、`stress`、`elastic`、`piezo`、`internal_strain`
-能力键；这些只能在理论和数据结构评审后增加。
+gamma/IR/Raman；v2 draft collector 已能读取 ABACUS 的 strain/stress/relaxed structure，
+但稳定的 `elastic`、`piezo`、`internal_strain` capability 仍未冻结，不能据此开放正式 CLI。
 
 ## 3. 数据和案例资产
 
@@ -52,18 +53,20 @@ gamma/IR/Raman，但尚未有稳定的 `strain`、`stress`、`elastic`、`piezo`
 
 ```text
 pytest -q
-394 passed, 1114 warnings in 30.39s
+483 passed, 1125 warnings
 ```
 
-警告主要来自 spglib、Phonopy 和 fontTools 的弃用提示，没有失败测试。参数化后的
-测试实际覆盖 32 个点群联合响应、BEC/IFC 轴顺序、低维归一化、断点状态、后端路由、
-Raman/介电输出和 v1 案例完整性。该结果是 v2 每个阶段必须保持的回归门；警告升级或
-依赖版本变化时需单独记录，不能把警告当作物理验证。
+警告主要来自 spglib、Phonopy 和 fontTools 的弃用提示，没有失败测试。v2 专项测试
+当前收集为 90 项，覆盖 32 个点群联合响应、BEC/IFC 轴顺序、单位/Voigt、低维拒绝
+门、断点状态、后端路由、rank/residual、acoustic-SR、Raman/介电输出和 v1 案例完整性。
+该结果是 v2 每个阶段必须保持的回归门；警告升级或依赖版本变化时需单独记录，不能把
+警告当作物理验证。
 
 ## 5. 现状中的关键风险
 
-1. `shared_response.py` 的联合拟合以 3 个 Cartesian 位移分量为输入；没有应变/应力
-   观测，也没有 e/d/g/h 的边界条件字段。
+1. `shared_response.py` 的 v1 联合拟合仍以 3 个 Cartesian 位移分量为输入；v2 的
+   应变/应力观测在独立 collector 中实现，尚未替换 v1 联合拟合，也没有稳定 e/d/g/h
+   后端能力键。
 2. `symmetry_reduction.py` 目前以 `equivalent_atoms` 选择原子代表，分子 dim=0
    明确不使用周期空间群；它还不是任意输入/输出张量的群表示约化器。
 3. v1 的 2D/1D 约定有明确的 slab-normal/wire-axis 限制，不能从真空胞自动推断
@@ -76,9 +79,14 @@ Raman/介电输出和 v1 案例完整性。该结果是 v2 每个阶段必须保
 
 ## 6. v2 隔离基线和进入下一阶段条件
 
-本轮结束时，隔离条件满足：独立分支已建立、v1 测试基线已记录、既有脏改动已声明、
-没有 v2 代码路径被导入、没有外部计算被提交。进入“理论和 schema 评审”前必须完成
+当前隔离条件满足：独立分支已建立、v1 测试基线已记录、v2 代码路径限定在独立命名空间，
+没有外部发布或合并。进入“理论和 schema 评审”前必须完成
 [`v2_theory.md`](v2_theory.md)、[`v2_symmetry_reduction.md`](v2_symmetry_reduction.md)
 和 [`v2_architecture.md`](v2_architecture.md) 的审阅，并由测试计划
 [`v2_test_validation_plan.md`](v2_test_validation_plan.md) 定义可重复的 rank、residual、
 units 和边界条件检查。
+
+截至 2026-09-13，Gate A 已满足；Gate B 仍在进行（schema/failure contract 尚未冻结）。
+Gate C 已完成 P4mm BaTiO3 的 clamped-ion、relaxed-ion、多幅度和 exact-geometry BEC
+ABACUS/PYATB 审计，但 acoustic gauge 的独立 Gamma/IFC、stress work-conjugacy、低
+对称材料、二维归一化和独立后端仍缺证据，因此尚未通过。

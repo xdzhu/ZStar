@@ -47,10 +47,9 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 
 ### 1.6 v1 回归
 
-每次 v2 提交运行当前完整 suite。第一轮冻结记录为 `394 passed`；随着工作区已有的
-声子谱回归和 v2 draft tests 加入，v2 独立 worktree 当前实测为 `474 passed, 1122 warnings`。
-用户的其它工作树可能包含尚未合入 v2 的额外测试或生成式案例，不能把那些数量直接
-当作本分支证据。测试
+每次 v2 提交运行当前完整 suite。独立 worktree 当前实测为 `483 passed, 1125 warnings`，
+其中 v2 专项测试收集为 90 项。用户的其它工作树可能包含尚未合入 v2 的额外测试或
+生成式案例，不能把那些数量直接当作本分支证据。测试
 必须验证 v1 canonical CLI、`response.json` 1.0、Unified
 `shared_response.json`、旧案例和旧命令 alias 没有行为变化；v2 新 schema 不能让 v1
 reader 接触到未知字段后崩溃。
@@ -109,9 +108,10 @@ separate_control_cost, v2_cost, efficiency_ratio
   当前 draft model/algebra/structure/ensemble 测试已通过，但 schema 评审和 failure
   contract 仍未冻结，因此只记为 **B-in-progress**。
 * **C**：ABACUS 两个晶系的 clamped-ion/relaxed-ion smoke + 步长扫描通过，schema
-  和 provenance 完整。当前已完成 P4mm clamped-ion、多幅度应变和单次 PYATB 三方向
-  极化数据链；relaxed-ion 目前仅完成 guarded preparation/log parsing，尚无真实
-  relaxed-ion 数据、`Lambda` 重建、proper e、stress sign 独立核查或独立后端对照。
+  和 provenance 完整。当前已完成 P4mm clamped-ion、relaxed-ion、多幅度应变、exact
+  geometry BEC 和单次 PYATB 三方向极化数据链，已完成 `Z*`/`Lambda` 单位一致的
+  代数重建与 acoustic-SR 代数审计；仍缺独立 Gamma/IFC、stress work-conjugacy 的
+  独立核查、非 P4mm 低对称和二维边界案例，因此 Gate C 尚未通过。
 * **D**：至少 cubic、tetragonal、hexagonal、orthorhombic/低对称、2D 五类真实验证，
   有独立后端或可靠文献对照，效率和误差同时达标。
 * **E**：仅在 D 之后设计并公开 `piezo`/`elastic` CLI；phase/finite-T/flexo/resonant
