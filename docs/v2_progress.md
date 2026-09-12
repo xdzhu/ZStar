@@ -150,6 +150,15 @@
     差值约 `(-5.86e-11, -1.75e-10, +1.06e-8) C/m²`。该结果只作为独立数值审计，
     不替代 formal stage，也不把单点审计误写成完整 relaxed-ion 张量验证。
 
+36. 为获得可解释的 clamped/relaxed 对照，又在 cu17 以 `40 MPI × 1 OpenMP` 对
+    formal stage 保存的原始 `strain-001-/STRU_INITIAL` 做了固定离子 SCF（约 123 s，
+    `scf_thr=1e-8`），并用一次 PYATB 得到三方向极化。有效 clamped-ion 值为
+    `(6.4773256444e-08, 5.9616427567e-08, 3.4876883547e-01) C/m²`；与同一应变、
+    同一收敛设置下的 relaxed 终态审计值相比，`ΔP_relaxed−clamped` 为
+    `(-2.6064e-10, -4.6217e-10, 4.6255143e-02) C/m²`。该差异仅是单个应变点的
+    内部弛豫审计，不能代替完整 Λ 或 relaxed-ion e 拟合；两次误复制终态的旧输出
+    已整体归档并明确标注为 `wrong-final`，不进入数据收集。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install
