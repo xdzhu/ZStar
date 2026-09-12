@@ -53,11 +53,11 @@ gamma/IR/Raman；v2 draft collector 已能读取 ABACUS 的 strain/stress/relaxe
 
 ```text
 pytest -q
-496 passed, 1155 warnings
+497 passed, 1155 warnings
 ```
 
 警告主要来自 spglib、Phonopy 和 fontTools 的弃用提示，没有失败测试。v2 专项测试
-当前收集为 103 项，覆盖 32 个点群联合响应、cubic/P4mm/P-6m2/Pmmm/P1 空间群
+当前收集为 104 项，覆盖 32 个点群联合响应、cubic/P4mm/P-6m2/Pmmm/P1 空间群
 fixture、BEC/IFC 轴顺序、单位/Voigt、低维归一化
 门、断点状态、后端路由、rank/residual、acoustic-SR、Raman/介电输出和 v1 案例完整性。
 该结果是 v2 每个阶段必须保持的回归门；警告升级或依赖版本变化时需单独记录，不能把

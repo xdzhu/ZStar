@@ -219,6 +219,18 @@ internal-strain coupling 和 homogeneous-strain response 联合构成。实现�
 `q_e/Omega`。v2 algebra API 使用 `internal_strain_unit` 明确这一转换，默认 `m`
 仅为保持无单位合成测试的向后兼容；实际 ABACUS 位移拟合应传入 `angstrom`。
 
+弹性内应变修正还必须闭合能量/长度量纲。若 `Phi` 为 eV/Angstrom²、`Gamma`
+为 eV/Angstrom、体积为 Angstrom³，则
+
+```text
+Gamma.T @ Phi^+ @ Gamma / Omega  ->  eV/Angstrom^3  ->  GPa (or kbar)
+```
+
+`relaxed_elastic` 的 unit-aware 模式要求同时提供 `energy_unit`、`length_unit`、
+`volume_unit` 和 `elastic_unit`，并检查体积单位确实是长度单位的三次方；它只转换
+最终能量密度，`Lambda` 仍以声明的长度单位返回。省略这些关键词的调用保留为
+无单位合成代数模式，不能直接写入真实材料的弹性常数。
+
 声学规范必须单独审计，而不能由伪逆“猜测”修复。令 \(T\) 为三个归一化刚性平移
 向量（每个原子的同方向位移为 \(1/\sqrt{N}\)），则输入必须满足
 \[

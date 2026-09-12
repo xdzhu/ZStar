@@ -364,12 +364,17 @@
     近简并位点的合成操作回归；即使某个候选原子同时接近多个目标，仍优先寻找完整
     双射，避免把合法操作误判为不等价。
 
+71. 为 `relaxed_elastic` 增加显式 unit-aware 模式：声明能量、长度、体积和目标弹性
+    单位后，将 `Gamma.T @ Phi^+ @ Gamma / Omega` 从 eV/Angstrom³ 等能量密度转换到
+    Pa/GPa/kbar；缺少任一单位或体积不是长度三次方时拒绝输入。旧的无单位调用仅
+    保留给合成代数测试，不能直接作为真实材料常数。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `496 passed, 1155 warnings`（本地 editable install
-  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `103 passed`。
+* v2 独立 worktree 的完整回归为 `497 passed, 1155 warnings`（本地 editable install
+  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `104 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 103 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 104 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成

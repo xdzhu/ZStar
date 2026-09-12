@@ -378,6 +378,52 @@ def test_relaxed_ion_algebra_matches_definitions():
     np.testing.assert_allclose(crel, c0 - expected_correction)
 
 
+def test_relaxed_elastic_unit_aware_mode_converts_ev_per_angstrom3_to_gpa():
+    c0 = np.eye(6) * 1000.0
+    phi = np.eye(3)
+    gamma = np.zeros((3, 6))
+    gamma[:, :3] = np.eye(3)
+    crel, lam, correction = relaxed_elastic(
+        c0,
+        phi,
+        gamma,
+        1.0,
+        energy_unit="eV",
+        length_unit="angstrom",
+        volume_unit="angstrom^3",
+        elastic_unit="GPa",
+    )
+    expected = 160.2176634  # 1 eV/Angstrom^3 in GPa
+    np.testing.assert_allclose(lam, -gamma)
+    np.testing.assert_allclose(np.diag(correction)[:3], expected, rtol=1.0e-12)
+    np.testing.assert_allclose(np.diag(correction)[3:], 0.0, atol=1.0e-12)
+    np.testing.assert_allclose(np.diag(crel)[:3], 1000.0 - expected, rtol=1.0e-12)
+    _, _, si_correction = relaxed_elastic(
+        c0,
+        phi,
+        gamma,
+        1.0,
+        energy_unit="J",
+        length_unit="m",
+        volume_unit="m^3",
+        elastic_unit="Pa",
+    )
+    np.testing.assert_allclose(np.diag(si_correction)[:3], 1.0, atol=1.0e-12)
+    with pytest.raises(ValueError, match="provided together"):
+        relaxed_elastic(c0, phi, gamma, 1.0, elastic_unit="GPa")
+    with pytest.raises(ValueError, match="cube of length_unit"):
+        relaxed_elastic(
+            c0,
+            phi,
+            gamma,
+            1.0,
+            energy_unit="eV",
+            length_unit="angstrom",
+            volume_unit="m^3",
+            elastic_unit="GPa",
+        )
+
+
 def test_algebra_rejects_invalid_shapes_and_volume():
     with pytest.raises(ValueError, match="volume"):
         relaxed_piezoelectric(np.zeros((3, 6)), np.zeros((1, 3, 3)), np.zeros((1, 3, 6)), 0.0)

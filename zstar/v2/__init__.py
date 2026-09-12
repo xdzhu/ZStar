@@ -77,7 +77,7 @@ from .polarization import (
     pyatb_directional_to_cartesian,
     unwrap_polarization_path,
 )
-from .units import BOHR_RADIUS, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
+from .units import BOHR_RADIUS, ELECTRONVOLT, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
 
 __all__ = [
     "BoundaryConditions",
@@ -85,6 +85,7 @@ __all__ = [
     "ENGINEERING_VOIGT",
     "EPSILON_0",
     "ELEMENTARY_CHARGE",
+    "ELECTRONVOLT",
     "IntertwinerBasis",
     "LinearFitResult",
     "ProperPiezoelectricResult",
