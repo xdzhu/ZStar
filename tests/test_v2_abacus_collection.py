@@ -178,6 +178,8 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     # structure moves atom 1 by 0.01 in fractional z.
     np.testing.assert_allclose(quantity.values[1:, 1, 2], 0.01 * 4.1, atol=1.0e-12)
     assert document.metadata["internal_displacement_collected"] is True
+    assert document.metadata["reference_force_max_eV_per_angstrom"] == 0.0
+    assert document.provenance["reference_force_max_eV_per_angstrom"] == 0.0
 
 
 def test_collect_abacus_strain_response_rejects_unrelaxed_reference(tmp_path):

@@ -258,6 +258,7 @@ def collect_abacus_strain_response(
             "ensemble metadata ion_relaxation must be 'clamped-ion' or 'relaxed-ion'; "
             f"got {ion_relaxation!r}"
         )
+    reference_force_max: float | None = None
     if ion_relaxation == "relaxed-ion":
         # A relaxed-ion derivative is defined around an internally equilibrated
         # zero-strain state.  Do not let a single-point, high-force reference
@@ -486,6 +487,7 @@ def collect_abacus_strain_response(
     provenance = {
         "reference_hash": ensemble.reference_hash,
         "stage_names": stage_names,
+        "reference_force_max_eV_per_angstrom": reference_force_max,
         "stages": [
             {
                 "name": name,
@@ -524,6 +526,7 @@ def collect_abacus_strain_response(
             ),
             "energy_collected": all(value is not None for value in energies),
             "ion_relaxation": ion_relaxation,
+            "reference_force_max_eV_per_angstrom": reference_force_max,
             "internal_displacement_collected": internal_displacements is not None,
         },
     )
