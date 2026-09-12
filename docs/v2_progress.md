@@ -135,8 +135,8 @@
 
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `472 passed, 1122 warnings`（本地 editable install
-  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `79 passed`。
+* v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install
+  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `81 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。

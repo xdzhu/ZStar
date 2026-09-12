@@ -48,7 +48,9 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 ### 1.6 v1 回归
 
 每次 v2 提交运行当前完整 suite。第一轮冻结记录为 `394 passed`；随着工作区已有的
-声子谱回归和 v2 draft tests 加入，当前实测为 `481 passed, 1385 warnings`。测试
+声子谱回归和 v2 draft tests 加入，v2 独立 worktree 当前实测为 `474 passed, 1122 warnings`。
+用户的其它工作树可能包含尚未合入 v2 的额外测试或生成式案例，不能把那些数量直接
+当作本分支证据。测试
 必须验证 v1 canonical CLI、`response.json` 1.0、Unified
 `shared_response.json`、旧案例和旧命令 alias 没有行为变化；v2 新 schema 不能让 v1
 reader 接触到未知字段后崩溃。
