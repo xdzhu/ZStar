@@ -338,7 +338,7 @@
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `86 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 90 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 93 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
