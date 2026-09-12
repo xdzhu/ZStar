@@ -12,6 +12,7 @@ from zstar.v2 import (
     apply_strain,
     prepare_abacus_berry_stages,
     prepare_abacus_strain_ensemble,
+    periodic_strain_indices,
 )
 
 
@@ -77,6 +78,54 @@ def test_abacus_strain_preparation_expands_positive_basis_vectors_to_ordered_pai
     for index in range(6):
         np.testing.assert_allclose(stages[2 * index].requested_vector, -np.eye(6)[index] * 1.0e-3)
         np.testing.assert_allclose(stages[2 * index + 1].requested_vector, np.eye(6)[index] * 1.0e-3)
+
+
+def test_periodic_strain_indices_only_include_intrinsic_low_dimensional_modes():
+    assert periodic_strain_indices(("x", "y", "z")) == (0, 1, 2, 3, 4, 5)
+    assert periodic_strain_indices(("x", "y")) == (0, 1, 5)
+    assert periodic_strain_indices(("z",)) == (2,)
+    with pytest.raises(ValueError, match="periodic_axes"):
+        periodic_strain_indices(("x", "x"))
+
+
+def test_abacus_strain_preparation_limits_default_low_dimensional_strain_to_periodic_modes(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "slab-strain",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        dimensionality=2,
+        periodic_axes=("x", "y"),
+    )
+    ensemble = result["ensemble"]
+    assert ensemble.periodic_axes == ("x", "y")
+    assert ensemble.metadata["periodic_strain_indices"] == [0, 1, 5]
+    assert len(ensemble.stages) == 6
+    assert all(
+        np.allclose(np.asarray(stage.requested_vector)[[2, 3, 4]], 0.0)
+        for stage in ensemble.stages
+    )
+    with pytest.raises(ValueError, match="open-direction components"):
+        prepare_abacus_strain_ensemble(
+            tmp_path / "slab-open-strain",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            dimensionality=2,
+            periodic_axes=("x", "y"),
+            strain_vectors=([0.0, 0.0, 1.0e-3, 0.0, 0.0, 0.0],),
+        )
+    with pytest.raises(ValueError, match="symmetry_reduce for dimensionality<3"):
+        prepare_abacus_strain_ensemble(
+            tmp_path / "slab-symmetry",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            dimensionality=2,
+            periodic_axes=("x", "y"),
+            symmetry_reduce=True,
+        )
 
 
 def test_abacus_strain_preparation_can_use_symmetry_rank_plan(tmp_path):

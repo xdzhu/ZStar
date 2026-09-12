@@ -30,6 +30,7 @@ def test_ensemble_and_v2_state_store_resume_atomically(tmp_path):
     ensemble = ResponseEnsemble(reference_hash="abc", stages=stages, dimensionality=3)
     manifest = ensemble.write(tmp_path / "manifest.json")
     loaded = ResponseEnsemble.read(manifest)
+    assert loaded.periodic_axes == ("x", "y", "z")
     assert len(loaded.pending) == 2
     completed = PerturbationStage(
         **{

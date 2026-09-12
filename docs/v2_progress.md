@@ -350,12 +350,22 @@
     collector 回归，确认单次 PYATB 三方向输出可直接复用，且不会悄然开启低维
     压电或弹性结论。
 
+68. 修复联合 symmetry input plan 在某一输出允许秩为零时的空 block 边界：Pmmm
+    正交 fixture 现在可以保留 12 个弹性允许参数，同时把 polarization 的秩 0
+    作为严格的 symmetry-forbidden 分支处理；新增 P-6m2 hBN 2D fixture，确认
+    六方边界兼容操作与 `1+6` 联合秩计划。
+
+69. 将低维周期轴写入 `ResponseEnsemble` schema，并在 ABACUS strain preparation
+    中显式计算 intrinsic periodic strain indices：2D 默认只生成面内 `xx/yy/xy`，
+    1D 只生成轴向 normal strain；open-direction components 会给出可操作错误，
+    未验证的低维 symmetry-reduced bulk 计划保持禁用。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `490 passed, 1131 warnings`（本地 editable install
-  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `97 passed`。
+* v2 独立 worktree 的完整回归为 `494 passed, 1140 warnings`（本地 editable install
+  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `101 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 97 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 101 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成

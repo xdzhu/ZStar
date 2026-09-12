@@ -394,10 +394,18 @@ def symmetry_adapted_input_plan(
         for kind in outputs:
             # Rows are output components and columns are unknown symmetry
             # coefficients.  This orientation is essential for rank tests.
-            block = np.stack(
-                [matrix @ direction for matrix in coefficient_matrices[kind]],
-                axis=1,
-            )
+            matrices = coefficient_matrices[kind]
+            if matrices:
+                block = np.stack(
+                    [matrix @ direction for matrix in matrices],
+                    axis=1,
+                )
+            else:
+                # A response can be symmetry-forbidden (allowed rank zero)
+                # while another output in the same unified plan remains
+                # active. Keep an explicit zero-column block so the combined
+                # rank calculation still includes the latter output.
+                block = np.zeros((bases[kind].output_dimension, 0), dtype=float)
             rows = slice(row_offset, row_offset + block.shape[0])
             columns = slice(column_offset, column_offset + block.shape[1])
             combined[rows, columns] = block

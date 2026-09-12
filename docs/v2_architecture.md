@@ -101,15 +101,16 @@ ABACUS [官方 Berry phase 文档](https://abacus.deepmodeling.com/en/v3.6.2/adv
 晶胞必须解方向投影方程并检查 rank/condition number。这里不再把三个方向的标量或
 tuple 机械相加作为通用坐标变换，也不做隐含分支选择。
 
-当前 collector 对 `dimensionality < 3` 的 Berry 极化请求明确拒绝。ABACUS 的原始
-`C/m^2` 值按三维晶胞体积归一化；二维 slab 还必须乘以明确的非周期长度得到
-sheet polarization，且该长度/表面边界条件不能由通用 collector 猜测。一维和
-分子体系同理需要 line/dipole 规范。低维归一化接口在理论和独立验证完成前保持
-未实现，不得把真空依赖的数值写成稳定本征响应。
+当前 collector 对 `dimensionality < 3` 的 Berry 极化请求默认拒绝。只有显式传入
+`normalize_low_dimensional=True` 才会在已声明周期轴和 slab/wire 边界下追加
+`polarization_intrinsic`；原始 `C/m^2` 量仍保留为诊断值，不被重新解释。二维 slab
+使用 `Omega/A` 高度，一维 wire 使用横截面积，分子体系仍拒绝 bulk Berry 极化。
+低维归一化保持研究性，不进入稳定用户入口，也不自动开放低维 e/C 响应。
 
 ## 4. Task graph 和恢复
 
-v2 采用 reference-first、serial-resumable 的图：
+v2 采用 reference-first、serial-resumable 的图。`ResponseEnsemble` 还持久化
+`dimensionality` 与 `periodic_axes`；低维任务不能依赖读取端的默认轴顺序。
 
 ```text
 reference gate

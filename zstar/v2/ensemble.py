@@ -9,6 +9,8 @@ from typing import Any, Iterable
 
 import numpy as np
 
+from ..dimensions import DimensionSpec
+
 
 def _vector(value: Iterable[float], name: str) -> tuple[float, ...]:
     array = np.asarray(tuple(value), dtype=float)
@@ -99,12 +101,14 @@ class ResponseEnsemble:
     dimensionality: int = 3
     schema_version: str = "0.1"
     metadata: dict[str, Any] = field(default_factory=dict)
+    periodic_axes: tuple[str, ...] | None = None
 
     def __post_init__(self) -> None:
         if not self.reference_hash.strip():
             raise ValueError("response ensemble requires a reference_hash")
-        if int(self.dimensionality) not in {0, 1, 2, 3}:
-            raise ValueError("dimensionality must be 0, 1, 2, or 3")
+        dimensions = DimensionSpec(int(self.dimensionality), self.periodic_axes)
+        object.__setattr__(self, "dimensionality", dimensions.value)
+        object.__setattr__(self, "periodic_axes", dimensions.periodic_axes)
         ids = [stage.stage_id for stage in self.stages]
         if len(set(ids)) != len(ids):
             raise ValueError(f"stage ids must be unique; got {ids}")
@@ -142,6 +146,7 @@ class ResponseEnsemble:
             "schema_version": self.schema_version,
             "reference_hash": self.reference_hash,
             "dimensionality": self.dimensionality,
+            "periodic_axes": list(self.periodic_axes),
             "stages": [stage.to_dict() for stage in self.stages],
             "metadata": self.metadata,
         }
@@ -163,6 +168,7 @@ class ResponseEnsemble:
             reference_hash=str(data["reference_hash"]),
             stages=tuple(PerturbationStage.from_dict(item) for item in data["stages"]),
             dimensionality=int(data.get("dimensionality", 3)),
+            periodic_axes=None if data.get("periodic_axes") is None else tuple(data["periodic_axes"]),
             schema_version=str(data.get("schema_version", "")),
             metadata=dict(data.get("metadata", {})),
         )

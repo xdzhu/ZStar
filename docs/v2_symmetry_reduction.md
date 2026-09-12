@@ -86,6 +86,9 @@ identified rank、容差和 `complete` 标志。`prepare_abacus_strain_ensemble`
 component control 对照。P4mm BaTiO3 的联合 `(polarization, strain, displacement)`
 计划由 6 个分量降为 `(xx, zz, 2yz, 2xy)` 4 个方向（8 个正负 stage），允许秩为
 `3+7+14=24` 且 identified rank 为 24；P1 则保留全部 6 个应变分量。
+实现中对允许秩为零的输出使用显式零列 block，而不是跳过该输出或调用空矩阵
+操作；因此像 Pmmm 这样的非极性正交晶体仍可联合规划弹性采样，同时将压电
+分量严格标记为 `symmetry-forbidden`。
 
 ### 3.3 联合 response ensemble
 
@@ -205,9 +208,10 @@ reconstruct(observations, report):
    对称禁止压电分量。
 2. **Tetragonal polar**：P4mm PbTiO3/HfO2；验证 `e_33/e_31/e_15` 允许项、
    极性轴和 improper/proper 修正。
-3. **Hexagonal**：P6_3/mmc hBN（非极性）与 P6_3mc 参考（极性）；验证六方
-   应变轨道、2D 周期平面和面外边界拒绝。
-4. **Orthorhombic**：Pnma 结构；验证低等价类、剪切 Voigt 因子和非对角 IFC。
+3. **Hexagonal**：P-6m2 hBN（非极性）；验证六方应变轨道、2D 周期平面和
+   面外边界拒绝。当前合成 fixture 已确认 12 个边界兼容操作和联合秩 `1+6`。
+4. **Orthorhombic**：Pmmm 单点 fixture（后续补充 Pnma）；验证压电零秩与
+   非零弹性子空间可在同一计划中并存，以及剪切 Voigt 因子。
 5. **Triclinic/低对称**：P1 合成晶体；无约化或仅恒等操作，6 个应变和全部独立
    位移必须达到满秩。
 6. **Symmetry-breaking sweep**：对上述结构人为施加 1e-6--1e-2 Å 破缺，检查

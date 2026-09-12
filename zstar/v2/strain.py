@@ -12,9 +12,9 @@ from typing import Iterable
 
 import numpy as np
 
-from ..dimensions import DimensionSpec
+from ..dimensions import dimension_spec
 from .ensemble import PerturbationStage, ResponseEnsemble, plan_central_stages
-from .mechanical import strain_tensor_to_voigt, voigt_to_strain_tensor
+from .mechanical import periodic_strain_indices, strain_tensor_to_voigt, voigt_to_strain_tensor
 from .structure import StructureSpec, analyze_space_group, symmetry_adapted_input_plan
 
 
@@ -226,6 +226,7 @@ def prepare_abacus_strain_ensemble(
     pp_dir: str | Path | None = None,
     orb_dir: str | Path | None = None,
     dimensionality: int = 3,
+    periodic_axes: Iterable[str] | str | None = None,
     strain_vectors: Iterable[Iterable[float]] | None = None,
     amplitude: float = 1.0e-3,
     symprec: float = 1.0e-3,
@@ -250,6 +251,11 @@ def prepare_abacus_strain_ensemble(
     enabled and no explicit ``strain_vectors``, a representation-rank plan
     selects the smallest canonical strain set that identifies polarization and
     stress responses (and internal displacement for relaxed-ion stages).
+    For dimensionality 1 or 2, ``periodic_axes`` is persisted in the ensemble
+    and the default plan contains only intrinsic axial/in-plane engineering
+    strains. Open-direction components are rejected until an explicit boundary
+    model is implemented; symmetry-reduced low-dimensional plans are likewise
+    kept disabled rather than guessing a bulk response space.
     """
 
     from ..shared_response import read_structure, write_structure
@@ -283,11 +289,17 @@ def prepare_abacus_strain_ensemble(
         lattice=np.asarray(atoms.cell, dtype=float),
         fractional_positions=np.asarray(atoms.scaled_positions, dtype=float),
         symbols=tuple(str(symbol) for symbol in atoms.symbols),
-        dimensionality=DimensionSpec(int(dimensionality)),
+        dimensionality=dimension_spec(int(dimensionality), periodic_axes),
     )
+    active_strain_indices = periodic_strain_indices(spec.dimensionality.periodic_axes)
     report = analyze_space_group(spec, symprec_grid=(float(symprec),))
     symmetry_plan = None
     if symmetry_reduce:
+        if int(dimensionality) != 3:
+            raise ValueError(
+                "symmetry_reduce for dimensionality<3 is not enabled: provide explicit "
+                "periodic strain_vectors after selecting a slab/wire boundary model"
+            )
         if strain_vectors is not None:
             raise ValueError(
                 "symmetry_reduce=True cannot be combined with explicit strain_vectors; "
@@ -311,7 +323,22 @@ def prepare_abacus_strain_ensemble(
             float(amplitude) * vector for vector in symmetry_plan.vectors
         )
     elif strain_vectors is None:
-        strain_vectors = (float(amplitude) * np.eye(6)[index] for index in range(6))
+        strain_vectors = (float(amplitude) * np.eye(6)[index] for index in active_strain_indices)
+    else:
+        explicit_vectors = tuple(np.asarray(vector, dtype=float) for vector in strain_vectors)
+        if not explicit_vectors:
+            raise ValueError("strain_vectors must contain at least one vector")
+        inactive = tuple(index for index in range(6) if index not in active_strain_indices)
+        for vector in explicit_vectors:
+            if vector.shape != (6,) or not np.all(np.isfinite(vector)):
+                raise ValueError("strain_vectors must contain finite six-component Voigt vectors")
+            if inactive and np.any(np.abs(vector[list(inactive)]) > 1.0e-14):
+                raise ValueError(
+                    "dimensionality<3 strain_vectors may only contain periodic-plane/axis "
+                    f"components {active_strain_indices}; open-direction components {inactive} "
+                    "require an explicit boundary model"
+                )
+        strain_vectors = explicit_vectors
     expected_outputs = ["polarization", "forces", "stress"]
     if relaxation == "relaxed-ion":
         expected_outputs.append("relaxed_structure")
@@ -327,12 +354,14 @@ def prepare_abacus_strain_ensemble(
         reference_hash=reference_hash,
         stages=stages,
         dimensionality=int(dimensionality),
+        periodic_axes=spec.dimensionality.periodic_axes,
         metadata={
             "preparation": "abacus",
             "symprec": float(symprec),
             "ion_relaxation": relaxation,
             "force_thr_ev": threshold,
             "symmetry_reduce": bool(symmetry_reduce),
+            "periodic_strain_indices": list(active_strain_indices),
             "symmetry_input_plan": None if symmetry_plan is None else symmetry_plan.to_dict(),
         },
     )

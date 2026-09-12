@@ -288,7 +288,7 @@ def collect_abacus_strain_response(
             )
         stage_vectors.append(np.asarray(stage.actual_vector, dtype=float))
         stage_names.append(stage.stage_id)
-    dimensions = DimensionSpec(ensemble.dimensionality)
+    dimensions = DimensionSpec(ensemble.dimensionality, ensemble.periodic_axes)
     ion_relaxation = str(ensemble.metadata.get("ion_relaxation", "clamped-ion")).strip().lower()
     if ion_relaxation not in {"clamped-ion", "relaxed-ion"}:
         raise ValueError(

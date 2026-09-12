@@ -93,3 +93,40 @@ def test_symmetry_adapted_strain_plan_keeps_all_components_for_p1():
     assert plan.complete
     assert plan.selected_indices == tuple(range(6))
     np.testing.assert_allclose(plan.vectors, np.eye(6))
+
+
+def test_hexagonal_low_dimensional_plan_handles_polar_response_and_six_strain_modes():
+    a = 2.5
+    structure = StructureSpec(
+        lattice=np.array([[a, 0.0, 0.0], [-0.5 * a, 0.5 * np.sqrt(3.0) * a, 0.0], [0.0, 0.0, 20.0]]),
+        fractional_positions=np.array([[0.0, 0.0, 0.0], [1.0 / 3.0, 2.0 / 3.0, 0.0]]),
+        symbols=("B", "N"),
+        dimensionality=DimensionSpec(2, ("x", "y")),
+    )
+    report = analyze_space_group(structure)
+    assert report.status == "stable"
+    assert report.space_group == "P-6m2"
+    assert report.operation_count == 12
+    plan = symmetry_adapted_input_plan(report, input_kind="strain", output_kinds=("polarization", "strain"))
+    assert plan.complete
+    assert plan.allowed_ranks == {"polarization": 1, "strain": 6}
+    assert plan.identified_rank == 7
+    assert plan.selected_indices == (0, 2, 3)
+
+
+def test_orthorhombic_plan_keeps_elastic_modes_when_piezo_is_forbidden():
+    structure = StructureSpec(
+        lattice=np.diag([4.0, 5.0, 6.0]),
+        fractional_positions=np.array([[0.0, 0.0, 0.0]]),
+        symbols=("X",),
+    )
+    report = analyze_space_group(structure)
+    assert report.status == "stable"
+    assert report.space_group == "Pmmm"
+    assert report.operation_count == 8
+    piezo = allowed_response_basis(report, input_kind="strain", output_kind="polarization")
+    assert piezo.allowed_rank == 0
+    plan = symmetry_adapted_input_plan(report, input_kind="strain", output_kinds=("polarization", "strain"))
+    assert plan.complete
+    assert plan.allowed_ranks == {"polarization": 0, "strain": 12}
+    assert plan.identified_rank == 12
