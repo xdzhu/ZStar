@@ -187,6 +187,8 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     forces = _parse_forces(text, int(count))
     stress = _parse_stress(text)
     energy = _parse_energy(text)
+    force_max = float(np.max(np.linalg.norm(forces, axis=1)))
+    stress_max_abs = float(np.max(np.abs(stress)))
     timing: dict[str, Any] = {}
     timing_path = directory / "time.json"
     if timing_path.is_file():
@@ -197,7 +199,9 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     return {
         "stage": directory.name,
         "forces": forces,
+        "force_max_eV_per_angstrom": force_max,
         "stress": stress,
+        "stress_max_abs_kbar": stress_max_abs,
         "stress_unit": "kbar",
         "force_unit": "eV/angstrom",
         "energy": energy,
@@ -530,6 +534,8 @@ def collect_abacus_strain_response(
                 "relaxed_structure_path": record["relaxed_structure_path"],
                 "input_structure_path": record["input_structure_path"],
                 "scf_iterations": record["scf_iterations"],
+                "force_max_eV_per_angstrom": record["force_max_eV_per_angstrom"],
+                "stress_max_abs_kbar": record["stress_max_abs_kbar"],
                 "energy": record["energy"],
                 "timing": record["timing"],
             }
@@ -548,7 +554,14 @@ def collect_abacus_strain_response(
         },
         symmetry={},
         functional=first_parameters.get("dft_functional", ""),
-        convergence={key: value for key, value in first_parameters.items() if key in {"scf_thr", "scf_nmax"}},
+        convergence={
+            **{key: value for key, value in first_parameters.items() if key in {"scf_thr", "scf_nmax"}},
+            **(
+                {"force_thr_ev": float(ensemble.metadata["force_thr_ev"])}
+                if "force_thr_ev" in ensemble.metadata
+                else {}
+            ),
+        },
         restart_state={"ensemble": str(base / "ensemble.json")},
         metadata={
             "stage_count": len(records),

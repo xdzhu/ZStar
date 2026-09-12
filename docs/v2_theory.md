@@ -208,6 +208,17 @@ internal-strain coupling 和 homogeneous-strain response 联合构成。实现�
 `q_e/Omega`。v2 algebra API 使用 `internal_strain_unit` 明确这一转换，默认 `m`
 仅为保持无单位合成测试的向后兼容；实际 ABACUS 位移拟合应传入 `angstrom`。
 
+声学规范必须单独审计，而不能由伪逆“猜测”修复。令 \(T\) 为三个归一化刚性平移
+向量（每个原子的同方向位移为 \(1/\sqrt{N}\)），则输入必须满足
+\[
+ \|T^T\Phi\|,\ \|\Phi T\| \simeq 0,\qquad T^T\Gamma\simeq 0.
+\]
+前两项分别检查力常数的左、右 acoustic sum rule，后一项检查每个应变下的净力为零。
+`acoustic_sum_rule_diagnostics` 只返回绝对/相对残差和兼容性标志，不对数据作静默投影；
+`internal_strain_response(..., check_acoustic=True)` 才会在超出给定容差时拒绝输入。这样
+可以区分真实的平移零模、有限 SCF/拟合噪声和错误的原子索引或边界条件。即使 \(\Lambda\)
+采用 Moore--Penrose 最小范数解，响应文件仍应保存这些诊断及所用的 acoustic gauge。
+
 还有一个不可省略的参考态条件：relaxed-ion 差分的零应变 reference 必须已经在
 同一电场/机械边界下满足内部力平衡（以及所采用边界下的应力条件），并且要记录其
 最大残余力、应力和空间群。若 reference 只是未弛豫的单点 SCF，±应变弛豫可能进入
@@ -216,6 +227,16 @@ internal-strain coupling 和 homogeneous-strain response 联合构成。实现�
 应变集合。`relaxed-ion` 的 preflight 因而至少检查 reference 的力阈值、固定晶胞/
 应力边界、离子收敛标记和原子对应关系；不满足时只允许保存诊断数据，不允许写入
 正式响应张量。
+
+### 5.1 SCF 阈值与离子收敛
+
+SCF 能量阈值和离子力阈值控制不同层次的误差。较严格的 `scf_thr` 通常会降低密度
+未收敛引起的力噪声，因此在相同 `force_thr_ev` 下更容易让离子弛豫真正达到目标；
+但它不能替代 `force_thr_ev`、最大位移、应力和结构对应关系的检查，也不能消除有限
+应变/位移差分的截断误差。v2 记录两者以及每个阶段的最终最大力：基线可用
+`scf_thr=1e-8`，当力残差接近阈值、响应随幅度不稳定或 acoustic/内部应变拟合受噪声
+限制时，用同一输入做 `1e-10` paired audit。只有在力、响应斜率和重建残差同时改善时，
+才把更严格阈值纳入生产设置；不能仅凭 SCF 迭代数或单次更小能量变化宣称离子收敛。
 
 ## 6. e、d、g、h 的热力学关系
 

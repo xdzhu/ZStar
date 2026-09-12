@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from zstar.v2 import (
+    acoustic_sum_rule_diagnostics,
     central_difference,
     convert_stress_sign,
     fit_elastic_response,
@@ -36,6 +37,39 @@ def test_remove_acoustic_translation_requires_explicit_positive_gauge_weights():
     np.testing.assert_allclose(np.average(weighted, axis=0, weights=[1.0, 3.0]), 0.0)
     with pytest.raises(ValueError, match="positive"):
         remove_acoustic_translation(displacements[0], weights=[1.0, 0.0])
+
+
+def test_acoustic_sum_rule_diagnostics_reports_translation_compatible_inputs():
+    phi = np.kron(np.array([[1.0, -1.0], [-1.0, 1.0]]), np.eye(3))
+    gamma = np.array(
+        [
+            [1.0, 0.2], [0.0, 0.1], [0.3, 0.4],
+            [-1.0, -0.2], [0.0, -0.1], [-0.3, -0.4],
+        ]
+    )
+    diagnostics = acoustic_sum_rule_diagnostics(phi, gamma, tolerance=1.0e-12)
+    assert diagnostics["natoms"] == 2
+    assert diagnostics["compatible"] is True
+    assert diagnostics["force_constants_translation_residual_max"] < 1.0e-12
+    assert diagnostics["strain_force_translation_residual_max"] < 1.0e-12
+    lam = internal_strain_response(
+        phi, gamma, check_acoustic=True, acoustic_tolerance=1.0e-12
+    )
+    translations = np.asarray(diagnostics["translation_basis"])
+    np.testing.assert_allclose(translations.T @ lam, 0.0, atol=1.0e-12)
+
+
+def test_internal_strain_response_can_reject_acoustic_sum_rule_violation():
+    phi = np.kron(np.array([[1.0, -1.0], [-1.0, 1.0]]), np.eye(3))
+    gamma = np.zeros((6, 1))
+    gamma[0, 0] = 1.0
+    with pytest.raises(ValueError, match="acoustic sum rule"):
+        internal_strain_response(phi, gamma, check_acoustic=True)
+    diagnostics = acoustic_sum_rule_diagnostics(phi, gamma)
+    assert diagnostics["compatible"] is False
+    assert diagnostics["strain_force_coupling_compatible"] is False
+    with pytest.raises(ValueError, match="acoustic sum rule"):
+        relaxed_elastic(np.eye(6), phi, gamma, 1.0, check_acoustic=True)
 
 
 def test_stress_sign_conversion_rejects_backend_raw_and_flips_known_signs():

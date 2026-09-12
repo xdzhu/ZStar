@@ -103,6 +103,8 @@ def test_collect_abacus_stage_parses_force_stress_and_iterations(tmp_path):
     record = collect_abacus_stage(stage)
     assert record["forces"].shape == (5, 3)
     np.testing.assert_allclose(record["stress"], np.eye(3) * 0.4)
+    assert np.isclose(record["force_max_eV_per_angstrom"], 0.0)
+    assert np.isclose(record["stress_max_abs_kbar"], 0.4)
     assert record["scf_iterations"] == 1
     assert record["scf_converged"] is True
     assert np.isclose(record["energy"], -274.1)
@@ -192,6 +194,7 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     assert document.metadata["internal_displacement_collected"] is True
     assert document.metadata["reference_force_max_eV_per_angstrom"] == 0.0
     assert document.provenance["reference_force_max_eV_per_angstrom"] == 0.0
+    assert document.convergence["force_thr_ev"] == 1.0e-3
 
 
 def test_collect_abacus_strain_response_rejects_unrelaxed_reference(tmp_path):

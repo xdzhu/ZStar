@@ -231,6 +231,7 @@ def prepare_abacus_strain_ensemble(
     symprec: float = 1.0e-3,
     ion_relaxation: str = "clamped-ion",
     force_thr_ev: float = 1.0e-3,
+    scf_thr: float | None = None,
 ) -> dict:
     """Prepare a reference plus ± homogeneous-strain ABACUS folders.
 
@@ -239,7 +240,10 @@ def prepare_abacus_strain_ensemble(
     cannot accidentally use the nominal requested amplitude.  ``clamped-ion``
     keeps the source SCF calculation unchanged; ``relaxed-ion`` switches only
     the ± strain stages to ``calculation relax`` and records the requested
-    force threshold.  The reference is always a single-point SCF on the
+    force threshold.  If ``scf_thr`` is provided, it is written to every
+    copied INPUT (including the reference) so SCF force noise and ionic
+    convergence can be audited as one reproducible ensemble.  The reference
+    is always a single-point SCF on the
     supplied reference structure, which must already be the intended relaxed
     geometry when relaxed-ion response is requested.
     """
@@ -263,6 +267,11 @@ def prepare_abacus_strain_ensemble(
     threshold = float(force_thr_ev)
     if not np.isfinite(threshold) or threshold <= 0.0:
         raise ValueError("force_thr_ev must be finite and positive")
+    scf_threshold: float | None = None
+    if scf_thr is not None:
+        scf_threshold = float(scf_thr)
+        if not np.isfinite(scf_threshold) or scf_threshold <= 0.0:
+            raise ValueError("scf_thr must be finite and positive when provided")
     atoms = read_structure(source)
     spec = StructureSpec(
         lattice=np.asarray(atoms.cell, dtype=float),
@@ -311,6 +320,8 @@ def prepare_abacus_strain_ensemble(
     if (reference_dir / input_name).is_file():
         _set_input_parameter(reference_dir / input_name, "cal_force", "1")
         _set_input_parameter(reference_dir / input_name, "cal_stress", "1")
+        if scf_threshold is not None:
+            _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
     prepared = prepare_stru_assets(
         reference_dir / "STRU",
         pp_dir=pp_dir,
@@ -335,6 +346,8 @@ def prepare_abacus_strain_ensemble(
         if (stage_dir / input_name).is_file():
             _set_input_parameter(stage_dir / input_name, "cal_force", "1")
             _set_input_parameter(stage_dir / input_name, "cal_stress", "1")
+            if scf_threshold is not None:
+                _set_input_parameter(stage_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
             if relaxation == "relaxed-ion":
                 _set_input_parameter(stage_dir / input_name, "calculation", "relax")
                 _set_input_parameter(stage_dir / input_name, "force_thr_ev", f"{threshold:.16g}")
@@ -370,6 +383,11 @@ def prepare_abacus_strain_ensemble(
         metadata={
             **ensemble.metadata,
             "reference_input_hash": _input_hash(reference_dir),
+            "scf_thr": (
+                scf_threshold
+                if scf_threshold is not None
+                else _read_input_parameter(reference_dir / input_name, "scf_thr")
+            ),
         },
     )
     final_ensemble.write(output / "ensemble.json")

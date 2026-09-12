@@ -305,6 +305,19 @@
     ensemble 的有限步长误差量级）；该结果支持单位一致的 `Z*Lambda` 链路，但
     Gate C 仍需 acoustic gauge、Gamma/IFC 和独立后端复核。
 
+61. 在 algebra 层增加 `acoustic_sum_rule_diagnostics`：对归一化刚性平移基检查
+    `Phi` 的左右平移零模和 `T^T Gamma` 的净力兼容性，返回绝对/相对残差及兼容性
+    标志；`internal_strain_response(..., check_acoustic=True)` 可在超出容差时明确
+    拒绝输入，默认不改变历史合成代数行为。新增兼容/不兼容矩阵测试，避免用伪逆
+    静默掩盖错误原子索引或边界条件。
+
+62. 应用户反馈把 SCF 与离子收敛的关系落实到准备接口：
+    `prepare_abacus_strain_ensemble(..., scf_thr=...)` 会把同一阈值写入 reference
+    和全部应变阶段，并在 ensemble metadata/convergence 中保留 `scf_thr` 与
+    `force_thr_ev`。较小 `scf_thr` 可降低力噪声、帮助达到给定离子力阈值；是否
+    采用 `1e-10` 仍通过 paired force/response audit 判定，而不是把它误当成单独的
+    物理收敛证明。collector 现同时保存每个阶段的最大力和最大应力诊断。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install
@@ -343,7 +356,8 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
    已完成合成数据、单位转换和 exact-geometry BEC 链路；下一步仍需独立 Born/IFC
    结果和 acoustic gauge 约定后才考虑冻结 relaxed-ion 公式；
 5. 独立复核 ABACUS stress work-conjugacy、单位和能量曲率，并记录
-   `scf_thr=1e-8`/`1e-10` 对力噪声的 paired audit；更高 SCF 精度可作为离子收敛
-   较困难体系的诊断选项，不能未经审计就全局提高；
+   `scf_thr=1e-8`/`1e-10` 对最终力、离子步数和响应斜率的 paired audit；更高 SCF
+   精度应视为降低力噪声、帮助满足 `force_thr_ev` 的收敛设置，同时仍须检查离子
+   收敛标记、最大力、应力和多幅度稳定性，不能只比较总能量；
 6. 在至少一个非 `P4mm` 低对称材料、一个独立后端和一个合适的二维边界条件案例
    上复现相同的 branch/rank/residual 检查，之后才进入正式压电/弹性 CLI 设计。

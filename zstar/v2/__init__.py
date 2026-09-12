@@ -1,6 +1,7 @@
 """Research-only ZStar v2 API, isolated from the stable v1 surface."""
 
 from .algebra import (
+    acoustic_sum_rule_diagnostics,
     internal_strain_response,
     relaxed_elastic,
     relaxed_piezoelectric,
@@ -110,6 +111,7 @@ __all__ = [
     "central_difference",
     "allowed_response_basis",
     "actual_strain",
+    "acoustic_sum_rule_diagnostics",
     "analyze_space_group",
     "apply_strain",
     "convert_dielectric",

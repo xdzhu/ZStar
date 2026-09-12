@@ -139,6 +139,38 @@ def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input
     assert (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text().find("calculation         scf") >= 0
 
 
+def test_abacus_strain_preparation_can_pin_scf_threshold_for_ionic_audit(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "tight-scf",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+        ion_relaxation="relaxed-ion",
+        force_thr_ev=1.0e-4,
+        scf_thr=1.0e-10,
+    )
+    ensemble = result["ensemble"]
+    assert ensemble.metadata["scf_thr"] == 1.0e-10
+    for stage_id in ("reference", "strain-001-", "strain-001+"):
+        input_text = (tmp_path / "tight-scf" / stage_id / "INPUT").read_text()
+        assert "scf_thr             1e-10" in input_text
+
+
+def test_abacus_strain_preparation_rejects_invalid_scf_threshold(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    with pytest.raises(ValueError, match="scf_thr"):
+        prepare_abacus_strain_ensemble(
+            tmp_path / "bad-scf",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+            scf_thr=0.0,
+        )
+
+
 def test_abacus_strain_preparation_rejects_unknown_ion_relaxation(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     with pytest.raises(ValueError, match="ion_relaxation"):
