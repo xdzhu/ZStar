@@ -404,3 +404,34 @@ def test_collect_pyatb_strain_response_rejects_quantized_writer_by_default(tmp_p
         collect_pyatb_strain_response(root)
     document = collect_pyatb_strain_response(root, require_precision=False)
     assert document.metadata["pyatb_precision_complete"] is False
+
+
+def test_collect_pyatb_strain_response_rejects_explicit_metallic_ensemble(tmp_path):
+    root = tmp_path / "metallic"
+    root.mkdir()
+    (root / "ensemble.json").write_text(
+        json.dumps(
+            {
+                "schema": "zstar-v2-ensemble",
+                "schema_version": "0.1",
+                "reference_hash": "synthetic",
+                "dimensionality": 3,
+                "metadata": {"insulating": False},
+                "stages": [
+                    {
+                        "stage_id": "strain-001+",
+                        "kind": "strain",
+                        "requested_vector": [0.001, 0, 0, 0, 0, 0],
+                        "actual_vector": [0.001, 0, 0, 0, 0, 0],
+                        "unit": "engineering_strain",
+                        "expected_outputs": [],
+                        "sign": "+",
+                        "status": "planned",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="not applicable to a metallic ensemble"):
+        collect_pyatb_strain_response(root)

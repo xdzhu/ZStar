@@ -520,11 +520,17 @@ def collect_pyatb_strain_response(
     """
 
     base = Path(root).resolve()
+    ensemble = ResponseEnsemble.read(base / "ensemble.json")
+    if ensemble.metadata.get("insulating") is False:
+        raise ValueError(
+            "PYATB Berry polarization is not applicable to a metallic ensemble. "
+            "Verify an insulating gap or use a separately validated metallic-response method "
+            "before collecting piezoelectric data."
+        )
     scf_document = collect_abacus_strain_response(base)
     stage_names = tuple(scf_document.provenance.get("stage_names", ()))
     if not stage_names:
         raise ValueError("SCF response document does not contain stage_names provenance")
-    ensemble = ResponseEnsemble.read(base / "ensemble.json")
     ion_relaxation = str(ensemble.metadata.get("ion_relaxation", "clamped-ion")).strip().lower()
     stage_paths = [base / "reference"] + [base / stage.stage_id for stage in ensemble.stages]
     if len(stage_paths) != len(stage_names):

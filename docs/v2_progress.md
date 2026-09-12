@@ -124,6 +124,11 @@
     临时替换 `STRU`，则以保留的 `STRU_INITIAL` 进行校验。新增输入被改写后的失败测试，
     防止不同输入生成的结果被静默混合。
 
+32. backend capability contract 已接入 draft API；`BackendCapabilities.require` 显式
+    检查功能、最大维度和金属 Berry 极化安全门，PYATB strain collector 也会在读取输出
+    前拒绝 `metadata.insulating: false`。该字段仍需由独立 band-gap/后端审计提供，不把
+    capability 声明冒充物理验证。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `472 passed, 1122 warnings`（本地 editable install

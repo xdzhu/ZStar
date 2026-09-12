@@ -147,6 +147,11 @@ ABACUS 优先接入既有 `shared_abacus.py`/PYATB；VASP/CP2K/QE/ABINIT 只有�
 输出轴和边界条件均有测试后才提升 capability。运行时仍要检查可执行文件、版本、
 赝势/轨道匹配和输出格式。
 
+`collect_pyatb_strain_response` also honors an explicit
+`ensemble.metadata.insulating: false` declaration and stops before reading
+calculator outputs. This is a safety gate, not a band-gap calculation: the
+adapter or user must supply the independently verified insulating status.
+
 ## 6. CLI 设计门
 
 第一轮不增加 CLI。后续顺序必须是：
