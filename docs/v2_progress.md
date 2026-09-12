@@ -166,6 +166,13 @@
     扫描所有已完成 stage。每个节点最多一个 40-rank ABACUS/PYATB 作业，所有活动
     stage 通过 `.running40`/`.zstar-stage.lock` 可审计，未修改 PBS 占位或其他用户任务。
 
+38. 资源审计随后发现 cu26 曾残留第二个旧 `run_relaxed_batch.sh`（40 ranks，工作于
+    `strain-015-`），使节点短时出现 80 个 ABACUS 进程。通过独立 PGID/session 和
+    工作目录确认其为本轮遗留后，仅终止该旧进程组；其部分输出与日志整体归档为
+    `OUT.POLAR.duplicate-aborted-20260912-1835`，未纳入结果。cu26 的 atomic
+    `strain-014-` 未被终止，清除残留 `.running40` 后将按序重跑 `015-`，并再次核验
+    节点仅有一组 `mpirun -np 40`。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install
