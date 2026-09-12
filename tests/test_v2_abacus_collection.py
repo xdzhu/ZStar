@@ -10,6 +10,7 @@ import pytest
 from zstar.v2 import (
     collect_abacus_stage,
     collect_abacus_strain_response,
+    collect_pyatb_strain_response,
     plan_central_stages,
 )
 from zstar.v2.ensemble import ResponseEnsemble
@@ -246,3 +247,76 @@ def test_collect_abacus_strain_response_rejects_low_dimensional_berry_without_no
         )
     with pytest.raises(ValueError, match="dimensionality=3"):
         collect_abacus_strain_response(root, polarization_stages=polarization)
+
+
+def _pyatb_output(stage: Path, values: tuple[float, float, float]) -> None:
+    output = stage / "pyatb" / "Out"
+    (output / "Polarization").mkdir(parents=True)
+    (output / "Polarization" / "polarization.dat").write_text(
+        "".join(
+            f"The calculated polarization direction is in {axis}, "
+            f"P = {value} (mod 10) C/m^2.\n"
+            for axis, value in zip(("a", "b", "c"), values)
+        ),
+        encoding="utf-8",
+    )
+    (output / "Polarization" / "zstar_precision.json").write_text(
+        '{"adapter":"zstar.pyatb_precision","numerical_kernel_changed":false}',
+        encoding="utf-8",
+    )
+    (output / "input.json").write_text(
+        '{"LATTICE":{"lattice_constant":1.0,'
+        '"lattice_vector":[[1,0,0],[0,1,0],[0,0,1]]}}',
+        encoding="utf-8",
+    )
+
+
+def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tmp_path):
+    root = tmp_path / "ensemble"
+    _stage(root / "reference")
+    _pyatb_output(root / "reference", (0.0, 0.0, 0.0))
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id)
+        _pyatb_output(root / stage.stage_id, (0.1, 0.2, 0.3))
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    document = collect_pyatb_strain_response(root)
+    assert document.backend == "abacus+pyatb"
+    assert document.metadata["polarization_backend"] == "pyatb"
+    assert document.metadata["pyatb_run_count"] == 3
+    np.testing.assert_allclose(
+        document.quantity("polarization_directional").values,
+        [[0.0, 0.0, 0.0], [0.1, 0.2, 0.3], [0.1, 0.2, 0.3]],
+    )
+    np.testing.assert_allclose(
+        document.quantity("polarization_cartesian").values,
+        [[0.0, 0.0, 0.0], [0.1, 0.2, 0.3], [0.1, 0.2, 0.3]],
+    )
+
+
+def test_collect_pyatb_strain_response_rejects_quantized_writer_by_default(tmp_path):
+    root = tmp_path / "ensemble"
+    _stage(root / "reference")
+    _pyatb_output(root / "reference", (0.0, 0.0, 0.0))
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id)
+        _pyatb_output(root / stage.stage_id, (0.1, 0.2, 0.3))
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    (root / "reference" / "pyatb" / "Out" / "Polarization" / "zstar_precision.json").unlink()
+    with pytest.raises(ValueError, match="precision writer metadata"):
+        collect_pyatb_strain_response(root)
+    document = collect_pyatb_strain_response(root, require_precision=False)
+    assert document.metadata["pyatb_precision_complete"] is False

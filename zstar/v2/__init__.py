@@ -1,7 +1,7 @@
 """Research-only ZStar v2 API, isolated from the stable v1 surface."""
 
 from .algebra import internal_strain_response, relaxed_elastic, relaxed_piezoelectric
-from .abacus import collect_abacus_stage, collect_abacus_strain_response
+from .abacus import collect_abacus_stage, collect_abacus_strain_response, collect_pyatb_strain_response
 from .ensemble import PerturbationStage, ResponseEnsemble, V2StateStore, plan_central_stages
 from .fit import (
     LinearFitResult,
@@ -55,9 +55,12 @@ from .polarization import (
     collect_abacus_polarization_component,
     collect_abacus_polarization_stage,
     collect_abacus_polarization_triplet,
+    collect_pyatb_polarization,
     match_polarization_ensemble,
     match_polarization_branch,
     parse_abacus_berry_polarization,
+    parse_pyatb_polarization,
+    pyatb_directional_to_cartesian,
     unwrap_polarization_path,
 )
 from .units import BOHR_RADIUS, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
@@ -87,9 +90,11 @@ __all__ = [
     "assemble_cartesian_polarization",
     "collect_abacus_stage",
     "collect_abacus_strain_response",
+    "collect_pyatb_strain_response",
     "collect_abacus_polarization_stage",
     "collect_abacus_polarization_component",
     "collect_abacus_polarization_triplet",
+    "collect_pyatb_polarization",
     "V2_SCHEMA_NAME",
     "V2_SCHEMA_VERSION",
     "central_difference",
@@ -116,6 +121,8 @@ __all__ = [
     "prepare_abacus_strain_ensemble",
     "prepare_abacus_berry_stages",
     "parse_abacus_berry_polarization",
+    "parse_pyatb_polarization",
+    "pyatb_directional_to_cartesian",
     "project_intertwiner",
     "relaxed_elastic",
     "relaxed_piezoelectric",

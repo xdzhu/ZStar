@@ -6,7 +6,9 @@ along a continuous path; no function in this module silently chooses a
 ferroelectric branch or zero-fills a missing component.  ABACUS's scalar
 ``gdir`` value and optional Cartesian tuple are retained separately because a
 non-orthogonal cell needs an explicit coordinate transformation before a
-Cartesian response tensor can be reconstructed.
+Cartesian response tensor can be reconstructed.  The production v1-compatible
+path is one PYATB run per geometry, whose ``polarization.dat`` contains all
+three lattice-direction values; the ABACUS gdir path remains an audit fallback.
 """
 
 from __future__ import annotations
@@ -33,6 +35,15 @@ _POLARIZATION_PATTERN = re.compile(
     flags=re.IGNORECASE,
 )
 _AXES = ("x", "y", "z")
+_LATTICE_AXES = ("a", "b", "c")
+
+
+_PYATB_POLARIZATION_PATTERN = re.compile(
+    rf"The\s+calculated\s+polarization\s+direction\s+is\s+in\s+"
+    rf"([abc])\s*,\s*P\s*=\s*({_NUMBER})\s*\(\s*mod\s*({_NUMBER})\s*\)\s*"
+    rf"C\s*/\s*m\^?2\s*\.?",
+    flags=re.IGNORECASE,
+)
 
 
 def _finite_vector(value: Iterable[float], name: str) -> np.ndarray:
@@ -148,6 +159,75 @@ def parse_abacus_berry_polarization(
     )
 
 
+def parse_pyatb_polarization(text: str, *, source: str = "") -> PolarizationSample:
+    """Parse one PYATB polarization.dat containing all a/b/c directions.
+
+    PYATB evaluates the three Berry loops inside a single calculator run and
+    writes one scalar C/m^2 value plus its branch quantum for each lattice
+    direction. The values are kept as directional components; a Cartesian
+    vector requires the lattice geometry and is therefore constructed
+    explicitly by pyatb_directional_to_cartesian.
+    """
+
+    records: dict[str, tuple[float, float]] = {}
+    for match in _PYATB_POLARIZATION_PATTERN.finditer(str(text)):
+        axis = match.group(1).lower()
+        value = float(match.group(2).replace("D", "E").replace("d", "e"))
+        quantum = float(match.group(3).replace("D", "E").replace("d", "e"))
+        if not np.isfinite(value) or not np.isfinite(quantum) or quantum <= 0.0:
+            raise ValueError("PYATB polarization values and quanta must be finite with positive quanta")
+        if axis in records:
+            raise ValueError(f"PYATB polarization.dat contains duplicate direction {axis!r}")
+        records[axis] = (value, quantum)
+    missing = [axis for axis in _LATTICE_AXES if axis not in records]
+    if missing:
+        location = f" in {source}" if source else ""
+        raise ValueError(
+            "PYATB polarization.dat must contain exactly one a/b/c direction; "
+            f"missing {', '.join(missing)}{location}"
+        )
+    return PolarizationSample(
+        values=np.asarray([records[axis][0] for axis in _LATTICE_AXES], dtype=float),
+        quanta=np.asarray([records[axis][1] for axis in _LATTICE_AXES], dtype=float),
+        axes=_LATTICE_AXES,
+        logs=(source, source, source),
+        raw_units=("C/m^2", "C/m^2", "C/m^2"),
+    )
+
+
+def pyatb_directional_to_cartesian(
+    directional_values: Iterable[float],
+    lattice_vectors: Iterable[Iterable[float]],
+) -> np.ndarray:
+    """Recover Cartesian polarization from PYATB lattice-direction values.
+
+    PYATB's a/b/c scalars are projections on the normalized lattice vectors.
+    For a non-orthogonal cell, summing P_i * a_hat_i is not an inverse
+    transformation; solve U @ P_cart = P_directional with rows of U equal to
+    the normalized lattice vectors. Orthogonal cells reduce to the familiar
+    component-wise result.
+    """
+
+    values = _finite_vector(directional_values, "directional_values")
+    lattice = np.asarray(lattice_vectors, dtype=float)
+    if lattice.shape != (3, 3) or not np.all(np.isfinite(lattice)):
+        raise ValueError("lattice_vectors must be a finite array with shape (3, 3)")
+    lengths = np.linalg.norm(lattice, axis=1)
+    if np.any(lengths <= 0.0):
+        raise ValueError("lattice_vectors must contain three non-zero vectors")
+    directions = lattice / lengths[:, None]
+    rank = int(np.linalg.matrix_rank(directions))
+    if rank != 3:
+        raise ValueError("normalized lattice directions are rank-deficient")
+    condition = float(np.linalg.cond(directions))
+    if not np.isfinite(condition) or condition > 1.0e8:
+        raise ValueError(
+            "normalized lattice directions are ill-conditioned for a Cartesian "
+            f"polarization reconstruction (condition number {condition:.3e})"
+        )
+    return _finite_vector(np.linalg.solve(directions, values), "cartesian_polarization")
+
+
 def _find_abacus_polarization_log(stage: Path, axis: str) -> Path:
     candidates = sorted(stage.glob(f"OUT.*/running_nscf_{axis}.log"))
     candidates.extend(sorted(stage.glob(f"running_nscf_{axis}.log")))
@@ -257,6 +337,39 @@ class PolarizationSample:
             object.__setattr__(self, "cartesian_values", cartesian)
         object.__setattr__(self, "values", values)
         object.__setattr__(self, "quanta", quanta)
+
+
+def collect_pyatb_polarization(stage: str | Path) -> tuple[PolarizationSample, np.ndarray]:
+    """Collect one PYATB run and its lattice geometry.
+
+    The stage directory contains pyatb/Out. The returned sample has all three
+    directional values from one polarization.dat; the second item is the 3x3
+    lattice matrix in Angstrom, with lattice vectors stored as rows.
+    """
+
+    directory = Path(stage).resolve()
+    polarization_path = directory / "pyatb" / "Out" / "Polarization" / "polarization.dat"
+    if not polarization_path.is_file():
+        raise FileNotFoundError(f"PYATB polarization output not found: {polarization_path}")
+    input_path = directory / "pyatb" / "Out" / "input.json"
+    if not input_path.is_file():
+        raise FileNotFoundError(f"PYATB geometry output not found: {input_path}")
+    import json
+
+    try:
+        data = json.loads(input_path.read_text(encoding="utf-8"))
+        lattice = data["LATTICE"]
+        scale = float(lattice.get("lattice_constant", 1.0))
+        vectors = np.asarray(lattice["lattice_vector"], dtype=float) * scale
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        raise ValueError(f"invalid PYATB lattice metadata in {input_path}") from exc
+    if vectors.shape != (3, 3) or not np.all(np.isfinite(vectors)):
+        raise ValueError(f"PYATB lattice_vector must have shape (3, 3): {input_path}")
+    sample = parse_pyatb_polarization(
+        polarization_path.read_text(encoding="utf-8", errors="replace"),
+        source=str(polarization_path),
+    )
+    return sample, vectors
 
 
 def assemble_cartesian_polarization(sample: PolarizationSample) -> np.ndarray:

@@ -62,10 +62,30 @@
     证明采样和重建链闭合，不作为材料压电值。详细输入哈希、节点计时和失败门见
     [`v2_abacus_tetragonal_piezo_smoke_20260912.md`](v2_abacus_tetragonal_piezo_smoke_20260912.md)。
 
+21. 重新核对 v1 的 PYATB 实现后确认：一次 PYATB 运行会在内部完成 a/b/c 三个
+    Berry loop，并在一个 polarization.dat 中写出三方向极化和量子。因此 v2 正式
+    路径改为“每个几何一次 PYATB”，不再为三个方向分别启动 ABACUS NSCF；新增
+    parse_pyatb_polarization、collect_pyatb_polarization 和非正交晶格的显式方向投影
+    重建。ABACUS gdir=1,2,3 仅保留为可选交叉审计 backend。
+
+22. 直接 PYATB writer 的六位小数不足以支撑本轮小应变差分；已改用 v1
+    zstar.pyatb_precision writer 在 40 MPI × 1 OpenMP 上重跑三方向极化。该适配器
+    保留六位小数原文件，另写 16 位 polarization.dat 与哈希证明，数值 kernel 未改。
+
+23. 已在 cu24/cu25/cu26 以每任务 `40 MPI × 1 OpenMP` 完成 tetragonal `P4mm`
+    fixture 的 1 个 reference + 36 个中心应变 SCF，并对每个几何各运行一次
+    precision PYATB；37 个 PYATB 输出均包含 a/b/c 三个方向。SCF 串行 wall-time
+    合计 4905 s，PYATB（含 reference）合计 882 s，所有任务 `exit_code=0`。
+
+24. formal collector 已闭合：输入秩 6、P4mm 允许秩 3、拟合秩 3，最大重建残差
+    `2.7885e-6 C/m²`，branch shift 最大值 0。当前 raw e 仅为固定离子算法验证，
+    不作为材料数值；完整输入哈希、节点计时、命令和 Gate C 缺口见
+    [`v2_abacus_tetragonal_formal40_20260912.md`](v2_abacus_tetragonal_formal40_20260912.md)。
+
 ## 证据状态
 
-* 本阶段全量回归为 `460 passed, 1252 warnings`（包含当前未提交的 v1/声子谱改动以及
-    v2 draft tests）；Berry 极化/ensemble 定向测试为 `17 passed`。警告均为现有依赖的
+* 本阶段全量回归为 `468 passed, 1318 warnings`（包含当前工作树的 v1/声子谱改动以及
+    v2 draft tests）；v2 极化/ABACUS collector 定向测试为 `35 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、

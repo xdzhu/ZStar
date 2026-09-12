@@ -14,9 +14,12 @@ from zstar.v2 import (
     collect_abacus_polarization_component,
     collect_abacus_polarization_stage,
     collect_abacus_polarization_triplet,
+    collect_pyatb_polarization,
     match_polarization_branch,
     match_polarization_ensemble,
     parse_abacus_berry_polarization,
+    parse_pyatb_polarization,
+    pyatb_directional_to_cartesian,
     unwrap_polarization_path,
 )
 
@@ -283,3 +286,61 @@ def test_branch_matching_rejects_rank_deficient_active_quantum_basis():
             [1.0, 1.0, 1.0],
             np.zeros((3, 3)),
         )
+
+
+def test_parse_pyatb_polarization_reads_all_three_directions_once():
+    sample = parse_pyatb_polarization(
+        "The calculated polarization direction is in a, P = 1.0 (mod 2.0) C/m^2.\n"
+        "The calculated polarization direction is in b, P = -2.0 (mod 3.0) C/m^2.\n"
+        "The calculated polarization direction is in c, P = 4.0 (mod 5.0) C/m^2.\n",
+        source="polarization.dat",
+    )
+    np.testing.assert_allclose(sample.values, [1.0, -2.0, 4.0])
+    np.testing.assert_allclose(sample.quanta, [2.0, 3.0, 5.0])
+    assert sample.axes == ("a", "b", "c")
+    assert sample.logs == ("polarization.dat",) * 3
+
+
+def test_parse_pyatb_polarization_rejects_duplicate_or_missing_direction():
+    text = (
+        "The calculated polarization direction is in a, P = 1 (mod 2) C/m^2.\n"
+        "The calculated polarization direction is in a, P = 2 (mod 2) C/m^2.\n"
+        "The calculated polarization direction is in c, P = 3 (mod 2) C/m^2.\n"
+    )
+    with pytest.raises(ValueError, match="duplicate"):
+        parse_pyatb_polarization(text)
+    with pytest.raises(ValueError, match="missing"):
+        parse_pyatb_polarization(
+            "The calculated polarization direction is in a, P = 1 (mod 2) C/m^2.\n"
+            "The calculated polarization direction is in b, P = 2 (mod 2) C/m^2.\n"
+        )
+
+
+def test_pyatb_directional_to_cartesian_solves_nonorthogonal_projections():
+    lattice = np.asarray([[2.0, 0.0, 0.0], [1.0, 2.0, 0.0], [0.0, 0.0, 3.0]])
+    cartesian = np.asarray([1.5, -0.5, 2.0])
+    directions = lattice / np.linalg.norm(lattice, axis=1)[:, None]
+    directional = directions @ cartesian
+    np.testing.assert_allclose(
+        pyatb_directional_to_cartesian(directional, lattice),
+        cartesian,
+    )
+
+
+def test_collect_pyatb_polarization_reads_one_run_and_geometry(tmp_path):
+    output = tmp_path / "pyatb" / "Out"
+    (output / "Polarization").mkdir(parents=True)
+    (output / "Polarization" / "polarization.dat").write_text(
+        "The calculated polarization direction is in a, P = 1 (mod 2) C/m^2.\n"
+        "The calculated polarization direction is in b, P = 2 (mod 3) C/m^2.\n"
+        "The calculated polarization direction is in c, P = 3 (mod 4) C/m^2.\n",
+        encoding="utf-8",
+    )
+    (output / "input.json").write_text(
+        '{"LATTICE":{"lattice_constant":2.0,'
+        '"lattice_vector":[[1,0,0],[0,1,0],[0,0,1]]}}',
+        encoding="utf-8",
+    )
+    sample, lattice = collect_pyatb_polarization(tmp_path)
+    np.testing.assert_allclose(sample.values, [1, 2, 3])
+    np.testing.assert_allclose(lattice, 2.0 * np.eye(3))

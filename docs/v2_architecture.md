@@ -39,7 +39,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 | `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换（draft 已实现） | 生成结构文件 |
 | `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |
 | `ensemble.py` | 联合 polarization/force/stress/displacement task graph、v2 状态（draft 已实现） | 具体命令行 |
-| `backends/abacus.py` | 调用既有 ABACUS/PYATB adapter 并收集输出；当前 `v2/abacus.py` 已支持可选 Berry triplet 到统一文档 | 修改 ABACUS |
+| `backends/abacus.py` | 调用既有 ABACUS/PYATB adapter 并收集输出；生产极化优先使用每个结构一次 PYATB，ABACUS Berry 仅作交叉审计 | 修改 ABACUS |
 | `backends/{vasp,cp2k,qe,abinit}.py` | 能力声明和后续交叉验证 | 假设未验证能力 |
 | `phase.py` | 参考相配对、插值、branch matching、路径检查 | 默认执行 NEB |
 | `finite_temperature.py` | 外部 ML/q-NEP 数据导出/回读、统计分析 | 训练 ML 势 |
@@ -74,17 +74,29 @@ functional、pseudopotential/orbital、k mesh、cutoff、SCF thresholds、pertur
 vectors、task graph、restart state、CPU/wall-time 和失败事件。所有矩阵轴要能由
 metadata 唯一解释；不允许匿名数组。
 
-当前 ABACUS collector 在显式传入每个 ensemble stage 的 `gdir=1,2,3` 目录映射时，
-写入 `polarization_gdir`（晶格方向标量）、`polarization_quantum` 和可选的
-`polarization_cartesian_directional`（每个 gdir 的 Cartesian tuple）。后者只有在
-所有方向都提供 tuple 时才生成；缺失数据不补零。branch matching 仍是独立的
-后处理步骤，不能从这三个 quantity 自动推断自发极化。
+v1 已验证的生产路径是：每个结构的 ABACUS SCF 导出实空间矩阵，随后一次 PYATB
+运行在同一个 `POLARIZATION` 区块内部完成 a/b/c 三个 Berry loop，并在一个
+`polarization.dat` 中写入三个方向的标量极化和量子。v2 现提供
+`parse_pyatb_polarization`/`collect_pyatb_polarization`，保留这一 calculator-neutral
+语义；应变 ensemble 仍需每个独立结构各运行一次 PYATB，但不为 a/b/c 各启动一次
+ABACUS NSCF。branch matching 仍是独立的后处理步骤，不能从原始三个标量自动推断
+自发极化。
+
+PYATB 默认 writer 只有六位小数；有限差分必须沿用 v1 的 zstar.pyatb_precision
+writer（不改变数值 kernel，只把同一结果保存为 16 位），并同时保留原始舍入文件。
+未启用 precision writer 的输出只能用于流程/定性检查，不能作为小应变的定量张量。
+
+ABACUS `gdir=1,2,3` NSCF collector 仍保留为可选 backend-audit lane：它适合核对
+Berry 实现或在 PYATB 不可用时给出明确的替代路径，不是默认生产路线。该 lane 的
+`polarization_gdir`/`polarization_quantum` 与可选方向 tuple 都保留原始来源；缺失
+方向不补零，也不把 ABACUS 目录数量误报为独立材料响应数量。
 
 ABACUS [官方 Berry phase 文档](https://abacus.deepmodeling.com/en/v3.6.2/advanced/elec_properties/Berry_phase.html)
 把括号 tuple 定义为“沿所选晶格方向的 Cartesian components”，因此
-三行 tuple 不是 `(x,y,z)` 标量向量。若三方向 tuple 全部存在，collector 另写入
-`polarization_cartesian`，其值是三个轴向贡献的显式求和；原始 directional quantity
-仍保留，便于审计。这里不对非正交晶胞做隐含旋转或分支选择。
+三行 tuple 不是 `(x,y,z)` 标量向量。对于 PYATB 输出，a/b/c 标量必须结合
+`input.json` 的晶格方向显式重建 Cartesian 极化；正交晶胞时退化为分量读取，非正交
+晶胞必须解方向投影方程并检查 rank/condition number。这里不再把三个方向的标量或
+tuple 机械相加作为通用坐标变换，也不做隐含分支选择。
 
 当前 collector 对 `dimensionality < 3` 的 Berry 极化请求明确拒绝。ABACUS 的原始
 `C/m^2` 值按三维晶胞体积归一化；二维 slab 还必须乘以明确的非周期长度得到

@@ -16,7 +16,10 @@ from .model import BoundaryConditions, ResponseDocument, TensorQuantity
 from .polarization import (
     PolarizationSample,
     assemble_cartesian_polarization,
+    collect_pyatb_polarization,
     collect_abacus_polarization_triplet,
+    match_polarization_branch,
+    pyatb_directional_to_cartesian,
 )
 
 
@@ -343,4 +346,178 @@ def collect_abacus_strain_response(
             ),
             "energy_collected": all(value is not None for value in energies),
         },
+    )
+
+
+def collect_pyatb_strain_response(
+    root: str | Path,
+    *,
+    require_precision: bool = True,
+) -> ResponseDocument:
+    """Collect SCF force/stress data and one PYATB polarization run per stage.
+
+    PYATB writes all three lattice-direction Berry values in one
+    polarization.dat. Branch matching is performed in that directional basis
+    with the stage-specific quanta, then each matched sample is converted to
+    Cartesian coordinates using the stage lattice. This is the v1-compatible
+    production path; the ABACUS gdir triplet collector remains an audit lane.
+    """
+
+    base = Path(root).resolve()
+    scf_document = collect_abacus_strain_response(base)
+    stage_names = tuple(scf_document.provenance.get("stage_names", ()))
+    if not stage_names:
+        raise ValueError("SCF response document does not contain stage_names provenance")
+    ensemble = ResponseEnsemble.read(base / "ensemble.json")
+    stage_paths = [base / "reference"] + [base / stage.stage_id for stage in ensemble.stages]
+    if len(stage_paths) != len(stage_names):
+        raise ValueError("SCF stage order does not match ensemble provenance")
+    if ensemble.dimensionality != 3:
+        raise ValueError(
+            "PYATB bulk polarization collection currently requires dimensionality=3; "
+            "define sheet/line normalization before collecting lower-dimensional data"
+        )
+
+    if not isinstance(require_precision, bool):
+        raise TypeError("require_precision must be a bool")
+    precision_paths = [
+        path / "pyatb" / "Out" / "Polarization" / "zstar_precision.json"
+        for path in stage_paths
+    ]
+    missing_precision = [str(path) for path in precision_paths if not path.is_file()]
+    if require_precision and missing_precision:
+        raise ValueError(
+            "PYATB precision writer metadata is missing for stage(s): "
+            + ", ".join(missing_precision)
+            + "; rerun with zstar.pyatb_precision or set require_precision=False "
+            "for a qualitative audit only"
+        )
+
+    samples: list[PolarizationSample] = []
+    lattices: list[np.ndarray] = []
+    for path in stage_paths:
+        sample, lattice = collect_pyatb_polarization(path)
+        samples.append(sample)
+        lattices.append(lattice)
+    reference = samples[0]
+    wrapped = np.asarray([sample.values for sample in samples], dtype=float)
+    quanta = np.asarray([sample.quanta for sample in samples], dtype=float)
+    matched_directional: list[np.ndarray] = []
+    branch_shifts: list[np.ndarray] = []
+    residuals: list[float] = []
+    cartesian: list[np.ndarray] = []
+    for sample, lattice in zip(samples, lattices):
+        match = match_polarization_branch(
+            reference.values,
+            sample.values,
+            np.diag(sample.quanta),
+            periodic_axes=(0, 1, 2),
+        )
+        matched_directional.append(match.matched)
+        branch_shifts.append(match.branch_shift)
+        residuals.append(match.residual)
+        cartesian.append(pyatb_directional_to_cartesian(match.matched, lattice))
+
+    polarization_boundary = BoundaryConditions(electric="E", mechanical="strain")
+    quantities = list(scf_document.quantities)
+    quantities.extend(
+        (
+            TensorQuantity(
+                name="polarization_directional",
+                values=wrapped,
+                unit="C/m^2",
+                axes=("stage", "lattice_direction"),
+                coordinate_system="lattice_direction_scalar",
+                boundary_conditions=polarization_boundary,
+                periodic_axes=("x", "y", "z"),
+                normalization="cell_volume",
+                source="pyatb_berry",
+                backend="pyatb",
+                provenance={"stage_names": stage_names},
+            ),
+            TensorQuantity(
+                name="polarization_quantum",
+                values=quanta,
+                unit="C/m^2",
+                axes=("stage", "lattice_direction"),
+                coordinate_system="lattice_direction_scalar",
+                boundary_conditions=polarization_boundary,
+                periodic_axes=("x", "y", "z"),
+                normalization="cell_volume",
+                source="pyatb_berry",
+                backend="pyatb",
+                provenance={"stage_names": stage_names},
+            ),
+            TensorQuantity(
+                name="polarization_directional_matched",
+                values=np.asarray(matched_directional),
+                unit="C/m^2",
+                axes=("stage", "lattice_direction"),
+                coordinate_system="lattice_direction_scalar",
+                boundary_conditions=polarization_boundary,
+                periodic_axes=("x", "y", "z"),
+                normalization="cell_volume",
+                source="branch_matching",
+                backend="pyatb",
+                provenance={
+                    "stage_names": stage_names,
+                    "branch_shifts": np.asarray(branch_shifts).tolist(),
+                    "residuals": residuals,
+                },
+            ),
+            TensorQuantity(
+                name="polarization_cartesian",
+                values=np.asarray(cartesian),
+                unit="C/m^2",
+                axes=("stage", "cartesian"),
+                coordinate_system="cartesian_right_handed",
+                boundary_conditions=polarization_boundary,
+                periodic_axes=("x", "y", "z"),
+                normalization="cell_volume",
+                source="pyatb_berry",
+                backend="pyatb",
+                provenance={
+                    "stage_names": stage_names,
+                    "lattice_vectors_angstrom": [lattice.tolist() for lattice in lattices],
+                    "transformation": "solve normalized lattice-direction projections",
+                },
+            ),
+        )
+    )
+    provenance = dict(scf_document.provenance)
+    provenance.update(
+        {
+            "polarization_backend": "pyatb",
+            "polarization_stage_names": list(stage_names),
+            "polarization_logs": [
+                sample.logs[0] for sample in samples
+            ],
+        }
+    )
+    metadata = dict(scf_document.metadata)
+    metadata.update(
+        {
+            "polarization_collected": True,
+            "polarization_backend": "pyatb",
+            "pyatb_run_count": len(samples),
+            "pyatb_precision_required": require_precision,
+            "pyatb_precision_complete": not missing_precision,
+            "branch_shift_max": int(np.max(np.abs(np.asarray(branch_shifts)))),
+            "branch_residual_max": float(max(residuals)),
+        }
+    )
+    return ResponseDocument(
+        backend="abacus+pyatb",
+        dimensionality=scf_document.dimensionality,
+        quantities=tuple(quantities),
+        provenance=provenance,
+        structure=scf_document.structure,
+        symmetry=scf_document.symmetry,
+        functional=scf_document.functional,
+        pseudopotential=scf_document.pseudopotential,
+        orbital=scf_document.orbital,
+        convergence=scf_document.convergence,
+        restart_state=scf_document.restart_state,
+        metadata=metadata,
+        created_at=scf_document.created_at,
     )

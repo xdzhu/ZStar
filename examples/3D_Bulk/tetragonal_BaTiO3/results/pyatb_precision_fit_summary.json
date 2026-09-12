@@ -1,0 +1,31 @@
+{
+  "status": "experimental_algorithm_validation",
+  "backend": "abacus+pyatb",
+  "structure": "artificial tetragonal BaTiO3 fixture",
+  "space_group": "P4mm",
+  "stage_count": 37,
+  "pyatb_runs": 37,
+  "polarization_directions_per_run": 3,
+  "pyatb_precision_writer": true,
+  "mpi": 40,
+  "omp": 1,
+  "nodes": ["cu24", "cu25", "cu26"],
+  "strain_amplitudes": [0.0005, 0.001, 0.002],
+  "voigt_convention": "engineering (xx,yy,zz,2yz,2xz,2xy)",
+  "allowed_rank": 3,
+  "input_rank": 6,
+  "fit_rank": 3,
+  "complete": true,
+  "condition_number": 1.0000000000000413,
+  "residual_max_C_per_m2": 2.7884510811846536e-06,
+  "residual_rms_C_per_m2": 5.419210343094425e-07,
+  "branch_shift_max": 0,
+  "branch_residual_max_C_per_m2": 8.926308651011903e-04,
+  "e_raw_C_per_m2": [
+    [0.0, 0.0, 0.0, 0.0, -0.01713191040473604, 0.0],
+    [0.0, 0.0, 0.0, -0.017131910404736037, 0.0, 0.0],
+    [-0.05454340524490889, -0.0545434052449089, -0.4449212070098807, 0.0, 0.0, 0.0]
+  ],
+  "scientific_claim_allowed": false,
+  "source_diagnostic": "D:/Temp/zstar-v2-tbto-formal40-20260912/pyatb_precision_fit_diagnostic.json"
+}

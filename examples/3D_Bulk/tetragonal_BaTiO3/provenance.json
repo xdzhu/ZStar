@@ -1,0 +1,25 @@
+{
+  "case": "tetragonal_BaTiO3_v2_formal40",
+  "status": "experimental_algorithm_validation",
+  "branch": "zstar-v2-development",
+  "date": "2026-09-12",
+  "backend": "ABACUS 3.10.0-LTS + PYATB",
+  "abacus_commit": "e84abb4",
+  "nodes": ["cu24", "cu25", "cu26"],
+  "mpi": 40,
+  "omp": 1,
+  "scf_tasks": 37,
+  "pyatb_tasks": 37,
+  "pyatb_directions_per_task": 3,
+  "scf_wall_seconds_serial_sum": 4905.0,
+  "pyatb_precision_wall_seconds_serial_sum": 882.0,
+  "precision_adapter": "zstar/pyatb_precision.py",
+  "input_hashes": {
+    "INPUT": "b1e34c2704a8ffb6e1a354bde00bccd16be8912eade23a096230f4f4813e89e5",
+    "STRU": "9cec10dcce286cfa7f5401c8d5b2b34f151274ce3a63ebdcf4881c6142e207fb",
+    "KPT": "36ed6ce38df591bb0c19c8c77ffed5527ff49d2e7eeaf3143785518b201a0085",
+    "ensemble.json": "0bdaa19e5ce1b80eb8fc4dd89a893cd2ed72ea7576acc610e3a27e1cb41696ff"
+  },
+  "reference": "docs/v2_abacus_tetragonal_formal40_20260912.md",
+  "result_summary": "results/pyatb_precision_fit_summary.json"
+}
