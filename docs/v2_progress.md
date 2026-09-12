@@ -113,12 +113,17 @@
     `OUT.POLAR.duplicate-aborted-20260912-1130` 并安排干净重跑；该阶段及其冲突日志
     不会进入结果摘要。
 
+30. 将 relaxed-ion 研究 runner 固化到 tetragonal 案例目录：每个 stage 使用原子
+    `.zstar-stage.lock`，陈旧锁只移动到带时间戳的审计目录，不会静默删除；默认仍为
+    `40 MPI × 1 OpenMP`，并要求 `STRU_ION_D` 与明确的 ionic-convergence 标记后才写入
+    `.done40`。同时将 v2 测试改为使用仓库内可复现的 tetragonal 输入，不再依赖被忽略的
+    v1 运行时生成目录。
+
 ## 证据状态
 
-* 本阶段全量回归为 `481 passed, 1385 warnings`（包含当前工作树的 v1/声子谱改动以及
-    v2 draft tests）；v2 极化/ABACUS collector 定向测试为 `35 passed`。警告均为现有依赖的
-  弃用提示，
-  没有失败。
+* v2 独立 worktree 的 v2 定向测试为 `75 passed, 7 warnings`；警告均为 spglib 的现有
+  弃用提示，没有失败。当前未在该 worktree 安装本地 distribution，因此依赖
+  `importlib.metadata.version("zstar")` 的 v1 安装测试需在已安装环境中另行执行。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
