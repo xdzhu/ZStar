@@ -24,9 +24,22 @@ from .polarization import (
 
 
 def _single_log(stage: Path) -> Path:
-    logs = sorted(stage.glob("OUT.*/running_scf.log"))
+    logs: list[Path] = []
+    for pattern in (
+        "OUT.*/running_scf.log",
+        "OUT.*/running_relax.log",
+        "OUT.*/running_cell-relax.log",
+        "running_scf.log",
+        "running_relax.log",
+        "running_cell-relax.log",
+    ):
+        logs.extend(sorted(stage.glob(pattern)))
+    logs = list(dict.fromkeys(logs))
     if len(logs) != 1:
-        raise ValueError(f"Expected exactly one ABACUS running_scf.log in {stage}; found {len(logs)}")
+        raise ValueError(
+            "Expected exactly one ABACUS running_scf.log/running_relax.log/"
+            f"running_cell-relax.log in {stage}; found {len(logs)}"
+        )
     return logs[0]
 
 
@@ -102,7 +115,9 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     directory = Path(stage).resolve()
     log = _single_log(directory)
     text = log.read_text(encoding="utf-8", errors="replace")
-    if "charge density convergence is achieved" not in text:
+    charge_converged = "charge density convergence is achieved" in text
+    ionic_converged = bool(re.search(r"relaxation is converged", text, flags=re.IGNORECASE))
+    if not charge_converged and not ionic_converged:
         raise ValueError(f"ABACUS SCF is not marked converged in {log}")
     structure = read_structure(directory / "STRU")
     count = structure.natoms if natoms is None and hasattr(structure, "natoms") else natoms
@@ -126,7 +141,9 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         "force_unit": "eV/angstrom",
         "energy": energy,
         "energy_unit": "eV",
-        "scf_converged": True,
+        "scf_converged": charge_converged,
+        "ionic_relaxation_converged": ionic_converged,
+        "log_kind": log.name,
         "scf_iterations": int(text.count("E_Harris")),
         "timing": timing,
         "input_parameters": _input_parameters(directory / "INPUT"),
@@ -316,7 +333,9 @@ def collect_abacus_strain_response(
             {
                 "name": name,
                 "log": record["log"],
+                "log_kind": record["log_kind"],
                 "scf_converged": record["scf_converged"],
+                "ionic_relaxation_converged": record["ionic_relaxation_converged"],
                 "scf_iterations": record["scf_iterations"],
                 "energy": record["energy"],
                 "timing": record["timing"],

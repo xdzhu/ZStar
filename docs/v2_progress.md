@@ -93,9 +93,16 @@
     formal tetragonal 数据在 compression-positive 假设下给出正特征值候选，但 sign、
     应变收敛和独立后端尚未核实，因此只写入案例诊断，不提升为正式 C。
 
+27. 为 ABACUS 应变任务增加显式 `ion_relaxation` 研究选项。默认
+    `clamped-ion` 保持原有 SCF 输入；选择 `relaxed-ion` 时，只有正负应变阶段切换
+    到 `calculation relax` 并写入正的 `force_thr_ev`，reference 仍固定为参考结构的
+    单点 SCF。collector 同时识别 `running_scf.log`、`running_relax.log` 和
+    `running_cell-relax.log`，分别记录电荷与离子收敛状态。该接口尚未声称已完成
+    relaxed-ion 实际计算或 `Lambda` 重建，后续仍需结构回读、内部应变拟合和独立核对。
+
 ## 证据状态
 
-* 本阶段全量回归为 `472 passed, 1318 warnings`（包含当前工作树的 v1/声子谱改动以及
+* 本阶段全量回归为 `475 passed, 1319 warnings`（包含当前工作树的 v1/声子谱改动以及
     v2 draft tests）；v2 极化/ABACUS collector 定向测试为 `35 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。

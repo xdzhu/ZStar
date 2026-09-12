@@ -193,12 +193,19 @@ def prepare_abacus_strain_ensemble(
     strain_vectors: Iterable[Iterable[float]] | None = None,
     amplitude: float = 1.0e-3,
     symprec: float = 1.0e-3,
+    ion_relaxation: str = "clamped-ion",
+    force_thr_ev: float = 1.0e-3,
 ) -> dict:
     """Prepare a reference plus ± homogeneous-strain ABACUS folders.
 
     This is a dry-run/preparation API: it never executes ABACUS.  Each stage
     records the strain recovered from the serialized cell so later fitting
-    cannot accidentally use the nominal requested amplitude.
+    cannot accidentally use the nominal requested amplitude.  ``clamped-ion``
+    keeps the source SCF calculation unchanged; ``relaxed-ion`` switches only
+    the ± strain stages to ``calculation relax`` and records the requested
+    force threshold.  The reference is always a single-point SCF on the
+    supplied reference structure, which must already be the intended relaxed
+    geometry when relaxed-ion response is requested.
     """
 
     from ..shared_response import read_structure, write_structure
@@ -214,6 +221,12 @@ def prepare_abacus_strain_ensemble(
         raise ValueError("amplitude must be finite and positive")
     if not np.isfinite(float(symprec)) or float(symprec) <= 0.0:
         raise ValueError("symprec must be finite and positive")
+    relaxation = str(ion_relaxation).strip().lower()
+    if relaxation not in {"clamped-ion", "relaxed-ion"}:
+        raise ValueError("ion_relaxation must be 'clamped-ion' or 'relaxed-ion'")
+    threshold = float(force_thr_ev)
+    if not np.isfinite(threshold) or threshold <= 0.0:
+        raise ValueError("force_thr_ev must be finite and positive")
     atoms = read_structure(source)
     spec = StructureSpec(
         lattice=np.asarray(atoms.cell, dtype=float),
@@ -224,11 +237,14 @@ def prepare_abacus_strain_ensemble(
     report = analyze_space_group(spec, symprec_grid=(float(symprec),))
     if strain_vectors is None:
         strain_vectors = (float(amplitude) * np.eye(6)[index] for index in range(6))
+    expected_outputs = ["polarization", "forces", "stress"]
+    if relaxation == "relaxed-ion":
+        expected_outputs.append("relaxed_structure")
     stages = plan_central_stages(
         strain_vectors,
         kind="strain",
         unit="engineering_strain",
-        expected_outputs=("polarization", "forces", "stress"),
+        expected_outputs=tuple(expected_outputs),
         prefix="strain",
     )
     reference_hash = _sha256(source)
@@ -236,7 +252,12 @@ def prepare_abacus_strain_ensemble(
         reference_hash=reference_hash,
         stages=stages,
         dimensionality=int(dimensionality),
-        metadata={"preparation": "abacus", "symprec": float(symprec)},
+        metadata={
+            "preparation": "abacus",
+            "symprec": float(symprec),
+            "ion_relaxation": relaxation,
+            "force_thr_ev": threshold,
+        },
     )
     output.mkdir(parents=True, exist_ok=True)
     reference_dir = output / "reference"
@@ -278,6 +299,9 @@ def prepare_abacus_strain_ensemble(
         if (stage_dir / input_name).is_file():
             _set_input_parameter(stage_dir / input_name, "cal_force", "1")
             _set_input_parameter(stage_dir / input_name, "cal_stress", "1")
+            if relaxation == "relaxed-ion":
+                _set_input_parameter(stage_dir / input_name, "calculation", "relax")
+                _set_input_parameter(stage_dir / input_name, "force_thr_ev", f"{threshold:.16g}")
         if kpt_source.is_file():
             shutil.copy2(kpt_source, stage_dir / "KPT")
         prepared = prepare_stru_assets(
@@ -292,7 +316,17 @@ def prepare_abacus_strain_ensemble(
             shutil.copy2(asset, stage_dir / asset.name)
         serialized = read_structure(stage_dir / "STRU")
         actual = actual_strain(atoms.cell, serialized.cell)
-        actual_stages.append(replace(stage, actual_vector=tuple(actual), metadata={"directory": stage.stage_id}))
+        actual_stages.append(
+            replace(
+                stage,
+                actual_vector=tuple(actual),
+                metadata={
+                    "directory": stage.stage_id,
+                    "ion_relaxation": relaxation,
+                    "force_thr_ev": threshold,
+                },
+            )
+        )
     final_ensemble = replace(ensemble, stages=tuple(actual_stages))
     final_ensemble.write(output / "ensemble.json")
     (output / "symmetry.json").write_text(json.dumps(_report_dict(report), indent=2) + "\n", encoding="utf-8")

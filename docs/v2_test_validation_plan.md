@@ -48,7 +48,7 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 ### 1.6 v1 回归
 
 每次 v2 提交运行当前完整 suite。第一轮冻结记录为 `394 passed`；随着工作区已有的
-声子谱回归和 v2 draft tests 加入，当前实测为 `472 passed, 1318 warnings`。测试
+声子谱回归和 v2 draft tests 加入，当前实测为 `475 passed, 1319 warnings`。测试
 必须验证 v1 canonical CLI、`response.json` 1.0、Unified
 `shared_response.json`、旧案例和旧命令 alias 没有行为变化；v2 新 schema 不能让 v1
 reader 接触到未知字段后崩溃。
@@ -108,7 +108,8 @@ separate_control_cost, v2_cost, efficiency_ratio
   contract 仍未冻结，因此只记为 **B-in-progress**。
 * **C**：ABACUS 两个晶系的 clamped-ion/relaxed-ion smoke + 步长扫描通过，schema
   和 provenance 完整。当前已完成 P4mm clamped-ion、多幅度应变和单次 PYATB 三方向
-  极化数据链；relaxed-ion、proper e、stress sign 独立核查和独立后端仍未完成。
+  极化数据链；relaxed-ion 目前仅完成 guarded preparation/log parsing，尚无真实
+  relaxed-ion 数据、`Lambda` 重建、proper e、stress sign 独立核查或独立后端对照。
 * **D**：至少 cubic、tetragonal、hexagonal、orthorhombic/低对称、2D 五类真实验证，
   有独立后端或可靠文献对照，效率和误差同时达标。
 * **E**：仅在 D 之后设计并公开 `piezo`/`elastic` CLI；phase/finite-T/flexo/resonant

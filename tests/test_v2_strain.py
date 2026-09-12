@@ -56,6 +56,45 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     assert all((tmp_path / "strain" / stage.stage_id / "STRU").is_file() for stage in ensemble.stages)
 
 
+def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input(tmp_path):
+    case = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/run").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "relaxed-strain",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        pp_dir=case / "assets",
+        orb_dir=case / "assets",
+        strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+        ion_relaxation="relaxed-ion",
+        force_thr_ev=2.5e-4,
+        symprec=1.0e-3,
+    )
+    ensemble = result["ensemble"]
+    assert ensemble.metadata["ion_relaxation"] == "relaxed-ion"
+    assert ensemble.metadata["force_thr_ev"] == 2.5e-4
+    assert all("relaxed_structure" in stage.expected_outputs for stage in ensemble.stages)
+    stage_input = (tmp_path / "relaxed-strain" / "strain-001+" / "INPUT").read_text()
+    assert "calculation         relax" in stage_input
+    assert "force_thr_ev        0.00025" in stage_input
+    assert (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text().find("calculation         scf") >= 0
+
+
+def test_abacus_strain_preparation_rejects_unknown_ion_relaxation(tmp_path):
+    case = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/run").resolve()
+    with pytest.raises(ValueError, match="ion_relaxation"):
+        prepare_abacus_strain_ensemble(
+            tmp_path / "bad",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            pp_dir=case / "assets",
+            orb_dir=case / "assets",
+            strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+            ion_relaxation="unknown",
+        )
+
+
 def test_abacus_berry_preparation_copies_restart_and_sets_nscf_inputs(tmp_path):
     source = tmp_path / "scf"
     (source / "OUT.POLAR").mkdir(parents=True)

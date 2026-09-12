@@ -113,6 +113,21 @@ def test_collect_abacus_stage_keeps_missing_energy_explicit(tmp_path):
     assert record["energy"] is None
 
 
+def test_collect_abacus_stage_accepts_relax_log_and_marks_ionic_convergence(tmp_path):
+    stage = tmp_path / "relaxed"
+    stage.mkdir()
+    shutil.copy2(CASE_STRU, stage / "STRU")
+    output = stage / "OUT.RELAX"
+    output.mkdir()
+    text = _log().replace("charge density convergence is achieved\n", "")
+    text += "\nRelaxation is converged!\n"
+    (output / "running_relax.log").write_text(text, encoding="utf-8")
+    record = collect_abacus_stage(stage)
+    assert record["scf_converged"] is False
+    assert record["ionic_relaxation_converged"] is True
+    assert record["log_kind"] == "running_relax.log"
+
+
 def test_collect_abacus_strain_response_builds_v2_document(tmp_path):
     root = tmp_path / "ensemble"
     _stage(root / "reference")
