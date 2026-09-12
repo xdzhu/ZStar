@@ -72,6 +72,12 @@ ABACUS：36 个应变 SCF 全部 `exit_code=0`，串行 wall-time 合计 4790 s�
 重建 → 对称约束拟合”的算法链；不构成已验证的压电系数。非正交晶胞的 Cartesian
 重建解的是单位晶格方向投影方程，而不是把三个标量机械相加。
 
+在同一 branch-matched reference 极化上，研究 API 还给出 Vanderbilt 几何修正后的
+`e_proper`：`e31=e32≈0.29443253`、`e33≈-0.44492121`、
+`e15=e24≈-0.19161988 C/m²`。这只是验证 raw→correction→proper 的矩阵变换，
+因为本 fixture 尚未完成 proper finite-difference、离子弛豫和收敛/独立后端审计，
+不能把这些数值当作最终 proper 材料常数。
+
 ## 输出和复现
 
 原始远端目录为 `/home/zhuxd/zstar-v2-tbto-formal40-20260912`，本地归档在
