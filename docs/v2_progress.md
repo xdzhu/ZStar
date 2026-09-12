@@ -269,6 +269,12 @@
     使用逻辑名 `STRU`，同时保持真正内容变化的拒绝；新增回归测试后 v2 定向测试
     为 `86 passed`。修正提交为 `15c4fd6`，正负应变生成约定测试随后的提交补充。
 
+55. 在同一 tight reference 上完成 `±2.5e-4` 和 `±5e-4` 两个六分量幅度 ensemble。
+    两批各 12 个 ABACUS relaxed-ion stage 均收敛并完成一次 PYATB 三方向后处理。
+    三种幅度下 `e31/e32` 展宽约 2.2%、`e15/e24` 约 2.1%、`e33` 约 0.5%；弹性
+    张量变化小于约 0.4%，Lambda 残差保持 `10^-6 Å` 量级。完整数值、SCF 次数、
+    40 核资源和一次中断重跑记录见 `v2_abacus_amplitude_audit_20260913.md`。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `478 passed, 1123 warnings`（本地 editable install
