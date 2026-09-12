@@ -14,6 +14,7 @@ from zstar.v2 import (
     plan_central_stages,
 )
 from zstar.v2.ensemble import ResponseEnsemble
+from zstar.shared_response import read_structure, write_structure
 
 
 CASE_STRU = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/run/STRU")
@@ -46,12 +47,23 @@ TOTAL-STRESS (KBAR)
     return block
 
 
-def _stage(path: Path, *, stress: bool = True, energy: bool = True) -> None:
+def _stage(path: Path, *, stress: bool = True, energy: bool = True, relaxed: bool = False) -> None:
     path.mkdir(parents=True)
     shutil.copy2(CASE_STRU, path / "STRU")
     output = path / "OUT.POLAR"
     output.mkdir()
-    (output / "running_scf.log").write_text(_log(stress, energy), encoding="utf-8")
+    log_text = _log(stress, energy)
+    log_name = "running_scf.log"
+    if relaxed:
+        log_text = log_text.replace("charge density convergence is achieved\n", "")
+        log_text += "\nRelaxation is converged!\n"
+        log_name = "running_relax.log"
+        atoms = read_structure(path / "STRU")
+        scaled_positions = np.asarray(atoms.scaled_positions, dtype=float)
+        scaled_positions[1, 2] += 0.01
+        atoms.scaled_positions = scaled_positions
+        write_structure(path / "STRU", output / "STRU_ION_D", atoms)
+    (output / log_name).write_text(log_text, encoding="utf-8")
     (path / "time.json").write_text(json.dumps({"total": 1.25}), encoding="utf-8")
 
 
@@ -115,17 +127,61 @@ def test_collect_abacus_stage_keeps_missing_energy_explicit(tmp_path):
 
 def test_collect_abacus_stage_accepts_relax_log_and_marks_ionic_convergence(tmp_path):
     stage = tmp_path / "relaxed"
-    stage.mkdir()
-    shutil.copy2(CASE_STRU, stage / "STRU")
-    output = stage / "OUT.RELAX"
-    output.mkdir()
-    text = _log().replace("charge density convergence is achieved\n", "")
-    text += "\nRelaxation is converged!\n"
-    (output / "running_relax.log").write_text(text, encoding="utf-8")
+    _stage(stage, relaxed=True)
     record = collect_abacus_stage(stage)
     assert record["scf_converged"] is False
     assert record["ionic_relaxation_converged"] is True
     assert record["log_kind"] == "running_relax.log"
+    relaxed_path = Path(record["relaxed_structure_path"])
+    assert relaxed_path.name == "STRU_ION_D"
+    assert relaxed_path.parent.name == "OUT.POLAR"
+    assert record["relaxed_structure"] is not None
+
+
+def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path):
+    root = tmp_path / "relaxed-ensemble"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id, relaxed=True)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        metadata={"ion_relaxation": "relaxed-ion"},
+        stages=tuple(
+            stage.__class__(
+                **{
+                    **stage.to_dict(),
+                    "actual_vector": stage.requested_vector,
+                }
+            )
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    document = collect_abacus_strain_response(root)
+    quantity = document.quantity("internal_displacement")
+    assert quantity.shape == (3, 5, 3)
+    assert quantity.ion_relaxation == "relaxed-ion"
+    np.testing.assert_allclose(quantity.values[0], 0.0)
+    np.testing.assert_allclose(quantity.values[1:, 1, 2], 0.01 * 3.9814151535, atol=1.0e-12)
+    assert document.metadata["internal_displacement_collected"] is True
+
+
+def test_collect_abacus_strain_response_rejects_relaxed_stage_without_final_structure(tmp_path):
+    root = tmp_path / "relaxed-missing"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id, relaxed=False)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        metadata={"ion_relaxation": "relaxed-ion"},
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match=r"missing OUT\.\*/STRU_ION_D"):
+        collect_abacus_strain_response(root)
 
 
 def test_collect_abacus_strain_response_builds_v2_document(tmp_path):

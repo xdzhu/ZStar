@@ -7,6 +7,7 @@ from zstar.v2 import (
     central_difference,
     convert_stress_sign,
     fit_elastic_response,
+    fit_internal_strain_response,
     fit_linear_response,
     fit_piezoelectric_ensemble,
     fit_piezoelectric_response,
@@ -151,6 +152,39 @@ def test_fit_piezoelectric_response_rejects_invalid_shapes_and_reference():
             [[0.0, 0.0, 0.0]],
             reference_polarization=[0.0, 0.0],
         )
+
+
+def test_fit_internal_strain_response_recovers_cartesian_lambda_without_gauge_projection():
+    strains = np.array(
+        [
+            [0.0] * 6,
+            [0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, -0.02, 0.0, 0.0, 0.0, 0.0],
+            [0.01, -0.02, 0.0, 0.0, 0.0, 0.0],
+        ]
+    )
+    expected = np.zeros((2, 3, 6))
+    expected[0, 0, 0] = 0.4
+    expected[0, 1, 1] = -0.7
+    expected[1, 2, 0] = 0.2
+    reference = np.array([[0.1, -0.2, 0.3], [-0.4, 0.5, -0.6]])
+    observations = reference + np.einsum("sm,ibm->sib", strains, expected)
+    result = fit_internal_strain_response(
+        strains,
+        observations,
+        reference_displacement=reference,
+    )
+    np.testing.assert_allclose(result.matrix.reshape(2, 3, 6), expected, atol=1.0e-12)
+    assert result.input_rank == 2
+    assert result.fit_rank == 12
+    assert result.allowed_rank == 36
+    assert not result.complete
+    assert result.residual_max < 1.0e-12
+
+
+def test_fit_internal_strain_response_rejects_wrong_observation_shape():
+    with pytest.raises(ValueError, match="displacement_observations"):
+        fit_internal_strain_response([[0.0] * 6], np.zeros((1, 3)))
 
 
 def test_proper_piezoelectric_response_applies_vanderbilt_correction_in_engineering_voigt():

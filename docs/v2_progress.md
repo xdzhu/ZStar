@@ -100,9 +100,15 @@
     `running_cell-relax.log`，分别记录电荷与离子收敛状态。该接口尚未声称已完成
     relaxed-ion 实际计算或 `Lambda` 重建，后续仍需结构回读、内部应变拟合和独立核对。
 
+28. collector 现在会读取固定晶胞 relax 输出中的唯一 `OUT.*/STRU_ION_D`，校验原子
+    顺序和晶胞，并把 `wrapped(final_fractional-initial_fractional) @ initial_cell`
+    保存为显式 `internal_displacement` 张量。新增 `fit_internal_strain_response` 将
+    该张量拟合为 Cartesian Λ 的扁平化线性结果；不自动施加声学平移规范，也不把
+    尚未实跑的 relaxed-ion 数据误标为正式响应。
+
 ## 证据状态
 
-* 本阶段全量回归为 `475 passed, 1319 warnings`（包含当前工作树的 v1/声子谱改动以及
+* 本阶段全量回归为 `480 passed, 1385 warnings`（包含当前工作树的 v1/声子谱改动以及
     v2 draft tests）；v2 极化/ABACUS collector 定向测试为 `35 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。
@@ -122,9 +128,9 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
-* **Gate C：**六分量/多幅度 force-stress/energy 数据收集已通过；极化 collector 和
-  非中心对称 smoke 已接通，但完整 Gate C 仍未满足，尚需 stress sign/单位和能量
-  曲率收敛确认、允许子空间完备的非零 e、relaxed-ion 和独立后端核对。
+* **Gate C：**六分量/多幅度 force-stress/energy 数据收集、单次 PYATB 三方向极化
+  collector 和内部位移拟合接口已接通；完整 Gate C 仍未满足，尚需 stress sign/单位
+  和能量曲率收敛确认、允许子空间完备的非零 e、真实 relaxed-ion Λ 数据和独立后端核对。
 
 ## 下一步
 

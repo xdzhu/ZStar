@@ -380,6 +380,53 @@ def fit_piezoelectric_response(
     )
 
 
+def fit_internal_strain_response(
+    actual_strains: Iterable[Iterable[float]],
+    displacement_observations: np.ndarray | Iterable[object],
+    *,
+    reference_displacement: np.ndarray | Iterable[float] | None = None,
+    sample_weights: Iterable[float] | None = None,
+    svd_cutoff: float | None = None,
+) -> LinearFitResult:
+    """Fit ``Delta u = Lambda eta`` from fixed-cell relaxed structures.
+
+    ``displacement_observations`` has shape ``(samples, atoms, 3)`` and must
+    contain Cartesian displacements of the relaxed ions relative to the
+    clamped strained structures.  The returned :class:`LinearFitResult` uses
+    flattened ``(atom, cartesian)`` output rows; reshape its ``matrix`` to
+    ``(atoms, 3, 6)`` for the tensor convention of the v2 response schema.
+    No acoustic gauge is silently imposed: translation removal or a specified
+    gauge must be performed explicitly before using ``Lambda`` in the relaxed
+    piezoelectric/elastic algebra.
+    """
+
+    strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
+    displacements = np.asarray(displacement_observations, dtype=float)
+    if strains.ndim != 2 or strains.shape[1] != 6:
+        raise ValueError(f"actual_strains must have shape (samples, 6); got {strains.shape}")
+    if displacements.ndim != 3 or displacements.shape[0] != strains.shape[0] or displacements.shape[2] != 3:
+        raise ValueError(
+            "displacement_observations must have shape (samples, atoms, 3) matching actual_strains; "
+            f"got {displacements.shape}"
+        )
+    if not np.all(np.isfinite(strains)) or not np.all(np.isfinite(displacements)):
+        raise ValueError("strain and displacement observations must be finite")
+    reference = np.zeros(displacements.shape[1:], dtype=float) if reference_displacement is None else np.asarray(
+        reference_displacement, dtype=float
+    )
+    if reference.shape != displacements.shape[1:] or not np.all(np.isfinite(reference)):
+        raise ValueError(
+            "reference_displacement must have shape (atoms, 3) and be finite; "
+            f"got {reference.shape}"
+        )
+    return fit_linear_response(
+        strains,
+        (displacements - reference).reshape(displacements.shape[0], -1),
+        sample_weights=sample_weights,
+        svd_cutoff=svd_cutoff,
+    )
+
+
 def fit_piezoelectric_ensemble(
     ensemble: MatchedPolarizationEnsemble,
     *,

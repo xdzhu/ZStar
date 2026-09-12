@@ -98,6 +98,23 @@ def _parse_energy(text: str) -> float | None:
     return value
 
 
+def _relaxed_structure_path(stage: Path, log: Path) -> Path | None:
+    """Locate the unique fixed-cell relaxation structure emitted by ABACUS."""
+
+    candidates: list[Path] = []
+    for candidate in (log.parent / "STRU_ION_D", stage / "STRU_ION_D"):
+        if candidate.is_file():
+            candidates.append(candidate)
+    candidates.extend(sorted(stage.glob("OUT.*/STRU_ION_D")))
+    candidates = list(dict.fromkeys(candidate.resolve() for candidate in candidates))
+    if len(candidates) > 1:
+        raise ValueError(
+            "Expected at most one ABACUS relaxed structure STRU_ION_D in "
+            f"{stage}; found {len(candidates)}"
+        )
+    return candidates[0] if candidates else None
+
+
 def _input_parameters(path: Path) -> dict[str, str]:
     if not path.is_file():
         return {}
@@ -123,6 +140,19 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     count = structure.natoms if natoms is None and hasattr(structure, "natoms") else natoms
     if count is None:
         count = len(structure)
+    relaxed_path = _relaxed_structure_path(directory, log)
+    relaxed_structure = None
+    if relaxed_path is not None:
+        relaxed_structure = read_structure(relaxed_path)
+        if relaxed_structure.symbols != structure.symbols:
+            raise ValueError(
+                f"ABACUS relaxed structure atom ordering differs between {directory / 'STRU'} "
+                f"and {relaxed_path}"
+            )
+        if len(relaxed_structure) != int(count):
+            raise ValueError(
+                f"ABACUS relaxed structure has {len(relaxed_structure)} atoms; expected {int(count)}"
+            )
     forces = _parse_forces(text, int(count))
     stress = _parse_stress(text)
     energy = _parse_energy(text)
@@ -148,6 +178,8 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         "timing": timing,
         "input_parameters": _input_parameters(directory / "INPUT"),
         "log": str(log),
+        "relaxed_structure": relaxed_structure,
+        "relaxed_structure_path": str(relaxed_path) if relaxed_path is not None else None,
     }
 
 
@@ -179,6 +211,12 @@ def collect_abacus_strain_response(
         stage_vectors.append(np.asarray(stage.actual_vector, dtype=float))
         stage_names.append(stage.stage_id)
     dimensions = DimensionSpec(ensemble.dimensionality)
+    ion_relaxation = str(ensemble.metadata.get("ion_relaxation", "clamped-ion")).strip().lower()
+    if ion_relaxation not in {"clamped-ion", "relaxed-ion"}:
+        raise ValueError(
+            "ensemble metadata ion_relaxation must be 'clamped-ion' or 'relaxed-ion'; "
+            f"got {ion_relaxation!r}"
+        )
     stress_boundary = BoundaryConditions(electric="E", mechanical="strain", stress_sign="backend-raw")
     quantities = [
         TensorQuantity(
@@ -192,6 +230,7 @@ def collect_abacus_strain_response(
             normalization="dimensionless",
             source="serialized_structure",
             backend="abacus",
+            ion_relaxation=ion_relaxation,
             provenance={"stage_names": stage_names},
         ),
         TensorQuantity(
@@ -204,6 +243,7 @@ def collect_abacus_strain_response(
             normalization="per_atom",
             source="abacus_output",
             backend="abacus",
+            ion_relaxation=ion_relaxation,
             provenance={"stage_names": stage_names},
         ),
         TensorQuantity(
@@ -216,6 +256,7 @@ def collect_abacus_strain_response(
             normalization="cell_volume",
             source="abacus_output",
             backend="abacus",
+            ion_relaxation=ion_relaxation,
             provenance={"stage_names": stage_names, "sign_convention": "backend-raw"},
         ),
     ]
@@ -232,7 +273,58 @@ def collect_abacus_strain_response(
                 normalization="total_cell",
                 source="abacus_output",
                 backend="abacus",
+                ion_relaxation=ion_relaxation,
                 provenance={"stage_names": stage_names},
+            )
+        )
+
+    internal_displacements: np.ndarray | None = None
+    if ion_relaxation == "relaxed-ion":
+        displacement_rows: list[np.ndarray] = []
+        relaxed_paths: list[str] = []
+        for name, stage_path, record in zip(stage_names, [reference] + [base / stage.stage_id for stage in ensemble.stages], records):
+            if name == "reference":
+                displacement_rows.append(np.zeros((natoms, 3), dtype=float))
+                relaxed_paths.append("")
+                continue
+            initial = read_structure(stage_path / "STRU")
+            relaxed = record.get("relaxed_structure")
+            relaxed_path = record.get("relaxed_structure_path")
+            if relaxed is None or not relaxed_path:
+                raise ValueError(
+                    f"relaxed-ion stage {name} is missing OUT.*/STRU_ION_D; "
+                    "complete the ionic relaxation before collecting internal strain"
+                )
+            if not np.allclose(relaxed.cell, initial.cell, atol=1.0e-8, rtol=0.0):
+                raise ValueError(
+                    f"relaxed-ion stage {name} changed the cell; use fixed-cell calculation relax "
+                    "for internal-strain response, not cell-relax"
+                )
+            delta_fractional = np.asarray(relaxed.scaled_positions, dtype=float) - np.asarray(
+                initial.scaled_positions, dtype=float
+            )
+            delta_fractional -= np.rint(delta_fractional)
+            displacement_rows.append(delta_fractional @ np.asarray(initial.cell, dtype=float))
+            relaxed_paths.append(str(relaxed_path))
+        internal_displacements = np.asarray(displacement_rows, dtype=float)
+        quantities.append(
+            TensorQuantity(
+                name="internal_displacement",
+                values=internal_displacements,
+                unit="angstrom",
+                axes=("stage", "atom", "cartesian"),
+                coordinate_system="cartesian_right_handed",
+                boundary_conditions=stress_boundary,
+                periodic_axes=dimensions.periodic_axes,
+                normalization="per_atom",
+                source="abacus_output",
+                backend="abacus",
+                ion_relaxation="relaxed-ion",
+                provenance={
+                    "stage_names": stage_names,
+                    "relaxed_structure_paths": relaxed_paths,
+                    "definition": "wrapped(final_fractional - initial_fractional) @ initial_cell",
+                },
             )
         )
     polarization_samples: list[PolarizationSample] = []
@@ -336,6 +428,7 @@ def collect_abacus_strain_response(
                 "log_kind": record["log_kind"],
                 "scf_converged": record["scf_converged"],
                 "ionic_relaxation_converged": record["ionic_relaxation_converged"],
+                "relaxed_structure_path": record["relaxed_structure_path"],
                 "scf_iterations": record["scf_iterations"],
                 "energy": record["energy"],
                 "timing": record["timing"],
@@ -364,6 +457,8 @@ def collect_abacus_strain_response(
                 polarization_samples and all(sample.cartesian_values is not None for sample in polarization_samples)
             ),
             "energy_collected": all(value is not None for value in energies),
+            "ion_relaxation": ion_relaxation,
+            "internal_displacement_collected": internal_displacements is not None,
         },
     )
 
@@ -388,6 +483,7 @@ def collect_pyatb_strain_response(
     if not stage_names:
         raise ValueError("SCF response document does not contain stage_names provenance")
     ensemble = ResponseEnsemble.read(base / "ensemble.json")
+    ion_relaxation = str(ensemble.metadata.get("ion_relaxation", "clamped-ion")).strip().lower()
     stage_paths = [base / "reference"] + [base / stage.stage_id for stage in ensemble.stages]
     if len(stage_paths) != len(stage_names):
         raise ValueError("SCF stage order does not match ensemble provenance")
@@ -452,6 +548,7 @@ def collect_pyatb_strain_response(
                 normalization="cell_volume",
                 source="pyatb_berry",
                 backend="pyatb",
+                ion_relaxation=ion_relaxation,
                 provenance={"stage_names": stage_names},
             ),
             TensorQuantity(
@@ -465,6 +562,7 @@ def collect_pyatb_strain_response(
                 normalization="cell_volume",
                 source="pyatb_berry",
                 backend="pyatb",
+                ion_relaxation=ion_relaxation,
                 provenance={"stage_names": stage_names},
             ),
             TensorQuantity(
@@ -478,6 +576,7 @@ def collect_pyatb_strain_response(
                 normalization="cell_volume",
                 source="branch_matching",
                 backend="pyatb",
+                ion_relaxation=ion_relaxation,
                 provenance={
                     "stage_names": stage_names,
                     "branch_shifts": np.asarray(branch_shifts).tolist(),
@@ -495,6 +594,7 @@ def collect_pyatb_strain_response(
                 normalization="cell_volume",
                 source="pyatb_berry",
                 backend="pyatb",
+                ion_relaxation=ion_relaxation,
                 provenance={
                     "stage_names": stage_names,
                     "lattice_vectors_angstrom": [lattice.tolist() for lattice in lattices],
