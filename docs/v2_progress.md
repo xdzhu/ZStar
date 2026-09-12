@@ -374,6 +374,11 @@
     新增回归测试。该契约不改变 1D/2D intrinsic strain 规则，也不把分子体系静默
     扩展为周期弹性响应。
 
+73. schema 层强制每个 `TensorQuantity.periodic_axes` 与顶层 `DimensionSpec` 一致；
+    dim2/1/0 文档若漏写物理周期轴会在构造时失败，而不是默认为三维 bulk。新增
+    dim2 拒绝和 dim0 合法 round-trip 测试，v2 schema 仍与 v1 `zstar-response` 1.0
+    完全隔离。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `497 passed, 1155 warnings`（本地 editable install

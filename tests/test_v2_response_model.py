@@ -81,6 +81,20 @@ def test_metadata_and_quantity_validation():
             ),
             provenance={"source": "synthetic"},
         )
+    with pytest.raises(ValueError, match="periodic_axes must match document dimensionality"):
+        ResponseDocument(
+            backend="test",
+            dimensionality=DimensionSpec(2),
+            quantities=(TensorQuantity(name="sheet", values=[1.0], unit="1"),),
+            provenance={"source": "synthetic"},
+        )
+    molecular = ResponseDocument(
+        backend="test",
+        dimensionality=DimensionSpec(0),
+        quantities=(TensorQuantity(name="dipole", values=[1.0], unit="e*angstrom", periodic_axes=()),),
+        provenance={"source": "synthetic"},
+    )
+    assert molecular.dimensionality.periodic_axes == ()
 
 
 def test_unit_conversions_are_explicit():

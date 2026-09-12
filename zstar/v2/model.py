@@ -222,6 +222,17 @@ class ResponseDocument:
         names = [quantity.name for quantity in self.quantities]
         if len(set(names)) != len(names):
             raise ValueError(f"response quantity names must be unique; got {names}")
+        expected_periodic = tuple(self.dimensionality.periodic_axes)
+        mismatched_periodic = {
+            quantity.name: tuple(quantity.periodic_axes)
+            for quantity in self.quantities
+            if tuple(quantity.periodic_axes) != expected_periodic
+        }
+        if mismatched_periodic:
+            raise ValueError(
+                "response quantity periodic_axes must match document dimensionality "
+                f"{expected_periodic}; got {mismatched_periodic}"
+            )
         if not self.provenance:
             raise ValueError("response document requires provenance metadata")
 

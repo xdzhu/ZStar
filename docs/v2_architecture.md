@@ -64,7 +64,7 @@ voigt_convention: [xx, yy, zz, 2yz, 2xz, 2xy]
 ion_relaxation: clamped-ion | relaxed-ion | internal-contribution
 electric_boundary: E | D | open-circuit | short-circuit
 mechanical_boundary: strain | stress
-periodic_axes: [x, y, z]
+periodic_axes: [x, y, z]  # must match the document dimensionality
 normalization: cell_volume | area | length | molecule
 source: finite_difference | DFPT | postprocess
 backend: abacus | vasp | cp2k | qe | abinit
@@ -75,7 +75,9 @@ diagnostics: {rank: ..., residual: ..., condition_number: ...}
 顶层还需要 structure hash、space-group/Hall、dimensionality、reference branch、
 functional、pseudopotential/orbital、k mesh、cutoff、SCF thresholds、perturbation
 vectors、task graph、restart state、CPU/wall-time 和失败事件。所有矩阵轴要能由
-metadata 唯一解释；不允许匿名数组。
+metadata 唯一解释；不允许匿名数组。`ResponseDocument` 会拒绝 quantity 的
+`periodic_axes` 与顶层 `DimensionSpec` 不一致的文档，避免把 1D/2D/分子结果默认为
+三维 bulk 响应。
 
 v1 已验证的生产路径是：每个结构的 ABACUS SCF 导出实空间矩阵，随后一次 PYATB
 运行在同一个 `POLARIZATION` 区块内部完成 a/b/c 三个 Berry loop，并在一个
