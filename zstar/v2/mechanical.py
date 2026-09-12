@@ -20,7 +20,13 @@ def periodic_strain_indices(periodic_axes: Iterable[str]) -> tuple[int, ...]:
     """
 
     axes = tuple(str(axis).strip().lower() for axis in periodic_axes)
-    if not axes or len(set(axes)) != len(axes) or any(axis not in {"x", "y", "z"} for axis in axes):
+    if not axes:
+        raise ValueError(
+            "homogeneous periodic strain is undefined for dimensionality=0 "
+            "(molecular systems); use a molecular polarizability or an explicit "
+            "finite-cluster boundary model"
+        )
+    if len(set(axes)) != len(axes) or any(axis not in {"x", "y", "z"} for axis in axes):
         raise ValueError(f"periodic_axes must be unique members of ('x', 'y', 'z'); got {axes}")
     positions = {axis: index for index, axis in enumerate(("x", "y", "z"))}
     diagonal = {positions[axis] for axis in axes}

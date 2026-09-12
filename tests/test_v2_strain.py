@@ -84,6 +84,8 @@ def test_periodic_strain_indices_only_include_intrinsic_low_dimensional_modes():
     assert periodic_strain_indices(("x", "y", "z")) == (0, 1, 2, 3, 4, 5)
     assert periodic_strain_indices(("x", "y")) == (0, 1, 5)
     assert periodic_strain_indices(("z",)) == (2,)
+    with pytest.raises(ValueError, match="dimensionality=0"):
+        periodic_strain_indices(())
     with pytest.raises(ValueError, match="periodic_axes"):
         periodic_strain_indices(("x", "x"))
 
