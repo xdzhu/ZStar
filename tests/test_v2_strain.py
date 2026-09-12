@@ -52,6 +52,26 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     assert (tmp_path / "strain" / "ensemble.json").is_file()
     assert (tmp_path / "strain" / "symmetry.json").is_file()
     assert all((tmp_path / "strain" / stage.stage_id / "STRU").is_file() for stage in ensemble.stages)
+    assert ensemble.metadata["reference_input_hash"]
+    assert all(stage.input_hash for stage in ensemble.stages)
+
+
+def test_abacus_strain_collection_rejects_changed_serialized_input_hash(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "hashed-strain",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+        symprec=1.0e-3,
+    )
+    stage_input = tmp_path / "hashed-strain" / "strain-001+" / "INPUT"
+    stage_input.write_text(stage_input.read_text(encoding="utf-8") + "# changed\n", encoding="utf-8")
+    from zstar.v2 import collect_abacus_strain_response
+
+    with pytest.raises(ValueError, match="input hash mismatch"):
+        collect_abacus_strain_response(tmp_path / "hashed-strain")
 
 
 def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input(tmp_path):

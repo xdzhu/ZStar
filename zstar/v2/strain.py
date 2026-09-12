@@ -52,6 +52,37 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _input_hash(directory: Path) -> str:
+    """Hash serialized inputs and copied ABACUS assets, excluding outputs.
+
+    Relaxed-ion post-processing may replace ``STRU`` with ``STRU_ION_D``.  If
+    ``STRU_INITIAL`` is present it is the immutable pre-relaxation input and is
+    hashed instead, so provenance remains stable after PYATB preparation.
+    """
+
+    root = Path(directory)
+    digest = hashlib.sha256()
+    names = {"INPUT", "INPUT-scf", "KPT", "STRU"}
+    candidates: list[Path] = []
+    initial = root / "STRU_INITIAL"
+    if initial.is_file():
+        candidates.append(initial)
+        names.discard("STRU")
+    for candidate in sorted(root.iterdir(), key=lambda item: item.name.lower()):
+        if not candidate.is_file():
+            continue
+        if candidate.name in names or candidate.suffix.lower() in {".upf", ".orb", ".gz"}:
+            candidates.append(candidate)
+    if not candidates:
+        raise ValueError(f"cannot compute v2 input hash: no serialized inputs in {root}")
+    for candidate in sorted(set(candidates), key=lambda item: item.name.lower()):
+        digest.update(candidate.name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(candidate.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
 def _report_dict(report) -> dict:
     return {
         "status": report.status,
@@ -320,6 +351,7 @@ def prepare_abacus_strain_ensemble(
             replace(
                 stage,
                 actual_vector=tuple(actual),
+                input_hash=_input_hash(stage_dir),
                 metadata={
                     "directory": stage.stage_id,
                     "ion_relaxation": relaxation,
@@ -327,7 +359,14 @@ def prepare_abacus_strain_ensemble(
                 },
             )
         )
-    final_ensemble = replace(ensemble, stages=tuple(actual_stages))
+    final_ensemble = replace(
+        ensemble,
+        stages=tuple(actual_stages),
+        metadata={
+            **ensemble.metadata,
+            "reference_input_hash": _input_hash(reference_dir),
+        },
+    )
     final_ensemble.write(output / "ensemble.json")
     (output / "symmetry.json").write_text(json.dumps(_report_dict(report), indent=2) + "\n", encoding="utf-8")
     return {

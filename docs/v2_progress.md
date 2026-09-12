@@ -119,6 +119,11 @@
     `.done40`。同时将 v2 测试改为使用仓库内可复现的 tetragonal 输入，不再依赖被忽略的
     v1 运行时生成目录。
 
+31. strain preparation 现在为 reference 和每个 stage 保存输入哈希（INPUT、STRU/KPT
+    及复制的 UPF/ORB 资产），collector 在解析输出前逐项校验；relaxed-ion 若由 PYATB
+    临时替换 `STRU`，则以保留的 `STRU_INITIAL` 进行校验。新增输入被改写后的失败测试，
+    防止不同输入生成的结果被静默混合。
+
 ## 证据状态
 
 * v2 独立 worktree 的 v2 定向测试为 `75 passed, 7 warnings`；警告均为 spglib 的现有

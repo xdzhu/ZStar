@@ -124,6 +124,14 @@ reference gate
 fit 状态和错误。可复用 v1 的 `WorkflowStateStore` 设计和原子替换写入，但不得让 v2
 状态覆盖 `.zstar/stages` 或改变 v1 `workflow.jsonl` 的语义。
 
+`prepare_abacus_strain_ensemble` now hashes each serialized stage input (INPUT,
+STRU/KPT and copied UPF/ORB assets) and stores a separate reference-input hash.
+The collector verifies these hashes before parsing outputs.  Relaxed-ion
+post-processing may replace `STRU` with `STRU_ION_D`; the immutable
+`STRU_INITIAL` is used for verification in that case.  A mismatch stops
+collection with a regenerate/restore action rather than silently combining
+outputs produced from different inputs.
+
 ## 5. Backend capability contract
 
 adapter 在准备阶段返回：结构读写、绝缘性门、polarization、force、stress、BEC、IFC、

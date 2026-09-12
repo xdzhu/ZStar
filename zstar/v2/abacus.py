@@ -23,6 +23,25 @@ from .polarization import (
 )
 
 
+def _verify_input_hash(directory: Path, expected: str, *, label: str) -> None:
+    """Reject changed v2 inputs before parsing calculator output."""
+
+    if not expected:
+        return
+    from .strain import _input_hash
+
+    try:
+        actual = _input_hash(directory)
+    except ValueError as exc:
+        raise ValueError(f"cannot verify v2 input hash for {label}: {exc}") from exc
+    if actual != expected:
+        raise ValueError(
+            f"v2 input hash mismatch for {label}: expected {expected}, got {actual}. "
+            "Restore the serialized INPUT/STRU/KPT/assets or regenerate the ensemble "
+            "before collecting results."
+        )
+
+
 def _single_log(stage: Path) -> Path:
     logs: list[Path] = []
     for pattern in (
@@ -211,6 +230,16 @@ def collect_abacus_strain_response(
     base = Path(root).resolve()
     ensemble = ResponseEnsemble.read(base / "ensemble.json")
     reference = base / "reference"
+    _verify_input_hash(
+        reference,
+        str(ensemble.metadata.get("reference_input_hash", "")),
+        label="reference",
+    )
+    # Verify every serialized input before parsing any calculator output.  A
+    # changed later stage must fail deterministically even when the reference
+    # output is absent or incomplete.
+    for stage in ensemble.stages:
+        _verify_input_hash(base / stage.stage_id, stage.input_hash, label=stage.stage_id)
     reference_structure = read_structure(reference / "STRU")
     natoms = len(reference_structure)
     records = [collect_abacus_stage(reference, natoms=natoms)]
