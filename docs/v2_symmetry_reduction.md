@@ -125,7 +125,10 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
 
 完备性条件是 `fit_rank == allowed_rank` 且 residual 小于输入收敛误差传播后的阈值。
 `rank` 不足必须是 actionable error：指出缺哪些扰动方向、建议的最小新增 stages，
-并保留已经完成的结果。
+并保留已经完成的结果。当前 `fit_linear_response` 在约束设计矩阵秩不足时返回
+`suggested_input_indices`：它只根据实际已序列化 vectors 和 canonical input basis
+推荐能增加秩的方向，不会生成观测或把缺失列填零；每个推荐方向仍需按中心差分生成
+正负 stage 并重新收集所有 required outputs。
 
 严格禁止的分量由群投影的零空间判定（理论上为零）；拟合后“数值上很小”但投影
 允许的分量必须标为 `allowed_but_small`，不能写成 `symmetry_forbidden`。

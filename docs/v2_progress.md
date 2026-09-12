@@ -333,6 +333,11 @@
     directions（8 个正负 stage），P1 保留全部 6 个。计划的向量、允许秩、identified
     rank 和 complete 标志写入 ensemble metadata，all-six control 仍可用于内部审计。
 
+65. 补齐 rank 不足的 failure contract：`LinearFitResult` 现在在约束设计矩阵不完备
+    时返回 `suggested_input_indices`，按实际已序列化输入向量推荐能增加秩的 canonical
+    方向；它不生成缺失观测，也不零填充张量。新增 rank-deficiency 回归断言，并在
+    对称性文档中记录“推荐方向仍须成对重算”的恢复动作。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install

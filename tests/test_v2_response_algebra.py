@@ -340,6 +340,7 @@ def test_rank_deficiency_is_reported_instead_of_zero_filling():
     result = fit_linear_response(x, y, allowed_basis=basis)
     assert result.fit_rank < result.allowed_rank
     assert not result.complete
+    assert result.suggested_input_indices == (1,)
 
 
 def test_relaxed_ion_algebra_matches_definitions():

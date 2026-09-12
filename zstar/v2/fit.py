@@ -25,6 +25,7 @@ class LinearFitResult:
     residual_max: float
     residual_rms: float
     residual_relative: float
+    suggested_input_indices: tuple[int, ...] = ()
 
     @property
     def complete(self) -> bool:
@@ -218,6 +219,24 @@ def fit_linear_response(
         if not np.any(nonzero)
         else singular_values[0] / singular_values[np.flatnonzero(nonzero)[-1]]
     )
+    suggested: list[int] = []
+    if fit_rank < allowed_rank:
+        # Recommend canonical input directions that increase the constrained
+        # design rank.  This is a diagnostic only: no missing observation is
+        # synthesized and callers must generate both signs themselves.
+        candidate_design = np.array(constrained_design, copy=True)
+        candidate_rank = fit_rank
+        for index in range(input_dimension):
+            direction = np.eye(input_dimension, dtype=float)[index]
+            block = _design_matrix(direction[None, :], output_dimension) @ basis
+            trial = np.vstack([candidate_design, block])
+            trial_rank = int(np.linalg.matrix_rank(trial, tol=cutoff))
+            if trial_rank > candidate_rank:
+                suggested.append(index)
+                candidate_design = trial
+                candidate_rank = trial_rank
+            if candidate_rank >= allowed_rank:
+                break
     return LinearFitResult(
         matrix=matrix,
         predicted=predicted,
@@ -230,6 +249,7 @@ def fit_linear_response(
         residual_max=residual_max,
         residual_rms=residual_rms,
         residual_relative=residual_relative,
+        suggested_input_indices=tuple(suggested),
     )
 
 
