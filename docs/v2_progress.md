@@ -95,7 +95,7 @@
 
 ## 证据状态
 
-* 本阶段全量回归为 `470 passed, 1318 warnings`（包含当前工作树的 v1/声子谱改动以及
+* 本阶段全量回归为 `472 passed, 1318 warnings`（包含当前工作树的 v1/声子谱改动以及
     v2 draft tests）；v2 极化/ABACUS collector 定向测试为 `35 passed`。警告均为现有依赖的
   弃用提示，
   没有失败。
