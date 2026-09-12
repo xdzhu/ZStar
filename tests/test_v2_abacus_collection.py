@@ -17,7 +17,9 @@ from zstar.v2.ensemble import ResponseEnsemble
 from zstar.shared_response import read_structure, write_structure
 
 
-CASE_STRU = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/run/STRU")
+# Use the tracked v2 fixture.  The historical cubic phonon input is generated
+# by some v1 workflows and is intentionally not a required checkout artifact.
+CASE_STRU = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs/STRU")
 
 
 def _log(stress: bool = True, energy: bool = True) -> str:
@@ -171,7 +173,9 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     assert quantity.shape == (3, 5, 3)
     assert quantity.ion_relaxation == "relaxed-ion"
     np.testing.assert_allclose(quantity.values[0], 0.0)
-    np.testing.assert_allclose(quantity.values[1:, 1, 2], 0.01 * 3.9814151535, atol=1.0e-12)
+    # The tracked tetragonal fixture has c = 4.1 Å; the synthetic relaxed
+    # structure moves atom 1 by 0.01 in fractional z.
+    np.testing.assert_allclose(quantity.values[1:, 1, 2], 0.01 * 4.1, atol=1.0e-12)
     assert document.metadata["internal_displacement_collected"] is True
 
 

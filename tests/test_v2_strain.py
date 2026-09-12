@@ -30,14 +30,12 @@ def test_apply_strain_preserves_fractional_sites_and_recovers_actual_vector():
 
 
 def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_path):
-    case = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/run").resolve()
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     result = prepare_abacus_strain_ensemble(
         tmp_path / "strain",
         structure=case / "STRU",
         input_template=case / "INPUT",
         kpt_template=case / "KPT",
-        pp_dir=case / "assets",
-        orb_dir=case / "assets",
         strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
         symprec=1.0e-3,
     )
@@ -57,14 +55,12 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
 
 
 def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input(tmp_path):
-    case = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/run").resolve()
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     result = prepare_abacus_strain_ensemble(
         tmp_path / "relaxed-strain",
         structure=case / "STRU",
         input_template=case / "INPUT",
         kpt_template=case / "KPT",
-        pp_dir=case / "assets",
-        orb_dir=case / "assets",
         strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
         ion_relaxation="relaxed-ion",
         force_thr_ev=2.5e-4,
@@ -81,15 +77,13 @@ def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input
 
 
 def test_abacus_strain_preparation_rejects_unknown_ion_relaxation(tmp_path):
-    case = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/run").resolve()
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     with pytest.raises(ValueError, match="ion_relaxation"):
         prepare_abacus_strain_ensemble(
             tmp_path / "bad",
             structure=case / "STRU",
             input_template=case / "INPUT",
             kpt_template=case / "KPT",
-            pp_dir=case / "assets",
-            orb_dir=case / "assets",
             strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
             ion_relaxation="unknown",
         )
