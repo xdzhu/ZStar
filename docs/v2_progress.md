@@ -129,6 +129,10 @@
     前拒绝 `metadata.insulating: false`。该字段仍需由独立 band-gap/后端审计提供，不把
     capability 声明冒充物理验证。
 
+33. 增加显式 `remove_acoustic_translation` 规范工具：支持等权或用户提供的正权重，
+    仅在调用者明确选择时移除整体平移，collector 和 Λ 拟合默认保留原始规范；对应
+    理论说明和测试已补齐。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `472 passed, 1122 warnings`（本地 editable install
