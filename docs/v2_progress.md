@@ -159,6 +159,13 @@
     内部弛豫审计，不能代替完整 Λ 或 relaxed-ion e 拟合；两次误复制终态的旧输出
     已整体归档并明确标注为 `wrong-final`，不进入数据收集。
 
+37. 为充分使用新增的 `cu17` 而不产生同目录并发，先暂停 cu24/cu26 的旧批处理父进程，
+    保留其当前 MPI 子作业继续收尾；随后在确认 `strain-013-` 完整收敛后手工补写其
+    运行记录并结束旧父进程。现在由 cu24 收尾 `016+`、cu17 的原子 runner 接管
+    `017+–018+`，cu26 的原子 runner 接管 `014-–018-`；cu25 的原子 PYATB runner
+    扫描所有已完成 stage。每个节点最多一个 40-rank ABACUS/PYATB 作业，所有活动
+    stage 通过 `.running40`/`.zstar-stage.lock` 可审计，未修改 PBS 占位或其他用户任务。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install
