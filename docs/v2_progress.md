@@ -188,6 +188,12 @@
     `e`、`Lambda` 或 relaxed-ion `C`。Gate C 暂停，已在 cu17 独立启动 reference
     relaxation，完成后须以该平衡结构重建应变点再继续。
 
+41. 将上述物理前置条件落实为 collector 失败门：`relaxed-ion` ensemble 现在必须
+    声明正的 `force_thr_ev`，并在解析任何响应张量前检查 reference 的最大离子力；
+    超过阈值会给出“先弛豫 reference”的明确错误，而不是继续拟合。新增失败测试覆盖
+    高力 reference；相关定向测试为 `38 passed`。这只收紧算法正确性契约，不改变
+    v1 接口，也不引入 CLI 或集群调度逻辑。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install

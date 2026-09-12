@@ -258,6 +258,29 @@ def collect_abacus_strain_response(
             "ensemble metadata ion_relaxation must be 'clamped-ion' or 'relaxed-ion'; "
             f"got {ion_relaxation!r}"
         )
+    if ion_relaxation == "relaxed-ion":
+        # A relaxed-ion derivative is defined around an internally equilibrated
+        # zero-strain state.  Do not let a single-point, high-force reference
+        # masquerade as that state and contaminate every ±strain difference.
+        threshold_value = ensemble.metadata.get("force_thr_ev")
+        try:
+            force_threshold = float(threshold_value)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "relaxed-ion ensemble metadata must provide a finite positive "
+                "force_thr_ev for reference-equilibrium validation"
+            ) from exc
+        if not np.isfinite(force_threshold) or force_threshold <= 0.0:
+            raise ValueError(
+                "relaxed-ion ensemble metadata force_thr_ev must be finite and positive"
+            )
+        reference_force_max = float(np.max(np.linalg.norm(records[0]["forces"], axis=1)))
+        if reference_force_max > force_threshold:
+            raise ValueError(
+                "relaxed-ion reference is not internally equilibrated: maximum force "
+                f"{reference_force_max:.6g} eV/angstrom exceeds force_thr_ev "
+                f"{force_threshold:.6g}; relax the reference structure before fitting"
+            )
     stress_boundary = BoundaryConditions(electric="E", mechanical="strain", stress_sign="backend-raw")
     quantities = [
         TensorQuantity(

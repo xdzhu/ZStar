@@ -157,7 +157,7 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
         _stage(root / stage.stage_id, relaxed=True)
     ResponseEnsemble(
         reference_hash="synthetic",
-        metadata={"ion_relaxation": "relaxed-ion"},
+        metadata={"ion_relaxation": "relaxed-ion", "force_thr_ev": 1.0e-3},
         stages=tuple(
             stage.__class__(
                 **{
@@ -180,6 +180,33 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     assert document.metadata["internal_displacement_collected"] is True
 
 
+def test_collect_abacus_strain_response_rejects_unrelaxed_reference(tmp_path):
+    root = tmp_path / "relaxed-unbalanced-reference"
+    _stage(root / "reference")
+    reference_log = root / "reference" / "OUT.POLAR" / "running_scf.log"
+    reference_log.write_text(
+        "\n".join(
+            line.replace("0.0000000000", "0.0200000000", 1) if "Ba1" in line else line
+            for line in reference_log.read_text(encoding="utf-8").splitlines()
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id, relaxed=True)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        metadata={"ion_relaxation": "relaxed-ion", "force_thr_ev": 1.0e-3},
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match="reference is not internally equilibrated"):
+        collect_abacus_strain_response(root)
+
+
 def test_collect_abacus_strain_response_rejects_relaxed_stage_without_final_structure(tmp_path):
     root = tmp_path / "relaxed-missing"
     _stage(root / "reference")
@@ -188,7 +215,7 @@ def test_collect_abacus_strain_response_rejects_relaxed_stage_without_final_stru
         _stage(root / stage.stage_id, relaxed=False)
     ResponseEnsemble(
         reference_hash="synthetic",
-        metadata={"ion_relaxation": "relaxed-ion"},
+        metadata={"ion_relaxation": "relaxed-ion", "force_thr_ev": 1.0e-3},
         stages=tuple(
             stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
             for stage in stages
