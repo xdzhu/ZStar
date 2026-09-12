@@ -110,3 +110,26 @@ Those outputs are archived as `OUT.POLAR_BAL_XX_{P025,M025}.wrong-cell-20260912`
 and are excluded from all results.  No production CLI or workflow claim is
 made from the corrected jobs until both their cells, ionic convergence and
 polarization are independently checked.
+
+The corrected balanced ±2.5e-4 pair has now converged in four ionic steps on
+each node.  Its one-run PYATB values are:
+
+```text
+balanced -2.5e-4: (6.7765282793994102e-08, 5.9508557055927092e-08,
+                   3.9516430111373685e-01) C/m^2
+balanced +2.5e-4: (7.3194737617733333e-08, 5.9551595857878803e-08,
+                   3.9519364467850548e-01) C/m^2
+```
+
+Relative to the equilibrated reference and using the serialized cell
+denominator, this gives
+
+```text
+dP/deta_xx = (1.08589101e-05, 8.60776078e-08, 5.86871322e-02) C/m^2
+midpoint(reference-subtracted) = (8.97e-10, 4.37e-10, 1.6899e-04) C/m^2
+```
+
+This is a meaningful improvement over the unbalanced-reference audit, but it
+is not yet a convergence proof: the midpoint c offset is finite and the
+balanced ±5e-4 pair is still running.  No response tensor is promoted until
+the amplitude comparison is complete.

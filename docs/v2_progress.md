@@ -207,6 +207,12 @@
     随后按保留旧 ±晶格、替换为平衡内部坐标的规则重新启动。该事件再次说明必须在
     SCF 前检查实际晶格和序列化结构，不能只相信目录名或 nominal amplitude。
 
+44. 纠正输入后，平衡 reference 周围的 ±`2.5e-4` 两个 stage 各四个离子步收敛，
+    并各自只运行一次 PYATB。用实际晶格分母得到
+    `dP/deta_xx=(1.0859e-05, 8.61e-08, 5.8687e-02) C/m^2`，中点相对平衡 reference
+    的 c 偏移降到 `1.69e-04 C/m^2`。这只说明 reference 前置条件已修正，仍需与
+    平衡 reference 的 ±`5e-4`（当前在 cu24/cu25 计算）比较后才可判断线性收敛。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `475 passed, 1122 warnings`（本地 editable install
