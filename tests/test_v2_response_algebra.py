@@ -82,6 +82,36 @@ def test_fit_elastic_response_converts_compression_positive_tensor_stress():
     np.testing.assert_allclose(result.matrix[:, 0], expected[:, 0])
 
 
+def test_fit_elastic_response_can_enforce_major_symmetry():
+    rng = np.random.default_rng(20260912)
+    strains = rng.normal(size=(24, 6))
+    stiffness = np.array(
+        [
+            [220.0, 80.0, 70.0, 0.0, 0.0, 0.0],
+            [80.0, 210.0, 75.0, 0.0, 0.0, 0.0],
+            [70.0, 75.0, 250.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 90.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 95.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 85.0],
+        ]
+    )
+    result = fit_elastic_response(
+        strains,
+        strains @ stiffness.T,
+        enforce_major_symmetry=True,
+    )
+    np.testing.assert_allclose(result.matrix, stiffness, atol=1.0e-10)
+    assert result.allowed_rank == 21
+    assert result.fit_rank == 21
+    assert result.complete
+    assert result.residual_max < 1.0e-10
+
+
+def test_fit_elastic_response_rejects_non_boolean_major_symmetry_flag():
+    with pytest.raises(TypeError, match="enforce_major_symmetry"):
+        fit_elastic_response([[0.0] * 6], [[0.0] * 6], enforce_major_symmetry=1)
+
+
 def test_fit_piezoelectric_response_requires_branch_matched_si_polarization():
     strains = np.array(
         [

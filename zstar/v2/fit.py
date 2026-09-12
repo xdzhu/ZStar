@@ -245,6 +245,40 @@ def _stress_observations_to_voigt(observations: np.ndarray | Iterable[object]) -
     )
 
 
+def _major_symmetric_basis(allowed_basis: IntertwinerBasis | None) -> IntertwinerBasis:
+    """Intersect an optional symmetry basis with the elastic major-symmetry subspace."""
+
+    if allowed_basis is None:
+        base = np.eye(36, dtype=float)
+    else:
+        if allowed_basis.input_dimension != 6 or allowed_basis.output_dimension != 6:
+            raise ValueError("elastic symmetry basis must describe a 6x6 response")
+        base = np.asarray(allowed_basis.basis, dtype=float)
+    constraints = np.zeros((15, 36), dtype=float)
+    row = 0
+    for first in range(6):
+        for second in range(first + 1, 6):
+            constraints[row, first + 6 * second] = 1.0
+            constraints[row, second + 6 * first] = -1.0
+            row += 1
+    projected = constraints @ base
+    _u, singular_values, vh = np.linalg.svd(projected, full_matrices=True)
+    scale = float(singular_values[0]) if singular_values.size else 1.0
+    cutoff = max(projected.shape) * np.finfo(float).eps * max(scale, 1.0)
+    rank = int(np.count_nonzero(singular_values > cutoff))
+    null_coefficients = vh[rank:].T.copy()
+    symmetric_basis = base @ null_coefficients
+    original_constraint_rank = 36 - int(base.shape[1])
+    return IntertwinerBasis(
+        output_dimension=6,
+        input_dimension=6,
+        basis=symmetric_basis,
+        constraint_rank=original_constraint_rank + rank,
+        singular_values=singular_values,
+        tolerance=cutoff,
+    )
+
+
 def fit_elastic_response(
     actual_strains: Iterable[Iterable[float]],
     stress_observations: np.ndarray | Iterable[object],
@@ -252,6 +286,7 @@ def fit_elastic_response(
     reference_stress: np.ndarray | Iterable[float] | None = None,
     stress_sign: str = "tension-positive",
     allowed_basis: IntertwinerBasis | None = None,
+    enforce_major_symmetry: bool = False,
     sample_weights: Iterable[float] | None = None,
     svd_cutoff: float | None = None,
 ) -> LinearFitResult:
@@ -262,7 +297,10 @@ def fit_elastic_response(
     or work-conjugate six-vectors.  ``backend-raw`` is rejected until the
     backend convention has been independently established.  If a reference
     stress is supplied it is subtracted before fitting, which avoids treating
-    residual hydrostatic stress as an elastic response.
+    residual hydrostatic stress as an elastic response.  Set
+    ``enforce_major_symmetry=True`` to intersect the space-group basis with
+    the thermodynamic constraint ``C == C.T``; the default keeps the raw
+    representation fit explicit for auditing.
     """
 
     strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
@@ -279,10 +317,13 @@ def fit_elastic_response(
     if reference.shape != (6,) or not np.all(np.isfinite(reference)):
         raise ValueError("reference_stress must have shape (6,) or (3, 3) and be finite")
     converted = convert_stress_sign(stresses - reference, from_sign=stress_sign)
+    if not isinstance(enforce_major_symmetry, bool):
+        raise TypeError("enforce_major_symmetry must be a bool")
+    fit_basis = _major_symmetric_basis(allowed_basis) if enforce_major_symmetry else allowed_basis
     return fit_linear_response(
         strains,
         converted,
-        allowed_basis=allowed_basis,
+        allowed_basis=fit_basis,
         sample_weights=sample_weights,
         svd_cutoff=svd_cutoff,
     )

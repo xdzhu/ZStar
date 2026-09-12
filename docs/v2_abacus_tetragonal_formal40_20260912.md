@@ -78,6 +78,13 @@ ABACUS：36 个应变 SCF 全部 `exit_code=0`，串行 wall-time 合计 4790 s�
 因为本 fixture 尚未完成 proper finite-difference、离子弛豫和收敛/独立后端审计，
 不能把这些数值当作最终 proper 材料常数。
 
+同一批 ABACUS `stress_raw` 还做了一个显式假设为 compression-positive 的弹性拟合，
+并开启 major symmetry 约束。候选矩阵的 `C11=374.4416`、`C12=129.6646`、
+`C13=117.1720`、`C33=329.6101`、`C44=125.5997`、`C66=139.5320 GPa`，最大
+拟合残差为 `0.06670 kbar`，对称化后的特征值均为正。这里的 sign 仍是待独立确认的
+假设，且结构未做充分应变/截断/SCF 收敛，因此只作为弹性代码链和稳定性诊断候选，
+不是正式 `C`。
+
 ## 输出和复现
 
 原始远端目录为 `/home/zhuxd/zstar-v2-tbto-formal40-20260912`，本地归档在

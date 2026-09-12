@@ -88,6 +88,11 @@
     的 Voigt 剪切约定。该转换不选择 Berry branch，reference branch 仍由 collector
     和 ensemble matching 负责。
 
+26. 为弹性拟合增加显式 `enforce_major_symmetry` 门，将空间群允许子空间与
+    `C=C.T` 的热力学约束求交；P4mm 的 elastic basis 从 7 降为 6 个独立参数。
+    formal tetragonal 数据在 compression-positive 假设下给出正特征值候选，但 sign、
+    应变收敛和独立后端尚未核实，因此只写入案例诊断，不提升为正式 C。
+
 ## 证据状态
 
 * 本阶段全量回归为 `470 passed, 1318 warnings`（包含当前工作树的 v1/声子谱改动以及

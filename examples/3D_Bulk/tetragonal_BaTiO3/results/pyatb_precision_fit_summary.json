@@ -42,6 +42,22 @@
     [2.9443253069442020e-01, 2.9443253069442016e-01, -4.4492120700988070e-01, -2.984935628652299e-08, -3.5096663761026355e-08, 0.0]
   ],
   "proper_status": "algorithmic_conversion_only_not_a_material_benchmark",
+  "elastic_candidate": {
+    "stress_sign_assumption": "compression-positive",
+    "major_symmetry_enforced": true,
+    "unit": "GPa",
+    "matrix": [
+      [374.4416010776309, 129.6646138933375, 117.1719744935758, 0.0, 0.0, 0.0],
+      [129.66461389333745, 374.441601077631, 117.17197449357582, 0.0, 0.0, 0.0],
+      [117.1719744935758, 117.17197449357582, 329.61009650287104, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 125.59973726857139, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 0.0, 125.5997372685714, 0.0],
+      [0.0, 0.0, 0.0, 0.0, 0.0, 139.5320373357142]
+    ],
+    "fit_residual_max_kbar": 0.06670414205166697,
+    "eigenvalues_GPa": [125.5997372685714, 125.5997372685714, 139.5320373357142, 229.586248998, 244.77698718, 604.13006248],
+    "stability_status": "candidate_positive_but_sign_and_convergence_unverified"
+  },
   "scientific_claim_allowed": false,
   "source_diagnostic": "D:/Temp/zstar-v2-tbto-formal40-20260912/pyatb_precision_fit_diagnostic.json"
 }
