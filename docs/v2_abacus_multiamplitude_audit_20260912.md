@@ -162,3 +162,18 @@ The balanced `±1e-3` pair is complete, but a tighter `force_thr_ev=1e-4`
 ±2.5e-4 audit is now running to separate force-convergence error from response
 nonlinearity.  Until that comparison is made, the correct status remains
 “algorithm audit blocked”.
+
+The tight ±2.5e-4 pair converged to maximum forces `6.9e-5` and `6.7e-5
+eV/Angstrom`.  The PYATB values are:
+
+```text
+tight -2.5e-4: (6.7414277063059204e-08, 5.9259598491561052e-08,
+                 3.9518396295534186e-01) C/m^2
+tight +2.5e-4: (7.2839502300388326e-08, 5.9566599934170212e-08,
+                 3.9519489232006028e-01) C/m^2
+```
+
+The corresponding c derivative is approximately `0.02186 C/m^2`, between the
+previous loose-threshold ±2.5e-4 and ±5e-4 values.  This confirms that force
+convergence is a material part of the error budget; the ±5e-4 tight pair is
+being recomputed before any linear-response decision.
