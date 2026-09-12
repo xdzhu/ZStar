@@ -173,6 +173,21 @@
     `strain-014-` 未被终止，清除残留 `.running40` 后将按序重跑 `015-`，并再次核验
     节点仅有一组 `mpirun -np 40`。
 
+39. 按“先证明算法、再优化工程”的要求，补做了 `eta_xx=±2.5e-4` 并与已有
+    `±5e-4`、`±1e-3` 极化审计比较。每个几何只运行一次 PYATB `POLARIZATION`，
+    由同一输出取得 a/b/c 三个方向；实际应变从序列化晶格回算。中心差分的
+    `dP_c/deta_xx` 依幅度分别为约 `0.0122`、`0.1145`、`0.0294 C/m^2`，明显不
+    收敛；各弛豫对的中点相对单点 reference 还存在约 `0.0463 C/m^2` 的 c 方向
+    偏移。完整数值、输入和命令见
+    [`v2_abacus_multiamplitude_audit_20260912.md`](v2_abacus_multiamplitude_audit_20260912.md)。
+
+40. 该不收敛不是 Berry 分支跳变：所有打印值均远离约 2.0/2.1 `C/m^2` 的分支
+    量子；审计进一步发现 formal reference 的单点 SCF 残余力为约
+    `0.36--0.67 eV/Angstrom`、对角应力为约 `41--75 kbar`，不满足 relaxed-ion
+    响应的平衡参考条件。因此当前数据只能作为算法失败诊断，不能写成已验证的
+    `e`、`Lambda` 或 relaxed-ion `C`。Gate C 暂停，已在 cu17 独立启动 reference
+    relaxation，完成后须以该平衡结构重建应变点再继续。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install
@@ -196,19 +211,20 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
-* **Gate C：**六分量/多幅度 force-stress/energy 数据收集、单次 PYATB 三方向极化
-  collector 和内部位移拟合接口已接通；真实 relaxed-ion runner 已启动但尚未完成，
-  完整 Gate C 仍未满足，尚需 stress sign/单位和能量曲率收敛确认、允许子空间完备的
-  非零 e、无并发污染的 relaxed-ion Λ 数据和独立后端核对。
+* **Gate C：**阻塞。collector、单次 PYATB 三方向路径和内部位移拟合接口已接通，
+  但多幅度 audit 暴露出 formal reference 未达到离子平衡，导致 relaxed-ion 极化
+  差分不收敛。必须先完成独立 reference relaxation，再重建应变点并确认
+  stress sign/单位、能量曲率、允许子空间、Λ 和独立后端核对；当前不得报告材料
+  响应常数。
 
 ## 下一步
 
 1. 评审并冻结 draft schema 的字段语义、单位注册表、边界条件和错误契约；
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
-3. 完成当前 P4mm relaxed-ion 六分量、多幅度任务，逐 stage 检查 ionic convergence、
-   `STRU_ION_D` 和无并发污染，并记录输入哈希、SCF、wall time 和日志；
-4. 在同一批最终结构上运行每几何一次的 PYATB 三方向极化，执行 branch matching，
-   拟合内部位移 Λ 和 relaxed-ion `e`，并单独审计 stress 符号/单位；
-5. 在 `P4mm` 允许子空间完备的 branch-matched 极化数据上验证 draft e 拟合，再以
-   独立后端或高精度参考结果核对完整 C 矩阵和 proper e 张量，之后才进入正式
-   压电/弹性 CLI 设计。
+3. 完成 cu17 reference relaxation，核对最终力、应力、空间群、能量和结构对应关系；
+4. 以平衡 reference 重建至少 `eta_xx` 的 ±多幅度点，逐 stage 检查 ionic
+   convergence、`STRU_ION_D`、实际应变、分支残差和中点一致性；
+5. 只有多幅度差分收敛后，才扩展到六分量、Λ、relaxed-ion `e`/`C`，并单独审计
+   stress 符号/单位和机械稳定性；
+6. 在 `P4mm` 允许子空间完备的 branch-matched 极化数据上以独立后端或高精度
+   参考结果核对，之后才进入正式压电/弹性 CLI 设计。
