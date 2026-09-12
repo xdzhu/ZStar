@@ -251,10 +251,28 @@
     暂不把全部生产任务盲目提高到 `1e-10`；如后续体系出现 SCF 力噪声，再按同样的
     paired audit 决定。
 
+52. 按用户授权在共享目录运行完整的 `P4mm` BaTiO3 六分量 `±1e-3` relaxed-ion
+    API 验证（reference + 12 stages）。ABACUS 每阶段使用 `40 MPI x 1 OpenMP`，
+    `scf_thr=1e-8`、`force_thr_ev=1e-4`；PYATB 每个几何只运行一次并输出 a/b/c
+    三方向极化。13 个 stage 的 ABACUS wall-time 总和为 `10873.6 s`，所有离子
+    阶段均有 `Relaxation is converged` 和 `STRU_ION_D`。详细输入、节点、SCF
+    次数、张量、能量曲率和机械稳定性记录见
+    `v2_abacus_sixstrain_api_audit_20260913.md`。
+
+53. 完整 collector 回读成功：输入哈希、`STRU_INITIAL` 分数坐标、实际 cell 应变、
+    force/stress/energy、内部位移和 13 次 PYATB 均通过。`P4mm` 允许子空间秩为
+    3（压电）和 6（major-symmetric 弹性）；直接 relaxed-ion improper `e` 最大
+    拟合残差 `1.94e-5 C/m^2`，弹性残差 `2.64e-2 kbar`，六个稳定性特征值均为
+    正。该结果仍是单材料/单后端/单幅度审计，Gate C 不变。
+
+54. 发现并修复 `STRU`→`STRU_INITIAL` 别名造成的输入哈希假失败：哈希现在对该别名
+    使用逻辑名 `STRU`，同时保持真正内容变化的拒绝；新增回归测试后 v2 定向测试
+    为 `85 passed`。修正提交为 `15c4fd6`。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `477 passed, 1122 warnings`（本地 editable install
-  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `84 passed`。
+  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `85 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
@@ -275,9 +293,9 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 * **Gate A：**已满足。
 * **Gate B：**进行中；需要 schema/failure contract 评审和完整 v2 synthetic failure matrix。
 * **Gate C：**仍阻塞。collector、单次 PYATB 三方向路径和内部位移拟合接口已接通；
-  tight reference 周围的 `eta_xx` 多幅度差分已初步收敛，且 `1e-8`/`1e-10` SCF
-  对照显示当前几何中 SCF 误差不是主导项。但在报告材料响应常数前，仍必须完成六个
-  应变分量的允许子空间/秩检查、stress 符号与单位、能量曲率、Λ 重建和独立后端核对。
+  `P4mm` 六分量 `±1e-3` 审计已完成，允许子空间/秩、stress 符号与单位、能量曲率
+  和 Λ 重建已有单后端证据。但在报告材料响应常数前，仍必须完成多幅度收敛、
+  work-conjugacy 的独立复核和独立后端核对。
 
 ## 下一步
 
@@ -285,9 +303,9 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
 3. 对 tight reference 核对最终力、应力、空间群、能量和结构对应关系，并保留
    `1e-8`/`1e-10` SCF paired-audit 证据；
-4. 将已通过的 `eta_xx` 多幅度审计扩展到其余应变分量，逐 stage 检查 ionic
+4. 将已通过的六分量 `±1e-3` 审计扩展到 `±2.5e-4`/`±5e-4`，逐 stage 检查 ionic
    convergence、`STRU_ION_D`、实际应变、分支残差和中点一致性；
-5. 只有多幅度差分收敛后，才扩展到六分量、Λ、relaxed-ion `e`/`C`，并单独审计
-   stress 符号/单位和机械稳定性；
+5. 只有多幅度差分收敛后，才冻结 relaxed-ion `e`/`C`/Λ，并单独完成 stress
+   work-conjugacy、单位和机械稳定性审计；
 6. 在 `P4mm` 允许子空间完备的 branch-matched 极化数据上以独立后端或高精度
    参考结果核对，之后才进入正式压电/弹性 CLI 设计。
