@@ -1,7 +1,7 @@
 # ZStar v2 阶段进度记录
 
 **目标线程：**长期推进 ZStar v2；**工作分支：**`zstar-v2-development`
-**更新时间：**2026-09-12（Asia/Shanghai）
+**更新时间：**2026-09-13（Asia/Shanghai）
 
 ## 已完成
 
@@ -368,6 +368,11 @@
     单位后，将 `Gamma.T @ Phi^+ @ Gamma / Omega` 从 eV/Angstrom³ 等能量密度转换到
     Pa/GPa/kbar；缺少任一单位或体积不是长度三次方时拒绝输入。旧的无单位调用仅
     保留给合成代数测试，不能直接作为真实材料常数。
+
+72. 明确分子 `dimensionality=0` 的机械边界：`periodic_strain_indices(())` 现在给出
+    “均匀周期应变未定义”的可操作错误，要求转用分子极化率或显式有限团簇边界模型；
+    新增回归测试。该契约不改变 1D/2D intrinsic strain 规则，也不把分子体系静默
+    扩展为周期弹性响应。
 
 ## 证据状态
 
