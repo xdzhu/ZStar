@@ -8,10 +8,12 @@ from zstar.v2 import (
     allowed_response_basis,
     analyze_space_group,
     displacement_representation,
+    fit_linear_response,
     polarization_representation,
     strain_representation,
     symmetry_adapted_input_plan,
 )
+from zstar.v2.structure import _operation_permutation
 
 
 def test_cubic_space_group_builds_representation_and_forbids_piezo():
@@ -130,3 +132,67 @@ def test_orthorhombic_plan_keeps_elastic_modes_when_piezo_is_forbidden():
     assert plan.complete
     assert plan.allowed_ranks == {"polarization": 0, "strain": 12}
     assert plan.identified_rank == 12
+
+
+def test_five_symmetry_plans_reconstruct_known_allowed_responses_exactly():
+    a = 2.5
+    hexagonal = StructureSpec(
+        lattice=np.array([[a, 0.0, 0.0], [-0.5 * a, 0.5 * np.sqrt(3.0) * a, 0.0], [0.0, 0.0, 20.0]]),
+        fractional_positions=np.array([[0.0, 0.0, 0.0], [1.0 / 3.0, 2.0 / 3.0, 0.0]]),
+        symbols=("B", "N"),
+        dimensionality=DimensionSpec(2, ("x", "y")),
+    )
+    structures = (
+        StructureSpec(np.diag([5.43, 5.43, 5.43]), np.array([[0.0, 0.0, 0.0]]), ("Si",)),
+        StructureSpec(
+            np.diag([3.9, 3.9, 4.1]),
+            np.array([[0, 0, 0], [0.5, 0.5, 0.5], [0.5, 0.5, 0.1], [0.5, 0, 0.6], [0, 0.5, 0.6]]),
+            ("Ba", "Ti", "O", "O", "O"),
+        ),
+        hexagonal,
+        StructureSpec(np.diag([4.0, 5.0, 6.0]), np.array([[0.0, 0.0, 0.0]]), ("X",)),
+        StructureSpec(
+            np.array([[4.1, 0.0, 0.0], [0.2, 5.0, 0.0], [0.1, 0.3, 6.2]]),
+            np.array([[0.13, 0.27, 0.31], [0.61, 0.22, 0.79]]),
+            ("A", "B"),
+        ),
+    )
+    for structure in structures:
+        report = analyze_space_group(structure)
+        plan = symmetry_adapted_input_plan(
+            report, input_kind="strain", output_kinds=("polarization", "strain")
+        )
+        assert plan.complete
+        actual = plan.vectors
+        for output_kind in ("polarization", "strain"):
+            basis = allowed_response_basis(
+                report, input_kind="strain", output_kind=output_kind
+            )
+            coefficients = np.arange(basis.allowed_rank, dtype=float) + 1.0
+            matrix = (
+                basis.matrix_from_coefficients(coefficients)
+                if basis.allowed_rank
+                else np.zeros((basis.output_dimension, basis.input_dimension))
+            )
+            fitted = fit_linear_response(
+                actual, actual @ matrix.T, allowed_basis=basis
+            )
+            assert fitted.complete
+            assert fitted.fit_rank == basis.allowed_rank
+            assert fitted.residual_max < 1.0e-10
+            np.testing.assert_allclose(fitted.matrix, matrix, atol=1.0e-10)
+
+
+def test_operation_permutation_uses_bipartite_matching_for_near_degenerate_sites():
+    structure = StructureSpec(
+        lattice=np.eye(3),
+        fractional_positions=np.array([[0.0, 0.0, 0.0], [6.0e-8, 0.0, 0.0]]),
+        symbols=("X", "X"),
+    )
+    permutation = _operation_permutation(
+        structure,
+        np.diag([-1.0, 1.0, 1.0]),
+        np.array([3.0e-8, 0.0, 0.0]),
+        tolerance=5.0e-8,
+    )
+    assert permutation == (1, 0)

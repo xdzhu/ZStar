@@ -142,21 +142,44 @@ def _operation_permutation(
     tolerance: float,
 ) -> tuple[int, ...] | None:
     transformed = (structure.fractional_positions @ rotation.T + translation) % 1.0
-    permutation: list[int] = []
-    used: set[int] = set()
+    candidate_lists: list[list[tuple[float, int]]] = []
     for index, position in enumerate(transformed):
-        candidates = [
-            target
+        candidates = sorted(
+            (
+                _wrapped_distance(position, structure.fractional_positions[target], structure.lattice),
+                target,
+            )
             for target, symbol in enumerate(structure.symbols)
-            if symbol == structure.symbols[index] and target not in used
-        ]
-        if not candidates:
+            if symbol == structure.symbols[index]
+        )
+        if not candidates or candidates[0][0] > tolerance:
             return None
-        target = min(candidates, key=lambda item: _wrapped_distance(position, structure.fractional_positions[item], structure.lattice))
-        if _wrapped_distance(position, structure.fractional_positions[target], structure.lattice) > tolerance:
+        candidate_lists.append([item for item in candidates if item[0] <= tolerance])
+
+    # Resolve the species-preserving assignment as a bipartite matching rather
+    # than a greedy nearest-neighbour walk.  Near-degenerate Wyckoff sites can
+    # make a greedy choice consume the only target of a later atom even though
+    # a valid bijection exists.
+    source_order = sorted(range(len(candidate_lists)), key=lambda item: (len(candidate_lists[item]), item))
+    target_owner: dict[int, int] = {}
+
+    def assign(source: int, visited: set[int]) -> bool:
+        for _distance, target in candidate_lists[source]:
+            if target in visited:
+                continue
+            visited.add(target)
+            owner = target_owner.get(target)
+            if owner is None or assign(owner, visited):
+                target_owner[target] = source
+                return True
+        return False
+
+    for source in source_order:
+        if not assign(source, set()):
             return None
-        permutation.append(target)
-        used.add(target)
+    permutation = [0] * len(candidate_lists)
+    for target, source in target_owner.items():
+        permutation[source] = target
     return tuple(permutation)
 
 

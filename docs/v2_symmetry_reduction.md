@@ -60,7 +60,8 @@ L D_input(g) = D_output(g) L    for every accepted g.
    重新读取 \(\Delta u\)。
 
 site stabilizer 只用于旋转响应，不把不同 Wyckoff site 的原子合并；原子等价类由
-完整 `p_g` 决定。
+完整 `p_g` 决定。每个操作的原子映射通过 species-preserving 二分图匹配求双射，
+不使用可能被近简并 Wyckoff 位点误导的贪心最近邻分配。
 
 ### 3.2 应变
 
