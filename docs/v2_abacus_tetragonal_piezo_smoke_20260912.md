@@ -81,3 +81,32 @@ Cartesian directional tuple。轴向 tuple 求和后的 Cartesian 极化为：
 真实 ABACUS 输出、restart 和完整 provenance 留在节点共享目录的临时 smoke 目录，
 未提交到 Git；后续若将此案例升级为 benchmark，必须补充独立计算器/高精度参考、
 完整六分量或对称完备应变集合、`proper e`、relaxed-ion e 及收敛表。
+
+## 补齐独立应变后的完整性 smoke
+
+随后补充了 `eta_yy`、`eta_zz` 和 `eta_xz` 的正负对（总计 4 个应变方向、8 个
+应变结构，加 reference 共 9 个 SCF；每个结构再做 3 个 gdir，共 27 个 Berry
+NSCF）。全部阶段 `exit_code=0`，解析器、轴向 tuple 求和和 reference branch
+matching 均成功。SCF wall time 为 226–251 s；Berry wall time 为 126–139 s，
+此前受 cu26 竞争影响的 gdir=3 除外（reference/`strain-001−` 分别 282/302 s）。
+按日志的串行 wall-time 加总为 SCF 2160 s、Berry 3888 s；实际采用三节点分波，
+未修改 PBS 占位作业。
+
+`P4mm` 允许的 strain→polarization 子空间秩为 3；这组采样的输入秩为 4、拟合
+秩为 3，`complete=True`。以 branch-matched 的轴向求和 Cartesian 极化做 draft raw
+fit（单位 C/m²，engineering-Voigt 顺序 `xx,yy,zz,2yz,2xz,2xy`）得到：
+
+```text
+e_raw = [[ 0,        0,        0,        0,        0.32860, 0],
+         [ 0,        0,        0,        0.32860,  0,       0],
+         [-0.05865, -0.05865, -0.44435,  0,        0,       0]] C/m^2
+```
+
+其中 `e15=e24` 和 `e31=e32` 与 `P4mm` 约束一致；线性 fit 的最大重建残差为
+`5.5×10⁻⁷ C/m²`。各样本 branch shift 仍为零，最大 reference-matching residual
+为 `4.449×10⁻⁴ C/m²`，这是有限应变引起的物理 ΔP，不是 branch jump。
+
+该矩阵只证明“独立响应自由度已被采样且数值链闭合”，不能作为 BaTiO₃ 的发表值：
+结构是人为极性位移、未做离子弛豫；只有 `|eta|=0.001` 一个幅度；还未分离
+clamped-ion/relaxed-ion、proper/improper 和内部应变贡献，也未与 VASP/QE 或高精度
+ABACUS 参考交叉验证。任何正式结果必须先通过多幅度、收敛、应力符号和独立后端门控。

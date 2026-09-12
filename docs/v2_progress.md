@@ -55,10 +55,11 @@
 19. 已加入低维安全门：`dimensionality < 3` 的 ABACUS Berry 极化不会被按三维
     `C/m^2` 静默收集；在 sheet/line 归一化、真空依赖和边界条件明确前，collector
     给出可操作的失败提示。对应 failure-matrix 测试已加入。
-20. 已在人为构造的非中心对称 tetragonal BaTiO₃ (`P4mm`) 上完成 3 个 SCF + 9 个
-    Berry NSCF 的小规模链路 smoke。reference 极化约 `0.348069 C/m²`，但只采样
-    `eta_xx` 正负对，允许秩 3 而拟合秩 1，故 `complete=False`，没有把欠定 fit 写成
-    压电材料结论。详细输入哈希、节点计时和失败门见
+20. 已在人为构造的非中心对称 tetragonal BaTiO₃ (`P4mm`) 上完成 9 个 SCF + 27 个
+    Berry NSCF 的算法完整性 smoke。补齐 `eta_xx/eta_yy/eta_zz/eta_xz` 正负对后，
+    允许秩 3、拟合秩 3，`complete=True`，最大线性重建残差为 `5.5e-7 C/m²`，且
+    `e15=e24`、`e31=e32` 满足 `P4mm` 约束。该单幅度、未弛豫人工结构结果只用于
+    证明采样和重建链闭合，不作为材料压电值。详细输入哈希、节点计时和失败门见
     [`v2_abacus_tetragonal_piezo_smoke_20260912.md`](v2_abacus_tetragonal_piezo_smoke_20260912.md)。
 
 ## 证据状态
@@ -75,8 +76,9 @@
 ## 资源状态
 
 PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当前用户的
-40 核占位作业持有。用户已明确授权在这些节点上直接运行 v2；后续仍须每个节点不
-超过 40 核、先做 smoke、记录 MPI/OpenMP/wall time，并避免修改占位作业本身。
+40 核占位作业持有。用户已明确授权在这些节点上直接运行 v2；算法 smoke 已完成，
+从下一批正式第一性原理任务起固定使用每任务 `40 MPI x 1 OpenMP`，记录节点、
+MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身。
 
 ## 当前门控
 
