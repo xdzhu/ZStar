@@ -219,6 +219,11 @@
     “reference 已平衡、响应尚未幅度收敛”；平衡 ±`1e-3` 正在作为最后的截断误差
     诊断，Gate C 仍阻塞。
 
+46. 进一步检查发现各 balanced stage 的最终最大力残差约为 `7.5e-5--3.6e-4
+    eV/Angstrom`，不能把幅度差异直接归因于物理非线性。保持 `scf_thr=1e-8`，另建
+    `force_thr_ev=1e-4` 的 ±`2.5e-4` tight audit（cu24/cu25，40 MPI）以分离离子
+    收敛误差；在该审计结束前不接受任何材料响应常数。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `475 passed, 1122 warnings`（本地 editable install

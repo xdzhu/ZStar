@@ -154,5 +154,11 @@ midpoint(reference-subtracted) = (7.22e-10, 5.51e-10, 1.8070e-04) C/m^2
 
 The c derivative changes by about a factor of seven between balanced
 `±2.5e-4` and `±5e-4`, so the response is still not numerically converged.
-The balanced `±1e-3` pair is being used as the final amplitude diagnostic;
-until it is compared, the correct status remains “algorithm audit blocked”.
+The final force residuals are also not uniform: the balanced points span about
+`7.5e-5` to `3.6e-4 eV/Angstrom` under the nominal `5e-4` threshold.  Ionic
+relaxation noise can therefore contaminate the small polarization differences;
+the derivative discrepancy is not yet a clean physical-nonlinearity claim.
+The balanced `±1e-3` pair is complete, but a tighter `force_thr_ev=1e-4`
+±2.5e-4 audit is now running to separate force-convergence error from response
+nonlinearity.  Until that comparison is made, the correct status remains
+“algorithm audit blocked”.
