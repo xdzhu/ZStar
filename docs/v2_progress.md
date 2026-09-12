@@ -194,6 +194,19 @@
     高力 reference；相关定向测试为 `38 passed`。这只收紧算法正确性契约，不改变
     v1 接口，也不引入 CLI 或集群调度逻辑。
 
+42. 在 cu17 完成了独立 fixed-cell reference relaxation（40 MPI，约 1209 s）：最大
+    力 `0.000488 eV/Angstrom`，达到 `force_thr_ev=0.0005`；最终能量
+    `-3729.323887441615625 eV`，应力仍约 `(68.1855, 68.1855, 23.5694) kbar`。
+    对该最终结构只运行一次 PYATB 得到
+    `(6.9583213193e-08, 5.9093019978e-08, 3.9500998393e-01) C/m^2`，与旧 relaxed
+    ±应变点的 c 分量对齐，确认旧偏移源于未平衡 reference。
+
+43. 重建平衡 reference 周围的 ±`2.5e-4` 应变时，输入审计先发现一次错误：误用
+    旧目录的零应变 `STRU_INITIAL`，使两项实际变成 zero-strain。两项 40-rank 任务
+    已完成但整体移入 `OUT.POLAR_BAL_XX_{P025,M025}.wrong-cell-20260912`，明确排除；
+    随后按保留旧 ±晶格、替换为平衡内部坐标的规则重新启动。该事件再次说明必须在
+    SCF 前检查实际晶格和序列化结构，不能只相信目录名或 nominal amplitude。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install

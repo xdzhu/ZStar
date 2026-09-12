@@ -93,6 +93,20 @@ strain points around that relaxed reference and repeat the amplitude audit.
 An isolated reference relaxation was started in
 `reference-relaxed-audit-20260912` on cu17 with the same `40 MPI x 1 OpenMP`,
 `scf_thr=1e-8`, PBEsol/LCAO settings and `force_thr_ev=0.0005`.  Its output is
-not included until ionic convergence and the final structure are independently
-checked.  No production CLI or workflow claim is made from the present data.
+now converged in 1209 s with maximum force `0.000488 eV/Angstrom` and final
+energy `-3729.323887441615625 eV`.  The fixed-cell diagonal stress remains
+approximately `(68.1855, 68.1855, 23.5694) kbar`; this is an internally
+equilibrated fixed-cell reference, not a zero-stress volume optimization.  Its
+single PYATB result is
+`(6.9583213193e-08, 5.9093019978e-08, 3.9500998393e-01) C/m^2`, which aligns
+with the c-polarization of the old relaxed ±strain points and confirms their
+common `~0.395` offset was caused by the unrelaxed reference.
 
+The next ±2.5e-4 points are being recomputed from this equilibrated internal
+structure while preserving the actual ± strained cells.  An initial attempt
+was discarded: a provenance check found that it had accidentally used the old
+`STRU_INITIAL` (zero-strain cell) and therefore produced two zero-strain jobs.
+Those outputs are archived as `OUT.POLAR_BAL_XX_{P025,M025}.wrong-cell-20260912`
+and are excluded from all results.  No production CLI or workflow claim is
+made from the corrected jobs until both their cells, ionic convergence and
+polarization are independently checked.
