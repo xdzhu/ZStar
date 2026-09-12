@@ -203,6 +203,11 @@ relaxed-ion 组合。`remove_acoustic_translation` 提供等权或用户权重�
 internal-strain coupling 和 homogeneous-strain response 联合构成。实现时必须保留
 固定内部坐标的结构和每个弛豫结构的收敛力阈值。
 
+`Lambda` 的数值必须与长度单位一起保存。对于以 `C/m^2` 返回的实现，体积用
+`m^3`，并将 `Lambda` 显式转换为米；计算器输出的 `Angstrom` 数值不能直接代入
+`q_e/Omega`。v2 algebra API 使用 `internal_strain_unit` 明确这一转换，默认 `m`
+仅为保持无单位合成测试的向后兼容；实际 ABACUS 位移拟合应传入 `angstrom`。
+
 还有一个不可省略的参考态条件：relaxed-ion 差分的零应变 reference 必须已经在
 同一电场/机械边界下满足内部力平衡（以及所采用边界下的应力条件），并且要记录其
 最大残余力、应力和空间群。若 reference 只是未弛豫的单点 SCF，±应变弛豫可能进入

@@ -324,6 +324,17 @@ def test_relaxed_ion_algebra_matches_definitions():
     np.testing.assert_allclose(contribution, expected_contribution)
     np.testing.assert_allclose(relaxed, e0 + expected_contribution)
 
+    # Calculator displacement fits are commonly stored in Angstrom.  The
+    # relaxed-ion formula is SI when volume is m^3, so the conversion must be
+    # explicit rather than silently treating an Angstrom value as metres.
+    _, angstrom_contribution = relaxed_piezoelectric(
+        np.zeros((3, 6)), born, lam, 2.0, charge=1.0,
+        internal_strain_unit="angstrom",
+    )
+    np.testing.assert_allclose(angstrom_contribution, expected_contribution * 1.0e-10)
+    with pytest.raises(ValueError, match="internal_strain_unit"):
+        relaxed_piezoelectric(np.zeros((3, 6)), born, lam, 2.0, internal_strain_unit="eV")
+
     c0 = np.eye(6) * 10.0
     crel, lam2, correction = relaxed_elastic(c0, phi, gamma, 2.0)
     np.testing.assert_allclose(lam2, expected_lambda)

@@ -21,7 +21,12 @@ def _canonical(unit: str) -> str:
     aliases = {
         "å": "angstrom",
         "a": "angstrom",
+        "angstrom": "angstrom",
         "angstroms": "angstrom",
+        "meter": "m",
+        "meters": "m",
+        "metre": "m",
+        "metres": "m",
         "m": "m",
         "ev/a": "ev_per_angstrom",
         "ev/å": "ev_per_angstrom",

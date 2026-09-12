@@ -288,6 +288,23 @@
     `C33` 从 `3194.04` 降至 `1420.08 kbar`。这只证明边界条件分离和内部弛豫
     软化的数值链路，尚不等于最终 `Z*/Omega · Lambda` 规范已经冻结。
 
+58. 在同一 tight P4mm BaTiO3 reference 上完成 v1 Unified symmetry-adapted BEC
+    审计：4 个独立 site、8 个中心差分 stage，实际位移范数全部为 `0.010000 Å`；
+    9 个几何各运行一次 PYATB 并得到 a/b/c 三方向极化。投影 BEC 的声学和最大
+    误差为 `8.9e-16 e`，site 位移秩均为 3；ABACUS wall-time `1246.922 s`
+    （约 `13.855` 个 40 核 core-hours），详情见
+    `v2_abacus_bec_audit_20260913.md`。
+
+59. BEC 与同一 relaxed-ion 六分量应变 ensemble 的 `Lambda` 做了实测重建。发现
+    algebra API 原先会把 Å 数值直接代入 `q/Omega`，造成 `1e10` 的单位错误；现已
+    增加显式 `internal_strain_unit` 转换，新增回归测试覆盖 `angstrom -> m` 和
+    非法单位拒绝。该修正只在 v2 algebra 层，未改变 v1 入口。
+
+60. 使用 `internal_strain_unit="angstrom"` 后，BEC/`Lambda` 重建的 relaxed-ion
+    `e` 与直接应变拟合最大差为 `6.32e-4 C/m^2`（单材料、单后端、不同响应
+    ensemble 的有限步长误差量级）；该结果支持单位一致的 `Z*Lambda` 链路，但
+    Gate C 仍需 acoustic gauge、Gamma/IFC 和独立后端复核。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install
@@ -323,7 +340,8 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 3. 对 tight reference 核对最终力、应力、空间群、能量和结构对应关系，并保留
    `1e-8`/`1e-10` SCF paired-audit 证据；
 4. 将 clamped/relaxed 两组结果接入 `Z*`、`Lambda` 和体积/声学规范的显式代数，
-   先用合成数据和独立 Born 电荷结果验证，再考虑冻结 relaxed-ion 公式；
+   已完成合成数据、单位转换和 exact-geometry BEC 链路；下一步仍需独立 Born/IFC
+   结果和 acoustic gauge 约定后才考虑冻结 relaxed-ion 公式；
 5. 独立复核 ABACUS stress work-conjugacy、单位和能量曲率，并记录
    `scf_thr=1e-8`/`1e-10` 对力噪声的 paired audit；更高 SCF 精度可作为离子收敛
    较困难体系的诊断选项，不能未经审计就全局提高；

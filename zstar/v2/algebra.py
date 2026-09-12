@@ -6,7 +6,7 @@ from typing import Iterable
 
 import numpy as np
 
-from .units import ELEMENTARY_CHARGE
+from .units import ELEMENTARY_CHARGE, convert_values
 
 
 def _finite(value: np.ndarray | Iterable[float], name: str) -> np.ndarray:
@@ -70,12 +70,15 @@ def relaxed_piezoelectric(
     volume: float,
     *,
     charge: float = ELEMENTARY_CHARGE,
+    internal_strain_unit: str = "m",
 ) -> tuple[np.ndarray, np.ndarray]:
     """Combine clamped-ion and internal-strain piezoelectric contributions.
 
     ``born_effective_charges`` uses ``(atom, polarization, displacement)`` and
     ``internal_strain`` uses ``(atom, displacement, voigt)``.  ``volume`` is
-    expressed in m^3 when the returned tensor is in C m^-2.
+    expressed in m^3 when the returned tensor is in C m^-2.  The
+    ``internal_strain_unit`` argument declares the length unit used by
+    ``internal_strain``; pass ``"angstrom"`` for calculator displacement fits.
     """
 
     e0 = _finite(clamped_piezo, "clamped_piezo")
@@ -91,7 +94,13 @@ def relaxed_piezoelectric(
         raise ValueError("volume must be finite and positive")
     if not np.isfinite(charge) or float(charge) <= 0.0:
         raise ValueError("charge must be finite and positive")
-    contribution = float(charge) / float(volume) * np.einsum("iab,ibm->am", born, lam)
+    try:
+        lambda_m = convert_values(lam, internal_strain_unit, "m")
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "internal_strain_unit must be a supported length unit (m or angstrom)"
+        ) from exc
+    contribution = float(charge) / float(volume) * np.einsum("iab,ibm->am", born, lambda_m)
     return e0 + contribution, contribution
 
 
