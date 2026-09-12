@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
 
 import numpy as np
 import pytest
@@ -72,6 +73,26 @@ def test_abacus_strain_collection_rejects_changed_serialized_input_hash(tmp_path
 
     with pytest.raises(ValueError, match="input hash mismatch"):
         collect_abacus_strain_response(tmp_path / "hashed-strain")
+
+
+def test_input_hash_is_stable_when_stru_is_preserved_as_initial_alias(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "alias-strain",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+        symprec=1.0e-3,
+    )
+    from zstar.v2.strain import _input_hash
+
+    stage = tmp_path / "alias-strain" / "strain-001+"
+    before = _input_hash(stage)
+    shutil.copy2(stage / "STRU", stage / "STRU_INITIAL")
+    (stage / "STRU").unlink()
+    expected = next(item.input_hash for item in result["ensemble"].stages if item.stage_id == "strain-001+")
+    assert _input_hash(stage) == before == expected
 
 
 def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input(tmp_path):

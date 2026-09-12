@@ -76,7 +76,12 @@ def _input_hash(directory: Path) -> str:
     if not candidates:
         raise ValueError(f"cannot compute v2 input hash: no serialized inputs in {root}")
     for candidate in sorted(set(candidates), key=lambda item: item.name.lower()):
-        digest.update(candidate.name.encode("utf-8"))
+        # ``STRU_INITIAL`` is a provenance-preserving alias for the original
+        # serialized ``STRU``.  Use the logical input name in the digest so
+        # post-processing may preserve the pre-relaxation structure without
+        # invalidating an ensemble hash generated before the alias existed.
+        logical_name = "STRU" if candidate.name == "STRU_INITIAL" else candidate.name
+        digest.update(logical_name.encode("utf-8"))
         digest.update(b"\0")
         digest.update(candidate.read_bytes())
         digest.update(b"\0")
