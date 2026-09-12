@@ -161,6 +161,15 @@ ABACUS 优先接入既有 `shared_abacus.py`/PYATB；VASP/CP2K/QE/ABINIT 只有�
 calculator outputs. This is a safety gate, not a band-gap calculation: the
 adapter or user must supply the independently verified insulating status.
 
+The collector remains bulk-normalized by default. An explicitly selected
+`normalize_low_dimensional=True` path may append `polarization_intrinsic` for a
+2D slab (`C/m`, periodic-plane projection and `Omega/A` height) or a 1D wire
+(`C`, periodic-axis projection and transverse area). The geometric factor,
+projection, periodic axes, and boundary-condition label are serialized in the
+quantity provenance. This is a normalization/inspection path only: it does
+not establish an open-boundary electrostatic solution or authorize 1D/2D
+piezoelectric, elastic, flexoelectric, or molecular-polarization claims.
+
 ## 6. CLI 设计门
 
 第一轮不增加 CLI。后续顺序必须是：

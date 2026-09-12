@@ -13,6 +13,7 @@ from ..dimensions import DimensionSpec
 from ..shared_response import read_structure
 from .ensemble import ResponseEnsemble
 from .model import BoundaryConditions, ResponseDocument, TensorQuantity
+from .normalization import normalize_polarization
 from .polarization import (
     PolarizationSample,
     assemble_cartesian_polarization,
@@ -584,6 +585,7 @@ def collect_pyatb_strain_response(
     root: str | Path,
     *,
     require_precision: bool = True,
+    normalize_low_dimensional: bool = False,
 ) -> ResponseDocument:
     """Collect SCF force/stress data and one PYATB polarization run per stage.
 
@@ -592,6 +594,11 @@ def collect_pyatb_strain_response(
     with the stage-specific quanta, then each matched sample is converted to
     Cartesian coordinates using the stage lattice. This is the v1-compatible
     production path; the ABACUS gdir triplet collector remains an audit lane.
+    Bulk (3D) collection is the default. For an explicitly declared 1D/2D
+    ensemble, ``normalize_low_dimensional=True`` additionally stores an
+    intrinsic line/sheet polarization after applying the documented geometric
+    projection. It does not enable low-dimensional piezoelectric or elastic
+    claims, and it rejects molecular (0D) bulk polarization.
     """
 
     base = Path(root).resolve()
@@ -610,10 +617,18 @@ def collect_pyatb_strain_response(
     stage_paths = [base / "reference"] + [base / stage.stage_id for stage in ensemble.stages]
     if len(stage_paths) != len(stage_names):
         raise ValueError("SCF stage order does not match ensemble provenance")
-    if ensemble.dimensionality != 3:
+    if not isinstance(normalize_low_dimensional, bool):
+        raise TypeError("normalize_low_dimensional must be a bool")
+    dimensions = scf_document.dimensionality
+    if dimensions.value != 3 and not normalize_low_dimensional:
         raise ValueError(
             "PYATB bulk polarization collection currently requires dimensionality=3; "
-            "define sheet/line normalization before collecting lower-dimensional data"
+            "set normalize_low_dimensional=True only after choosing an explicit sheet/line boundary"
+        )
+    if dimensions.value == 0 and normalize_low_dimensional:
+        raise ValueError(
+            "PYATB bulk polarization cannot be normalized for dimensionality=0; "
+            "collect a molecular dipole instead"
         )
 
     if not isinstance(require_precision, bool):
@@ -649,7 +664,7 @@ def collect_pyatb_strain_response(
             reference.values,
             sample.values,
             np.diag(sample.quanta),
-            periodic_axes=(0, 1, 2),
+            periodic_axes=dimensions.periodic_axes,
         )
         matched_directional.append(match.matched)
         branch_shifts.append(match.branch_shift)
@@ -667,7 +682,7 @@ def collect_pyatb_strain_response(
                 axes=("stage", "lattice_direction"),
                 coordinate_system="lattice_direction_scalar",
                 boundary_conditions=polarization_boundary,
-                periodic_axes=("x", "y", "z"),
+                periodic_axes=dimensions.periodic_axes,
                 normalization="cell_volume",
                 source="pyatb_berry",
                 backend="pyatb",
@@ -681,7 +696,7 @@ def collect_pyatb_strain_response(
                 axes=("stage", "lattice_direction"),
                 coordinate_system="lattice_direction_scalar",
                 boundary_conditions=polarization_boundary,
-                periodic_axes=("x", "y", "z"),
+                periodic_axes=dimensions.periodic_axes,
                 normalization="cell_volume",
                 source="pyatb_berry",
                 backend="pyatb",
@@ -695,7 +710,7 @@ def collect_pyatb_strain_response(
                 axes=("stage", "lattice_direction"),
                 coordinate_system="lattice_direction_scalar",
                 boundary_conditions=polarization_boundary,
-                periodic_axes=("x", "y", "z"),
+                periodic_axes=dimensions.periodic_axes,
                 normalization="cell_volume",
                 source="branch_matching",
                 backend="pyatb",
@@ -713,7 +728,7 @@ def collect_pyatb_strain_response(
                 axes=("stage", "cartesian"),
                 coordinate_system="cartesian_right_handed",
                 boundary_conditions=polarization_boundary,
-                periodic_axes=("x", "y", "z"),
+                periodic_axes=dimensions.periodic_axes,
                 normalization="cell_volume",
                 source="pyatb_berry",
                 backend="pyatb",
@@ -726,6 +741,43 @@ def collect_pyatb_strain_response(
             ),
         )
     )
+    if normalize_low_dimensional:
+        normalized = [
+            normalize_polarization(
+                value,
+                lattice,
+                dimensionality=dimensions.value,
+                periodic_axes=dimensions.periodic_axes,
+                boundary_condition="explicit_slab_or_wire",
+            )
+            for value, lattice in zip(cartesian, lattices)
+        ]
+        units = {item.unit for item in normalized}
+        normalizations = {item.normalization for item in normalized}
+        if len(units) != 1 or len(normalizations) != 1:
+            raise ValueError("low-dimensional polarization stages produced inconsistent normalization")
+        quantities.append(
+            TensorQuantity(
+                name="polarization_intrinsic",
+                values=np.asarray([item.values for item in normalized]),
+                unit=normalized[0].unit,
+                axes=("stage", "cartesian"),
+                coordinate_system="cartesian_right_handed",
+                boundary_conditions=polarization_boundary,
+                periodic_axes=dimensions.periodic_axes,
+                normalization=normalized[0].normalization,
+                source="explicit_low_dimensional_normalization",
+                backend="zstar-v2",
+                ion_relaxation=ion_relaxation,
+                provenance={
+                    "stage_names": stage_names,
+                    "geometric_factors_si": [item.geometric_factor_si for item in normalized],
+                    "geometric_factor_units": [item.geometric_factor_unit for item in normalized],
+                    "projection": [item.projection for item in normalized],
+                    "boundary_condition": [item.boundary_condition for item in normalized],
+                },
+            )
+        )
     provenance = dict(scf_document.provenance)
     provenance.update(
         {
@@ -744,6 +796,7 @@ def collect_pyatb_strain_response(
             "pyatb_run_count": len(samples),
             "pyatb_precision_required": require_precision,
             "pyatb_precision_complete": not missing_precision,
+            "low_dimensional_normalization": normalize_low_dimensional,
             "branch_shift_max": int(np.max(np.abs(np.asarray(branch_shifts)))),
             "branch_residual_max": float(max(residuals)),
         }

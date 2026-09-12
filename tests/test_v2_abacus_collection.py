@@ -470,6 +470,37 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     )
 
 
+def test_collect_pyatb_strain_response_normalizes_explicit_two_dimensional_polarization(tmp_path):
+    root = tmp_path / "slab-ensemble"
+    _stage(root / "reference")
+    _pyatb_output(root / "reference", (0.0, 0.0, 0.0))
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
+        _pyatb_output(root / stage.stage_id, (0.1, 0.2, 0.3))
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        dimensionality=2,
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match="dimensionality=3"):
+        collect_pyatb_strain_response(root)
+    document = collect_pyatb_strain_response(root, normalize_low_dimensional=True)
+    intrinsic = document.quantity("polarization_intrinsic")
+    assert intrinsic.unit == "C/m"
+    assert intrinsic.normalization == "sheet_area"
+    assert intrinsic.periodic_axes == ("x", "y")
+    np.testing.assert_allclose(
+        intrinsic.values,
+        [[0.0, 0.0, 0.0], [1.0e-11, 2.0e-11, 0.0], [1.0e-11, 2.0e-11, 0.0]],
+    )
+    assert intrinsic.provenance["geometric_factor_units"] == ["m", "m", "m"]
+    assert document.metadata["low_dimensional_normalization"] is True
+
+
 def test_collect_pyatb_strain_response_rejects_quantized_writer_by_default(tmp_path):
     root = tmp_path / "ensemble"
     _stage(root / "reference")

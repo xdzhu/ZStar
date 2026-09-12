@@ -93,7 +93,9 @@ def normalize_polarization(
     """
 
     values = _polarization(polarization)
-    if "".join(str(source_unit).lower().split()) not in {"c/m^2", "c/m2", "c*m^-2"}:
+    if "".join(str(source_unit).lower().split()) not in {
+        "c/m^2", "c/m2", "c*m^-2", "cm^-2", "cm-2"
+    }:
         raise ValueError("source_unit must be C/m^2 for low-dimensional polarization normalization")
     dimensions = DimensionSpec(int(dimensionality), None if periodic_axes is None else tuple(periodic_axes))
     raw_cell = _lattice(lattice)

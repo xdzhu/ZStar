@@ -344,12 +344,18 @@
     极化。合成真空扫描和 wire 归一化测试通过。该层只解决几何/单位，不开放尚未
     验证的低维压电、弹性或开放方向响应。
 
+67. 将显式低维归一化接入 PYATB strain collector 的可选路径：默认仍要求 3D bulk
+    语义；`normalize_low_dimensional=True` 时才追加 `polarization_intrinsic`，并把
+    `C/m`/`C` 单位、周期轴、投影、几何因子和边界标签写入 provenance。新增 2D
+    collector 回归，确认单次 PYATB 三方向输出可直接复用，且不会悄然开启低维
+    压电或弹性结论。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install
-  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `86 passed`。
+* v2 独立 worktree 的完整回归为 `490 passed, 1131 warnings`（本地 editable install
+  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `97 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 96 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 97 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
