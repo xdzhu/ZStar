@@ -126,6 +126,7 @@ def run_phonopy_and_process_files(
     abacus_sub: Optional[str] = "abacus_x.sh",
     vasp_sub: Optional[str] = "vasp_scf.sh",
     node: str = "s1",
+    input_file: str | Path = "INPUT",
 ) -> list[str]:
     """Generate displacement folders without requiring a copied job script.
 
@@ -151,14 +152,18 @@ def run_phonopy_and_process_files(
         return [s['name'] for s in metadata['stages']]
     structure_text = structure.read_text(encoding="utf-8", errors="ignore")
     is_abacus = "ATOMIC_SPECIES" in structure_text
+    workdir = Path.cwd().resolve()
+    input_path = Path(input_file)
+    if not input_path.is_absolute():
+        input_path = workdir / input_path
     if is_abacus:
-        for required in ("INPUT", "KPT"):
-            if not (Path.cwd() / required).is_file():
+        for required in (input_path, workdir / "KPT"):
+            if not required.is_file():
                 raise FileNotFoundError(
                     f"{required} is required beside STRU to prepare ABACUS "
                     "phonon displacement folders"
                 )
-        input_text = (Path.cwd() / "INPUT").read_text(
+        input_text = input_path.read_text(
             encoding="utf-8",
             errors="ignore",
         )
@@ -178,7 +183,6 @@ def run_phonopy_and_process_files(
         calculator="abacus" if is_abacus else "vasp",
     )
 
-    workdir = Path.cwd().resolve()
     stru_files = sorted(
         path
         for path in workdir.glob("STRU-*")
@@ -195,7 +199,7 @@ def run_phonopy_and_process_files(
             number = displaced.name.split("-", 1)[1]
             target = workdir / f"disp-{number}"
             target.mkdir(parents=True, exist_ok=True)
-            create_symlink(workdir / "INPUT", target / "INPUT")
+            create_symlink(input_path, target / "INPUT")
             create_symlink(workdir / "KPT", target / "KPT")
             create_symlink(displaced, target / "STRU")
             _copy_abacus_assets(assets, target)

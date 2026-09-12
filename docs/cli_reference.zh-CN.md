@@ -23,7 +23,7 @@ pre -> job (optional) -> run -> stat -> post
 | 功能族 | 规范动作 | 用途 |
 | --- | --- | --- |
 | `zstar bec` | `pre/job/run/stat/post` | 极化、APT/BEC 与 `BORN`；支持 ABACUS + PYATB、VASP、CP2K、QE。 |
-| `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep` | 位移、串行力计算、力常数、频率与 Gamma 点不可约表示。 |
+| `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep/spectrum` | 位移、串行力计算、力常数、频率、Gamma 点不可约表示、有限波矢声子能带与 DOS。 |
 | `zstar spectra` | `pre/job/run/stat/post` | ABACUS + PYATB、VASP、CP2K、QE 的 IR 与 Raman 工作流。 |
 | `zstar dielectric` (`diel`) | `static` (`zero`)、`freq`、`optics` | 晶格静态响应、频率相关振动响应与电子光学响应。 |
 | `zstar backend list` | `--check`、`--json`、`--discover` | 列出已实现能力，并可检查本机程序或第三方插件。 |
@@ -131,15 +131,30 @@ Unified BEC/Gamma 声子位移，自动选择所需正负位移。计算器和 `
 [Unified BEC/声子教程](research/shared_response/USAGE.zh-CN.md)。
 
 Unified Gamma 流程的 `zstar bec post` 已同时生成声子结果。有限波矢/扩胞声子
-请在另一个独立目录中准备：
+请在另一个独立目录中准备；加入 `--spectrum` 可启用完整的 Phonopy 能带与
+DOS 流程：
 
 ```bash
-zstar phonon pre --stru STRU --dim "2 2 2"
-zstar phonon run
-zstar phonon stat
-zstar phonon post
-zstar phonon irrep
+zstar phonon pre --spectrum --root . --stru STRU --input INPUT
+zstar phonon run --root .
+zstar phonon stat --root .
+zstar phonon post --root . --stru STRU --physical-dim 3
+cp path/to/BORN .
+zstar phonon spectrum --root . --nac
 ```
+
+`--input` 默认为 `INPUT`，也接受用户提供的 ABACUS CPU 或 GPU 输入文件。
+ZStar 只会在每个位移目录中将其作为 `INPUT` 使用，不会修改其中的计算器相关
+参数；输入文件必须包含 `cal_force 1`。三维 bulk 通常采用
+`OMP_NUM_THREADS=1` 并尽量增加 MPI ranks，低维体系和分子则可采用较少 MPI
+ranks 与更多 OpenMP 线程。实际资源由作业头文件和执行配置控制。
+
+不指定 `--supercell` 时，ZStar 会将每个周期性晶格矢量扩展到严格大于
+10 Angstrom；使用 `--supercell "2 2 2"` 可显式指定扩胞倍数。高对称路径由
+Seekpath 生成，并使用 spglib 的标准化对称性数据。三维体材料在存在 `BORN`
+时默认生成未加 NAC、加 NAC 和蓝红叠加对比的三张 PDF 图，同时写出 PNG
+预览和 JSON 元数据；使用 `--no-nac` 只生成未修正图。NAC 仅对具有匹配
+`BORN` 文件的三维体材料启用。
 
 IR 与 Raman：
 

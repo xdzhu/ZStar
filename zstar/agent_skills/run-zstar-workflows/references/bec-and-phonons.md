@@ -110,19 +110,32 @@ and retain full-precision polarization. Charge cubes must be private copies.
 All stages must have matching polarization grids, valence counts, and occupied
 bands. Negative optical frequencies must not be hidden in a static response.
 
-For a finite-q supercell workflow, use a separate directory:
+For a finite-q supercell workflow, use a separate directory. The spectrum
+variant also writes Phonopy band and DOS plots:
 
 ```bash
-zstar phonon pre --stru STRU --dim "2 2 2"
+zstar phonon pre --spectrum --stru STRU --input INPUT --supercell "2 2 2" --physical-dim 3
 zstar phonon run --root .
 zstar phonon stat --root .
-zstar phonon post --root .
-zstar phonon irrep --root . --file irreps.yaml --mode db
+zstar phonon post --root . --stru STRU --physical-dim 3
 cp path/to/bec/BORN .
-cp path/to/bec/BEC.dat .
-zstar dielectric static --qpoints qpoints.yaml --born BEC.dat --dielectric BORN --dim 3
-zstar dielectric freq --qpoints qpoints.yaml --born BEC.dat --dielectric BORN --dim 3
+zstar phonon spectrum --root . --nac
 ```
+
+The `--input` option defaults to `INPUT` and can point to a user-owned ABACUS
+CPU/GPU input. It is staged as `INPUT` in each displacement directory without
+editing calculator-specific settings; require `cal_force 1`. For 3D bulk,
+prefer MPI ranks with one OpenMP thread per rank. For lower-dimensional or
+molecular cases, use the allocation that best matches the calculator.
+
+If `--supercell` is omitted, repeat each periodic lattice vector until it is
+strictly longer than 10 Angstrom. The band path is generated from Seekpath
+and spglib labels. A bulk `BORN` archive produces separate w/o NAC and with
+NAC plots plus a combined comparison plot; add `--band-only` for an additional
+compact band-only comparison. Use `--omit-disconnected-tail` when a focused
+figure should omit a disconnected trailing branch; `--no-nac` requests only
+the first plot.
+NAC is rejected for non-bulk dimensionalities.
 
 For a 2D slab, use `--dim 2`. Omit `--thickness` for the vacuum-independent
 sheet response; supply a physically justified thickness only when converting to

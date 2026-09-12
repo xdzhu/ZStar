@@ -37,7 +37,7 @@ ACTION_ALIASES = {
 
 FAMILY_HELP = {
     "bec": "pre, job, run, stat, post",
-    "phonon": "pre, job, run, stat, post, irrep",
+    "phonon": "pre, job, run, stat, post, irrep, spectrum",
     "spectra": "pre, job, run, stat, post",
     "dielectric": "static, freq, optics",
     "stru": "convert, wyckoff",
@@ -331,11 +331,56 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         _print_family_help("phonon")
         return
     action = ACTION_ALIASES.get(arguments[0], arguments[0])
-    if action not in {"pre", "run", "stat", "post", "irrep", "job"}:
+    if action not in {"pre", "run", "stat", "post", "irrep", "job", "spectrum"}:
         raise SystemExit(f"Unknown zstar phonon action: {arguments[0]}")
     rest = list(arguments[1:])
     root = str(_option(rest, "--root", default="."))
     root_path = Path(root).resolve()
+    if action == "spectrum":
+        from .phonon_spectrum import run_phonon_spectrum
+
+        parser = argparse.ArgumentParser(prog="zstar phonon spectrum")
+        parser.add_argument("--root", default=".")
+        parser.add_argument("--calculator", "--calc", default="abacus")
+        parser.add_argument("--born", default=None)
+        parser.add_argument("--npoints", type=int, default=101)
+        parser.add_argument("--mesh", nargs=3, type=int, default=[20, 20, 20])
+        parser.add_argument(
+            "--nac",
+            action="store_true",
+            help="Require BORN and generate the NAC comparison outputs.",
+        )
+        parser.add_argument(
+            "--no-nac",
+            action="store_true",
+            help="Generate only the without-NAC band and DOS plot.",
+        )
+        parser.add_argument(
+            "--band-only",
+            action="store_true",
+            help="Also write a compact without-NAC/with-NAC band-only comparison.",
+        )
+        parser.add_argument(
+            "--omit-disconnected-tail",
+            action="store_true",
+            help="Omit the first disconnected trailing path branch.",
+        )
+        args = parser.parse_args(rest)
+        result = run_phonon_spectrum(
+            args.root,
+            calculator=args.calculator,
+            born=args.born,
+            npoints=args.npoints,
+            mesh=args.mesh,
+            require_nac=args.nac,
+            no_nac=args.no_nac,
+            band_only=args.band_only,
+            omit_disconnected_tail=args.omit_disconnected_tail,
+        )
+        for name in result["outputs"]:
+            print(f"[OUT] {Path(args.root).resolve() / name}")
+        return
+
     if action in {"run", "stat", "job"}:
         from .phonon_workflow import (
             format_phonon_status,
@@ -402,6 +447,41 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
     physical_dim_text = _option(rest, "--physical-dim", default=None)
     clean = _drop_options(rest, "--root", "--calculator", "--calc")
     if action == "pre":
+        if _has_option(rest, "--spectrum"):
+            from .phonon_spectrum import prepare_phonon_spectrum
+
+            parser = argparse.ArgumentParser(prog="zstar phonon pre --spectrum")
+            parser.add_argument("--spectrum", action="store_true", help=argparse.SUPPRESS)
+            parser.add_argument("--root", default=".")
+            parser.add_argument("--stru", default="STRU")
+            parser.add_argument(
+                "--input",
+                default="INPUT",
+                help="User-provided ABACUS input; copied as INPUT in each stage.",
+            )
+            parser.add_argument("--supercell", "--dim", dest="supercell", default=None)
+            parser.add_argument("--physical-dim", type=int, default=3)
+            parser.add_argument("--periodic-axes", default=None)
+            parser.add_argument("--minimum-length", type=float, default=10.0)
+            parser.add_argument("--symmprec", "--tol", type=float, default=1.0e-3)
+            parser.add_argument("--calculator", "--calc", default="abacus")
+            args = parser.parse_args(rest)
+            metadata = prepare_phonon_spectrum(
+                args.root,
+                structure=args.stru,
+                input_file=args.input,
+                supercell=args.supercell,
+                dimensionality=args.physical_dim,
+                periodic_axes=args.periodic_axes,
+                minimum_length=args.minimum_length,
+                symm_tol=args.symmprec,
+                calculator=args.calculator,
+            )
+            print(
+                f"[SPECTRUM] supercell={' '.join(str(item) for item in metadata['supercell'])}; "
+                f"generated={len(metadata['displacement_folders'])}"
+            )
+            return
         physical_dim = 3 if physical_dim_text is None else int(physical_dim_text)
         clean = _drop_options(clean, "--physical-dim")
         structure = Path(_option(clean, "--stru", default="STRU"))
@@ -463,7 +543,7 @@ def handle_canonical_cli(arguments: Sequence[str], legacy: LegacyRunner) -> bool
     if family == "bec":
         _run_bec(rest, legacy)
         return True
-    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job"}
+    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum"}
     if family == "phonon" or (
         family == "ph" and rest and rest[0] in phonon_actions | {"-h", "--help"}
     ):

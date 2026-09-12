@@ -24,7 +24,7 @@ aliases. New documentation and automation should use the short canonical verbs.
 | Family | Canonical actions | Purpose |
 | --- | --- | --- |
 | `zstar bec` | `pre/job/run/stat/post` | Polarization, APT/BEC, and `BORN`; calculators: ABACUS + PYATB, VASP, CP2K, QE. |
-| `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep` | Displacements, serial force calculations, force constants, frequencies, and Gamma irreps. |
+| `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep/spectrum` | Displacements, serial force calculations, force constants, frequencies, Gamma irreps, finite-q bands, and DOS. |
 | `zstar spectra` | `pre/job/run/stat/post` | IR and Raman workflows for ABACUS + PYATB, VASP, CP2K, and QE. |
 | `zstar dielectric` (`diel`) | `static` (`zero`), `freq`, `optics` | Ionic static response, frequency-dependent vibrational response, and electronic optics. |
 | `zstar backend list` | `--check`, `--json`, `--discover` | List implemented capabilities and optionally check configured executables or plugins. |
@@ -137,15 +137,35 @@ specify `--calculator cp2k`, `vasp`, or `qe` only when changing backends.
 actual displacement units, raw diagnostics, and compatibility.
 
 For the Unified Gamma route, `zstar bec post` already generates the phonon
-outputs. Prepare finite-q/supercell phonons in a separate directory:
+outputs. Prepare finite-q/supercell phonons in a separate directory. The
+`--spectrum` option enables the complete Phonopy band/DOS route:
 
 ```bash
-zstar phonon pre --stru STRU --dim "2 2 2"
-zstar phonon run
-zstar phonon stat
-zstar phonon post
-zstar phonon irrep
+zstar phonon pre --spectrum --root . --stru STRU --input INPUT
+zstar phonon run --root .
+zstar phonon stat --root .
+zstar phonon post --root . --stru STRU --physical-dim 3
+cp path/to/BORN .
+zstar phonon spectrum --root . --nac
 ```
+
+`--input` defaults to `INPUT` and accepts a user-provided ABACUS CPU or GPU
+input file. ZStar stages it as `INPUT` in each displacement directory without
+editing its calculator-specific settings; it must contain `cal_force 1`.
+For 3D bulk jobs, MPI ranks with `OMP_NUM_THREADS=1` are generally preferred,
+whereas low-dimensional and molecular jobs may use fewer MPI ranks and more
+OpenMP threads. The scheduler header and execution configuration control the
+actual allocation.
+
+Without `--supercell`, ZStar repeats every periodic lattice vector until its
+length is strictly greater than 10 Angstrom; `--supercell "2 2 2"` selects
+explicit repeats. The path is generated from the standardized structure using
+Seekpath with spglib symmetry data. A bulk case with `BORN` produces
+`phonon_band_dos_wo_nac.pdf`, `phonon_band_dos_with_nac.pdf`, and
+`phonon_band_dos_nac_comparison.pdf`, together with PNG previews and JSON
+metadata. The comparison draws w/o NAC in blue and with NAC in red. Use
+`--no-nac` to request only the uncorrected plot. NAC is restricted to bulk
+systems with a compatible `BORN` file.
 
 IR and Raman:
 

@@ -13,7 +13,7 @@ class CliReachabilityTests(unittest.TestCase):
         ]
         commands += [
             ["phonon", action, "--help"]
-            for action in ("pre", "run", "stat", "post", "irrep", "job")
+            for action in ("pre", "run", "stat", "post", "irrep", "job", "spectrum")
         ]
         commands += [
             ["spectra", action, "--help"]

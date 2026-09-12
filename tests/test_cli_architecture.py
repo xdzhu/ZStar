@@ -41,7 +41,7 @@ class CanonicalCliArchitectureTests(unittest.TestCase):
     def test_family_help_uses_documented_action_order(self):
         expected = {
             "bec": "pre, job, run, stat, post",
-            "phonon": "pre, job, run, stat, post, irrep",
+            "phonon": "pre, job, run, stat, post, irrep, spectrum",
             "spectra": "pre, job, run, stat, post",
             "data": "db, qnep",
         }

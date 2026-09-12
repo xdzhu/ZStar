@@ -52,6 +52,15 @@ Gamma-point IR/Raman response, but it does not implement a finite-wavevector
 - Reject bulk/Gonze non-analytic corrections for `dim=1`; Gamma-point spectra
   are supported without NAC, while finite-wavevector polar dispersion requires
   a genuine `1d-cutoff` implementation from the calculator.
+- For finite-q bulk phonons, use `zstar phonon pre --spectrum`, complete the
+  Phonopy force collection, and pass the matching `BORN` to
+  `zstar phonon spectrum`. Keep the w/o NAC, with NAC, and overlay plots as
+  distinct outputs; do not apply bulk NAC to lower-dimensional systems.
+- Preserve the user's ABACUS input for finite-q runs. Pass
+  `--input INPUT-GPU` when needed; ZStar stages that file as `INPUT` without
+  editing settings such as `ks_solver`, and requires only `cal_force 1` for
+  force collection. Prefer MPI with `OMP_NUM_THREADS=1` for 3D bulk jobs;
+  lower-dimensional and molecular jobs may use a more OpenMP-heavy layout.
 - Use the symmetry-complete Unified displacement ensemble for Raman derivatives;
   use explicit central normal-mode differences only as a Separate control. Do not interpret
   broadened or normalized spectra as absolute experimental intensities.

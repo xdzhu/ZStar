@@ -1,0 +1,24 @@
+{
+  "schema": "zstar-phonon-spectrum",
+  "calculator": "abacus",
+  "structure": "/home/zhuxd/abacus/agent-runs/20260912-zstar-phonon-nac-bto/run/STRU",
+  "supercell": [
+    2,
+    2,
+    2
+  ],
+  "supercell_source": "user",
+  "minimum_periodic_length_A": 10.0,
+  "periodic_axes": [
+    true,
+    true,
+    true
+  ],
+  "symmetry_tolerance": 0.001,
+  "displacement_folders": [
+    "disp-001",
+    "disp-002",
+    "disp-003"
+  ],
+  "next": "Run zstar phonon run, then zstar phonon post, then zstar phonon spectrum."
+}

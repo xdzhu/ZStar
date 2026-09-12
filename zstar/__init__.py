@@ -60,6 +60,7 @@ __all__ = [
     "md_dielectric",
     "phonon_gen",
     "phonon_post",
+    "phonon_spectrum",
     "polarization_2d",
     "potential",
     "pyatb_compat",

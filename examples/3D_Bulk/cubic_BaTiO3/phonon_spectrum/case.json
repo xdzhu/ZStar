@@ -1,0 +1,14 @@
+{
+  "case": "cubic BaTiO3 phonon dispersion and NAC",
+  "phase": "cubic Pm-3m",
+  "dimensionality": 3,
+  "functional": "PBEsol",
+  "calculator": "ABACUS",
+  "supercell": [2, 2, 2],
+  "born_source": "../results/unified/BORN",
+  "outputs": [
+    "phonon_band_dos_wo_nac.pdf",
+    "phonon_band_dos_with_nac.pdf",
+    "phonon_band_dos_nac_comparison.pdf"
+  ]
+}
