@@ -203,6 +203,15 @@ relaxed-ion 组合。`remove_acoustic_translation` 提供等权或用户权重�
 internal-strain coupling 和 homogeneous-strain response 联合构成。实现时必须保留
 固定内部坐标的结构和每个弛豫结构的收敛力阈值。
 
+还有一个不可省略的参考态条件：relaxed-ion 差分的零应变 reference 必须已经在
+同一电场/机械边界下满足内部力平衡（以及所采用边界下的应力条件），并且要记录其
+最大残余力、应力和空间群。若 reference 只是未弛豫的单点 SCF，±应变弛豫可能进入
+与 reference 不同的内部极小值；此时 `P(+eta)` 与 `P(-eta)` 的中点会出现有限偏移，
+且多幅度斜率不收敛。该现象不能解释成大的压电响应，必须先弛豫 reference，再重建
+应变集合。`relaxed-ion` 的 preflight 因而至少检查 reference 的力阈值、固定晶胞/
+应力边界、离子收敛标记和原子对应关系；不满足时只允许保存诊断数据，不允许写入
+正式响应张量。
+
 ## 6. e、d、g、h 的热力学关系
 
 以下采用应力 \(T\)、应变 \(S\)、电场 \(E\)、电位移 \(D\) 的矩阵形式，
@@ -274,8 +283,8 @@ J=\arg\min_J\|UJ-Y\|_W,
 \]
 单边差分截断误差 \(O(h)\)，中心差分截断误差 \(O(h^2)\)；舍入/SCF 噪声约按
 \(O(\varepsilon_\text{num}/h)\) 放大。每个响应至少做三个幅度（例如
-`0.5h, h, 2h`）并报告斜率、条件数和 residual；SCF 未收敛、Berry branch 跳变或
-弛豫不完整时不能把差分误差归因于物理非线性。
+`0.5h, h, 2h`）并报告斜率、条件数和 residual；SCF 未收敛、reference 未达到
+内部平衡、Berry branch 跳变或弛豫不完整时不能把差分误差归因于物理非线性。
 
 正负扰动和对称补全应使用真实 \(\Delta u\)、\(\Delta\eta\)；名义 `distance`
 只作为生成建议，不能作为后处理分母。应变 clamped-ion 固定分数坐标，relaxed-ion
