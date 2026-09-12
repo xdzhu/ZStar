@@ -16,3 +16,9 @@ and convergence markers, and uses an atomic `.zstar-stage.lock` so a stage
 cannot be started twice. Set `ZSTAR_V2_RUN_ROOT`, `ZSTAR_ABACUS`, and
 `ZSTAR_MPI_LAUNCHER` when running outside the shared validation environment.
 The runner is not a stable CLI and does not replace the v1 workflow.
+
+`run_polarization_batch.sh` is the corresponding experimental post-processing
+runner. It launches exactly one precision-PYATB polarization job per completed
+geometry (a single job writes all a/b/c directions), archives incomplete old
+outputs, and uses a temporary `running_scf.log` compatibility copy for
+relaxation logs. The compatibility copy is removed before v2 collection.
