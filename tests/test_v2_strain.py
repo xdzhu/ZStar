@@ -57,6 +57,28 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     assert all(stage.input_hash for stage in ensemble.stages)
 
 
+def test_abacus_strain_preparation_expands_positive_basis_vectors_to_ordered_pairs(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    vectors = tuple((1.0e-3 * np.eye(6)[index]).tolist() for index in range(6))
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "six-components",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        strain_vectors=vectors,
+        symprec=1.0e-3,
+    )
+    stages = result["ensemble"].stages
+    assert [stage.stage_id for stage in stages] == [
+        f"strain-{index:03d}{sign}"
+        for index in range(1, 7)
+        for sign in ("-", "+")
+    ]
+    for index in range(6):
+        np.testing.assert_allclose(stages[2 * index].requested_vector, -np.eye(6)[index] * 1.0e-3)
+        np.testing.assert_allclose(stages[2 * index + 1].requested_vector, np.eye(6)[index] * 1.0e-3)
+
+
 def test_abacus_strain_collection_rejects_changed_serialized_input_hash(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     result = prepare_abacus_strain_ensemble(

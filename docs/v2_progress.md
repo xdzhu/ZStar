@@ -267,12 +267,12 @@
 
 54. 发现并修复 `STRU`→`STRU_INITIAL` 别名造成的输入哈希假失败：哈希现在对该别名
     使用逻辑名 `STRU`，同时保持真正内容变化的拒绝；新增回归测试后 v2 定向测试
-    为 `85 passed`。修正提交为 `15c4fd6`。
+    为 `86 passed`。修正提交为 `15c4fd6`，正负应变生成约定测试随后的提交补充。
 
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `478 passed, 1123 warnings`（本地 editable install
-  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `85 passed`。
+  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `86 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
 * v2 独立测试覆盖 schema round-trip、单位、Voigt、稳定性、实际扰动差分、
   intertwiner、rank/residual、relaxed-ion 代数、cubic/P1/molecule symmetry 和 restart store。
