@@ -133,6 +133,13 @@
     仅在调用者明确选择时移除整体平移，collector 和 Λ 拟合默认保留原始规范；对应
     理论说明和测试已补齐。
 
+34. 远端 relaxed-ion 任务中，清理并重跑的 `strain-001-` 已在 cu25 以单一
+    `40 MPI × 1 OpenMP` 于 11:57--12:20 完成，`STRU_ION_D` 和 ionic-convergence
+    标记均存在；随后用原子锁定的 PYATB runner 于 12:41 完成一次三方向 precision
+    极化。当前 `reference` 加 9 个无污染 strain stage 已有 PYATB 输出，其余 stage
+    仍由 cu24/cu26 各一个 40-rank ABACUS runner 继续推进；relaxed-ion 全张量尚未
+    收集完毕，不能提前写入材料结论。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install
