@@ -106,13 +106,31 @@ e_internal (C/m^2) =
 但仍不是 Gate C 完成的充分条件：需要 acoustic gauge、Gamma/IFC 和独立后端或
 高精度参考的复核，并需把 proper/improper 规范分开保存。
 
+## Acoustic-SR 代数审计（由同一响应数据构造）
+
+为验证新加入的 `acoustic_sum_rule_diagnostics`，读取本轮 BEC ensemble 经过显式
+平移/互易投影后的 `FORCE_CONSTANTS`（单位 `eV/Angstrom^2`），并以同一应变拟合的
+`Lambda` 构造 `Gamma = -Phi Lambda`。归一化刚性平移基上的最大残差为：
+
+| 检查 | 最大绝对残差 |
+|---|---:|
+| `Phi @ T` 与 `T.T @ Phi` | `9.99e-16 eV/Angstrom^2` |
+| `T.T @ Gamma` | `3.55e-15 eV/Angstrom` |
+| `Phi - Phi.T` | `1.78e-15 eV/Angstrom^2` |
+
+因此这组**由同一 `Phi` 和 `Lambda` 构造的代数闭环**在 `1e-10` 相对容差下通过；
+它证明的是伪逆/单位接口和声学规范检查的一致性，不是独立的 Gamma 第一性原理
+验证。`internal_strain_response(..., check_acoustic=True)` 现可在生产后处理中选择
+同样的拒绝门；任何不兼容输入都必须先修正力常数、原子索引或边界条件，不能静默投影。
+
 ## 结论与下一步门控
 
 1. v1 Unified 约化位移路径已在 exact-geometry BEC 上成功得到完整 5 原子 BEC，
    且声学和、rank 和实际位移检查通过。
 2. 每个几何一次 PYATB 得三方向极化的路线可复现；不需要三次 ABACUS NSCF。
-3. `scf_thr=1e-8` 在本轮构型上完成了全部 SCF；`1e-10` 应作为困难离子构型或
-   收敛敏感性审计选项，而不是未经比较就强制全流程。
+3. `scf_thr=1e-8` 在本轮构型上完成了全部 SCF；较小的 `scf_thr` 会降低力噪声、
+   帮助达到给定离子力阈值。`1e-10` 应在力残差接近 `force_thr_ev`、离子步数或
+   响应斜率不稳定时作为 paired audit，并据最终力/响应数据决定是否用于生产。
 4. 目前只支持继续做 v2 代数/数据结构验证，不足以开放 piezo/elastic CLI，也不
    能宣称跨材料普适性。下一门控是独立验证 BEC/`Lambda` 的 acoustic gauge、
    Gamma/IFC 单位以及 stress work-conjugacy。

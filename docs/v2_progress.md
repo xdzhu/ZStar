@@ -318,6 +318,13 @@
     采用 `1e-10` 仍通过 paired force/response audit 判定，而不是把它误当成单独的
     物理收敛证明。collector 现同时保存每个阶段的最大力和最大应力诊断。
 
+63. 用 BEC ensemble 已保存的投影 `FORCE_CONSTANTS` 和同一应变拟合的 `Lambda`
+    做了新 acoustic 诊断的实数值闭环：`Phi@T`/`T.T@Phi` 最大残差
+    `9.99e-16 eV/Angstrom^2`，`T.T@Gamma` 最大残差 `3.55e-15 eV/Angstrom`，
+    `Phi-Phi.T` 最大残差 `1.78e-15 eV/Angstrom^2`。这是同一 `Phi/Lambda` 构造的
+    代数一致性证据，不是独立 Gamma 第一性原理验证；详情写入
+    `v2_abacus_bec_audit_20260913.md`。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install
