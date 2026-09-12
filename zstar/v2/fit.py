@@ -7,7 +7,7 @@ from typing import Iterable
 
 import numpy as np
 
-from .mechanical import convert_stress_sign, stress_tensor_to_voigt
+from .mechanical import ENGINEERING_VOIGT, convert_stress_sign, stress_tensor_to_voigt
 from .polarization import MatchedPolarizationEnsemble
 from .symmetry import IntertwinerBasis
 
@@ -31,6 +31,42 @@ class LinearFitResult:
         return self.fit_rank >= self.allowed_rank
 
 
+@dataclass(frozen=True)
+class ProperPiezoelectricResult:
+    """Proper/improper conversion for a symmetrized engineering-Voigt tensor.
+
+    ``improper`` is the direct finite-difference derivative ``dP/deta`` and
+    ``correction`` is the geometric term from Vanderbilt's proper response
+    relation.  The matrices use polarization-axis by engineering-Voigt-axis
+    order and C/m^2.  Keeping the correction separately prevents a proper
+    result from being mistaken for the raw finite-difference tensor.
+    """
+
+    improper: np.ndarray
+    correction: np.ndarray
+    proper: np.ndarray
+    voigt_convention: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        improper = np.asarray(self.improper, dtype=float)
+        correction = np.asarray(self.correction, dtype=float)
+        proper = np.asarray(self.proper, dtype=float)
+        if improper.shape != (3, 6) or correction.shape != (3, 6) or proper.shape != (3, 6):
+            raise ValueError("proper piezoelectric matrices must all have shape (3, 6)")
+        if not all(np.all(np.isfinite(value)) for value in (improper, correction, proper)):
+            raise ValueError("proper piezoelectric matrices must be finite")
+        convention = tuple(str(value) for value in self.voigt_convention)
+        if convention != ENGINEERING_VOIGT:
+            raise ValueError(
+                "proper piezoelectric conversion currently requires engineering Voigt "
+                f"convention {ENGINEERING_VOIGT}; got {convention}"
+            )
+        object.__setattr__(self, "improper", improper)
+        object.__setattr__(self, "correction", correction)
+        object.__setattr__(self, "proper", proper)
+        object.__setattr__(self, "voigt_convention", convention)
+
+
 def central_difference(
     y_plus: np.ndarray | Iterable[float] | float,
     y_minus: np.ndarray | Iterable[float] | float,
@@ -49,6 +85,56 @@ def central_difference(
     if not np.all(np.isfinite(plus)) or not np.all(np.isfinite(minus)):
         raise ValueError("finite-difference observations must be finite")
     return (plus - minus) / denominator
+
+
+def proper_piezoelectric_response(
+    improper: np.ndarray | Iterable[Iterable[float]],
+    polarization: np.ndarray | Iterable[float],
+    *,
+    voigt_convention: Iterable[str] = ENGINEERING_VOIGT,
+) -> ProperPiezoelectricResult:
+    """Apply the proper-piezoelectric geometric correction.
+
+    Vanderbilt's Cartesian relation is
+    ``c_proper[i,j,k] = c_improper[i,j,k] + delta[j,k] P[i]
+    - delta[i,j] P[k]``.  For the symmetric engineering shear columns used by
+    v2, the ``yz``, ``xz`` and ``xy`` corrections are the average of the two
+    Cartesian index orderings, hence the factor one-half.  ``polarization``
+    must be the branch-matched reference value in C/m^2.  This function does
+    not choose a Berry branch and does not alter the raw fit.
+    """
+
+    raw = np.asarray(improper, dtype=float)
+    p = np.asarray(polarization, dtype=float)
+    convention = tuple(str(value) for value in voigt_convention)
+    if raw.shape != (3, 6):
+        raise ValueError(f"improper piezoelectric tensor must have shape (3, 6); got {raw.shape}")
+    if p.shape != (3,):
+        raise ValueError(f"polarization must have shape (3,); got {p.shape}")
+    if not np.all(np.isfinite(raw)) or not np.all(np.isfinite(p)):
+        raise ValueError("improper piezoelectric tensor and polarization must be finite")
+    if convention != ENGINEERING_VOIGT:
+        raise ValueError(
+            "proper piezoelectric conversion currently requires engineering Voigt "
+            f"convention {ENGINEERING_VOIGT}; got {convention}"
+        )
+
+    correction = np.zeros((3, 6), dtype=float)
+    # Normal columns: delta_jk P_i - delta_ij P_k, with j=k.
+    for axis in range(3):
+        correction[:, axis] = p
+        correction[axis, axis] -= p[axis]
+    # Engineering shear columns are eta_4=2 eps_yz, eta_5=2 eps_xz,
+    # eta_6=2 eps_xy; symmetrize the Cartesian correction in each pair.
+    for column, first, second in ((3, 1, 2), (4, 0, 2), (5, 0, 1)):
+        correction[first, column] -= 0.5 * p[second]
+        correction[second, column] -= 0.5 * p[first]
+    return ProperPiezoelectricResult(
+        improper=raw,
+        correction=correction,
+        proper=raw + correction,
+        voigt_convention=convention,
+    )
 
 
 def _design_matrix(actual_vectors: np.ndarray, output_dimension: int) -> np.ndarray:

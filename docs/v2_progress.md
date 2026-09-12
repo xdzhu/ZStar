@@ -82,6 +82,12 @@
     不作为材料数值；完整输入哈希、节点计时、命令和 Gate C 缺口见
     [`v2_abacus_tetragonal_formal40_20260912.md`](v2_abacus_tetragonal_formal40_20260912.md)。
 
+25. 根据 Vanderbilt proper-piezoelectric 定义补齐研究 API
+    `proper_piezoelectric_response`：对 normal 和 engineering-shear 列分别施加
+    几何修正，并同时返回 raw、correction、proper 三个矩阵；新增测试明确拒绝未声明
+    的 Voigt 剪切约定。该转换不选择 Berry branch，reference branch 仍由 collector
+    和 ensemble matching 负责。
+
 ## 证据状态
 
 * 本阶段全量回归为 `468 passed, 1318 warnings`（包含当前工作树的 v1/声子谱改动以及

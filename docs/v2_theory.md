@@ -89,6 +89,30 @@ branch 选择，得到的是 improper quantity。v2 的 `proper` 结果必须：
 3. 按 Vanderbilt 的 proper 定义从几何项中扣除/保留所需修正；
 4. 在输出中同时给出 raw/improper、proper、branch quantum 和修正项。
 
+Vanderbilt 的直接关系为
+
+\[
+ \widetilde c_{ijk}=c_{ijk}+\delta_{jk}P_i-\delta_{ij}P_k,
+\]
+
+其中 \(c_{ijk}=\partial P_i/\partial\epsilon_{jk}\) 允许先把形变写成一般
+Cartesian deformation。v2 的应变输入只保留对称的小应变，并使用工程剪切分量，
+因此对 \(\mu=(jk)\) 的三个剪切列实际使用
+
+\[
+ \widetilde e_{i,(jk)}=e_{i,(jk)}
+ +\delta_{jk}P_i-\frac12\left(\delta_{ij}P_k+\delta_{ik}P_j\right),
+ \qquad j\ne k,
+\]
+
+而法向列为 \(\widetilde e_{i,jj}=e_{i,jj}+P_i-\delta_{ij}P_j\)。这里的
+\(P\) 必须是 reference 的 branch-matched Cartesian 极化；不能用任意包裹值，
+也不能把修正后的张量写回 raw 数据。`proper_piezoelectric_response` 在研究 API
+中显式返回 raw、geometric correction 和 proper 三个矩阵，并拒绝未声明的 Voigt
+剪切约定。公式依据 Vanderbilt, *Berry-phase theory of proper piezoelectric
+response*, J. Phys. Chem. Solids 61, 147 (2000), DOI
+[`10.1016/S0022-3697(99)00273-5`](https://doi.org/10.1016/S0022-3697(99)00273-5)。
+
 ### 3.1 极化分支的连续匹配
 
 ABACUS Berry 输出的单个方向是包裹值，不能直接相减。令 \(\mathbf Q\) 的列为周期方向

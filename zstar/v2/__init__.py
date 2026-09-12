@@ -5,11 +5,13 @@ from .abacus import collect_abacus_stage, collect_abacus_strain_response, collec
 from .ensemble import PerturbationStage, ResponseEnsemble, V2StateStore, plan_central_stages
 from .fit import (
     LinearFitResult,
+    ProperPiezoelectricResult,
     central_difference,
     fit_elastic_response,
     fit_linear_response,
     fit_piezoelectric_ensemble,
     fit_piezoelectric_response,
+    proper_piezoelectric_response,
 )
 from .mechanical import (
     ENGINEERING_VOIGT,
@@ -73,6 +75,7 @@ __all__ = [
     "ELEMENTARY_CHARGE",
     "IntertwinerBasis",
     "LinearFitResult",
+    "ProperPiezoelectricResult",
     "PerturbationStage",
     "ResponseDocument",
     "ResponseEnsemble",
@@ -108,6 +111,7 @@ __all__ = [
     "fit_elastic_response",
     "fit_piezoelectric_response",
     "fit_piezoelectric_ensemble",
+    "proper_piezoelectric_response",
     "intertwiner_basis",
     "intertwiner_constraint_matrix",
     "intertwining_residual",

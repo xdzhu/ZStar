@@ -14,6 +14,7 @@ from zstar.v2 import (
     intertwiner_basis,
     intertwining_residual,
     project_intertwiner,
+    proper_piezoelectric_response,
     relaxed_elastic,
     relaxed_piezoelectric,
     match_polarization_ensemble,
@@ -119,6 +120,37 @@ def test_fit_piezoelectric_response_rejects_invalid_shapes_and_reference():
             [[0.0] * 6],
             [[0.0, 0.0, 0.0]],
             reference_polarization=[0.0, 0.0],
+        )
+
+
+def test_proper_piezoelectric_response_applies_vanderbilt_correction_in_engineering_voigt():
+    polarization = np.array([0.1, 0.2, 0.3])
+    result = proper_piezoelectric_response(np.zeros((3, 6)), polarization)
+
+    expected = np.zeros((3, 6))
+    expected[:, 0] = [0.0, 0.2, 0.3]
+    expected[:, 1] = [0.1, 0.0, 0.3]
+    expected[:, 2] = [0.1, 0.2, 0.0]
+    expected[1, 3] = -0.5 * polarization[2]
+    expected[2, 3] = -0.5 * polarization[1]
+    expected[0, 4] = -0.5 * polarization[2]
+    expected[2, 4] = -0.5 * polarization[0]
+    expected[0, 5] = -0.5 * polarization[1]
+    expected[1, 5] = -0.5 * polarization[0]
+
+    np.testing.assert_allclose(result.correction, expected)
+    np.testing.assert_allclose(result.proper, expected)
+    np.testing.assert_allclose(result.proper, result.improper + result.correction)
+
+
+def test_proper_piezoelectric_response_rejects_tensorial_shear_convention():
+    with pytest.raises(ValueError, match="engineering Voigt"):
+        proper_piezoelectric_response(
+            np.zeros((3, 6)), np.zeros(3), voigt_convention=("xx", "yy", "zz", "xy", "xz", "yz")
+        )
+    with pytest.raises(ValueError, match="engineering Voigt"):
+        proper_piezoelectric_response(
+            np.zeros((3, 6)), np.zeros(3), voigt_convention=("xx", "yy", "zz", "2yz", "2xz", "2xy")
         )
 
 
