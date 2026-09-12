@@ -12,6 +12,7 @@ from zstar.v2 import (
     collect_abacus_strain_response,
     collect_pyatb_strain_response,
     plan_central_stages,
+    voigt_to_strain_tensor,
 )
 from zstar.v2.ensemble import ResponseEnsemble
 from zstar.shared_response import read_structure, write_structure
@@ -49,9 +50,20 @@ TOTAL-STRESS (KBAR)
     return block
 
 
-def _stage(path: Path, *, stress: bool = True, energy: bool = True, relaxed: bool = False) -> None:
+def _stage(
+    path: Path,
+    *,
+    stress: bool = True,
+    energy: bool = True,
+    relaxed: bool = False,
+    strain_vector: tuple[float, ...] | None = None,
+) -> None:
     path.mkdir(parents=True)
     shutil.copy2(CASE_STRU, path / "STRU")
+    if strain_vector is not None:
+        atoms = read_structure(path / "STRU")
+        atoms.cell = np.asarray(atoms.cell) @ (np.eye(3) + voigt_to_strain_tensor(strain_vector)).T
+        write_structure(path / "STRU", path / "STRU", atoms)
     output = path / "OUT.POLAR"
     output.mkdir()
     log_text = _log(stress, energy)
@@ -154,7 +166,7 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id, relaxed=True)
+        _stage(root / stage.stage_id, relaxed=True, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         metadata={"ion_relaxation": "relaxed-ion", "force_thr_ev": 1.0e-3},
@@ -196,7 +208,7 @@ def test_collect_abacus_strain_response_rejects_unrelaxed_reference(tmp_path):
     )
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id, relaxed=True)
+        _stage(root / stage.stage_id, relaxed=True, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         metadata={"ion_relaxation": "relaxed-ion", "force_thr_ev": 1.0e-3},
@@ -214,7 +226,7 @@ def test_collect_abacus_strain_response_rejects_stale_stage_coordinates(tmp_path
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id, relaxed=True)
+        _stage(root / stage.stage_id, relaxed=True, strain_vector=stage.requested_vector)
     shutil.copy2(root / stages[0].stage_id / "STRU", root / stages[0].stage_id / "STRU_INITIAL")
     stale = read_structure(root / stages[0].stage_id / "STRU_INITIAL")
     scaled_positions = np.asarray(stale.scaled_positions, dtype=float)
@@ -233,12 +245,29 @@ def test_collect_abacus_strain_response_rejects_stale_stage_coordinates(tmp_path
         collect_abacus_strain_response(root)
 
 
+def test_collect_abacus_strain_response_rejects_mismatched_serialized_strain(tmp_path):
+    root = tmp_path / "mismatched-serialized-strain"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id)
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match="serialized cell strain differs"):
+        collect_abacus_strain_response(root)
+
+
 def test_collect_abacus_strain_response_rejects_relaxed_stage_without_final_structure(tmp_path):
     root = tmp_path / "relaxed-missing"
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id, relaxed=False)
+        _stage(root / stage.stage_id, relaxed=False, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         metadata={"ion_relaxation": "relaxed-ion", "force_thr_ev": 1.0e-3},
@@ -256,7 +285,7 @@ def test_collect_abacus_strain_response_builds_v2_document(tmp_path):
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id)
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         stages=tuple(
@@ -296,7 +325,7 @@ def test_collect_abacus_strain_response_does_not_zero_fill_missing_energy(tmp_pa
     _stage(root / "reference", energy=False)
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id, energy=False)
+        _stage(root / stage.stage_id, energy=False, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         stages=tuple(
@@ -319,7 +348,7 @@ def test_collect_abacus_strain_response_optionally_adds_polarization_quantities(
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id)
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         stages=tuple(
@@ -351,7 +380,7 @@ def test_collect_abacus_strain_response_rejects_missing_polarization_mapping(tmp
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id)
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         stages=tuple(
@@ -368,7 +397,7 @@ def test_collect_abacus_strain_response_rejects_low_dimensional_berry_without_no
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id)
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
     ResponseEnsemble(
         reference_hash="synthetic",
         dimensionality=2,
@@ -415,7 +444,7 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     _pyatb_output(root / "reference", (0.0, 0.0, 0.0))
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id)
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
         _pyatb_output(root / stage.stage_id, (0.1, 0.2, 0.3))
     ResponseEnsemble(
         reference_hash="synthetic",
@@ -444,7 +473,7 @@ def test_collect_pyatb_strain_response_rejects_quantized_writer_by_default(tmp_p
     _pyatb_output(root / "reference", (0.0, 0.0, 0.0))
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
     for stage in stages:
-        _stage(root / stage.stage_id)
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
         _pyatb_output(root / stage.stage_id, (0.1, 0.2, 0.3))
     ResponseEnsemble(
         reference_hash="synthetic",

@@ -21,6 +21,7 @@ from .polarization import (
     match_polarization_branch,
     pyatb_directional_to_cartesian,
 )
+from .strain import actual_strain
 
 
 def _verify_input_hash(directory: Path, expected: str, *, label: str) -> None:
@@ -273,6 +274,13 @@ def collect_abacus_strain_response(
             )
         if stage.actual_vector is None:
             raise ValueError(f"Stage {stage.stage_id} has no actual serialized strain vector")
+        serialized_strain = actual_strain(reference_structure.cell, initial.cell)
+        declared_strain = np.asarray(stage.actual_vector, dtype=float)
+        if not np.allclose(serialized_strain, declared_strain, atol=1.0e-10, rtol=0.0):
+            raise ValueError(
+                f"stage {stage.stage_id} serialized cell strain differs from ensemble metadata; "
+                "recompute actual_vector from the generated structure before fitting"
+            )
         stage_vectors.append(np.asarray(stage.actual_vector, dtype=float))
         stage_names.append(stage.stage_id)
     dimensions = DimensionSpec(ensemble.dimensionality)
