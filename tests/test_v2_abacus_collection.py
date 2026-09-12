@@ -172,6 +172,7 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     quantity = document.quantity("internal_displacement")
     assert quantity.shape == (3, 5, 3)
     assert quantity.ion_relaxation == "relaxed-ion"
+    assert quantity.provenance["acoustic_gauge"] == "unfixed_raw_displacement"
     np.testing.assert_allclose(quantity.values[0], 0.0)
     # The tracked tetragonal fixture has c = 4.1 Å; the synthetic relaxed
     # structure moves atom 1 by 0.01 in fractional z.

@@ -365,6 +365,7 @@ def collect_abacus_strain_response(
                     "stage_names": stage_names,
                     "relaxed_structure_paths": relaxed_paths,
                     "definition": "wrapped(final_fractional - initial_fractional) @ initial_cell",
+                    "acoustic_gauge": "unfixed_raw_displacement",
                 },
             )
         )
