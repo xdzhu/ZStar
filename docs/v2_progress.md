@@ -275,6 +275,19 @@
     张量变化小于约 0.4%，Lambda 残差保持 `10^-6 Å` 量级。完整数值、SCF 次数、
     40 核资源和一次中断重跑记录见 `v2_abacus_amplitude_audit_20260913.md`。
 
+56. 在同一 tight reference 和同一 `±1e-3` 六分量序列上完成 clamped-ion
+    `P4mm` BaTiO3 审计（13 个 ABACUS single-point + 13 个一次性 PYATB 三方向
+    后处理）。每个 ABACUS 任务固定为 `40 MPI x 1 OpenMP`、`scf_thr=1e-8`；
+    总 wall-time `1658.4 s`、约 `18.43` 个 40 核 core-hours、190 个 SCF
+    迭代。clamped/relaxed 的 `e`、`C`、rank/residual 和机械稳定性均在同一
+    calculator-neutral collector 中回读成功，详情见
+    `v2_abacus_clamped_ion_audit_20260913.md`。
+
+57. clamped-ion 结果显示 `e33=-0.449975`、`e15=e24=-0.003945`
+    `C/m^2`，而 relaxed-ion 对应为 `3.890919`、`5.076478 C/m^2`；
+    `C33` 从 `3194.04` 降至 `1420.08 kbar`。这只证明边界条件分离和内部弛豫
+    软化的数值链路，尚不等于最终 `Z*/Omega · Lambda` 规范已经冻结。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install
@@ -309,9 +322,10 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 2. 补齐缺失 stage、金属、branch jump、backend failure、输入 hash 改变等 failure tests；
 3. 对 tight reference 核对最终力、应力、空间群、能量和结构对应关系，并保留
    `1e-8`/`1e-10` SCF paired-audit 证据；
-4. 将已通过的六分量 `±1e-3` 审计扩展到 `±2.5e-4`/`±5e-4`，逐 stage 检查 ionic
-   convergence、`STRU_ION_D`、实际应变、分支残差和中点一致性；
-5. 只有多幅度差分收敛后，才冻结 relaxed-ion `e`/`C`/Λ，并单独完成 stress
-   work-conjugacy、单位和机械稳定性审计；
-6. 在 `P4mm` 允许子空间完备的 branch-matched 极化数据上以独立后端或高精度
-   参考结果核对，之后才进入正式压电/弹性 CLI 设计。
+4. 将 clamped/relaxed 两组结果接入 `Z*`、`Lambda` 和体积/声学规范的显式代数，
+   先用合成数据和独立 Born 电荷结果验证，再考虑冻结 relaxed-ion 公式；
+5. 独立复核 ABACUS stress work-conjugacy、单位和能量曲率，并记录
+   `scf_thr=1e-8`/`1e-10` 对力噪声的 paired audit；更高 SCF 精度可作为离子收敛
+   较困难体系的诊断选项，不能未经审计就全局提高；
+6. 在至少一个非 `P4mm` 低对称材料、一个独立后端和一个合适的二维边界条件案例
+   上复现相同的 branch/rank/residual 检查，之后才进入正式压电/弹性 CLI 设计。
