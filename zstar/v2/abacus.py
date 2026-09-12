@@ -558,7 +558,10 @@ def collect_abacus_strain_response(
             **{key: value for key, value in first_parameters.items() if key in {"scf_thr", "scf_nmax"}},
             **(
                 {"force_thr_ev": float(ensemble.metadata["force_thr_ev"])}
-                if "force_thr_ev" in ensemble.metadata
+                if (
+                    "force_thr_ev" in ensemble.metadata
+                    and ion_relaxation == "relaxed-ion"
+                )
                 else {}
             ),
         },
