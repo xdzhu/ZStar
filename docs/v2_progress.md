@@ -213,6 +213,12 @@
     的 c 偏移降到 `1.69e-04 C/m^2`。这只说明 reference 前置条件已修正，仍需与
     平衡 reference 的 ±`5e-4`（当前在 cu24/cu25 计算）比较后才可判断线性收敛。
 
+45. 平衡 reference 的 ±`5e-4` pair 随后分别五、六个离子步收敛；PYATB 给出中心
+    `dP/deta_xx=(1.0969e-05, 2.68e-07, 8.0444e-03) C/m^2`，c 中点偏移约
+    `1.807e-04 C/m^2`。与 ±`2.5e-4` 的 c 斜率仍相差约七倍，因此只能判定为
+    “reference 已平衡、响应尚未幅度收敛”；平衡 ±`1e-3` 正在作为最后的截断误差
+    诊断，Gate C 仍阻塞。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `475 passed, 1122 warnings`（本地 editable install

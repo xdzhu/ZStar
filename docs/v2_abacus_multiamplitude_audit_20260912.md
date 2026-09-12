@@ -133,3 +133,26 @@ This is a meaningful improvement over the unbalanced-reference audit, but it
 is not yet a convergence proof: the midpoint c offset is finite and the
 balanced ±5e-4 pair is still running.  No response tensor is promoted until
 the amplitude comparison is complete.
+
+The balanced ±5e-4 pair subsequently converged (five and six ionic steps,
+respectively).  Its PYATB values are:
+
+```text
+balanced -5e-4: (6.4821125358785923e-08, 5.9510018144139882e-08,
+                 3.9518666020549947e-01) C/m^2
+balanced +5e-4: (7.5789930695090023e-08, 5.9777588657804670e-08,
+                 3.9519470456314332e-01) C/m^2
+```
+
+With actual serialized strains `-5.0000002056e-4` and `+4.9999999409e-4`,
+the central result is
+
+```text
+dP/deta_xx = (1.09688052e-05, 2.67570510e-07, 8.04435753e-03) C/m^2
+midpoint(reference-subtracted) = (7.22e-10, 5.51e-10, 1.8070e-04) C/m^2
+```
+
+The c derivative changes by about a factor of seven between balanced
+`±2.5e-4` and `±5e-4`, so the response is still not numerically converged.
+The balanced `±1e-3` pair is being used as the final amplitude diagnostic;
+until it is compared, the correct status remains “algorithm audit blocked”.
