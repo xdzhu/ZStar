@@ -140,6 +140,16 @@
     仍由 cu24/cu26 各一个 40-rank ABACUS runner 继续推进；relaxed-ion 全张量尚未
     收集完毕，不能提前写入材料结论。
 
+35. 用户补充授权 `cu17` 后，先用 PBS/节点负载和进程检查确认该节点空闲，再在
+    独立审计目录 `audit-cu17-001minus-20260912` 以 `40 MPI × 1 OpenMP` 对已完成的
+    `strain-001-` 终态执行 `scf_thr=1e-8` 单点 SCF。ABACUS 运行约 123 s，能量为
+    `-3729.322542166178 eV`；随后仅运行一次 PYATB `POLARIZATION`（一次得到 a/b/c
+    三方向）并用 precision adapter 写出 16 位结果。相对于 formal stage 的
+    `(-)` 极化 `(6.4571267012e-08, 5.9328896803e-08, 3.9502396831e-01) C/m²`，
+    审计值为 `(6.4512617690e-08, 5.9154254935e-08, 3.9502397892e-01) C/m²`，
+    差值约 `(-5.86e-11, -1.75e-10, +1.06e-8) C/m²`。该结果只作为独立数值审计，
+    不替代 formal stage，也不把单点审计误写成完整 relaxed-ion 张量验证。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `474 passed, 1122 warnings`（本地 editable install
@@ -156,6 +166,8 @@ PBS 检查显示 `cu24`、`cu25`、`cu26` 均为 `job-exclusive`，分别由当�
 40 核占位作业持有。用户已明确授权在这些节点上直接运行 v2；算法 smoke 已完成，
 从下一批正式第一性原理任务起固定使用每任务 `40 MPI x 1 OpenMP`，记录节点、
 MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身。
+本轮另核对 `cu17` 的负载约 `0.16` 且无 ABACUS/MPI 进程；已用作上述独立审计，
+审计目录与 formal scratch 分离，未抢占其他用户任务。
 
 ## 当前门控
 
