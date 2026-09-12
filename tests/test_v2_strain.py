@@ -79,6 +79,34 @@ def test_abacus_strain_preparation_expands_positive_basis_vectors_to_ordered_pai
         np.testing.assert_allclose(stages[2 * index + 1].requested_vector, np.eye(6)[index] * 1.0e-3)
 
 
+def test_abacus_strain_preparation_can_use_symmetry_rank_plan(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "symmetry-reduced",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        ion_relaxation="relaxed-ion",
+        symmetry_reduce=True,
+    )
+    ensemble = result["ensemble"]
+    assert len(ensemble.stages) == 8
+    assert ensemble.metadata["symmetry_reduce"] is True
+    plan = ensemble.metadata["symmetry_input_plan"]
+    assert plan["complete"] is True
+    assert plan["selected_indices"] == [0, 2, 3, 5]
+    assert plan["output_kinds"] == ["polarization", "strain", "displacement"]
+    assert [stage.stage_id for stage in ensemble.stages] == [
+        f"strain-{index:03d}{sign}"
+        for index in range(1, 5)
+        for sign in ("-", "+")
+    ]
+    np.testing.assert_allclose(
+        [ensemble.stage(f"strain-{index:03d}+").requested_vector for index in range(1, 5)],
+        np.eye(6)[[0, 2, 3, 5]] * 1.0e-3,
+    )
+
+
 def test_abacus_strain_collection_rejects_changed_serialized_input_hash(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     result = prepare_abacus_strain_ensemble(

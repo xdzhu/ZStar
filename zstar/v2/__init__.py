@@ -47,12 +47,14 @@ from .symmetry import (
 from .structure import (
     SpaceGroupOperation,
     SpaceGroupReport,
+    SymmetryInputPlan,
     StructureSpec,
     allowed_response_basis,
     analyze_space_group,
     displacement_representation,
     polarization_representation,
     strain_representation,
+    symmetry_adapted_input_plan,
 )
 from .strain import actual_strain, apply_strain, prepare_abacus_berry_stages, prepare_abacus_strain_ensemble
 from .polarization import (
@@ -89,6 +91,7 @@ __all__ = [
     "ResponseEnsemble",
     "SpaceGroupOperation",
     "SpaceGroupReport",
+    "SymmetryInputPlan",
     "StructureSpec",
     "TensorQuantity",
     "UnitConversionError",
@@ -147,6 +150,7 @@ __all__ = [
     "convert_stress_sign",
     "stress_tensor_to_voigt",
     "strain_representation",
+    "symmetry_adapted_input_plan",
     "voigt_to_strain_tensor",
     "voigt_to_stress_tensor",
     "unwrap_polarization_path",

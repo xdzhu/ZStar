@@ -15,7 +15,7 @@ import numpy as np
 from ..dimensions import DimensionSpec
 from .ensemble import PerturbationStage, ResponseEnsemble, plan_central_stages
 from .mechanical import strain_tensor_to_voigt, voigt_to_strain_tensor
-from .structure import StructureSpec, analyze_space_group
+from .structure import StructureSpec, analyze_space_group, symmetry_adapted_input_plan
 
 
 def apply_strain(structure: StructureSpec, strain_voigt: Iterable[float]) -> StructureSpec:
@@ -232,6 +232,7 @@ def prepare_abacus_strain_ensemble(
     ion_relaxation: str = "clamped-ion",
     force_thr_ev: float = 1.0e-3,
     scf_thr: float | None = None,
+    symmetry_reduce: bool = False,
 ) -> dict:
     """Prepare a reference plus ± homogeneous-strain ABACUS folders.
 
@@ -245,7 +246,10 @@ def prepare_abacus_strain_ensemble(
     convergence can be audited as one reproducible ensemble.  The reference
     is always a single-point SCF on the
     supplied reference structure, which must already be the intended relaxed
-    geometry when relaxed-ion response is requested.
+    geometry when relaxed-ion response is requested.  With ``symmetry_reduce``
+    enabled and no explicit ``strain_vectors``, a representation-rank plan
+    selects the smallest canonical strain set that identifies polarization and
+    stress responses (and internal displacement for relaxed-ion stages).
     """
 
     from ..shared_response import read_structure, write_structure
@@ -267,6 +271,8 @@ def prepare_abacus_strain_ensemble(
     threshold = float(force_thr_ev)
     if not np.isfinite(threshold) or threshold <= 0.0:
         raise ValueError("force_thr_ev must be finite and positive")
+    if not isinstance(symmetry_reduce, (bool, np.bool_)):
+        raise TypeError("symmetry_reduce must be a bool")
     scf_threshold: float | None = None
     if scf_thr is not None:
         scf_threshold = float(scf_thr)
@@ -280,7 +286,31 @@ def prepare_abacus_strain_ensemble(
         dimensionality=DimensionSpec(int(dimensionality)),
     )
     report = analyze_space_group(spec, symprec_grid=(float(symprec),))
-    if strain_vectors is None:
+    symmetry_plan = None
+    if symmetry_reduce:
+        if strain_vectors is not None:
+            raise ValueError(
+                "symmetry_reduce=True cannot be combined with explicit strain_vectors; "
+                "choose one deterministic perturbation plan"
+            )
+        output_kinds = ("polarization", "strain")
+        if relaxation == "relaxed-ion":
+            output_kinds += ("displacement",)
+        symmetry_plan = symmetry_adapted_input_plan(
+            report,
+            input_kind="strain",
+            output_kinds=output_kinds,
+        )
+        if not symmetry_plan.complete:
+            raise ValueError(
+                "symmetry-adapted strain plan is rank-deficient: identified "
+                f"{symmetry_plan.identified_rank} of {sum(symmetry_plan.allowed_ranks.values())} "
+                "response coefficients; use explicit strain_vectors or review symmetry"
+            )
+        strain_vectors = (
+            float(amplitude) * vector for vector in symmetry_plan.vectors
+        )
+    elif strain_vectors is None:
         strain_vectors = (float(amplitude) * np.eye(6)[index] for index in range(6))
     expected_outputs = ["polarization", "forces", "stress"]
     if relaxation == "relaxed-ion":
@@ -302,6 +332,8 @@ def prepare_abacus_strain_ensemble(
             "symprec": float(symprec),
             "ion_relaxation": relaxation,
             "force_thr_ev": threshold,
+            "symmetry_reduce": bool(symmetry_reduce),
+            "symmetry_input_plan": None if symmetry_plan is None else symmetry_plan.to_dict(),
         },
     )
     output.mkdir(parents=True, exist_ok=True)

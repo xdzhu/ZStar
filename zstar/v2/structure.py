@@ -92,6 +92,40 @@ class SpaceGroupReport:
         return len(self.operations)
 
 
+@dataclass(frozen=True)
+class SymmetryInputPlan:
+    """Minimal canonical input directions that identify allowed responses.
+
+    ``vectors`` contains rows in the input representation's canonical basis.
+    It is a task-selection plan, not a claim that the corresponding response
+    has been calculated; rank and residual checks still belong to fitting.
+    """
+
+    input_kind: str
+    output_kinds: tuple[str, ...]
+    vectors: np.ndarray
+    selected_indices: tuple[int, ...]
+    allowed_ranks: dict[str, int]
+    identified_rank: int
+    tolerance: float
+
+    @property
+    def complete(self) -> bool:
+        return self.identified_rank == sum(self.allowed_ranks.values())
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "input_kind": self.input_kind,
+            "output_kinds": list(self.output_kinds),
+            "vectors": np.asarray(self.vectors, dtype=float).tolist(),
+            "selected_indices": list(self.selected_indices),
+            "allowed_ranks": dict(self.allowed_ranks),
+            "identified_rank": int(self.identified_rank),
+            "complete": self.complete,
+            "tolerance": float(self.tolerance),
+        }
+
+
 def _dataset_value(dataset: object, name: str):
     return getattr(dataset, name) if hasattr(dataset, name) else dataset[name]
 
@@ -283,4 +317,114 @@ def allowed_response_basis(
     return intertwiner_basis(
         tuple(builders[input_kind](index) for index in range(report.operation_count)),
         tuple(builders[output_kind](index) for index in range(report.operation_count)),
+    )
+
+
+def symmetry_adapted_input_plan(
+    report: SpaceGroupReport,
+    *,
+    input_kind: str,
+    output_kinds: str | Iterable[str] = "polarization",
+    tolerance: float = 1.0e-10,
+) -> SymmetryInputPlan:
+    """Select canonical perturbations sufficient to identify allowed responses.
+
+    For each candidate canonical input direction, the function evaluates all
+    matrices in the corresponding intertwiner basis and greedily retains a
+    direction only when it increases the combined coefficient rank across the
+    requested output kinds.  This reduces first-principles geometries while
+    keeping the fit auditable: the returned plan carries the allowed rank and
+    must still be checked against the rank of measured observations.
+
+    The method is representation-based and does not assume a crystallographic
+    point group.  For a unified strain ensemble, pass
+    ``input_kind="strain"`` and ``output_kinds=("polarization", "strain")``;
+    add ``"displacement"`` when relaxed-ion internal coordinates are needed.
+    """
+
+    if not report.operations:
+        raise ValueError("cannot build a symmetry-adapted input plan without operations")
+    if not np.isfinite(float(tolerance)) or float(tolerance) <= 0.0:
+        raise ValueError("tolerance must be finite and positive")
+    input_name = str(input_kind).strip().lower()
+    if not input_name:
+        raise ValueError("input_kind must be non-empty")
+    if isinstance(output_kinds, str):
+        outputs = (output_kinds,)
+    else:
+        outputs = tuple(str(kind) for kind in output_kinds)
+    outputs = tuple(str(kind).strip().lower() for kind in outputs)
+    if not outputs or any(not kind for kind in outputs):
+        raise ValueError("output_kinds must contain at least one non-empty kind")
+    if len(set(outputs)) != len(outputs):
+        raise ValueError("output_kinds must not contain duplicates")
+
+    bases = {
+        kind: allowed_response_basis(report, input_kind=input_name, output_kind=kind)
+        for kind in outputs
+    }
+    input_dimension = next(iter(bases.values())).input_dimension
+    if any(basis.input_dimension != input_dimension for basis in bases.values()):
+        raise ValueError("response bases disagree on input dimension")
+    allowed_ranks = {kind: basis.allowed_rank for kind, basis in bases.items()}
+    total_rank = sum(allowed_ranks.values())
+    if total_rank == 0:
+        return SymmetryInputPlan(
+            input_kind=input_name,
+            output_kinds=outputs,
+            vectors=np.zeros((0, input_dimension), dtype=float),
+            selected_indices=(),
+            allowed_ranks=allowed_ranks,
+            identified_rank=0,
+            tolerance=float(tolerance),
+        )
+
+    coefficient_matrices: dict[str, list[np.ndarray]] = {}
+    for kind, basis in bases.items():
+        coefficient_matrices[kind] = [
+            basis.matrix_from_coefficients(np.eye(basis.allowed_rank, dtype=float)[index])
+            for index in range(basis.allowed_rank)
+        ]
+
+    def feature(direction: np.ndarray) -> np.ndarray:
+        row_count = sum(bases[kind].output_dimension for kind in outputs)
+        combined = np.zeros((row_count, total_rank), dtype=float)
+        row_offset = 0
+        column_offset = 0
+        for kind in outputs:
+            # Rows are output components and columns are unknown symmetry
+            # coefficients.  This orientation is essential for rank tests.
+            block = np.stack(
+                [matrix @ direction for matrix in coefficient_matrices[kind]],
+                axis=1,
+            )
+            rows = slice(row_offset, row_offset + block.shape[0])
+            columns = slice(column_offset, column_offset + block.shape[1])
+            combined[rows, columns] = block
+            row_offset += block.shape[0]
+            column_offset += block.shape[1]
+        return combined
+
+    selected: list[int] = []
+    selected_features = np.zeros((0, total_rank), dtype=float)
+    identified_rank = 0
+    for index in range(input_dimension):
+        direction = np.eye(input_dimension, dtype=float)[index]
+        candidate = np.vstack([selected_features, feature(direction)])
+        candidate_rank = int(np.linalg.matrix_rank(candidate, tol=float(tolerance)))
+        if candidate_rank > identified_rank:
+            selected.append(index)
+            selected_features = candidate
+            identified_rank = candidate_rank
+        if identified_rank == total_rank:
+            break
+    vectors = np.eye(input_dimension, dtype=float)[selected] if selected else np.zeros((0, input_dimension))
+    return SymmetryInputPlan(
+        input_kind=input_name,
+        output_kinds=outputs,
+        vectors=vectors,
+        selected_indices=tuple(selected),
+        allowed_ranks=allowed_ranks,
+        identified_rank=identified_rank,
+        tolerance=float(tolerance),
     )

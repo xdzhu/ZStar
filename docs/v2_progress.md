@@ -325,6 +325,14 @@
     代数一致性证据，不是独立 Gamma 第一性原理验证；详情写入
     `v2_abacus_bec_audit_20260913.md`。
 
+64. 将任意空间群的响应秩选样落到 draft API：新增
+    `symmetry_adapted_input_plan`/`SymmetryInputPlan`，对 polarization、strain/stress
+    和 relaxed-ion displacement 的 intertwiner 基做联合 block-rank 贪心选择；不再
+    把六个应变分量固定写成“约化”。`prepare_abacus_strain_ensemble` 新增显式
+    `symmetry_reduce=True`，P4mm BaTiO3 的统一计划由 6 个分量降为 4 个 canonical
+    directions（8 个正负 stage），P1 保留全部 6 个。计划的向量、允许秩、identified
+    rank 和 complete 标志写入 ensemble metadata，all-six control 仍可用于内部审计。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install

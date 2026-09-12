@@ -64,15 +64,28 @@ site stabilizer 只用于旋转响应，不把不同 Wyckoff site 的原子合�
 
 ### 3.2 应变
 
-1. 生成六个工程 Voigt seed，或仅生成周期子空间允许的 seed。
-2. 对每个 seed 作用所有 `V(g)`，对轨道矩阵做 SVD/QR，得到独立应变子空间
-   `rank_strain` 和 canonical basis。
-3. 形变晶胞为 `h'=(I+eta)h`；clamped-ion 保持分数坐标，relaxed-ion 在每个
+1. 生成六个工程 Voigt canonical seed。
+2. 对每个响应输出表示（polarization、stress/strain 或 internal displacement）
+   建立 intertwiner null-space。对一个候选应变 (v)，把所有允许基矩阵作用后的
+   输出列堆成 design block；按 canonical index 贪心保留能增加联合系数秩的方向。
+   这给出“在 canonical seed 集合内”的最小可识别集合，而不是未经证明的晶系特例。
+3. 对多个输出取 block-diagonal 联合秩：clamped-ion 至少联合 polarization 与
+   strain/stress；relaxed-ion 再加入 displacement。若 `identified_rank` 小于允许
+   参数总数，停止并返回需要补充的方向，不得零填充。
+4. 形变晶胞为 `h'=(I+eta)h`；clamped-ion 保持分数坐标，relaxed-ion 在每个
    image 独立弛豫并记录最终坐标和残余力。
-4. 对 stress、polarization 和 internal displacement 同时应用设计矩阵；应变
+5. 对 stress、polarization 和 internal displacement 同时应用设计矩阵；应变
    response 的完整重建要求采样矩阵覆盖所有对称允许列。
-5. 对 2D/1D 只在周期应变子空间生成任务；开放方向分量若需要定义，必须另有 slab/
+6. 对 2D/1D 只在周期应变子空间生成任务；开放方向分量若需要定义，必须另有 slab/
    wire 边界模型，不得从 bulk 约化表借用。
+
+当前 draft API `symmetry_adapted_input_plan(report, input_kind="strain", output_kinds=...)`
+实现了上述 rank 选择，返回 canonical vectors、selected indices、各输出允许秩、
+identified rank、容差和 `complete` 标志。`prepare_abacus_strain_ensemble` 通过
+`symmetry_reduce=True` 采用这个计划；默认仍保留显式六分量路径以便与已有审计和 all-
+component control 对照。P4mm BaTiO3 的联合 `(polarization, strain, displacement)`
+计划由 6 个分量降为 `(xx, zz, 2yz, 2xy)` 4 个方向（8 个正负 stage），允许秩为
+`3+7+14=24` 且 identified rank 为 24；P1 则保留全部 6 个应变分量。
 
 ### 3.3 联合 response ensemble
 
@@ -151,10 +164,13 @@ analyze(structure, dimensionality, boundary, symprec_grid):
 
     atom_orbits = canonical_atom_orbits(ops)
     U_atom = independent_stabilizer_orbits(atom_orbits, ops)
-    E_strain = independent_voigt_orbits(ops, boundary)
-    plan = plus_minus_stages(U_atom, E_strain, actual_vector_required=True)
     allowed_basis = intertwiner_nullspace(ops, input_axes, output_axes)
-    assert rank(plan.design_matrix) >= rank(allowed_basis)
+    E_strain = symmetry_adapted_input_plan(
+        report, input_kind="strain", output_kinds=required_outputs
+    )
+    assert E_strain.complete
+    plan = plus_minus_stages(U_atom, E_strain.vectors, actual_vector_required=True)
+    assert rank(plan.design_matrix) >= sum(E_strain.allowed_ranks.values())
     return plan, symmetry_report(ops, atom_orbits, E_strain, allowed_basis)
 
 reconstruct(observations, report):

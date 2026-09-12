@@ -35,6 +35,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 |---|---|---|
 | `model.py` | 带单位的 quantity、tensor、boundary、provenance dataclass（draft 已实现） | calculator 解析 |
 | `symmetry.py` | 空间群/点群表示、原子/应变 orbit、intertwiner basis（draft 已实现） | SCF 运行 |
+| `structure.py` | Cartesian 表示、允许响应子空间与 canonical 输入秩计划（draft 已实现） | 代替计算器能力验证 |
 | `finite_difference.py` | 实际向量、中心/单边差分、步长扫描和拟合（当前由 `fit.py` 提供） | 选择物理公式 |
 | `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换（draft 已实现） | 生成结构文件 |
 | `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |
@@ -131,6 +132,13 @@ post-processing may replace `STRU` with `STRU_ION_D`; the immutable
 `STRU_INITIAL` is used for verification in that case.  A mismatch stops
 collection with a regenerate/restore action rather than silently combining
 outputs produced from different inputs.
+
+The optional `symmetry_reduce=True` preparation path calls
+`symmetry_adapted_input_plan`. It selects canonical strain directions from the
+combined rank of the requested polarization, strain/stress, and (for relaxed
+ion) internal-displacement intertwiner spaces. The selected vectors and rank
+diagnostics are serialized in `ensemble.json`; the historical all-six-component
+path remains available as an explicit control.
 
 ## 5. Backend capability contract
 
