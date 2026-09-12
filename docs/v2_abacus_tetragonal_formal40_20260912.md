@@ -26,6 +26,10 @@
   `scf_thr=1e-8`、`scf_nmax=200`；赝势为 `Ba.upf/Ti.upf/O.upf`（upf201），轨道为
   `Ba_gga_10au_100Ry_4s2p1d.orb`、`Ti_gga_10au_100Ry_4s2p2d1f.orb`、
   `O_gga_10au_100Ry_2s2p1d.orb`。
+* ABACUS 官方输入文档将 `press1/press2/press3` 的正值定义为压缩外应力，输出规范
+  将 stress 单位列为 kBar；这支持本报告的 compression-positive 候选，但仍不能替代
+  对 `TOTAL-STRESS` 符号的受控独立核查（[ABACUS input parameters](https://abacus.deepmodeling.com/en/latest/advanced/input_files/input-main.html#press1)，
+  [output specification](https://abacus.deepmodeling.com/en/v3.11.0-beta1/advanced/output_files/output-specification.html)）。
 * 输入 fixture：`examples/3D_Bulk/tetragonal_BaTiO3/inputs/`。
   `INPUT` SHA256=`b1e34c2704a8ffb6e1a354bde00bccd16be8912eade23a096230f4f4813e89e5`；
   `STRU` SHA256=`9cec10dcce286cfa7f5401c8d5b2b34f151274ce3a63ebdcf4881c6142e207fb`；
