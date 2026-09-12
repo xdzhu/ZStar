@@ -56,6 +56,7 @@ from .structure import (
     strain_representation,
     symmetry_adapted_input_plan,
 )
+from .normalization import NormalizedPolarization, normalize_polarization
 from .strain import actual_strain, apply_strain, prepare_abacus_berry_stages, prepare_abacus_strain_ensemble
 from .polarization import (
     BranchMatch,
@@ -98,6 +99,7 @@ __all__ = [
     "V2StateStore",
     "BranchMatch",
     "MatchedPolarizationEnsemble",
+    "NormalizedPolarization",
     "PolarizationComponent",
     "PolarizationPath",
     "PolarizationSample",
@@ -130,6 +132,7 @@ __all__ = [
     "intertwining_residual",
     "internal_strain_response",
     "mechanical_stability",
+    "normalize_polarization",
     "match_polarization_branch",
     "match_polarization_ensemble",
     "plan_central_stages",

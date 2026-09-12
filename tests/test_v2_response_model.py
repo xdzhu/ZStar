@@ -15,6 +15,7 @@ from zstar.v2 import (
     convert_dielectric,
     convert_values,
     mechanical_stability,
+    normalize_polarization,
     strain_tensor_to_voigt,
     stress_tensor_to_voigt,
     voigt_to_strain_tensor,
@@ -107,3 +108,39 @@ def test_mechanical_stability_reports_subspace():
     assert stable["stable_within_tolerance"] is True
     unstable = mechanical_stability(np.diag([2.0, -0.1, 4.0]))
     assert unstable["stable_within_tolerance"] is False
+
+
+def test_2d_polarization_normalization_removes_vacuum_dependence():
+    lattice = np.diag([3.0, 4.0, 20.0])
+    # A bulk density that scales inversely with the slab vacuum height.
+    bulk = np.array([2.0 / 20.0, 3.0 / 20.0, 9.0])
+    result = normalize_polarization(bulk, lattice, dimensionality=2)
+    np.testing.assert_allclose(result.values, [2.0e-10, 3.0e-10, 0.0])
+    assert result.unit == "C/m"
+    assert result.normalization == "sheet_area"
+    assert result.projection == "periodic_plane"
+    assert result.geometric_factor_unit == "m"
+    # Changing vacuum while preserving the sheet dipole gives the same result.
+    taller = normalize_polarization(
+        [2.0 / 40.0, 3.0 / 40.0, 9.0],
+        np.diag([3.0, 4.0, 40.0]),
+        dimensionality=2,
+    )
+    np.testing.assert_allclose(taller.values, result.values)
+
+
+def test_1d_polarization_normalization_projects_to_wire_axis():
+    result = normalize_polarization(
+        [2.0, 5.0, 7.0],
+        np.diag([10.0, 12.0, 30.0]),
+        dimensionality=1,
+    )
+    np.testing.assert_allclose(result.values, [0.0, 0.0, 7.0 * 10.0e-10 * 12.0e-10])
+    assert result.unit == "C"
+    assert result.normalization == "line_length"
+    assert result.geometric_factor_unit == "m^2"
+
+
+def test_molecular_bulk_polarization_is_rejected():
+    with pytest.raises(ValueError, match="molecular dipole"):
+        normalize_polarization([0.0, 0.0, 1.0], np.eye(3), dimensionality=0)

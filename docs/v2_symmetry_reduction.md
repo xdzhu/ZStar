@@ -152,7 +152,10 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
 `dim=3` 可使用完整三维空间群。`dim=2` 要求操作保持 slab normal 和周期平面，
 `dim=1` 要求操作保持 wire 轴；现有 v1 对“混合周期/开放方向”的拒绝逻辑应升级为
 可解释的 capability check。开放方向的极化、stress 或 flexo 只有在相应电静边界
-和归一化实现后才允许进入 allowed subspace。`dim=0` 不调用周期空间群约化，改由
+和归一化实现后才允许进入 allowed subspace。当前 draft 的
+`normalize_polarization` 只把 bulk `C/m^2` 转成显式的 2D `C/m` 面内投影或 1D
+`C` 轴向量，并记录真空/横截面几何因子；它不开放低维 e/C，也不填充开放方向。
+`dim=0` 不调用周期空间群约化，改由
 分子点群和刚体平移/旋转投影处理；bulk e/C/equation-of-state 不自动定义。
 
 ## 7. 伪代码

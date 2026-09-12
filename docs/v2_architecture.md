@@ -36,6 +36,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 | `model.py` | 带单位的 quantity、tensor、boundary、provenance dataclass（draft 已实现） | calculator 解析 |
 | `symmetry.py` | 空间群/点群表示、原子/应变 orbit、intertwiner basis（draft 已实现） | SCF 运行 |
 | `structure.py` | Cartesian 表示、允许响应子空间与 canonical 输入秩计划（draft 已实现） | 代替计算器能力验证 |
+| `normalization.py` | 显式 2D sheet/1D line 极化几何归一化（draft 已实现） | 电静边界、低维 e/C 或 flexoelectricity |
 | `finite_difference.py` | 实际向量、中心/单边差分、步长扫描和拟合（当前由 `fit.py` 提供） | 选择物理公式 |
 | `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换（draft 已实现） | 生成结构文件 |
 | `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |

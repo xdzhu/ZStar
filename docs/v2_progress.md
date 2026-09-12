@@ -338,6 +338,12 @@
     方向；它不生成缺失观测，也不零填充张量。新增 rank-deficiency 回归断言，并在
     对称性文档中记录“推荐方向仍须成对重算”的恢复动作。
 
+66. 新增 calculator-neutral `normalize_polarization`/`NormalizedPolarization`：2D 使用
+    周期面垂直高度 `Omega/A` 和面内投影，输出 `C/m`；1D 使用横截面积
+    `Omega/|a_parallel|` 和轴向投影，输出 `C`；0D 明确拒绝把体积 `C/m^2` 当作分子
+    极化。合成真空扫描和 wire 归一化测试通过。该层只解决几何/单位，不开放尚未
+    验证的低维压电、弹性或开放方向响应。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `479 passed, 1124 warnings`（本地 editable install

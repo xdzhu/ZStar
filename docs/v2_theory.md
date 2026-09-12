@@ -65,6 +65,17 @@ Z^{*}_{i,\alpha\beta}
   高度的 Berry 体极化直接当成 intrinsic 面外响应；
 * `dimensionality=2` 时电场、应变和应力的开放方向必须在边界元数据中注明。
 
+对于非正交 slab，不能把第三个晶格矢量的长度直接当作 (L_z)。若周期面由
+(a_1,a_2) 张成、
+(\hat n=(a_1\times a_2)/|a_1\times a_2|)，则应使用垂直高度
+(h=|a_3\cdot\hat n|=\Omega/|a_1\times a_2|)，并对极化作面内投影：
+\[
+ P^{2D}_{\parallel}=\left(I-\hat n\hat n^T\right)P^{3D}h .
+\]
+`normalize_polarization` 显式保存这个几何因子、投影和边界条件，返回 `C/m`；
+它不会把开放方向分量伪装成本征 sheet 响应。对应地，1D 只投影到周期轴并乘以
+(A_\perp=\Omega/|a_\parallel|)，返回 `C`；0D 必须直接使用分子偶极而不是体积极化。
+
 在 1D wire，周期轴为 \(z\)，横截面积 \(A_\perp\) 只是归一化参考：
 \(P^{1D}_z=A_\perp P^{3D}_z\) 的单位是 C，横向 dipole/force 响应需用开放边界
 电荷密度；不能使用真空稀释的横向 Berry 值。对分子（`dim=0`），没有晶体周期
