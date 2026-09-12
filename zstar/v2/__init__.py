@@ -1,6 +1,11 @@
 """Research-only ZStar v2 API, isolated from the stable v1 surface."""
 
-from .algebra import internal_strain_response, relaxed_elastic, relaxed_piezoelectric
+from .algebra import (
+    internal_strain_response,
+    relaxed_elastic,
+    relaxed_piezoelectric,
+    remove_acoustic_translation,
+)
 from .capabilities import BackendCapabilities, CapabilityError
 from .abacus import collect_abacus_stage, collect_abacus_strain_response, collect_pyatb_strain_response
 from .ensemble import PerturbationStage, ResponseEnsemble, V2StateStore, plan_central_stages
@@ -133,6 +138,7 @@ __all__ = [
     "project_intertwiner",
     "relaxed_elastic",
     "relaxed_piezoelectric",
+    "remove_acoustic_translation",
     "BackendCapabilities",
     "CapabilityError",
     "strain_tensor_to_voigt",

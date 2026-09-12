@@ -18,8 +18,24 @@ from zstar.v2 import (
     proper_piezoelectric_response,
     relaxed_elastic,
     relaxed_piezoelectric,
+    remove_acoustic_translation,
     match_polarization_ensemble,
 )
+
+
+def test_remove_acoustic_translation_requires_explicit_positive_gauge_weights():
+    displacements = np.array(
+        [
+            [[1.0, 2.0, 3.0], [3.0, 4.0, 5.0]],
+            [[-2.0, 0.0, 2.0], [0.0, 2.0, 4.0]],
+        ]
+    )
+    fixed = remove_acoustic_translation(displacements)
+    np.testing.assert_allclose(fixed.mean(axis=-2), 0.0)
+    weighted = remove_acoustic_translation(displacements[0], weights=[1.0, 3.0])
+    np.testing.assert_allclose(np.average(weighted, axis=0, weights=[1.0, 3.0]), 0.0)
+    with pytest.raises(ValueError, match="positive"):
+        remove_acoustic_translation(displacements[0], weights=[1.0, 0.0])
 
 
 def test_stress_sign_conversion_rejects_backend_raw_and_flips_known_signs():

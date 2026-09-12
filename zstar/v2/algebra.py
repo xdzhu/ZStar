@@ -16,6 +16,34 @@ def _finite(value: np.ndarray | Iterable[float], name: str) -> np.ndarray:
     return array
 
 
+def remove_acoustic_translation(
+    displacements: np.ndarray | Iterable[object],
+    *,
+    weights: np.ndarray | Iterable[float] | None = None,
+) -> np.ndarray:
+    """Remove an explicitly requested rigid translation from atom displacements.
+
+    The input may have shape ``(atom, 3)`` or ``(..., atom, 3)``.  With no
+    weights the arithmetic mean displacement is removed; supplied positive
+    weights can represent masses or another documented center-of-mass gauge.
+    This helper is never applied implicitly by collectors or fits.
+    """
+
+    values = _finite(np.asarray(displacements, dtype=float), "displacements")
+    if values.ndim < 2 or values.shape[-1] != 3 or values.shape[-2] == 0:
+        raise ValueError("displacements must have shape (atom, 3) or (..., atom, 3)")
+    natoms = values.shape[-2]
+    if weights is None:
+        weight_array = np.ones(natoms, dtype=float)
+    else:
+        weight_array = _finite(weights, "weights")
+        if weight_array.shape != (natoms,) or np.any(weight_array <= 0.0):
+            raise ValueError(f"weights must have shape ({natoms},) and be positive")
+    total = float(np.sum(weight_array))
+    center = np.sum(values * weight_array.reshape((1,) * (values.ndim - 2) + (natoms, 1)), axis=-2) / total
+    return values - np.expand_dims(center, axis=-2)
+
+
 def internal_strain_response(
     force_constants: np.ndarray,
     strain_force_coupling: np.ndarray,

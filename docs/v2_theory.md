@@ -194,6 +194,11 @@ C^{\mathcal E}=C^{\mathcal E,(0)}
  =C^{\mathcal E,(0)}-\frac{1}{\Omega}\Lambda^T\Phi\Lambda.
 \]
 
+有限差分得到的原子位移本身仍带有整体平移规范。v2 collector 保留原始 Cartesian
+位移，**不**自动减去均值或质量中心；使用者必须显式记录 acoustic gauge 后再进入
+relaxed-ion 组合。`remove_acoustic_translation` 提供等权或用户权重的中心约束，
+权重选择和约束后的数据应写入 provenance。
+
 因此，relaxed-ion 不是“重新命名 clamped-ion”，而是由 BEC、Gamma IFC、
 internal-strain coupling 和 homogeneous-strain response 联合构成。实现时必须保留
 固定内部坐标的结构和每个弛豫结构的收敛力阈值。
