@@ -475,6 +475,13 @@
     数量级，不提升 Gate C，也不涉及压电张量；详细来源和限制见
     [`v2_vasp_sic_bec_audit_20260913.md`](v2_vasp_sic_bec_audit_20260913.md)。
 
+90. `ElectromechanicalForms.to_tensor_quantities` 将上述热力学转换结果物化为
+    12 个带完整物理语义的 v2 `TensorQuantity`：分别标记 (e/d/g/h) 的电学与
+    机械边界、(C^E/C^D)、(s^E/s^D)、\(\epsilon^S/\epsilon^T\) 和
+    \(\beta^S/\beta^T\) 的单位、坐标轴、Voigt 约定、离子状态、周期轴、后端和
+    provenance。它不创建顶层 `ResponseDocument`，避免猜测结构维度；调用者必须
+    将其放入轴一致的文档。对应 schema 注释和测试已通过。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `513 passed, 1158 warnings`；新增首/末力块

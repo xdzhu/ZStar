@@ -43,6 +43,25 @@ def test_electromechanical_forms_convert_relative_dielectric_and_gpa():
     np.testing.assert_allclose(result.epsilon_s, np.eye(3) * 4.0 * 8.8541878128e-12)
 
 
+def test_electromechanical_forms_materialize_annotated_quantities():
+    result = convert_piezoelectric_forms(
+        np.zeros((3, 6)), np.eye(6) * 100.0e9, np.eye(3) * 8.8541878128e-12
+    )
+    quantities = result.to_tensor_quantities(
+        backend="abacus", source="synthetic", ion_relaxation="relaxed-ion"
+    )
+    assert len(quantities) == 12
+    by_name = {quantity.name: quantity for quantity in quantities}
+    assert by_name["piezoelectric_e"].unit == "C/m^2"
+    assert by_name["piezoelectric_e"].boundary_conditions.electric == "E"
+    assert by_name["piezoelectric_d"].boundary_conditions.mechanical == "stress"
+    assert by_name["piezoelectric_g"].boundary_conditions.electric == "D"
+    assert by_name["elastic_CD"].boundary_conditions.electric == "D"
+    assert by_name["dielectric_epsilonT"].boundary_conditions.mechanical == "stress"
+    assert all(quantity.ion_relaxation == "relaxed-ion" for quantity in quantities)
+    assert all(quantity.backend == "abacus" for quantity in quantities)
+
+
 def test_electromechanical_forms_rejects_raw_or_ambiguous_inputs():
     with pytest.raises(ValueError, match="proper"):
         convert_piezoelectric_forms(

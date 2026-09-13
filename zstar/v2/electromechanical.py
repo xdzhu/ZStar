@@ -20,6 +20,7 @@ from typing import Any, Mapping
 import numpy as np
 
 from .mechanical import ENGINEERING_VOIGT
+from .model import BoundaryConditions, TensorQuantity
 from .units import convert_dielectric, convert_values
 
 
@@ -127,6 +128,130 @@ class ElectromechanicalForms:
             )
         object.__setattr__(self, "voigt_convention", convention)
         object.__setattr__(self, "diagnostics", dict(self.diagnostics))
+
+    def to_tensor_quantities(
+        self,
+        *,
+        backend: str,
+        source: str = "thermodynamic_conversion",
+        periodic_axes: tuple[str, ...] = ("x", "y", "z"),
+        ion_relaxation: str = "clamped-ion",
+        normalization: str = "cell_volume",
+        provenance: Mapping[str, Any] | None = None,
+    ) -> tuple[TensorQuantity, ...]:
+        """Materialize the forms as explicitly annotated v2 quantities.
+
+        This method does not create a :class:`~zstar.v2.model.ResponseDocument`
+        because dimensionality and structure belong to the caller.  It does,
+        however, attach the thermodynamic electric/mechanical boundary to each
+        quantity so that ``d`` is not confused with ``e`` and ``C^D`` is not
+        confused with ``C^E``.  The caller must still place the returned tuple
+        in a document whose ``periodic_axes`` match ``periodic_axes``.
+        """
+
+        if not str(backend).strip():
+            raise ValueError("backend must not be empty")
+        if not str(source).strip():
+            raise ValueError("source must not be empty")
+        axes = tuple(str(axis).strip().lower() for axis in periodic_axes)
+        if len(set(axes)) != len(axes) or any(axis not in {"x", "y", "z"} for axis in axes):
+            raise ValueError(f"periodic_axes must be unique members of ('x', 'y', 'z'); got {axes}")
+        if ion_relaxation not in {"clamped-ion", "relaxed-ion", "internal-contribution", "not-applicable"}:
+            raise ValueError(f"unsupported ion_relaxation {ion_relaxation!r}")
+        shared_provenance = {
+            "conversion": "zstar.v2.convert_piezoelectric_forms",
+            "input_piezoelectric_kind": "proper",
+            "voigt_convention": list(ENGINEERING_VOIGT),
+            **dict(provenance or {}),
+        }
+
+        def quantity(
+            name: str,
+            values: np.ndarray,
+            unit: str,
+            *,
+            boundary: BoundaryConditions,
+            axes_: tuple[str, ...],
+        ) -> TensorQuantity:
+            return TensorQuantity(
+                name=name,
+                values=values,
+                unit=unit,
+                axes=axes_,
+                coordinate_system="cartesian_right_handed",
+                voigt_convention=ENGINEERING_VOIGT if "voigt" in axes_ else (),
+                ion_relaxation=ion_relaxation,
+                boundary_conditions=boundary,
+                periodic_axes=axes,
+                normalization=normalization,
+                source=source,
+                backend=backend,
+                provenance=shared_provenance,
+                diagnostics=self.diagnostics,
+            )
+
+        return (
+            quantity(
+                "piezoelectric_e", self.e, "C/m^2",
+                boundary=BoundaryConditions(electric="E", mechanical="strain"),
+                axes_=("electric", "voigt_engineering"),
+            ),
+            quantity(
+                "piezoelectric_d", self.d, "C/N",
+                boundary=BoundaryConditions(electric="E", mechanical="stress"),
+                axes_=("electric", "voigt_engineering"),
+            ),
+            quantity(
+                "piezoelectric_g", self.g, "V m/N",
+                boundary=BoundaryConditions(electric="D", mechanical="stress"),
+                axes_=("electric", "voigt_engineering"),
+            ),
+            quantity(
+                "piezoelectric_h", self.h, "V/m",
+                boundary=BoundaryConditions(electric="D", mechanical="strain"),
+                axes_=("electric", "voigt_engineering"),
+            ),
+            quantity(
+                "elastic_CE", self.c_e, "Pa",
+                boundary=BoundaryConditions(electric="E", mechanical="strain"),
+                axes_=("stress_voigt", "voigt_engineering"),
+            ),
+            quantity(
+                "elastic_CD", self.c_d, "Pa",
+                boundary=BoundaryConditions(electric="D", mechanical="strain"),
+                axes_=("stress_voigt", "voigt_engineering"),
+            ),
+            quantity(
+                "compliance_sE", self.s_e, "Pa^-1",
+                boundary=BoundaryConditions(electric="E", mechanical="stress"),
+                axes_=("strain_voigt", "stress_voigt"),
+            ),
+            quantity(
+                "compliance_sD", self.s_d, "Pa^-1",
+                boundary=BoundaryConditions(electric="D", mechanical="stress"),
+                axes_=("strain_voigt", "stress_voigt"),
+            ),
+            quantity(
+                "dielectric_epsilonS", self.epsilon_s, "F/m",
+                boundary=BoundaryConditions(electric="E", mechanical="strain"),
+                axes_=("electric_row", "electric_column"),
+            ),
+            quantity(
+                "dielectric_epsilonT", self.epsilon_t, "F/m",
+                boundary=BoundaryConditions(electric="E", mechanical="stress"),
+                axes_=("electric_row", "electric_column"),
+            ),
+            quantity(
+                "impermittivity_betaS", self.beta_s, "m/F",
+                boundary=BoundaryConditions(electric="E", mechanical="strain"),
+                axes_=("electric_row", "electric_column"),
+            ),
+            quantity(
+                "impermittivity_betaT", self.beta_t, "m/F",
+                boundary=BoundaryConditions(electric="E", mechanical="stress"),
+                axes_=("electric_row", "electric_column"),
+            ),
+        )
 
 
 def convert_piezoelectric_forms(
