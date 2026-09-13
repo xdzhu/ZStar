@@ -589,3 +589,6 @@ collector 反推出额外剪切并正确拒绝；随后按 `L' = L(I+eta)^T` 对
 中心能量曲率为 `524.31 GPa`。这只是单方向 work-conjugacy/collector smoke，
 不是完整 `C_ij` 或 Gate C 定量通过；详见
 `docs/v2_vasp_sic_strain_smoke_20260913.md`。
+
+随后加入非正交晶胞笛卡尔单轴应变回归测试，锁定 `L' = L(I+eta)^T` 约定，
+避免只修改一条晶格矢量而产生伪剪切。全量回归现为 `529 passed, 1158 warnings`。
