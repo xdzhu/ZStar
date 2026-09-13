@@ -41,6 +41,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 | `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换（draft 已实现） | 生成结构文件 |
 | `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |
 | `reconstruct.py` | 从已收集的 calculator-neutral `ResponseDocument` 拟合并追加带单位/轴/边界/诊断的 raw piezo、elastic、Gamma 和 Lambda quantities（draft 已实现） | proper-piezo 修正、BEC/IFC 规范或外部后端验证 |
+| `legacy.py` | 将稳定 v1 `ResponseRecord` 显式适配为 v2 draft document，保留原始 convention/metadata/provenance，并对未知量要求显式边界条件 | 修改 v1 schema、猜测 stress sign 或离子状态 |
 | `ensemble.py` | 联合 polarization/force/stress/displacement task graph、v2 状态（draft 已实现） | 具体命令行 |
 | `capabilities.py` | calculator-neutral 能力声明、维度/金属 Berry 安全门和可操作失败信息（draft 已实现） | 代替后端实际能力测试或物理验证 |
 | `backends/abacus.py` | 调用既有 ABACUS/PYATB adapter 并收集输出；生产极化优先使用每个结构一次 PYATB，ABACUS Berry 仅作交叉审计 | 修改 ABACUS |
