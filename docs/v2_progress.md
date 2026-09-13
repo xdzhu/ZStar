@@ -609,3 +609,16 @@ compression-positive 约定后，stress 拟合 rank 为 `6 -> 3/3`，残差
 也支持同一 major-symmetric reduced basis，使仅采样独立应变方向时能正确报告
 energy Hessian 的有效秩。新增 cubic stress/energy reduced-fit 回归；全量测试现为
 `531 passed, 1164 warnings`。
+
+## 2026-09-13 ABACUS 3D SiC 完整中心应变审计
+
+在 cu25 以 `40 MPI × 1 OpenMP` 完成现有 v1 3D SiC primitive cell 的 ABACUS
+六分量 `±0.005` clamped-ion 中心差分（reference + 12 stages）。collector 通过
+输入哈希、实际序列化应变、力、应力和能量完整性检查；空间群在三档 `symprec`
+下稳定为 `F-43m`/Hall 512，stress symmetry basis 为 3 维。压缩正应力转换后的
+C 拟合秩为 3/3，最大残差 `0.4889 kbar`；能量曲率拟合秩为 3/3，最大能量残差
+`6.14e-8 eV`，两者最大 C 分量差 `0.358 GPa`。所有阶段均达到 SCF 收敛并输出
+`TOTAL-STRESS (KBAR)`；总耗时 448.56 s（约 4.984 core-hours）。这证明了
+ABACUS 后端的 3D stress/energy 重建链闭合，但不是最终材料常数；仍需
+`symmetry=0` 复核、第二应变幅度及 ABINIT/QE 独立高精度基准，Gate C 继续阻塞。
+详见 [`v2_abacus_sic_fullstrain_20260913.md`](v2_abacus_sic_fullstrain_20260913.md)。
