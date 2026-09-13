@@ -36,6 +36,7 @@ from .mechanical import (
     periodic_strain_indices,
     strain_tensor_to_voigt,
     stress_tensor_to_voigt,
+    stress_representation,
     voigt_to_strain_tensor,
     voigt_to_stress_tensor,
 )
@@ -166,6 +167,7 @@ __all__ = [
     "strain_tensor_to_voigt",
     "convert_stress_sign",
     "stress_tensor_to_voigt",
+    "stress_representation",
     "strain_representation",
     "symmetry_adapted_input_plan",
     "voigt_to_strain_tensor",

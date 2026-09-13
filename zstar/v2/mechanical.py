@@ -121,6 +121,23 @@ def stress_tensor_to_voigt(stress: np.ndarray | Iterable[Iterable[float]]) -> np
     )
 
 
+def stress_representation(rotation: np.ndarray | Iterable[Iterable[float]]) -> np.ndarray:
+    """Return the tensorial-Voigt representation of a Cartesian rotation.
+
+    Stress is work-conjugate to engineering strain, but its six-vector uses
+    undoubled shear components.  It therefore needs a separate representation
+    from :func:`strain_tensor_to_voigt` when constructing symmetry bases for
+    ``stress <- strain`` responses.
+    """
+
+    matrix = _matrix3(rotation, "rotation")
+    result = np.zeros((6, 6), dtype=float)
+    for column in range(6):
+        transformed = matrix @ voigt_to_stress_tensor(np.eye(6)[column]) @ matrix.T
+        result[:, column] = stress_tensor_to_voigt(transformed)
+    return result
+
+
 def voigt_to_stress_tensor(voigt: Iterable[float]) -> np.ndarray:
     values = np.asarray(tuple(voigt), dtype=float)
     if values.shape != (6,):

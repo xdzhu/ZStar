@@ -34,6 +34,14 @@ D_P(g) P = R_g P
 一个由这条关系生成的 6x6 矩阵 `V(g)`，而不是手写晶系分量表。stress 用同一
 张量作用后再应用 engineering-shear 的度量因子。
 
+代码层面不能把 stress 直接当成 engineering strain 的同名表示：`strain` 输出使用
+`(xx, yy, zz, 2yz, 2xz, 2xy)`，而 `stress` 输出使用 work-conjugate 的不加倍
+剪切分量。`allowed_response_basis(..., output_kind="stress")` 因此调用独立的
+tensorial-Voigt stress representation；`output_kind="force"` 则明确复用
+Cartesian displacement representation。这样 unified strain plan 可以同时接收
+`polarization`、`force`、`stress` 和 `displacement`，而不会因剪切度量不同产生错误
+的 intertwiner 约束。
+
 一个线性响应算子 \(L\)（例如 `dP/du`、`dF/du`、`dP/deta` 或 `dstress/deta`）
 必须满足 intertwining 约束
 

@@ -8,7 +8,11 @@ from typing import Iterable
 import numpy as np
 
 from ..dimensions import DimensionSpec
-from .mechanical import strain_tensor_to_voigt, voigt_to_strain_tensor
+from .mechanical import (
+    strain_tensor_to_voigt,
+    stress_representation,
+    voigt_to_strain_tensor,
+)
 from .symmetry import intertwiner_basis
 
 try:
@@ -331,9 +335,18 @@ def allowed_response_basis(
     if not report.operations:
         raise ValueError("cannot build a symmetry basis without operations")
     builders = {
+        # Forces transform as Cartesian covectors under the same orthogonal
+        # rotations as displacements; retaining the alias lets the unified
+        # strain plan constrain force and internal-displacement outputs with
+        # one representation definition.
         "displacement": lambda index: displacement_representation(report, index),
+        "force": lambda index: displacement_representation(report, index),
         "polarization": lambda index: polarization_representation(report, index),
         "strain": lambda index: strain_representation(report, index),
+        # Stress uses undoubled tensorial shear components, unlike engineering
+        # strain.  Do not reuse strain_representation here: that would impose
+        # the wrong intertwining metric on stress <- strain fits.
+        "stress": lambda index: stress_representation(report.operations[int(index)].rotation_cartesian),
     }
     if input_kind not in builders or output_kind not in builders:
         raise ValueError("input_kind and output_kind must be displacement, polarization or strain")

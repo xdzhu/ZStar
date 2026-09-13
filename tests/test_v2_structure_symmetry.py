@@ -12,6 +12,7 @@ from zstar.v2 import (
     fit_linear_response,
     polarization_representation,
     strain_representation,
+    stress_representation,
     symmetry_adapted_input_plan,
 )
 from zstar.v2.structure import _operation_permutation
@@ -84,6 +85,40 @@ def test_symmetry_adapted_strain_plan_identifies_unified_p4mm_responses():
     assert plan.selected_indices == (0, 2, 3, 5)
     assert plan.vectors.shape == (4, 6)
     assert plan.to_dict()["complete"] is True
+
+
+def test_unified_strain_plan_accepts_force_and_tensorial_stress_outputs():
+    structure = StructureSpec(
+        lattice=np.diag([3.9, 3.9, 4.1]),
+        fractional_positions=np.array(
+            [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5], [0.5, 0.5, 0.1],
+             [0.5, 0.0, 0.6], [0.0, 0.5, 0.6]]
+        ),
+        symbols=("Ba", "Ti", "O", "O", "O"),
+    )
+    report = analyze_space_group(structure)
+    assert stress_representation(np.eye(3)).shape == (6, 6)
+    force_basis = allowed_response_basis(report, input_kind="strain", output_kind="force")
+    stress_basis = allowed_response_basis(report, input_kind="strain", output_kind="stress")
+    displacement_basis = allowed_response_basis(
+        report, input_kind="strain", output_kind="displacement"
+    )
+    assert force_basis.allowed_rank == displacement_basis.allowed_rank == 14
+    assert stress_basis.allowed_rank == 7
+    plan = symmetry_adapted_input_plan(
+        report,
+        input_kind="strain",
+        output_kinds=("polarization", "force", "stress", "displacement"),
+    )
+    assert plan.complete
+    assert plan.allowed_ranks == {
+        "polarization": 3,
+        "force": 14,
+        "stress": 7,
+        "displacement": 14,
+    }
+    assert plan.identified_rank == 38
+    assert plan.selected_indices == (0, 2, 3, 5)
 
 
 def test_symmetry_adapted_strain_plan_keeps_all_components_for_p1():

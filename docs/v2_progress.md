@@ -409,14 +409,19 @@
     但仍是同一 ABACUS 后端链路，不能替代首块对应性、独立 IFC/后端和 acoustic gauge
     闭合；完整数值与块数记录见 [`v2_gamma_force_audit_20260913.md`](v2_gamma_force_audit_20260913.md)。
 
+80. 修正 unified strain symmetry plan 的输出表示契约：`force` 显式复用 Cartesian
+    displacement 表示，`stress` 使用不加倍剪切的 tensorial-Voigt 表示，不再错误复用
+    engineering-strain 表示。P4mm 的 `(polarization, force, stress, displacement)`
+    联合计划达到允许秩 `3+14+7+14=38`，并保持四个 canonical 应变方向。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `504 passed, 1155 warnings`；新增首/末力块
+* v2 独立 worktree 的完整回归为 `505 passed, 1158 warnings`；新增首/末力块
   解析后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
-  测试当前为 `111 passed`。
+  测试当前为 `112 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 111 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 112 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
