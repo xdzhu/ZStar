@@ -1,0 +1,9 @@
+{
+  "schema": "zstar-trained-qnep-gpumd-phonon-inputs",
+  "model": "nep.txt",
+  "cell": "cubic BaTiO3 primitive 5 atoms, 2x2x2 GPUMD cell",
+  "replicate": [2, 2, 2],
+  "lattice_A": 4.04849223,
+  "displacement_A": 0.01,
+  "nac": "Phonopy BORN from GPUMD dump_xyz bec; GPUMD compute_phonon supplies force constants"
+}

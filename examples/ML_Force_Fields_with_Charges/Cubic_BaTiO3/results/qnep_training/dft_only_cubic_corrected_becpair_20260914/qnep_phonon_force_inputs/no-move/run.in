@@ -1,0 +1,6 @@
+potential nep.txt
+dump_xyz 1 dump_bec.xyz precision double force bec
+velocity 1
+ensemble nve
+time_step 0
+run 1

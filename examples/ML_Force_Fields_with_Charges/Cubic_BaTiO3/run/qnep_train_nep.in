@@ -1,0 +1,20 @@
+# Small, cubic-phase-only qNEP compatibility benchmark.
+# GPUMD 5.7/5.8 NEP4 syntax; target BEC is optional per frame in train.xyz.
+version      4
+type         3 Ba O Ti
+model_type   0
+charge_mode  1
+cutoff       8 4
+n_max        6 6
+basis_size   6 6
+l_max        4 1
+neuron       30
+lambda_e     1.0
+lambda_f     1.0
+lambda_v     0.1
+lambda_q     0.1
+lambda_z     0.5
+batch        32
+population   20
+generation   5000
+output_interval 100

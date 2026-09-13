@@ -1,0 +1,15 @@
+schema_version: 1
+sample: cubic_BaTiO3
+source:
+  qnep_zenodo: https://doi.org/10.5281/zenodo.18335947
+  qnep_batio_reference_xyz_md5: 2535112ce16d8fba1a2be5eb3f441b2f
+  qnep_mode1_model_md5: 1235b3258b73aaf468f85fd1c7c02035
+labels:
+  bec_units: e
+  zstar_coordinate_convention: cartesian_A
+  qnep_property: bec:R:9
+  sparse_labels_allowed: true
+levels:
+  level1: true
+  level2: completed_gpumd_qnep_smoke
+  level3: not_run

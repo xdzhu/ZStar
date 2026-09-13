@@ -1,0 +1,20 @@
+# All 104 cubic BaTiO3 frames are in train.xyz; test.xyz is a parser-only
+# duplicate of one training frame and must not be used as an independent test.
+version      4
+type         3 Ba O Ti
+model_type   0
+charge_mode  1
+cutoff       8 4
+n_max        6 6
+basis_size   6 6
+l_max        4 1
+neuron       80
+lambda_e     1.0
+lambda_f     1.0
+lambda_v     0.1
+lambda_q     0.1
+lambda_z     0.5
+batch        64
+population   30
+generation   50000
+output_interval 1000

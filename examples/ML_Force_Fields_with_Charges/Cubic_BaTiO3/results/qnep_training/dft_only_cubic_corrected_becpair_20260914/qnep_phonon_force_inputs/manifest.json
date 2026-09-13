@@ -1,0 +1,44 @@
+{
+  "schema": "zstar-qnep-phonon-inputs",
+  "source": "D:\\Work\\Code\\zstar\\examples\\3D_Bulk\\cubic_BaTiO3\\phonon_spectrum\\results\\phonopy_disp.yaml",
+  "normalized_source": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\dft_only_cubic_corrected_becpair_20260914\\qnep_phonon_force_inputs\\phonopy_disp_angstrom.yaml",
+  "calculator": "gpumd-qnep",
+  "supercell_atoms": 40,
+  "equilibrium": "equilibrium.xyz",
+  "displacements": [
+    {
+      "index": 1,
+      "file": "disp-001.xyz",
+      "natoms": 40,
+      "displacement": [
+        0,
+        0.01058354421806,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "index": 2,
+      "file": "disp-002.xyz",
+      "natoms": 40,
+      "displacement": [
+        8,
+        0.01058354421806,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "index": 3,
+      "file": "disp-003.xyz",
+      "natoms": 40,
+      "displacement": [
+        16,
+        0.007483695885577875,
+        0.007483695885577875,
+        0.0
+      ]
+    }
+  ],
+  "next": "Run one GPUMD force smoke test per disp-*.xyz, then collect forces into FORCE_SETS."
+}

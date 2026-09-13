@@ -1,0 +1,11 @@
+# Independent cubic 83/21 evaluation for a neuron=50 qNEP model.
+version      4
+type         3 Ba O Ti
+model_type   0
+prediction   1
+charge_mode  1
+cutoff       8 4
+n_max        6 6
+basis_size   6 6
+l_max        4 1
+neuron       50

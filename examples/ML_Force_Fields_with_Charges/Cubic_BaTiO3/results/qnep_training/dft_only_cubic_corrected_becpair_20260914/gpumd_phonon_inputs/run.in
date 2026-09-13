@@ -1,0 +1,8 @@
+replicate 2 2 2
+potential nep.txt
+dump_xyz 1 equilibrium_qnep.xyz precision double force bec
+velocity 1
+ensemble nve
+time_step 0
+run 1
+compute_phonon 0.01

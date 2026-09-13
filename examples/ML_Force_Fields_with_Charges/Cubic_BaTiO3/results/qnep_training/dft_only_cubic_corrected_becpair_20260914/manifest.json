@@ -1,0 +1,882 @@
+{
+  "schema": "zstar-dft-only-cubic-qnep-dataset",
+  "frames": 167,
+  "raw_cubic_bec_family_rows": 121,
+  "supercell_supplement_rows": 50,
+  "bec_annotation_rows": 22,
+  "bec_attached_to_existing_frames": 22,
+  "bec_unattached_rows": 0,
+  "atoms": {
+    "5": 117,
+    "40": 50
+  },
+  "bec_labeled_frames": 21,
+  "duplicate_geometry_frames_removed": [
+    "541::0.no-move",
+    "541::disp-001",
+    "541::disp-002",
+    "541::disp-003"
+  ],
+  "phase_counts": {
+    "cubic": 167
+  },
+  "energy_policy": "all energy values copied from completed ABACUS/PBEsol outputs; no shifts, offsets, normalization, or replacement",
+  "excluded_sources": [
+    "public qNEP force-pool excerpt",
+    "mixed-source training outputs"
+  ],
+  "sources": {
+    "raw_force_jsonl": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\bec_force_only_raw_dft_612.jsonl",
+    "candidate_jsonl": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\selected_bec\\qnep_bto_bec_candidates.jsonl",
+    "supplement_extxyz": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\cubic_50_supercell_supplement\\force_supplement_50.extxyz",
+    "bec_annotated_jsonl": [
+      "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\validation\\bec_campaign_full\\all_bec_annotated.jsonl",
+      "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\validation\\bec_supercell_pair_forward_annotated_20260914.jsonl"
+    ],
+    "bec_force_jsonl": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\bec_force_only_raw_dft_612.jsonl"
+  },
+  "export": {
+    "format": "gpumd-qnep-extxyz",
+    "output": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\dft_only_cubic_corrected_becpair_20260914\\dataset.xyz",
+    "frames": 167,
+    "labeled_frames": 21,
+    "unlabeled_frames": 146,
+    "frames_detail": [
+      {
+        "frame_id": "14::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "14::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "14::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "14::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-004",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-005",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-006",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-007",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "34::disp-008",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-004",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-005",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-006",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-007",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-008",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-009",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "36::disp-010",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-004",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-005",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-006",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-007",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "79::disp-008",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-004",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-005",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-006",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-007",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-008",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-009",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "95::disp-010",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-004",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-005",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-006",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-007",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "121::disp-008",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-004",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-005",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-006",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-007",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-008",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-009",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "138::disp-010",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-004",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-005",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-006",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-007",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "149::disp-008",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "534::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "534::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "534::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "534::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "535::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "535::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "535::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "535::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "536::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "536::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "536::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "536::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "537::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "537::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "537::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "537::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "538::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "538::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "538::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "538::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "539::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "539::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "539::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "539::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "540::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "540::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "540::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "540::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "542::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "542::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "542::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "542::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "543::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "543::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "543::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "543::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "544::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "544::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "544::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "544::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "545::0.no-move",
+        "has_bec": true,
+        "natoms": 5
+      },
+      {
+        "frame_id": "545::disp-001",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "545::disp-002",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "545::disp-003",
+        "has_bec": false,
+        "natoms": 5
+      },
+      {
+        "frame_id": "phonon_equilibrium",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "phonon_disp_001",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "phonon_disp_002",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "phonon_disp_003",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_001",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_002",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_003",
+        "has_bec": true,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_004",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_005",
+        "has_bec": true,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_006",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_007",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_008",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_009",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_010",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_011",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_012",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_013",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_014",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_015",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_016",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_017",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_018",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_019",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_020",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_021",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_022",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_023",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_024",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_025",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_026",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_027",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_028",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_029",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_030",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_031",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_032",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_033",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_034",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_035",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_036",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_037",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_038",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_039",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_040",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_041",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_042",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_043",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_044",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_045",
+        "has_bec": false,
+        "natoms": 40
+      },
+      {
+        "frame_id": "supp_046",
+        "has_bec": false,
+        "natoms": 40
+      }
+    ]
+  }
+}

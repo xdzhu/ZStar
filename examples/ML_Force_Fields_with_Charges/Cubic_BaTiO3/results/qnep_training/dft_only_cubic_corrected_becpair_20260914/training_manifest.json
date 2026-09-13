@@ -1,0 +1,32 @@
+{
+  "schema": "zstar-qnep-cost-capped-training",
+  "dataset": "dataset.xyz",
+  "split": "split/manifest.json",
+  "model": "n50_z05",
+  "gpumd_version": "5.7",
+  "charge_mode": 1,
+  "gpu": "G1 GPU 0 NVIDIA A30 24576 MiB",
+  "cuda_visible_devices": "0",
+  "omp_num_threads": 1,
+  "generations_requested": 100000,
+  "generations_completed": 10000,
+  "early_stop_policy": "cost watchdog at 10000 generations",
+  "wall_time_approx_min": 15.0,
+  "train_frames": 134,
+  "test_frames": 33,
+  "train_bec_frames": 18,
+  "test_bec_frames": 3,
+  "metrics": {
+    "test_energy_mae_eV_per_atom": 0.028818181818172143,
+    "test_force_mae_eV_per_A": 0.2778653371448261,
+    "test_force_rmse_eV_per_A": 0.4784329068404956,
+    "test_stress_mae_eV_per_A3": 2.1324792991352988,
+    "test_bec_mae_e": 0.0727126167405229,
+    "test_bec_rmse_e": 0.1399946632042228,
+    "test_bec_labeled_atom_rows": 85
+  },
+  "interpretation": "Small compatibility benchmark only; force error is not production-level and no finite-temperature MD claim is made.",
+  "source_training_host": "G1",
+  "source_scratch": "/home/zhuxd/zstar-qnep-compat/dft_only_cubic_corrected_becpair_20260914/n50_z05",
+  "raw_model_files": "not committed; retained in user scratch"
+}

@@ -1,0 +1,21 @@
+# Cubic-only 301-frame qNEP compatibility benchmark (156 cubic frames split
+# reproducibly into train/test; 64 optional BEC-labelled frames in the merged
+# source, 22 in this split).  This is deliberately not a production model.
+version      4
+type         3 Ba O Ti
+model_type   0
+charge_mode  1
+cutoff       8 4
+n_max        6 6
+basis_size   6 6
+l_max        4 1
+neuron       30
+lambda_e     1.0
+lambda_f     1.0
+lambda_v     0.1
+lambda_q     0.1
+lambda_z     0.5
+batch        32
+population   20
+generation   10000
+output_interval 100

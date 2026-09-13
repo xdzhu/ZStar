@@ -1,0 +1,40 @@
+{
+  "schema": "zstar-qnep-two-nac-overlays",
+  "frequency_unit": "THz",
+  "qpath_labels": [
+    "$\\Gamma$",
+    "$\\mathrm{X}$",
+    "$\\mathrm{M}$",
+    "$\\Gamma$",
+    "$\\mathrm{R}$",
+    "$\\mathrm{X}$"
+  ],
+  "common_y_limits_thz": [
+    -15.982004303679735,
+    39.51228336765953
+  ],
+  "source": {
+    "dft": "D:\\Work\\Code\\zstar\\examples\\3D_Bulk\\cubic_BaTiO3\\phonon_spectrum\\results\\phonon_spectrum_result.json",
+    "qnep": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\dft_only_cubic_corrected_becpair_20260914\\qnep_phonon_spectrum_result.json"
+  },
+  "without_nac": {
+    "mae_thz": 10.497700790809917,
+    "rmse_thz": 11.264724885646377,
+    "max_abs_thz": 23.864906376862038,
+    "n_values": 7575
+  },
+  "with_nac": {
+    "mae_thz": 10.155191770834792,
+    "rmse_thz": 10.72691542861246,
+    "max_abs_thz": 17.92120475819219,
+    "n_values": 7575
+  },
+  "outputs": [
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\figures\\cubic_BaTiO3_qNEP_final_n50_z05_10k_without_NAC.png",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\figures\\cubic_BaTiO3_qNEP_final_n50_z05_10k_without_NAC.pdf",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\figures\\cubic_BaTiO3_qNEP_final_n50_z05_10k_with_NAC.png",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\figures\\cubic_BaTiO3_qNEP_final_n50_z05_10k_with_NAC.pdf",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\figures\\cubic_BaTiO3_qNEP_final_n50_z05_10k_NAC_split.png",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\figures\\cubic_BaTiO3_qNEP_final_n50_z05_10k_NAC_split.pdf"
+  ]
+}

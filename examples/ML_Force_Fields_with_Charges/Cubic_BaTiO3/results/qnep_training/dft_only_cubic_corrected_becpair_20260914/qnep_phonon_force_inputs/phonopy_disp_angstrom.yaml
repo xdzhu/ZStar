@@ -1,0 +1,493 @@
+phonopy:
+  version: 2.38.2
+  calculator: abacus
+  frequency_unit_conversion_factor: 15.633302
+  symmetry_tolerance: 0.001
+  configuration:
+    cell_filename: /home/zhuxd/abacus/agent-runs/20260912-zstar-phonon-nac-bto/run/.STRU.zstar-phonopy
+    create_displacements: .true.
+    dim: 2 2 2
+    symmetry_tolerance: '0.001'
+    calculator: abacus
+physical_unit:
+  atomic_mass: AMU
+  length: angstrom
+space_group:
+  type: Pm-3m
+  number: 221
+  Hall_symbol: -P 4 2 3
+supercell_matrix:
+- - 2
+  - 0
+  - 0
+- - 0
+  - 2
+  - 0
+- - 0
+  - 0
+  - 2
+primitive_cell:
+  lattice:
+  - - 3.981414890929184
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 3.981414890929184
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 3.981414890929184
+  points:
+  - symbol: Ba
+    coordinates:
+    - 0.5
+    - 0.5
+    - 0.5
+    mass: 137.327
+  - symbol: Ti
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.0
+    mass: 47.867
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.0
+    - 0.0
+    mass: 15.9994
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.5
+    - 0.0
+    mass: 15.9994
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.5
+    mass: 15.9994
+  reciprocal_lattice:
+  - - 0.132911848023832
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 0.132911848023832
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 0.132911848023832
+unit_cell:
+  lattice:
+  - - 3.981414890929184
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 3.981414890929184
+    - -0.0
+  - - 0.0
+    - -0.0
+    - 3.981414890929184
+  points:
+  - symbol: Ba
+    coordinates:
+    - 0.5
+    - 0.5
+    - 0.5
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ti
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.0
+    mass: 47.867
+    reduced_to: 2
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.0
+    - 0.0
+    mass: 15.9994
+    reduced_to: 3
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.5
+    - 0.0
+    mass: 15.9994
+    reduced_to: 4
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.5
+    mass: 15.9994
+    reduced_to: 5
+supercell:
+  lattice:
+  - - 7.962829781858368
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 7.962829781858368
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 7.962829781858368
+  points:
+  - symbol: Ba
+    coordinates:
+    - 0.25
+    - 0.25
+    - 0.25
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ba
+    coordinates:
+    - 0.75
+    - 0.25
+    - 0.25
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ba
+    coordinates:
+    - 0.25
+    - 0.75
+    - 0.25
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ba
+    coordinates:
+    - 0.75
+    - 0.75
+    - 0.25
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ba
+    coordinates:
+    - 0.25
+    - 0.25
+    - 0.75
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ba
+    coordinates:
+    - 0.75
+    - 0.25
+    - 0.75
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ba
+    coordinates:
+    - 0.25
+    - 0.75
+    - 0.75
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ba
+    coordinates:
+    - 0.75
+    - 0.75
+    - 0.75
+    mass: 137.327
+    reduced_to: 1
+  - symbol: Ti
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.0
+    mass: 47.867
+    reduced_to: 9
+  - symbol: Ti
+    coordinates:
+    - 0.5
+    - 0.0
+    - 0.0
+    mass: 47.867
+    reduced_to: 9
+  - symbol: Ti
+    coordinates:
+    - 0.0
+    - 0.5
+    - 0.0
+    mass: 47.867
+    reduced_to: 9
+  - symbol: Ti
+    coordinates:
+    - 0.5
+    - 0.5
+    - 0.0
+    mass: 47.867
+    reduced_to: 9
+  - symbol: Ti
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.5
+    mass: 47.867
+    reduced_to: 9
+  - symbol: Ti
+    coordinates:
+    - 0.5
+    - 0.0
+    - 0.5
+    mass: 47.867
+    reduced_to: 9
+  - symbol: Ti
+    coordinates:
+    - 0.0
+    - 0.5
+    - 0.5
+    mass: 47.867
+    reduced_to: 9
+  - symbol: Ti
+    coordinates:
+    - 0.5
+    - 0.5
+    - 0.5
+    mass: 47.867
+    reduced_to: 9
+  - symbol: O
+    coordinates:
+    - 0.25
+    - 0.0
+    - 0.0
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.75
+    - 0.0
+    - 0.0
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.25
+    - 0.5
+    - 0.0
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.75
+    - 0.5
+    - 0.0
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.25
+    - 0.0
+    - 0.5
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.75
+    - 0.0
+    - 0.5
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.25
+    - 0.5
+    - 0.5
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.75
+    - 0.5
+    - 0.5
+    mass: 15.9994
+    reduced_to: 17
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.25
+    - 0.0
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.25
+    - 0.0
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.75
+    - 0.0
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.75
+    - 0.0
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.25
+    - 0.5
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.25
+    - 0.5
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.75
+    - 0.5
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.75
+    - 0.5
+    mass: 15.9994
+    reduced_to: 25
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.25
+    mass: 15.9994
+    reduced_to: 33
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.0
+    - 0.25
+    mass: 15.9994
+    reduced_to: 33
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.5
+    - 0.25
+    mass: 15.9994
+    reduced_to: 33
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.5
+    - 0.25
+    mass: 15.9994
+    reduced_to: 33
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.0
+    - 0.75
+    mass: 15.9994
+    reduced_to: 33
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.0
+    - 0.75
+    mass: 15.9994
+    reduced_to: 33
+  - symbol: O
+    coordinates:
+    - 0.0
+    - 0.5
+    - 0.75
+    mass: 15.9994
+    reduced_to: 33
+  - symbol: O
+    coordinates:
+    - 0.5
+    - 0.5
+    - 0.75
+    mass: 15.9994
+    reduced_to: 33
+nac:
+  born_effective_charge:
+  - - - 2.73365568
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 2.73365568
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 2.73365568
+  - - - 7.439844730000001
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 7.439844730000001
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 7.439844730000001
+  - - - -5.8610308
+      - 0.0
+      - 0.0
+    - - 0.0
+      - -2.15623481
+      - 0.0
+    - - 0.0
+      - 0.0
+      - -2.15623481
+  - - - -2.15623481
+      - 0.0
+      - 0.0
+    - - 0.0
+      - -5.8610308
+      - 0.0
+    - - 0.0
+      - 0.0
+      - -2.15623481
+  - - - -2.15623481
+      - 0.0
+      - 0.0
+    - - 0.0
+      - -2.15623481
+      - 0.0
+    - - 0.0
+      - 0.0
+      - -5.8610308
+  dielectric_constant:
+  - - 6.872583
+    - 0.0
+    - 0.0
+  - - 0.0
+    - 6.872583
+    - 0.0
+  - - 0.0
+    - 0.0
+    - 6.872583
+  unit_conversion_factor: 51.42209
+displacements:
+- atom: 1
+  displacement:
+  - 0.01058354421806
+  - 0.0
+  - 0.0
+- atom: 9
+  displacement:
+  - 0.01058354421806
+  - 0.0
+  - 0.0
+- atom: 17
+  displacement:
+  - 0.007483695885577875
+  - 0.007483695885577875
+  - 0.0
