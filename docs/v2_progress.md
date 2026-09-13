@@ -578,3 +578,14 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 设计秩、条件数和能量残差。新增满秩 3D 合成模型及单轴秩不足测试；响应代数定向
 测试增至 `27 passed`，随后全量回归为 `517 passed, 1158 warnings`。该结果用于后续 ABACUS
 stress-vs-energy work-conjugacy 对照，尚未作为材料常数发布。
+
+## 2026-09-13 VASP 3D SiC 应变 smoke
+
+在 `cu17` 上以 `40 MPI × 1 OpenMP` 完成 VASP reference、`eta_xx=+0.001`
+和 `eta_xx=-0.001` 三个 3D SiC 阶段。首次手工只修改一条非正交晶格矢量时，
+collector 反推出额外剪切并正确拒绝；随后按 `L' = L(I+eta)^T` 对三条晶格矢量
+统一变换后重跑，几何、OUTCAR 晶格、力和应力均通过 collector 检查。raw VASP
+应力导数为 `-5193.73 kbar`，显式转为 tension-positive 后为 `519.373 GPa`；
+中心能量曲率为 `524.31 GPa`。这只是单方向 work-conjugacy/collector smoke，
+不是完整 `C_ij` 或 Gate C 定量通过；详见
+`docs/v2_vasp_sic_strain_smoke_20260913.md`。
