@@ -13,6 +13,7 @@ from zstar.v2 import (
     polarization_representation,
     strain_representation,
     stress_representation,
+    stress_tensor_to_voigt,
     symmetry_adapted_input_plan,
 )
 from zstar.v2.structure import _operation_permutation
@@ -119,6 +120,24 @@ def test_unified_strain_plan_accepts_force_and_tensorial_stress_outputs():
     }
     assert plan.identified_rank == 38
     assert plan.selected_indices == (0, 2, 3, 5)
+
+
+def test_stress_representation_preserves_tensorial_shear_under_rotation():
+    angle = np.deg2rad(37.0)
+    rotation = np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0.0],
+            [np.sin(angle), np.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    stress = np.array([[2.0, 0.3, -0.4], [0.3, -1.0, 0.7], [-0.4, 0.7, 3.0]])
+    transformed = rotation @ stress @ rotation.T
+    np.testing.assert_allclose(
+        stress_representation(rotation) @ stress_tensor_to_voigt(stress),
+        stress_tensor_to_voigt(transformed),
+        atol=1.0e-12,
+    )
 
 
 def test_symmetry_adapted_strain_plan_keeps_all_components_for_p1():

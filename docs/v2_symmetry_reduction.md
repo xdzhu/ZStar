@@ -156,6 +156,8 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
   reconstruct。
 * 非标准晶胞先在 Cartesian metric 中验证操作，再记录原胞/常规胞变换矩阵；完整
   tensor 输出统一到用户声明坐标系，不能混用 fractional rotation。
+  v2 还显式检查每个 Cartesian rotation 的正交性和 \(|\det R|=1\)；不满足容差的
+  操作被拒绝并记录 `non_orthogonal_rotation`，不会进入 intertwiner basis。
 * 磁性、带门控外场、带电胞或自旋轨道耦合只在 backend 明确提供相应磁空间群/场
   对称时约化；当前 v1 的非磁性限制应原样保留并在 v2 preflight 中说明。
 

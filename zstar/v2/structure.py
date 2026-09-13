@@ -238,14 +238,25 @@ def analyze_space_group(
         rotations = np.asarray(_dataset_value(dataset, "rotations"), dtype=int)
         translations = np.asarray(_dataset_value(dataset, "translations"), dtype=float)
         operations: list[SpaceGroupOperation] = []
+        rejected_operations: list[str] = []
         cartesian_basis = structure.lattice.T
         inverse_basis = np.linalg.inv(cartesian_basis)
         for rotation, translation in zip(rotations, translations):
             permutation = _operation_permutation(structure, rotation, translation, max(tolerance * 2.0, 1.0e-7))
             if permutation is None:
+                rejected_operations.append("atom_mapping")
                 continue
             rotation_cartesian = cartesian_basis @ rotation @ inverse_basis
+            orthogonality_error = float(
+                np.max(np.abs(rotation_cartesian.T @ rotation_cartesian - np.eye(3)))
+            )
+            determinant_error = abs(abs(float(np.linalg.det(rotation_cartesian))) - 1.0)
+            operation_tolerance = max(tolerance * 10.0, 1.0e-7)
+            if orthogonality_error > operation_tolerance or determinant_error > operation_tolerance:
+                rejected_operations.append("non_orthogonal_rotation")
+                continue
             if not _boundary_compatible(rotation_cartesian, structure.dimensionality):
+                rejected_operations.append("boundary_mixing")
                 continue
             operations.append(SpaceGroupOperation(rotation, translation, rotation_cartesian, permutation))
         equivalent = tuple(int(value) for value in _dataset_value(dataset, "equivalent_atoms"))
@@ -255,6 +266,7 @@ def analyze_space_group(
             int(_dataset_value(dataset, "hall_number")),
             equivalent,
             tuple(operations),
+            tuple(rejected_operations),
         ))
     if not candidates:
         return SpaceGroupReport(
@@ -289,11 +301,12 @@ def analyze_space_group(
         operations=best[4],
         diagnostics={
             "candidate_count": len(candidates),
-            "candidate_signatures": [
-                {"symprec": item[0], "space_group": item[1], "hall_number": item[2], "operation_count": len(item[4])}
+                "candidate_signatures": [
+                    {"symprec": item[0], "space_group": item[1], "hall_number": item[2], "operation_count": len(item[4])}
                 for item in candidates
             ],
             "boundary_compatible_operations": len(best[4]),
+            "rejected_operation_reasons": list(best[5]),
         },
     )
 
