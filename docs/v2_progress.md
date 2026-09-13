@@ -429,6 +429,13 @@
     封装层现在明确拒绝使用最终近零 `forces`，要求重新收集可识别首个
     `TOTAL-FORCE` 块；clamped-ion 文档仍可使用其唯一固定离子力块。
 
+84. 对 cu17、cu24、cu25、cu26 做只读独立后端能力审计：四个节点均可见
+    ABACUS 3.10.0-LTS、VASP 6.3.2、Phonopy 和 Python 3.10.9；`pw.x` 与
+    `cp2k.popt` 未在当前 PATH 中发现。该结果只证明 VASP 交叉验证在软件层面
+    具有候选路径，不等于 POTCAR、collector 或物理结果已经验证；未提交作业，
+    资源消耗为 0 core-hours。详细路径、限制和下一步 Gate C 入口见
+    [`v2_independent_backend_capability_audit_20260913.md`](v2_independent_backend_capability_audit_20260913.md)。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `508 passed, 1158 warnings`；新增首/末力块
@@ -459,7 +466,8 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 * **Gate C：**仍阻塞。collector、单次 PYATB 三方向路径和内部位移拟合接口已接通；
   `P4mm` 六分量 `±1e-3` 审计已完成，允许子空间/秩、stress 符号与单位、能量曲率
   和 Λ 重建已有单后端证据。但在报告材料响应常数前，仍必须完成多幅度收敛、
-  work-conjugacy 的独立复核和独立后端核对。
+  work-conjugacy 的独立复核和独立后端核对。当前节点审计表明 VASP 是候选独立
+  后端，但尚未完成输入、赝势和 collector 验证。
 
 ## 下一步
 
@@ -476,3 +484,6 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
    收敛标记、最大力、应力和多幅度稳定性，不能只比较总能量；
 6. 在至少一个非 `P4mm` 低对称材料、一个独立后端和一个合适的二维边界条件案例
    上复现相同的 branch/rank/residual 检查，之后才进入正式压电/弹性 CLI 设计。
+7. 先完成 VASP 输入/POTCAR provenance 与 calculator-neutral collector 的本地
+   synthetic tests，再提交一项 40 MPI × 1 OpenMP reference smoke 和一对
+   `+/-` 应变任务；不要把可执行文件探测结果直接升级为 Gate C 科学证据。
