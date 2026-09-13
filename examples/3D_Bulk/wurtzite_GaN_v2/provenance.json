@@ -33,8 +33,9 @@
   "results": {
     "artifact": "results/piezo_fit.json",
     "amplitude_audit": "results/amplitude_audit.json",
+    "high_precision_shear_audit": "results/high_precision_shear_audit.json",
     "amplitude_audit_report": "docs/v2_abacus_gan_amplitude_audit_20260913.md",
     "report": "docs/v2_abacus_gan_piezo_benchmark_20260913.md",
-    "gate_decision": "conditional: e33 stable; e31 shows large-amplitude nonlinearity; e15 is unstable at 0.0005 and stable near -0.254 at 0.001/0.002; strict convergence and clamped-ion interpretation remain"
+    "gate_decision": "conditional: amplitude and clamped-ion audits completed; high-precision shear audit resolves the 0.0005 e15 noise; independent backend cross-check and production residual gate remain"
   }
 }
