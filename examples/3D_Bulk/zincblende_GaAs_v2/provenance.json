@@ -16,6 +16,11 @@
   "force_thr_eV_per_angstrom": 1e-3,
   "geometry_count": 13,
   "pyatb_runs": 13,
+  "stage_runtime_sum_seconds": 2665,
+  "mpi_core_hours_runtime_sum": 23.69,
+  "restartable": true,
+  "restart_count": 3,
+  "runtime_note": "The final Slurm job resumed two ABACUS stages from an earlier attempt; runtime sum is an audit of files in the case root.",
   "polarization_route": "one PYATB run per geometry, three directions",
   "results": "results/summary.json",
   "response_document": "results/response_document.json"
