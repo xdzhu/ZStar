@@ -107,10 +107,16 @@ energy blocks. The collector verified the serialized strain vectors and input
 hashes; the space group remained `F-43m`/Hall 512 and the stress basis rank was
 `3`.
 
+The summed wall time was `446.79 s`, corresponding to approximately `4.964
+core-hours` at 40 MPI ranks. Stage wall times were `21.74--46.33 s`; the
+timings are parsed from the `/usr/bin/time -p` records kept alongside the
+remote stage logs.
+
 The compression-positive raw stress was converted to the same
-tension-positive convention as the `±0.005` audit. Stress fitting returned
-rank `3/3`, maximum residual `0.1214 kbar` (RMS `0.0305 kbar`), and energy
-fitting returned rank `3/3`, maximum residual `7.18e-8 eV` (RMS `3.78e-8 eV`).
+tension-positive thermodynamic convention as the `±0.005` audit. Stress
+fitting returned rank `3/3`, maximum residual `0.1214 kbar` (RMS `0.0305 kbar`),
+and energy fitting returned rank `3/3`, maximum residual `7.18e-8 eV`
+(RMS `3.78e-8 eV`).
 After rotation to IEEE cubic axes, the independent constants were:
 
 | amplitude / observable | C11 (GPa) | C12 (GPa) | C44 (GPa) |
