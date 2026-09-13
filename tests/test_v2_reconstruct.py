@@ -11,6 +11,7 @@ from zstar.v2 import (
     ResponseDocument,
     TensorQuantity,
     fit_response_document,
+    proper_piezoelectric_response,
     voigt_to_stress_tensor,
 )
 
@@ -169,3 +170,31 @@ def test_fit_response_document_requires_explicit_stress_sign_and_rejects_duplica
             include_elastic=False,
             include_internal_strain=False,
         )
+
+
+def test_fit_response_document_can_append_explicit_proper_piezoelectric_terms():
+    document, expected = _synthetic_document()
+    fitted = fit_response_document(
+        document,
+        stress_sign="tension-positive",
+        include_proper_piezoelectric=True,
+        include_elastic=False,
+        include_gamma=False,
+        include_internal_strain=False,
+    )
+    raw = fitted.quantity("piezoelectric_raw").values
+    reference = document.quantity("polarization_cartesian").values[0]
+    expected_proper = proper_piezoelectric_response(raw, reference)
+    np.testing.assert_allclose(
+        fitted.quantity("piezoelectric_geometric_correction").values,
+        expected_proper.correction,
+    )
+    np.testing.assert_allclose(
+        fitted.quantity("piezoelectric_proper").values,
+        expected_proper.proper,
+    )
+    assert fitted.metadata["fitted_quantities"] == [
+        "piezoelectric_raw",
+        "piezoelectric_geometric_correction",
+        "piezoelectric_proper",
+    ]

@@ -13,6 +13,7 @@ from .fit import (
     fit_internal_strain_response,
     fit_piezoelectric_response,
     fit_strain_force_coupling,
+    fit_proper_piezoelectric_response,
 )
 from .mechanical import ENGINEERING_VOIGT
 from .model import BoundaryConditions, ResponseDocument, TensorQuantity
@@ -99,6 +100,7 @@ def fit_response_document(
     sample_weights: Iterable[float] | None = None,
     svd_cutoff: float | None = None,
     include_piezoelectric: bool = True,
+    include_proper_piezoelectric: bool = False,
     include_elastic: bool = True,
     include_gamma: bool = True,
     include_internal_strain: bool = True,
@@ -117,7 +119,10 @@ def fit_response_document(
     axes and rank/residual diagnostics; it does not apply proper-piezoelectric
     geometric corrections, acoustic projections, or relaxed-ion BEC algebra.
     Those operations require separately validated inputs and remain explicit
-    downstream steps.  ``sample_weights`` and ``svd_cutoff`` are forwarded to
+    downstream steps.  Set ``include_proper_piezoelectric=True`` only when the
+    Cartesian reference polarization is branch-matched; this appends the raw
+    geometric correction and proper tensor without overwriting the raw fit.
+    ``sample_weights`` and ``svd_cutoff`` are forwarded to
     every enabled linear fit so precision/conditioning choices remain visible.
     """
 
@@ -146,14 +151,26 @@ def fit_response_document(
                 "polarization_cartesian must have shape (samples, 3) matching strain_vector; "
                 f"got {polarization.shape}"
             )
-        fit = fit_piezoelectric_response(
-            strains,
-            polarization.values,
-            reference_polarization=polarization.values[index],
-            allowed_basis=_allowed_basis(allowed_bases, "piezoelectric"),
-            sample_weights=sample_weights,
-            svd_cutoff=svd_cutoff,
-        )
+        if include_proper_piezoelectric:
+            proper_fit = fit_proper_piezoelectric_response(
+                strains,
+                polarization.values,
+                reference_polarization=polarization.values[index],
+                allowed_basis=_allowed_basis(allowed_bases, "piezoelectric"),
+                sample_weights=sample_weights,
+                svd_cutoff=svd_cutoff,
+            )
+            fit = proper_fit.raw_fit
+        else:
+            proper_fit = None
+            fit = fit_piezoelectric_response(
+                strains,
+                polarization.values,
+                reference_polarization=polarization.values[index],
+                allowed_basis=_allowed_basis(allowed_bases, "piezoelectric"),
+                sample_weights=sample_weights,
+                svd_cutoff=svd_cutoff,
+            )
         additions.append(
             TensorQuantity(
                 name="piezoelectric_raw",
@@ -178,6 +195,49 @@ def fit_response_document(
                 diagnostics=_fit_diagnostics(fit),
             )
         )
+        if include_proper_piezoelectric:
+            assert proper_fit is not None
+            proper_provenance = {
+                "stage_names": stage_names,
+                "reference_index": index,
+                "input_quantity": polarization.name,
+                "reference_polarization_C_per_m2": polarization.values[index].tolist(),
+                "definition": "Vanderbilt proper piezoelectric derivative",
+            }
+            proper_diagnostics = {
+                **_fit_diagnostics(fit),
+                "proper_reference_index": int(index),
+            }
+            for name, values, definition in (
+                (
+                    "piezoelectric_geometric_correction",
+                    proper_fit.proper.correction,
+                    "proper minus raw geometric correction",
+                ),
+                (
+                    "piezoelectric_proper",
+                    proper_fit.proper.proper,
+                    "proper piezoelectric derivative at fixed declared ion state",
+                ),
+            ):
+                additions.append(
+                    TensorQuantity(
+                        name=name,
+                        values=values,
+                        unit=polarization.unit,
+                        axes=("polarization_cartesian", "voigt_engineering"),
+                        coordinate_system=polarization.coordinate_system,
+                        voigt_convention=ENGINEERING_VOIGT,
+                        ion_relaxation=polarization.ion_relaxation,
+                        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+                        periodic_axes=periodic_axes,
+                        normalization=polarization.normalization,
+                        source="proper_piezoelectric_correction",
+                        backend=document.backend,
+                        provenance={**proper_provenance, "definition": definition},
+                        diagnostics=proper_diagnostics,
+                    )
+                )
 
     stress = _quantity_or_none(document, "stress_raw")
     if include_elastic and stress is not None:
