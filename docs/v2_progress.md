@@ -714,6 +714,13 @@ API，得到 proper `e` 的确定性后处理结果；raw、geometric correction
 新增 document-level synthetic success/failure 测试，确保该入口可在后续 GaN/其他材料
 获得明确 `ε^S` 后直接复用。
 
+按 Codex Skill 规范新增独立 `develop-zstar-v2` skill（含 `SKILL.md`、UI metadata
+和 response-gates reference），与 v1 的 `run-zstar-workflows` 分开。skill 明确区分
+v1/v2、检查维度/绝缘性/空间群/units/rank/residual、要求人工确认后再提交大任务，
+并把 finite-T、switching、flexoelectricity 和 resonant Raman 标记为 experimental，
+不会误判为稳定功能。`zstar agent-skill install --name develop-zstar-v2` 可显式安装；
+validator 通过，skill 安装与 CLI 回归测试通过。
+
 ## 2026-09-13 ABACUS/PYATB 3D GaN 压电验证门与幅度审计
 
 选用文献锚点明确的纤锌矿 GaN（`P6_3mc`, `6mm`）作为首个 v2 机电响应门，
