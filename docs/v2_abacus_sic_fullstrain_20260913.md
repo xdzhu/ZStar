@@ -86,11 +86,50 @@ stress-derived matrix by `0.358 GPa` (about `0.07%`):
 ```
 
 This close stress/energy agreement is an internal consistency result, not yet
-a universal SiC elastic constant. A second amplitude, a matched high-precision
-backend, and an independent DFPT oracle (ABINIT or QE) are still required
-before Gate C can pass. The current input retains `symmetry 1` from the v1
-source; a follow-up audit should repeat the fit with `symmetry 0` to exclude any
-symmetry-restoration contribution in the strained cells.
+a universal SiC elastic constant. A second amplitude and a matched-setting
+convergence study are still required before Gate C can pass. A third DFPT
+package is not a prerequisite when a definition-matched literature or database
+anchor is available; ABINIT/QE remain optional escalation paths only for
+materials without such an anchor or for a boundary-condition audit. The
+current input retains `symmetry 1` from the v1 source; a follow-up audit should
+repeat the fit with `symmetry 0` to exclude any symmetry-restoration
+contribution in the strained cells.
+
+## Second-amplitude audit (`±0.0025`, 2026-09-13)
+
+To test finite-strain stability without introducing another electronic-
+structure package, the same v1 SiC inputs were regenerated with the v2
+serializer at half the original amplitude. The ensemble was executed on cu25
+with the same `40 MPI × 1 OpenMP`, PBE, 100 Ry, `13×13×13` k-point and
+`scf_thr=1e-8` settings. All 13 stages (reference plus six positive/negative
+pairs) reached an ABACUS SCF convergence marker and emitted force, stress and
+energy blocks. The collector verified the serialized strain vectors and input
+hashes; the space group remained `F-43m`/Hall 512 and the stress basis rank was
+`3`.
+
+The compression-positive raw stress was converted to the same
+tension-positive convention as the `±0.005` audit. Stress fitting returned
+rank `3/3`, maximum residual `0.1214 kbar` (RMS `0.0305 kbar`), and energy
+fitting returned rank `3/3`, maximum residual `7.18e-8 eV` (RMS `3.78e-8 eV`).
+After rotation to IEEE cubic axes, the independent constants were:
+
+| amplitude / observable | C11 (GPa) | C12 (GPa) | C44 (GPa) |
+|---|---:|---:|---:|
+| `±0.005`, stress | 363.40 | 110.63 | 252.79 |
+| `±0.005`, energy | 363.31 | 110.94 | 252.52 |
+| `±0.0025`, stress | 363.24 | 110.57 | 252.73 |
+| `±0.0025`, energy | 362.77 | 110.72 | 252.32 |
+
+The stress-derived constants change by at most `0.16 GPa` (`0.054%`) when
+halving the amplitude; the energy-derived constants change by at most
+`0.54 GPa` (`0.20%`). Within each amplitude, stress and energy curvatures
+differ by at most `0.60 GPa` (`0.17%`). This is evidence of a stable linear
+elastic fit for this 3D SiC setup, but it remains a clamped-ion, single-
+functional result. The IEEE-axis comparison with the experimental literature
+anchor `(390,142,256) GPa` is recorded in
+[`v2_sic_backend_comparison_20260913.md`](v2_sic_backend_comparison_20260913.md);
+the anchor's temperature and measurement provenance must be carried with any
+future benchmark claim.
 
 ## Reproducible run command
 

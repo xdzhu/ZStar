@@ -16,6 +16,13 @@ Hamiltonians and basis errors are not identical.
 | energy residual max | 6.14e-8 eV | 6.54e-8 eV |
 | stress/energy C max difference | 0.358 GPa | 3.45 GPa |
 
+The same ABACUS setup was also repeated at `±0.0025`.  In IEEE cubic axes,
+the stress-derived `(C11,C12,C44)` changed from `(363.40,110.63,252.79)` to
+`(363.24,110.57,252.73)` GPa (maximum change `0.16 GPa`, `0.054%`).  The
+energy-derived values changed by at most `0.54 GPa` (`0.20%`).  This amplitude
+check is the relevant finite-difference convergence evidence; it is stronger
+than adding an unmatched third calculator.
+
 Using the input-cell Cartesian/engineering-Voigt convention, the largest
 absolute componentwise difference between the stress-derived matrices is
 `32.73 GPa`, or `5.80%` of the largest VASP component. The difference is

@@ -649,3 +649,13 @@ ABACUS `(363.40, 110.63, 252.79)` GPa、VASP `(383.49, 126.74, 264.27)` GPa，
 匹配，这仍是 collector/表示审计和文献锚定 benchmark，不是最终材料常数；不再为
 形式上的“第三后端”启动 ABINIT/QE。只有后续材料缺少定义匹配的外部锚点时，才考虑
 它们作为可选 oracle。详见 [`v2_sic_backend_comparison_20260913.md`](v2_sic_backend_comparison_20260913.md)。
+
+随后在 cu25 对同一 3D SiC 输入完成第二个 `±0.0025` clamped-ion 中心应变
+ensemble（仍为 `40 MPI × 1 OpenMP`、PBE、100 Ry、13×13×13、`scf_thr=1e-8`）。
+13 个阶段全部通过 SCF/force/stress/energy 收集，`F-43m` stress basis rank 为
+3/3；stress residual 为 `0.1214 kbar`，energy residual 为 `7.18e-8 eV`。旋转到
+IEEE cubic 轴后，stress `(C11,C12,C44)=(363.24,110.57,252.73)` GPa，相对原
+`±0.005` stress 结果最大变化 `0.16 GPa (0.054%)`；energy 结果最大变化
+`0.54 GPa (0.20%)`。这完成了该 3D SiC 设置的幅度稳定性审计；仍属于单一泛函、
+单一 ABACUS 后端的 clamped-ion 证据，不直接升级为普适材料常数。详见
+[`v2_abacus_sic_fullstrain_20260913.md`](v2_abacus_sic_fullstrain_20260913.md)。
