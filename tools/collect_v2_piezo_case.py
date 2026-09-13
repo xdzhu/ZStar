@@ -85,6 +85,32 @@ def main() -> int:
         summary["elastic_eigenvalues_GPa"] = np.linalg.eigvalsh(symmetric).tolist()
         summary["mechanical_stable_positive_definite"] = bool(np.min(np.linalg.eigvalsh(symmetric)) > 0.0)
         summary["elastic_diagnostics"] = dict(elastic.diagnostics)
+        # The stress-charge form follows directly from the thermodynamic
+        # matrix relation d = e (C^E)^-1.  With e in C/m^2 and C in GPa,
+        # multiplying by 1e3 gives the conventional pm/V (= pC/N) unit.
+        # This conversion needs no dielectric tensor; g/h remain unavailable
+        # until an explicitly labelled dielectric response is supplied.
+        if piezo is not None:
+            elastic_pa = convert_values(elastic.values, elastic.unit, "Pa")
+            elastic_pa = 0.5 * (elastic_pa + elastic_pa.T)
+            try:
+                compliance_pa = np.linalg.inv(elastic_pa)
+            except np.linalg.LinAlgError as exc:
+                raise ValueError("elastic tensor is singular; cannot derive piezoelectric d") from exc
+            d_c_per_n = np.asarray(piezo.values, dtype=float) @ compliance_pa
+            d_pm_per_v = d_c_per_n * 1.0e12
+            summary["piezoelectric_d_C_per_N"] = d_c_per_n.tolist()
+            summary["piezoelectric_d_pm_per_V"] = d_pm_per_v.tolist()
+            summary["piezoelectric_d_diagnostics"] = {
+                "relation": "d = e @ inverse(C^E)",
+                "piezoelectric_input": "proper",
+                "elastic_input_unit": elastic.unit,
+                "voigt_convention": ["xx", "yy", "zz", "2yz", "2xz", "2xy"],
+                "condition_number_C": float(np.linalg.cond(elastic_pa)),
+                "roundtrip_max_C_per_m2": float(
+                    np.max(np.abs(np.asarray(piezo.values) - d_c_per_n @ elastic_pa))
+                ),
+            }
     if internal is not None:
         summary["internal_strain_angstrom_per_strain"] = np.asarray(internal.values).tolist()
         summary["internal_strain_diagnostics"] = dict(internal.diagnostics)
