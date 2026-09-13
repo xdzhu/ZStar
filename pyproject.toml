@@ -8,7 +8,7 @@ version = "0.3.3"
 description = "An automated toolkit for polarization, Born effective charges, dielectric response, and infrared and Raman spectra calculations."
 readme = "README_PYPI.md"
 requires-python = ">=3.9"
-license = "GPL-3.0-only"
+license = { file = "LICENSE" }
 keywords = [
   "born-effective-charge",
   "polarization",
@@ -62,7 +62,10 @@ zstar = [
   "agent_skills/run-zstar-workflows/SKILL.md",
   "agent_skills/run-zstar-workflows/agents/*.yaml",
   "agent_skills/run-zstar-workflows/references/*.md",
-  "agent_skills/run-zstar-workflows/scripts/*.py"
+  "agent_skills/run-zstar-workflows/scripts/*.py",
+  "agent_skills/develop-zstar-v2/SKILL.md",
+  "agent_skills/develop-zstar-v2/agents/*.yaml",
+  "agent_skills/develop-zstar-v2/references/*.md"
 ]
 
 [tool.pytest.ini_options]
