@@ -11,3 +11,9 @@ that single PYATB run emits the three Cartesian polarization components.
 
 Reference settings: PBEsol, Dojo-NC-FR 8-au LCAO orbitals, 100 Ry, `8x8x6`
 k-mesh, `scf_thr=1e-8`, engineering-Voigt strain amplitude `1e-3`.
+
+Scheduler notes: on HF submit `tools/v2_piezo_hf.slurm` with Slurm (32 MPI
+tasks, one OpenMP thread per task, no node exclusivity).  On 235 run
+`tools/v2_piezo_235_direct.sh` inside the allocated compute node (40 MPI × 1
+OMP); it does not submit PBS jobs.  The driver is resumable through its stage
+markers, so do not start a second copy for the same case root.
