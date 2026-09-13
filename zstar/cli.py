@@ -714,7 +714,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     # ---------------- agent skill ----------------
     parser_agent_skill = subparsers.add_parser(
         'agent-skill',
-        help='Install or inspect the packaged run-zstar-workflows agent skill.'
+        help='Install or inspect a packaged ZStar agent skill.'
     )
     agent_skill_actions = parser_agent_skill.add_subparsers(
         dest='agent_skill_action', required=True
@@ -727,7 +727,21 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         help='Parent skills directory; defaults to $CODEX_HOME/skills or ~/.codex/skills.'
     )
     parser_agent_skill_install.add_argument('--force', action='store_true')
-    agent_skill_actions.add_parser('path', help='Print the packaged skill directory.')
+    parser_agent_skill_install.add_argument(
+        '--name', dest='skill_name',
+        choices=['run-zstar-workflows', 'develop-zstar-v2'],
+        default='run-zstar-workflows',
+        help='Skill to install (default: run-zstar-workflows).',
+    )
+    parser_agent_skill_path = agent_skill_actions.add_parser(
+        'path', help='Print the packaged skill directory.'
+    )
+    parser_agent_skill_path.add_argument(
+        '--name', dest='skill_name',
+        choices=['run-zstar-workflows', 'develop-zstar-v2'],
+        default='run-zstar-workflows',
+        help='Skill to inspect (default: run-zstar-workflows).',
+    )
     parser_agent_skill_preflight = agent_skill_actions.add_parser(
         'preflight', help='Emit a non-mutating JSON readiness report.'
     )
@@ -1855,11 +1869,13 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         )
 
         if args.agent_skill_action == 'install':
-            destination = install_agent_skill(args.dest, force=args.force)
-            print(f"Installed run-zstar-workflows to {destination}")
+            destination = install_agent_skill(
+                args.dest, force=args.force, skill_name=args.skill_name
+            )
+            print(f"Installed {args.skill_name} to {destination}")
             print("Restart or open a new agent session to refresh skill discovery.")
         elif args.agent_skill_action == 'path':
-            print(packaged_skill_path())
+            print(packaged_skill_path(args.skill_name))
         elif args.agent_skill_action == 'preflight':
             print(
                 write_preflight_json(

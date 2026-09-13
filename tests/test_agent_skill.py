@@ -8,6 +8,7 @@ from zstar import __version__
 from zstar.agent_skill import (
     LANES,
     SKILL_NAME,
+    V2_SKILL_NAME,
     install_agent_skill,
     packaged_skill_path,
     preflight_report,
@@ -62,6 +63,16 @@ class AgentSkillTests(unittest.TestCase):
                 install_agent_skill(root)
             replaced = install_agent_skill(root, force=True)
             self.assertEqual(replaced, installed)
+
+    def test_v2_skill_is_packaged_and_can_be_installed_explicitly(self):
+        skill = packaged_skill_path(V2_SKILL_NAME)
+        text = (skill / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn(f"name: {V2_SKILL_NAME}\n", text)
+        self.assertNotIn("TODO", text)
+        with tempfile.TemporaryDirectory() as tmp:
+            installed = install_agent_skill(tmp, skill_name=V2_SKILL_NAME)
+            self.assertEqual(installed.name, V2_SKILL_NAME)
+            self.assertTrue((installed / "references" / "v2-response-gates.md").is_file())
 
     def test_preflight_accepts_supported_1d_workflow_with_scope_warning(self):
         with tempfile.TemporaryDirectory() as tmp:

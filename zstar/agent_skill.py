@@ -14,12 +14,21 @@ from . import __version__
 
 
 SKILL_NAME = "run-zstar-workflows"
+V2_SKILL_NAME = "develop-zstar-v2"
+SKILL_NAMES = (SKILL_NAME, V2_SKILL_NAME)
 LANES = ("bec", "phonon", "ir", "raman", "dielectric", "cp2k", "database")
 DIMENSIONS = ("molecule", "1d", "2d", "bulk")
 
 
-def packaged_skill_path() -> Path:
-    path = Path(__file__).resolve().parent / "agent_skills" / SKILL_NAME
+def _validate_skill_name(skill_name: str) -> str:
+    if skill_name not in SKILL_NAMES:
+        raise ValueError(f"Unsupported skill {skill_name!r}; choose from {', '.join(SKILL_NAMES)}")
+    return skill_name
+
+
+def packaged_skill_path(skill_name: str = SKILL_NAME) -> Path:
+    skill_name = _validate_skill_name(skill_name)
+    path = Path(__file__).resolve().parent / "agent_skills" / skill_name
     if not (path / "SKILL.md").is_file():
         raise FileNotFoundError(f"Packaged agent skill is incomplete: {path}")
     return path
@@ -34,19 +43,21 @@ def install_agent_skill(
     destination_root: str | Path | None = None,
     *,
     force: bool = False,
+    skill_name: str = SKILL_NAME,
 ) -> Path:
     """Install the packaged skill beneath a Codex-compatible skills directory."""
 
+    skill_name = _validate_skill_name(skill_name)
     root = Path(destination_root).expanduser() if destination_root else default_codex_skill_root()
-    destination = root / SKILL_NAME
-    source = packaged_skill_path()
+    destination = root / skill_name
+    source = packaged_skill_path(skill_name)
     root.mkdir(parents=True, exist_ok=True)
     if destination.exists():
         if not force:
             raise FileExistsError(
                 f"Skill already exists: {destination}. Re-run with --force to replace it."
             )
-    temporary = root / f".{SKILL_NAME}.tmp"
+    temporary = root / f".{skill_name}.tmp"
     if temporary.exists():
         shutil.rmtree(temporary)
     shutil.copytree(

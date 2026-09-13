@@ -1,0 +1,4 @@
+interface:
+  display_name: "Develop Zstar V2"
+  short_description: "Audit and extend ZStar v2 response research"
+  default_prompt: "Use $develop-zstar-v2 to plan, validate, or extend ZStar v2 research response work."
