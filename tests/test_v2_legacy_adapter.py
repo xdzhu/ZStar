@@ -7,7 +7,7 @@ import pytest
 
 from zstar.dimensions import dimension_spec
 from zstar.response_schema import ResponseQuantity, ResponseRecord
-from zstar.v2 import ENGINEERING_VOIGT, adapt_v1_response_record
+from zstar.v2 import ENGINEERING_VOIGT, adapt_v1_response_file, adapt_v1_response_record
 
 
 def _record(*quantities: ResponseQuantity) -> ResponseRecord:
@@ -114,3 +114,15 @@ def test_tracked_v1_bulk_sic_record_adapts_known_quantities():
         force_constants.values[0, 0],
         np.asarray(record.quantity("force_constants").values)[0, 0],
     )
+
+
+def test_file_adapter_writes_only_new_v2_document_and_records_source(tmp_path):
+    source = Path("examples/3D_Bulk/SiC/results/spectra/response.json")
+    output = tmp_path / "migrated-v2.json"
+    document = adapt_v1_response_file(source, output=output)
+    assert output.is_file()
+    assert document.provenance["source_file"] == str(source.resolve())
+    assert ResponseRecord.read(source).schema_version == "1.0"
+    loaded = document.read(output)
+    assert loaded.schema == "zstar-v2-response"
+    assert loaded.quantity("born_effective_charge").shape == (2, 3, 3)

@@ -7,6 +7,8 @@ new object carrying the original quantity metadata in its provenance.
 
 from __future__ import annotations
 
+from dataclasses import replace
+from pathlib import Path
 from typing import Any, Mapping
 
 from ..response_schema import ResponseRecord
@@ -201,3 +203,34 @@ def adapt_v1_response_record(
         convergence=dict(record_metadata.get("convergence", {})),
         metadata=document_metadata,
     )
+
+
+def adapt_v1_response_file(
+    source: str | Path,
+    *,
+    output: str | Path | None = None,
+    quantity_overrides: Mapping[str, Mapping[str, Any]] | None = None,
+    metadata: Mapping[str, Any] | None = None,
+) -> ResponseDocument:
+    """Read, adapt, and optionally write one v1 response file.
+
+    The v1 file is read through its stable schema reader.  If ``output`` is
+    supplied, only the new v2 document is written there; the source file is
+    never modified.  The absolute source path is added to v2 provenance so a
+    migrated fixture can be traced without relying on directory conventions.
+    """
+
+    source_path = Path(source).expanduser().resolve()
+    if not source_path.is_file():
+        raise FileNotFoundError(f"v1 response file does not exist: {source_path}")
+    document = adapt_v1_response_record(
+        ResponseRecord.read(source_path),
+        quantity_overrides=quantity_overrides,
+        metadata=metadata,
+    )
+    provenance = dict(document.provenance)
+    provenance["source_file"] = str(source_path)
+    document = replace(document, provenance=provenance)
+    if output is not None:
+        document.write(output)
+    return document
