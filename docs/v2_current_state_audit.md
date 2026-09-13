@@ -55,7 +55,7 @@ major-symmetry 交集的研究 API。`elastic`、`piezo`、`internal_strain` cap
 
 ```text
 pytest -q
-531 passed, 1164 warnings
+534 passed, 1164 warnings
 ```
 
 警告主要来自 spglib、Phonopy 和 fontTools 的弃用提示，没有失败测试。v2 专项测试
@@ -79,7 +79,9 @@ Gamma 固定离子力拟合和已有多幅度只读审计另见
 覆盖和独立后端核对，而不是重新定义 BEC 或 Gamma。2026-09-13 在 cu25 完成了 3D
 SiC ABACUS 六分量 `±0.005` clamped-ion stress/energy 审计：13 个 stage、
 40 MPI×1 OMP，空间群 `F-43m` basis 秩 3/3，stress/energy 曲率最大差 `0.358 GPa`；
-详细证据见 `v2_abacus_sic_fullstrain_20260913.md`。
+详细证据见 `v2_abacus_sic_fullstrain_20260913.md`。同一设置的 `±0.0025` 第二幅度
+审计已完成，IEEE 轴应力曲率变化不超过 `0.054%`；v2 mechanical draft 另增加了
+不依赖计算器的 engineering-Voigt 四阶张量旋转和 IEEE 坐标回归。
 
 ## 5. 现状中的关键风险
 

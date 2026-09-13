@@ -659,3 +659,9 @@ IEEE cubic 轴后，stress `(C11,C12,C44)=(363.24,110.57,252.73)` GPa，相对�
 `0.54 GPa (0.20%)`。这完成了该 3D SiC 设置的幅度稳定性审计；仍属于单一泛函、
 单一 ABACUS 后端的 clamped-ion 证据，不直接升级为普适材料常数。详见
 [`v2_abacus_sic_fullstrain_20260913.md`](v2_abacus_sic_fullstrain_20260913.md)。
+
+新增 `zstar.v2.rotate_elastic_tensor`：在明确的 engineering-Voigt 约定下，将
+6×6 stiffness 展开为 Cartesian 四阶张量，执行给定右手正交旋转，再压回同一 Voigt
+约定。函数不自动对称化或投影晶体点群，保留坐标变换前后的残差语义；新增任意旋转
+往返、非法旋转和 SiC primitive→IEEE cubic 回归测试。全量回归为 `534 passed,
+1164 warnings`。

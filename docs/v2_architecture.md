@@ -38,7 +38,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 | `structure.py` | Cartesian 表示、允许响应子空间与 canonical 输入秩计划（draft 已实现） | 代替计算器能力验证 |
 | `normalization.py` | 显式 2D sheet/1D line 极化几何归一化（draft 已实现） | 电静边界、低维 e/C 或 flexoelectricity |
 | `finite_difference.py` | 实际向量、中心/单边差分、步长扫描和拟合（当前由 `fit.py` 提供）；包含独立的总能量二次曲率拟合用于 work-conjugacy 审计 | 选择物理公式 |
-| `mechanical.py` | stress/strain、C/S、稳定性和 Voigt 转换（draft 已实现） | 生成结构文件 |
+| `mechanical.py` | stress/strain、C/S、稳定性、engineering-Voigt 转换和显式 Cartesian/IEEE 弹性张量旋转（draft 已实现） | 生成结构文件 |
 | `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |
 | `electromechanical.py` | 在显式 SI、engineering-Voigt 和 proper-e 约定下转换 e/d/g/h，并构造 (C^E/C^D)、(s^E/s^D)、\(\epsilon^S/\epsilon^T\)；返回往返残差和条件数 | 猜测 calculator 单位、stress sign、Berry branch 或 improper→proper 修正 |
 | `reconstruct.py` | 从已收集的 calculator-neutral `ResponseDocument` 拟合并追加带单位/轴/边界/诊断的 raw piezo、elastic、Gamma 和 Lambda quantities（draft 已实现） | proper-piezo 修正、BEC/IFC 规范或外部后端验证 |
