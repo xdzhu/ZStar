@@ -31,8 +31,10 @@
 
 当前 `BackendRegistry` 的内建后端为 `abacus`、`cp2k`、`phonopy`、`qe`、`vasp`。
 它已经能声明 structure/forces/band_gap/polarization/density/dipole/APT/BEC/dielectric/
-gamma/IR/Raman；v2 draft collector 已能读取 ABACUS 的 strain/stress/relaxed structure，
-但稳定的 `elastic`、`piezo`、`internal_strain` capability 仍未冻结，不能据此开放正式 CLI。
+gamma/IR/Raman；v2 draft collector 现已能读取 ABACUS 的 strain/stress/energy 和固定晶胞
+relax 结构，并提供 clamped-ion strain/stress/energy 拟合、engineering-Voigt 与
+major-symmetry 交集的研究 API。`elastic`、`piezo`、`internal_strain` capability 仍未
+冻结，不能据此开放正式 CLI。
 
 ## 3. 数据和案例资产
 
@@ -53,7 +55,7 @@ gamma/IR/Raman；v2 draft collector 已能读取 ABACUS 的 strain/stress/relaxe
 
 ```text
 pytest -q
-513 passed, 1158 warnings
+531 passed, 1164 warnings
 ```
 
 警告主要来自 spglib、Phonopy 和 fontTools 的弃用提示，没有失败测试。v2 专项测试
@@ -73,7 +75,11 @@ Gamma 固定离子力拟合和已有多幅度只读审计另见
 它们与应变—力/应力拟合、engineering-Voigt、边界条件、单位和新 schema 的兼容性。
 如果 v1 的既有结果已经包含相同的 `Z*Lambda`、声学规范和 stress work-conjugacy
 证据，下一步应导入其 provenance 并做回归，不应重复提交同一物理计算。当前 Gate C
-剩余的是证据映射和独立后端/低对称/二维边界覆盖，而不是重新定义 BEC 或 Gamma。
+剩余的是证据映射、stress sign/work-conjugacy、relaxed-ion 内应变、低对称/二维边界
+覆盖和独立后端核对，而不是重新定义 BEC 或 Gamma。2026-09-13 在 cu25 完成了 3D
+SiC ABACUS 六分量 `±0.005` clamped-ion stress/energy 审计：13 个 stage、
+40 MPI×1 OMP，空间群 `F-43m` basis 秩 3/3，stress/energy 曲率最大差 `0.358 GPa`；
+详细证据见 `v2_abacus_sic_fullstrain_20260913.md`。
 
 ## 5. 现状中的关键风险
 
@@ -103,6 +109,11 @@ units 和边界条件检查。
 Gate C 已完成 P4mm BaTiO3 的 clamped-ion、relaxed-ion、多幅度和 exact-geometry BEC
 ABACUS/PYATB 审计，但 acoustic gauge 的独立 Gamma/IFC、stress work-conjugacy、低
 对称材料、二维归一化和独立后端仍缺证据，因此尚未通过。
+
+补充的 3D SiC ABACUS stress/energy 结果属于后端一致性审计，不能替代独立 DFPT。
+为检查自动对称化影响，`symmetry=0` + 40 MPI 的对照在第二个应变 stage 初始化阶段
+阻塞；同一输入以 4 MPI 完成，确认是并行分解/扩展性问题。该失败日志已保留并排除
+出正式拟合。
 
 共享节点的只读能力审计显示 cu17、cu24、cu25、cu26 均可见 ABACUS 3.10.0-LTS、
 VASP 6.3.2、Phonopy 和 Python 3.10.9；Quantum ESPRESSO 与 CP2K 可执行文件未在
