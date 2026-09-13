@@ -14,6 +14,7 @@ from zstar.v2 import (
     fit_linear_response,
     fit_piezoelectric_ensemble,
     fit_piezoelectric_response,
+    fit_proper_piezoelectric_response,
     internal_strain_response,
     intertwiner_basis,
     intertwining_residual,
@@ -593,3 +594,32 @@ def test_algebra_rejects_invalid_shapes_and_volume():
         relaxed_piezoelectric(np.zeros((3, 6)), np.zeros((1, 3, 3)), np.zeros((1, 3, 6)), 0.0)
     with pytest.raises(ValueError, match="square"):
         internal_strain_response(np.zeros((2, 3)), np.zeros((2, 6)))
+
+
+def test_fit_proper_piezoelectric_response_keeps_raw_fit_and_applies_reference_correction():
+    rng = np.random.default_rng(20260913)
+    strains = rng.normal(scale=0.01, size=(40, 6))
+    reference = np.array([0.0, 0.0, 0.39517389498898037])
+    raw = rng.normal(size=(3, 6))
+    polarizations = reference + strains @ raw.T
+    result = fit_proper_piezoelectric_response(
+        strains,
+        polarizations,
+        reference_polarization=reference,
+    )
+    np.testing.assert_allclose(result.raw_fit.matrix, raw, atol=1.0e-11)
+    np.testing.assert_allclose(result.proper.improper, raw, atol=1.0e-12)
+    expected = proper_piezoelectric_response(raw, reference)
+    np.testing.assert_allclose(result.proper.correction, expected.correction, atol=1.0e-12)
+    np.testing.assert_allclose(result.proper.proper, expected.proper, atol=1.0e-12)
+    assert result.raw_fit.complete
+    assert result.raw_fit.residual_max < 1.0e-12
+
+
+def test_fit_proper_piezoelectric_response_rejects_invalid_reference_shape():
+    with pytest.raises(ValueError, match="reference_polarization"):
+        fit_proper_piezoelectric_response(
+            [[0.0] * 6, [0.01, 0.0, 0.0, 0.0, 0.0, 0.0]],
+            [[0.0, 0.0, 0.0], [0.01, 0.0, 0.0]],
+            reference_polarization=[0.0, 0.0],
+        )

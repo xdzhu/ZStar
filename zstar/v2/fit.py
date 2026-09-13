@@ -70,6 +70,28 @@ class ProperPiezoelectricResult:
 
 
 @dataclass(frozen=True)
+class ProperPiezoelectricFitResult:
+    """Raw finite-difference fit together with its explicit proper correction.
+
+    ``raw_fit`` retains the rank/residual diagnostics of the measured
+    ``dP/deta`` response.  ``proper`` applies the geometric correction using
+    the caller-supplied, branch-matched reference polarization; no branch or
+    ion-relaxation state is inferred here.
+    """
+
+    raw_fit: LinearFitResult
+    proper: ProperPiezoelectricResult
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.raw_fit, LinearFitResult):
+            raise TypeError("raw_fit must be a LinearFitResult")
+        if not isinstance(self.proper, ProperPiezoelectricResult):
+            raise TypeError("proper must be a ProperPiezoelectricResult")
+        if not np.allclose(self.raw_fit.matrix, self.proper.improper, atol=0.0, rtol=0.0):
+            raise ValueError("proper.improper must equal raw_fit.matrix exactly")
+
+
+@dataclass(frozen=True)
 class EnergyElasticFitResult:
     """Quadratic energy fit used as an independent elastic consistency check.
 
@@ -667,6 +689,44 @@ def fit_piezoelectric_response(
         sample_weights=sample_weights,
         svd_cutoff=svd_cutoff,
     )
+
+
+def fit_proper_piezoelectric_response(
+    actual_strains: Iterable[Iterable[float]],
+    polarization_observations: np.ndarray | Iterable[object],
+    *,
+    reference_polarization: np.ndarray | Iterable[float],
+    allowed_basis: IntertwinerBasis | None = None,
+    sample_weights: Iterable[float] | None = None,
+    svd_cutoff: float | None = None,
+    voigt_convention: Iterable[str] = ENGINEERING_VOIGT,
+) -> ProperPiezoelectricFitResult:
+    """Fit raw ``dP/deta`` and apply the explicit proper correction.
+
+    ``reference_polarization`` must already be branch-matched Cartesian
+    polarization in C/m².  Keeping this argument separate from the observed
+    samples prevents a wrapped Berry value or a strained midpoint from being
+    silently used as the geometric reference.  The raw fit remains available
+    for auditing and is never overwritten by the proper result.
+    """
+
+    reference = np.asarray(reference_polarization, dtype=float)
+    if reference.shape != (3,) or not np.all(np.isfinite(reference)):
+        raise ValueError("reference_polarization must have shape (3,) and be finite")
+    raw_fit = fit_piezoelectric_response(
+        actual_strains,
+        polarization_observations,
+        reference_polarization=reference,
+        allowed_basis=allowed_basis,
+        sample_weights=sample_weights,
+        svd_cutoff=svd_cutoff,
+    )
+    proper = proper_piezoelectric_response(
+        raw_fit.matrix,
+        reference,
+        voigt_convention=voigt_convention,
+    )
+    return ProperPiezoelectricFitResult(raw_fit=raw_fit, proper=proper)
 
 
 def fit_internal_strain_response(

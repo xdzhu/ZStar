@@ -22,6 +22,7 @@ from .ensemble import (
 from .fit import (
     EnergyElasticFitResult,
     LinearFitResult,
+    ProperPiezoelectricFitResult,
     ProperPiezoelectricResult,
     central_difference,
     fit_elastic_response,
@@ -30,6 +31,7 @@ from .fit import (
     fit_linear_response,
     fit_piezoelectric_ensemble,
     fit_piezoelectric_response,
+    fit_proper_piezoelectric_response,
     fit_strain_force_coupling,
     proper_piezoelectric_response,
 )
@@ -155,6 +157,8 @@ __all__ = [
     "fit_energy_elastic_response",
     "fit_internal_strain_response",
     "fit_piezoelectric_response",
+    "fit_proper_piezoelectric_response",
+    "ProperPiezoelectricFitResult",
     "fit_strain_force_coupling",
     "fit_response_document",
     "adapt_v1_response_record",
