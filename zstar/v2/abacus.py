@@ -569,6 +569,16 @@ def collect_abacus_strain_response(
                 )
             )
     first_parameters = records[0]["input_parameters"]
+    symmetry_data: dict[str, Any] = {}
+    symmetry_path = base / "symmetry.json"
+    if symmetry_path.is_file():
+        try:
+            loaded_symmetry = json.loads(symmetry_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Invalid v2 symmetry report: {symmetry_path}") from exc
+        if not isinstance(loaded_symmetry, dict):
+            raise ValueError(f"v2 symmetry report must be a JSON object: {symmetry_path}")
+        symmetry_data = loaded_symmetry
     provenance = {
         "reference_hash": ensemble.reference_hash,
         "stage_names": stage_names,
@@ -603,7 +613,7 @@ def collect_abacus_strain_response(
             "fractional_positions": reference_structure.scaled_positions.tolist(),
             "symbols": list(reference_structure.symbols),
         },
-        symmetry={},
+        symmetry=symmetry_data,
         functional=first_parameters.get("dft_functional", ""),
         convergence={
             **{key: value for key, value in first_parameters.items() if key in {"scf_thr", "scf_nmax"}},
