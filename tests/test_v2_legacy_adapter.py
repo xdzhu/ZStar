@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -94,3 +96,13 @@ def test_adapter_rejects_override_for_missing_quantity():
     )
     with pytest.raises(ValueError, match="not present"):
         adapt_v1_response_record(record, quantity_overrides={"stress_raw": {}})
+
+
+def test_tracked_v1_nanowire_record_adapts_known_quantities():
+    source = Path("examples/1D_Nanowire/BN_9_0/results/response.json")
+    record = ResponseRecord.read(source)
+    adapted = adapt_v1_response_record(record)
+    assert adapted.dimensionality.value == 1
+    assert adapted.dimensionality.periodic_axes == ("z",)
+    assert adapted.quantity("born_effective_charge").periodic_axes == ("z",)
+    assert adapted.quantity("supercell_electronic_dielectric").periodic_axes == ("z",)

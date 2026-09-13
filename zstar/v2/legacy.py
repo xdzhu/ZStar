@@ -34,6 +34,14 @@ _KNOWN_DEFAULTS: dict[str, dict[str, Any]] = {
         "boundary_conditions": BoundaryConditions(electric="E", mechanical="not-applicable"),
         "ion_relaxation": "not-applicable",
     },
+    "force_constants": {
+        "boundary_conditions": BoundaryConditions(electric="E", mechanical="not-applicable"),
+        "ion_relaxation": "not-applicable",
+        # v1 uses the same ``atom`` label for row and column.  v2 requires
+        # unique axis names, so retain the old labels in provenance and use an
+        # explicit row/column distinction in the adapted document.
+        "axes": ("atom_row", "atom_column", "force", "displacement"),
+    },
 }
 
 _OVERRIDE_KEYS = {
