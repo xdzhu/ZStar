@@ -96,6 +96,8 @@ def fit_response_document(
     stress_sign: str | None = None,
     enforce_major_symmetry: bool = False,
     allowed_bases: Mapping[str, IntertwinerBasis] | None = None,
+    sample_weights: Iterable[float] | None = None,
+    svd_cutoff: float | None = None,
     include_piezoelectric: bool = True,
     include_elastic: bool = True,
     include_gamma: bool = True,
@@ -115,7 +117,8 @@ def fit_response_document(
     axes and rank/residual diagnostics; it does not apply proper-piezoelectric
     geometric corrections, acoustic projections, or relaxed-ion BEC algebra.
     Those operations require separately validated inputs and remain explicit
-    downstream steps.
+    downstream steps.  ``sample_weights`` and ``svd_cutoff`` are forwarded to
+    every enabled linear fit so precision/conditioning choices remain visible.
     """
 
     if not isinstance(document, ResponseDocument):
@@ -148,6 +151,8 @@ def fit_response_document(
             polarization.values,
             reference_polarization=polarization.values[index],
             allowed_basis=_allowed_basis(allowed_bases, "piezoelectric"),
+            sample_weights=sample_weights,
+            svd_cutoff=svd_cutoff,
         )
         additions.append(
             TensorQuantity(
@@ -190,6 +195,8 @@ def fit_response_document(
             stress_sign=stress_sign,
             allowed_basis=_allowed_basis(allowed_bases, "elastic"),
             enforce_major_symmetry=enforce_major_symmetry,
+            sample_weights=sample_weights,
+            svd_cutoff=svd_cutoff,
         )
         additions.append(
             TensorQuantity(
@@ -222,6 +229,14 @@ def fit_response_document(
     force = _quantity_or_none(document, "forces_initial")
     if include_gamma and force is None:
         force = _quantity_or_none(document, "forces")
+        relaxed_declared = str(document.metadata.get("ion_relaxation", "")).strip().lower()
+        relaxed_quantity = force is not None and force.ion_relaxation == "relaxed-ion"
+        if force is not None and (relaxed_declared == "relaxed-ion" or relaxed_quantity):
+            raise ValueError(
+                "cannot fit Gamma from final relaxed-ion forces: the response document "
+                "is missing forces_initial; recollect logs with an identifiable first "
+                "TOTAL-FORCE block instead of using the converged zero-force block"
+            )
     if include_gamma and force is not None:
         if force.shape[0] != strains.shape[0] or len(force.shape) != 3 or force.shape[-1] != 3:
             raise ValueError(
@@ -233,6 +248,8 @@ def fit_response_document(
             force.values,
             reference_forces=force.values[index],
             allowed_basis=_allowed_basis(allowed_bases, "gamma"),
+            sample_weights=sample_weights,
+            svd_cutoff=svd_cutoff,
         )
         additions.append(
             TensorQuantity(
@@ -274,6 +291,8 @@ def fit_response_document(
             displacement.values,
             reference_displacement=displacement.values[index],
             allowed_basis=_allowed_basis(allowed_bases, "internal_strain"),
+            sample_weights=sample_weights,
+            svd_cutoff=svd_cutoff,
         )
         additions.append(
             TensorQuantity(

@@ -425,6 +425,10 @@
     sign 必须显式提供，缺失观测不补零，重复拟合会被拒绝。该层仍不宣称 proper、
     relaxed-ion 或独立后端验证完成。
 
+83. 加强 Gamma 安全门：若响应文档声明 `relaxed-ion` 但缺少 `forces_initial`，结果
+    封装层现在明确拒绝使用最终近零 `forces`，要求重新收集可识别首个
+    `TOTAL-FORCE` 块；clamped-ion 文档仍可使用其唯一固定离子力块。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `508 passed, 1158 warnings`；新增首/末力块

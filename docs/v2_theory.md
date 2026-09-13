@@ -342,6 +342,8 @@ IFC+BEC 进入谐性晶格介电响应和 LO--TO/NAC；要获得 e、C、Lambda 
 diagnostics。`stress_raw` 的 backend-dependent 符号必须由调用者显式提供；该层不执行
 proper-piezo 几何修正、acoustic gauge 投影或 `Z*Lambda` relaxed-ion 合成，这些仍是
 独立验证门。
+当文档声明 `relaxed-ion` 而没有 `forces_initial` 时，结果层会拒绝使用末块
+`forces` 拟合 Gamma；末块只能作为离子收敛观测，必须重新收集带可识别首块的日志。
 
 ## 8. 有限差分精度和实际扰动向量
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 import numpy as np
 import pytest
 
@@ -144,4 +146,26 @@ def test_fit_response_document_requires_explicit_stress_sign_and_rejects_duplica
             include_piezoelectric=False,
             include_elastic=False,
             include_gamma=False,
+        )
+
+    final_only = replace(
+        document,
+        quantities=tuple(
+            quantity
+            for quantity in document.quantities
+            if quantity.name != "forces_initial"
+        ),
+    )
+    final_forces = replace(
+        document.quantity("forces_initial"),
+        name="forces",
+        ion_relaxation="relaxed-ion",
+    )
+    final_only = replace(final_only, quantities=final_only.quantities + (final_forces,))
+    with pytest.raises(ValueError, match="cannot fit Gamma from final relaxed-ion forces"):
+        fit_response_document(
+            final_only,
+            include_piezoelectric=False,
+            include_elastic=False,
+            include_internal_strain=False,
         )

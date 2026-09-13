@@ -150,6 +150,8 @@ force blocks and the actual serialized strain vectors to fit `Gamma = -dF/deta`.
 accepts either `(stage, atom, cartesian)` or flattened force observations, keeps the
 force-unit convention explicit, and reports rank/residual diagnostics without claiming
 that an unverified initial block is a complete Gamma/IFC result.
+If a document declares `relaxed-ion` but lacks `forces_initial`, the reconstruction layer
+rejects the final converged `forces` block instead of treating its near-zero values as Gamma.
 
 The optional `symmetry_reduce=True` preparation path calls
 `symmetry_adapted_input_plan`. It selects canonical strain directions from the
