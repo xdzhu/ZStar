@@ -755,7 +755,7 @@ relaxed-ion 离子收敛标记均通过。
 超时产生重复 40-rank 私有作业，已按进程组全部终止，未纳入结果；该资源事件和
 输入/输出 provenance 均不改变物理结论。机器可读记录见
 `examples/3D_Bulk/wurtzite_GaN_v2/results/high_precision_shear_audit.json`。
-全量回归现为 `537 passed, 1164 warnings`。
+全量回归现为 `543 passed, 1164 warnings`。
 
 ## 2026-09-13 Berry branch 证据门加固
 
