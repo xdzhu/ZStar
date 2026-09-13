@@ -766,3 +766,12 @@ collector 在 Cartesian 极化量中写入 branch reference、shift 最大值、
 及对应 matched quantity，形成可追溯的输入契约。新增未匹配分支反例测试；相关
 collector/reconstruct 回归共 `32 passed`。该改动只收紧 v2 研究入口，不改动 v1 schema
 或 v1 CLI。
+
+随后新增 `derive_relaxed_piezoelectric_response` document-level 研究 API：它只接受
+显式标记为 clamped-ion/proper、`C/m^2` 的压电输入，要求 BEC 和 Lambda 具有可解释
+轴标签，并支持 v1 常见的 `(atom, displacement, polarization)` BEC 顺序；BEC 可用
+`e` 或 `C` 明确标注，Lambda 按自身长度单位转换。参考体积只能来自显式 `volume_m3`
+或 `structure.lattice_angstrom` 的行列式。输出分别保存 `piezoelectric_internal` 和
+`piezoelectric_relaxed`，带有 internal-contribution/relaxed-ion 标记、公式、输入名、
+体积和单位 provenance；匿名轴、错误边界、非三维结构和非 proper 输入均失败。新增
+3 个合成测试，覆盖 v1 轴顺序重排、数值 contraction 和失败门。
