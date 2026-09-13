@@ -186,8 +186,8 @@ clamped-ion/relaxed-ion 对照有直接借鉴意义。
 
 | 软件/工作流 | 已核查能力 | 对 ZStar v2 的建议角色 |
 |---|---|---|
-| **ABINIT + `anaddb`** | `rfstrs`、`piezoflag`、`instrflag`；可由 DDB 后处理 relaxed/clamped-ion 弹性、internal strain、(e,d,g,h)、介电和不同 (E/D) 边界量 | 首选科学 oracle；最完整地覆盖 v2 机电理论，但当前节点尚未发现可执行文件，需先做环境和输入验证 |
-| **Quantum ESPRESSO + `ph.x`/`thermo_pw`** | QE/PHonon 提供 BEC、介电、IFC；`thermo_pw` 有 Berry-phase 应变压电、clamped-ion 选项、内部坐标弛豫和弹性常数流程 | 第二独立开源路线；适合验证 v2 的单位、剪切和边界条件，但当前节点需先安装/探测 |
+| **ABINIT + `anaddb`** | `rfstrs`、`piezoflag`、`instrflag`；可由 DDB 后处理 relaxed/clamped-ion 弹性、internal strain、(e,d,g,h)、介电和不同 (E/D) 边界量 | 完整的可选科学 oracle；只有在缺少定义匹配的文献/数据库锚点，或需要专门边界条件审计时才启动 |
+| **Quantum ESPRESSO + `ph.x`/`thermo_pw`** | QE/PHonon 提供 BEC、介电、IFC；`thermo_pw` 有 Berry-phase 应变压电、clamped-ion 选项、内部坐标弛豫和弹性常数流程 | 可选第二独立开源路线；不为满足“第三后端”形式而运行，优先使用已有文献/数据库值 |
 | **VASP + py4vasp / atomate(2)** | VASP 有成熟线性响应 BEC/介电/压电路径；atomate/atomate2 提供标准化高通量输入、解析和 provenance | 实用交叉验证和工作流参考；VASP 本身是非开源商业后端，不能作为“开源算法”来源 |
 | **Phonopy** | 有限位移 IFC、空间群/置换对称化和 ASR | 继续复用 v1 的位移/IFC 基线；不是压电计算器 |
 | **MechElastic / ElasTool** | 读取 VASP、ABINIT、QE 的 (C_{ij})，机械稳定性和派生模量/可视化 | 只作为弹性结果的独立后处理和表示对照，不承担 piezo 物理定义 |
@@ -208,19 +208,21 @@ FireWorks/atomate 任务和解析器保存 provenance；但其底层压电计算
 
 ### 3.3 给 v2 的明确路线
 
-建议采用“三层参考”而不是复制某一个仓库：
+建议采用“文献/数据库锚点 + 后端抽查”的分层参考，而不是复制某一个仓库：
 
 1. **ABACUS/PYATB**：继续作为 v2 首要验证后端；每个几何一次 PYATB，保留 v1 的
    三方向极化和 Unified 位移/力基线。
-2. **ABINIT `anaddb`**：作为完整机电张量和边界条件的首选独立 oracle；优先核对
-   BEC、IFC、internal strain、(e)、(d)、(g)、(h)、(C^E/C^D)。
-3. **QE/thermo_pw 或有许可的 VASP**：作为第二独立数值路线；ElasTool 的 OHESS/
-   ULICS/ASESS 用作应变采样效率和 stress--strain benchmark。
+2. **原始论文/权威数据库**：在定义、温度、取向和边界条件匹配时，直接作为外部
+   数值锚点；例如本轮 3C-SiC 已用 IEEE 取向的实验弹性常数作比较。
+3. **ABINIT `anaddb`、QE/thermo_pw 或有许可的 VASP**：仅在没有完整外部锚点、或
+   需要专门边界条件/实现审计时作为独立数值路线；ElasTool 的 OHESS/ULICS/ASESS
+   仍只用作应变采样效率和 stress--strain benchmark。
 
 具体执行顺序是：先把 Elastool 的三种应变集合做成**外部 benchmark 方案**，不把
-其代码并入核心；再用 ABINIT/QE 的 DFPT 输出设计 v2 的 `provenance` 映射；最后
-才决定是否实现 VASP/QE/ABINIT adapter。任何后端只有在输入、单位、张量轴、边界
-条件、对称性和独立参考均通过后，才能进入 v2 稳定能力矩阵。
+其代码并入核心；优先收集可核验的论文/数据库数据并完成坐标、单位和边界映射；只有
+外部锚点不足时，才设计 ABINIT/QE/VASP 的独立重算和 `provenance` 映射。任何后端
+只有在输入、单位、张量轴、边界条件、对称性和独立参考均通过后，才能进入 v2 稳定
+能力矩阵。
 
 这里的“独立参考”不等于每个材料都必须再跑一个电子结构后端。若已有可靠的单晶
 实验值、原始第一性原理论文或权威数据库条目，文献/数据库可以直接作为外部数值
