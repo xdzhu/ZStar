@@ -94,7 +94,7 @@ from .polarization import (
 from .reconstruct import fit_response_document
 from .legacy import adapt_v1_response_file, adapt_v1_response_record
 from .units import BOHR_RADIUS, ELECTRONVOLT, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
-from .vasp import VaspObservations, parse_vasp_outcar_observations
+from .vasp import VaspObservations, collect_vasp_strain_response, parse_vasp_outcar_observations
 
 __all__ = [
     "BoundaryConditions",
@@ -120,6 +120,7 @@ __all__ = [
     "UnitConversionError",
     "V2StateStore",
     "VaspObservations",
+    "collect_vasp_strain_response",
     "BranchMatch",
     "MatchedPolarizationEnsemble",
     "NormalizedPolarization",

@@ -489,6 +489,14 @@
     三项 synthetic parser/failure 测试通过。该模块不执行 VASP、不转换 stress sign，
     后续结果仍必须经 v2 的实际应变、单位和边界条件拟合。
 
+92. 新增 `collect_vasp_strain_response`：将 VASP `reference + strain-*` 的
+    POSCAR/OUTCAR 观测包装为与 ABACUS 同构的 `ResponseDocument`，提供实际序列化
+    应变、原始应力、总能量、末力/首力块和 fixed-cell `CONTCAR` 内部位移；检查
+    阶段状态、POSCAR/OUTCAR 晶胞一致性、原子顺序、reference 力阈值和 3D 边界。
+    应力始终保留 `vasp-raw`，极化字段不补零，故只能进入弹性/内应变独立审计，
+    不能被误当作 VASP 压电 workflow。clamped/relaxed/failure 三项 collector
+    测试通过。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `522 passed, 1158 warnings`；新增首/末力块

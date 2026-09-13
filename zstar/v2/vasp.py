@@ -16,6 +16,12 @@ from typing import Any
 
 import numpy as np
 
+from ..dimensions import DimensionSpec
+from ..structure_io import read_structure
+from .ensemble import ResponseEnsemble
+from .model import BoundaryConditions, ResponseDocument, TensorQuantity
+from .strain import actual_strain
+
 
 _NUMBER = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[EeDd][-+]?\d+)?"
 _NUMBER_RE = re.compile(_NUMBER)
@@ -200,4 +206,223 @@ def parse_vasp_outcar_observations(
         lattice_angstrom=_parse_lattice(text),
         natoms=count,
         provenance={"source_file": str(source), "force_parse_error": None if force_error is None else str(force_error)},
+    )
+
+
+def _vasp_input_hash(directory: Path) -> str:
+    """Hash the immutable VASP inputs when a manifest asks for verification."""
+
+    import hashlib
+
+    files = [directory / name for name in ("INCAR", "POSCAR", "KPOINTS", "POTCAR")]
+    present = [path for path in files if path.is_file()]
+    if not present:
+        raise ValueError(f"cannot compute VASP input hash: no INCAR/POSCAR/KPOINTS/POTCAR in {directory}")
+    digest = hashlib.sha256()
+    for path in present:
+        digest.update(path.name.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def _verify_vasp_input_hash(directory: Path, expected: str, label: str) -> None:
+    if not expected:
+        return
+    actual = _vasp_input_hash(directory)
+    if actual != expected:
+        raise ValueError(
+            f"VASP input hash mismatch for {label}: expected {expected}, got {actual}; "
+            "restore INCAR/POSCAR/KPOINTS/POTCAR or regenerate the ensemble"
+        )
+
+
+def _stage_initial_structure(stage_path: Path):
+    path = stage_path / "POSCAR"
+    if not path.is_file():
+        raise FileNotFoundError(f"VASP stage is missing POSCAR: {path}")
+    return read_structure(path)
+
+
+def collect_vasp_strain_response(root: str | Path) -> ResponseDocument:
+    """Collect a VASP strain ensemble into the v2 response schema.
+
+    The ensemble must contain ``reference`` plus completed ``strain`` stages
+    with POSCAR/OUTCAR files.  The collector provides elastic, energy and force
+    observations; it deliberately does not invent Berry polarization because
+    this parser has no validated VASP polarization reader.  Stress remains
+    ``vasp-raw`` until the caller supplies the sign to ``fit_response_document``.
+    """
+
+    base = Path(root).expanduser().resolve()
+    ensemble_path = base / "ensemble.json"
+    if not ensemble_path.is_file():
+        raise FileNotFoundError(f"VASP strain ensemble is missing {ensemble_path}")
+    ensemble = ResponseEnsemble.read(ensemble_path)
+    if ensemble.dimensionality != 3:
+        raise ValueError(
+            "VASP strain collector currently requires dimensionality=3; "
+            "2D/1D stress and open-direction boundary conditions are not defined here"
+        )
+    reference_path = base / "reference"
+    reference_structure = _stage_initial_structure(reference_path)
+    natoms = len(reference_structure.symbols)
+    expected_reference_hash = str(ensemble.metadata.get("reference_input_hash", ""))
+    _verify_vasp_input_hash(reference_path, expected_reference_hash, "reference")
+    ion_relaxation = str(ensemble.metadata.get("ion_relaxation", "clamped-ion")).strip().lower()
+    if ion_relaxation not in {"clamped-ion", "relaxed-ion"}:
+        raise ValueError("VASP ensemble metadata ion_relaxation must be clamped-ion or relaxed-ion")
+    if ion_relaxation == "relaxed-ion":
+        try:
+            force_threshold = float(ensemble.metadata["force_thr_ev"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError(
+                "relaxed-ion VASP ensemble requires a positive force_thr_ev in metadata"
+            ) from exc
+        if not np.isfinite(force_threshold) or force_threshold <= 0.0:
+            raise ValueError("relaxed-ion VASP ensemble force_thr_ev must be finite and positive")
+    else:
+        force_threshold = None
+
+    paths = [reference_path]
+    stage_names = ["reference"]
+    for stage in ensemble.stages:
+        if stage.kind != "strain":
+            raise ValueError(f"VASP strain collector found non-strain stage {stage.stage_id!r}")
+        if stage.status in {"failed", "skipped"}:
+            action = "rerun the failed stage" if stage.status == "failed" else "remove the skipped stage or regenerate the ensemble"
+            raise ValueError(f"cannot collect VASP stage {stage.stage_id}: manifest status is {stage.status!r}; {action}")
+        if stage.status != "complete" or stage.actual_vector is None:
+            raise ValueError(f"VASP stage {stage.stage_id} is not complete with an actual strain vector")
+        path = base / stage.stage_id
+        if not path.is_dir():
+            raise FileNotFoundError(f"VASP stage directory does not exist: {path}")
+        _verify_vasp_input_hash(path, stage.input_hash, stage.stage_id)
+        initial = _stage_initial_structure(path)
+        if initial.symbols != reference_structure.symbols:
+            raise ValueError(f"VASP stage {stage.stage_id} atom ordering differs from reference")
+        if not np.allclose(initial.positions_fractional, reference_structure.positions_fractional, atol=1.0e-8, rtol=0.0):
+            raise ValueError(
+                f"VASP stage {stage.stage_id} fractional positions differ from reference; "
+                "use POSCAR for the common initial coordinates"
+            )
+        serialized = actual_strain(reference_structure.lattice_angstrom, initial.lattice_angstrom)
+        if not np.allclose(serialized, np.asarray(stage.actual_vector), atol=1.0e-10, rtol=0.0):
+            raise ValueError(f"VASP stage {stage.stage_id} actual strain disagrees with POSCAR cell")
+        paths.append(path)
+        stage_names.append(stage.stage_id)
+
+    observations: list[VaspObservations] = []
+    for name, path in zip(stage_names, paths):
+        observation = parse_vasp_outcar_observations(path / "OUTCAR", natoms=natoms, require_forces=True)
+        structure = _stage_initial_structure(path)
+        if not np.allclose(
+            observation.lattice_angstrom,
+            structure.lattice_angstrom,
+            atol=1.0e-7,
+            rtol=0.0,
+        ):
+            raise ValueError(
+                f"VASP stage {name} OUTCAR lattice differs from POSCAR; "
+                "do not mix cell-relax output with a fixed-cell strain ensemble"
+            )
+        observations.append(observation)
+
+    if ion_relaxation == "relaxed-ion":
+        reference_force = observations[0].forces_final
+        if reference_force is None:
+            raise ValueError("relaxed-ion VASP reference has no converged force block")
+        reference_force_max = float(np.max(np.linalg.norm(reference_force, axis=1)))
+        if reference_force_max > float(force_threshold):
+            raise ValueError(
+                f"relaxed-ion VASP reference maximum force {reference_force_max:.6g} eV/angstrom "
+                f"exceeds force_thr_ev {float(force_threshold):.6g}; relax the reference first"
+            )
+    else:
+        reference_force_max = None
+
+    dimensions = DimensionSpec(3, ensemble.periodic_axes)
+    boundary = BoundaryConditions(electric="E", mechanical="strain", stress_sign="vasp-raw")
+    strains = [np.zeros(6, dtype=float)] + [np.asarray(stage.actual_vector, dtype=float) for stage in ensemble.stages]
+    quantities: list[TensorQuantity] = [
+        TensorQuantity(
+            name="strain_vector", values=np.asarray(strains), unit="engineering_strain",
+            axes=("stage", "voigt_engineering"), voigt_convention=("xx", "yy", "zz", "2yz", "2xz", "2xy"),
+            boundary_conditions=boundary, periodic_axes=dimensions.periodic_axes,
+            normalization="dimensionless", source="serialized_structure", backend="vasp",
+            ion_relaxation=ion_relaxation, provenance={"stage_names": stage_names},
+        ),
+        TensorQuantity(
+            name="forces", values=np.asarray([item.forces_final for item in observations]), unit="eV/angstrom",
+            axes=("stage", "atom", "cartesian"), boundary_conditions=boundary,
+            periodic_axes=dimensions.periodic_axes, normalization="per_atom", source="vasp_outcar",
+            backend="vasp", ion_relaxation=ion_relaxation, provenance={"stage_names": stage_names},
+        ),
+        TensorQuantity(
+            name="stress_raw", values=np.asarray([item.stress for item in observations]), unit="kbar",
+            axes=("stage", "stress_row_cartesian", "stress_column_cartesian"), boundary_conditions=boundary,
+            periodic_axes=dimensions.periodic_axes, normalization="cell_volume", source="vasp_outcar",
+            backend="vasp", ion_relaxation=ion_relaxation,
+            provenance={"stage_names": stage_names, "sign_convention": "vasp-raw"},
+        ),
+        TensorQuantity(
+            name="energy", values=np.asarray([item.energy for item in observations]), unit="eV",
+            axes=("stage",), boundary_conditions=boundary, periodic_axes=dimensions.periodic_axes,
+            normalization="total_cell", source="vasp_outcar", backend="vasp",
+            ion_relaxation=ion_relaxation, provenance={"stage_names": stage_names},
+        ),
+    ]
+    if ion_relaxation == "relaxed-ion":
+        quantities.append(
+            TensorQuantity(
+                name="forces_initial", values=np.asarray([item.forces_initial for item in observations]),
+                unit="eV/angstrom", axes=("stage", "atom", "cartesian"), boundary_conditions=boundary,
+                periodic_axes=dimensions.periodic_axes, normalization="per_atom",
+                source="vasp_outcar_initial_force_block", backend="vasp", ion_relaxation="clamped-ion",
+                provenance={"stage_names": stage_names, "definition": "first TOTAL-FORCE block"},
+            )
+        )
+        displacement_rows = [np.zeros((natoms, 3), dtype=float)]
+        final_paths = [""]
+        for name, path in zip(stage_names[1:], paths[1:]):
+            contcar = path / "CONTCAR"
+            if not contcar.is_file():
+                raise FileNotFoundError(f"relaxed-ion VASP stage {name} is missing CONTCAR")
+            initial = _stage_initial_structure(path)
+            final = read_structure(contcar)
+            if final.symbols != initial.symbols or not np.allclose(final.lattice_angstrom, initial.lattice_angstrom, atol=1.0e-8, rtol=0.0):
+                raise ValueError(f"relaxed-ion VASP stage {name} CONTCAR changes atom order or cell")
+            delta = np.asarray(final.positions_fractional) - np.asarray(initial.positions_fractional)
+            delta -= np.rint(delta)
+            displacement_rows.append(delta @ np.asarray(initial.lattice_angstrom, dtype=float))
+            final_paths.append(str(contcar))
+        quantities.append(
+            TensorQuantity(
+                name="internal_displacement", values=np.asarray(displacement_rows), unit="angstrom",
+                axes=("stage", "atom", "cartesian"), coordinate_system="cartesian_right_handed",
+                boundary_conditions=boundary, periodic_axes=dimensions.periodic_axes, normalization="per_atom",
+                source="vasp_contcar", backend="vasp", ion_relaxation="relaxed-ion",
+                provenance={"stage_names": stage_names, "relaxed_structure_paths": final_paths,
+                            "definition": "wrapped(final_fractional-initial_fractional) @ initial_cell",
+                            "acoustic_gauge": "unfixed_raw_displacement"},
+            )
+        )
+
+    provenance = {
+        "stage_names": stage_names,
+        "stages": [item.provenance for item in observations],
+        "reference_force_max_eV_per_angstrom": reference_force_max,
+        "stress_sign": "vasp-raw",
+        "polarization_collected": False,
+    }
+    return ResponseDocument(
+        backend="vasp", dimensionality=dimensions, quantities=tuple(quantities), provenance=provenance,
+        structure={"lattice_angstrom": np.asarray(reference_structure.lattice_angstrom).tolist(),
+                   "fractional_positions": np.asarray(reference_structure.positions_fractional).tolist(),
+                   "symbols": list(reference_structure.symbols)},
+        convergence={"force_thr_ev": force_threshold} if force_threshold is not None else {},
+        restart_state={"ensemble": str(ensemble_path)},
+        metadata={"stage_count": len(stage_names), "ion_relaxation": ion_relaxation,
+                  "energy_collected": True, "polarization_collected": False},
     )

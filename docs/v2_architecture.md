@@ -47,7 +47,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 | `capabilities.py` | calculator-neutral 能力声明、维度/金属 Berry 安全门和可操作失败信息（draft 已实现） | 代替后端实际能力测试或物理验证 |
 | `backends/abacus.py` | 调用既有 ABACUS/PYATB adapter 并收集输出；生产极化优先使用每个结构一次 PYATB，ABACUS Berry 仅作交叉审计 | 修改 ABACUS |
 | `backends/{vasp,cp2k,qe,abinit}.py` | 能力声明和后续交叉验证 | 假设未验证能力 |
-| `vasp.py` | 只读解析 VASP OUTCAR 的实际能量、原始应力、全部力块和晶胞，保留 `vasp-raw` 应力标签 | 猜测应力正负、执行 VASP、替代 v2 拟合或边界条件审计 |
+| `vasp.py` | 只读解析 VASP OUTCAR 的实际能量、原始应力、全部力块和晶胞，保留 `vasp-raw` 应力标签；将固定晶胞 VASP strain stages 包装成 v2 observations | 猜测应力正负、执行 VASP、解析未经验证的 Berry 极化或替代 v2 拟合/边界审计 |
 | `phase.py` | 参考相配对、插值、branch matching、路径检查 | 默认执行 NEB |
 | `finite_temperature.py` | 外部 ML/q-NEP 数据导出/回读、统计分析 | 训练 ML 势 |
 | `flexo.py` | 长波/表面规范可行性研究后再实现 | 用超胞差分冒充 bulk flexo |
