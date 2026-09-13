@@ -210,8 +210,8 @@ CLI manifest 必须含 `api_version`/`schema_version`，并与 v1 canonical fami
 
 * Gate A：文献、公式、schema、对称约化算法审阅通过；无代码。
 * Gate B：合成响应和 rank/residual/units 测试通过；只允许研究 API。
-* Gate C：ABACUS clamped-ion/relaxed-ion 小胞 + 独立后端核对通过；才可称为 v2
-  electromechanical prototype。
+* Gate C：ABACUS clamped-ion/relaxed-ion 小胞 + **独立后端或经过 DOI/出版社核验的
+  原始文献/权威数据库锚点**核对通过；才可称为 v2 electromechanical prototype。
 * Gate D：代表性案例、效率和失败率完整记录；才可写入 v2 论文的 implemented 部分。
 * finite-T、phase switching、flexo、resonant Raman 在各自 Gate 未通过前只写 roadmap，
   不写成论文结果或稳定功能。

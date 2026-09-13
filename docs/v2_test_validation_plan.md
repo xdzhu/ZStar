@@ -117,6 +117,6 @@ separate_control_cost, v2_cost, efficiency_ratio
   代数重建与 acoustic-SR 代数审计；仍缺独立 Gamma/IFC、stress work-conjugacy 的
   独立核查、非 P4mm 低对称和二维边界案例，因此 Gate C 尚未通过。
 * **D**：至少 cubic、tetragonal、hexagonal、orthorhombic/低对称、2D 五类真实验证，
-  有独立后端或可靠文献对照，效率和误差同时达标。
+  有独立后端或可靠文献/数据库对照，效率和误差同时达标。
 * **E**：仅在 D 之后设计并公开 `piezo`/`elastic` CLI；phase/finite-T/flexo/resonant
   继续各自走理论与证据门。
