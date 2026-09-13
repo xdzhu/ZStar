@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from zstar.dimensions import DimensionSpec
 from zstar.v2 import (
@@ -14,6 +15,7 @@ from zstar.v2 import (
     symmetry_adapted_input_plan,
 )
 from zstar.v2.structure import _operation_permutation
+import zstar.v2.structure as structure_module
 
 
 def test_cubic_space_group_builds_representation_and_forbids_piezo():
@@ -196,3 +198,34 @@ def test_operation_permutation_uses_bipartite_matching_for_near_degenerate_sites
         tolerance=5.0e-8,
     )
     assert permutation == (1, 0)
+
+
+def test_periodic_symmetry_analysis_rejects_missing_spglib(monkeypatch):
+    structure = StructureSpec(
+        lattice=np.eye(3) * 4.0,
+        fractional_positions=np.array([[0.0, 0.0, 0.0]]),
+        symbols=("X",),
+    )
+    monkeypatch.setattr(structure_module, "spglib", None)
+    with pytest.raises(RuntimeError, match="spglib is required"):
+        analyze_space_group(structure)
+
+
+def test_symmetry_analysis_marks_empty_spglib_dataset_untrusted(monkeypatch):
+    structure = StructureSpec(
+        lattice=np.eye(3) * 4.0,
+        fractional_positions=np.array([[0.0, 0.0, 0.0]]),
+        symbols=("X",),
+    )
+
+    class EmptySpglib:
+        @staticmethod
+        def get_symmetry_dataset(*_args, **_kwargs):
+            return None
+
+    monkeypatch.setattr(structure_module, "spglib", EmptySpglib())
+    report = analyze_space_group(structure, symprec_grid=(1.0e-5,))
+    assert report.status == "symmetry_untrusted"
+    assert report.operations == ()
+    with pytest.raises(ValueError, match="without operations"):
+        symmetry_adapted_input_plan(report, input_kind="strain")
