@@ -33,6 +33,7 @@ from .fit import (
     fit_strain_force_coupling,
     proper_piezoelectric_response,
 )
+from .electromechanical import ElectromechanicalForms, convert_piezoelectric_forms
 from .mechanical import (
     ENGINEERING_VOIGT,
     convert_stress_sign,
@@ -105,6 +106,7 @@ __all__ = [
     "InternalStrainSolution",
     "LinearFitResult",
     "EnergyElasticFitResult",
+    "ElectromechanicalForms",
     "ProperPiezoelectricResult",
     "PerturbationStage",
     "ResponseDocument",
@@ -141,6 +143,7 @@ __all__ = [
     "analyze_space_group",
     "apply_strain",
     "convert_dielectric",
+    "convert_piezoelectric_forms",
     "convert_values",
     "fit_linear_response",
     "fit_elastic_response",

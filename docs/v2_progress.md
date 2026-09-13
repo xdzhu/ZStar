@@ -457,6 +457,16 @@
     重复轴名，现映射为唯一的 `atom_row/atom_column` 并保留原始轴语义；新增文件级
     迁移 API 和 5 项适配器测试，完整回归更新为 `513 passed`。
 
+88. 新增 calculator-neutral `convert_piezoelectric_forms` 与
+    `ElectromechanicalForms`：输入必须显式声明 proper、engineering-Voigt、
+    \(e\) 的 C/m²、\(C^E\) 的压力单位和绝对/相对介电单位；在 SI 中构造
+    \(d=e s^E\)、\(\epsilon^T=\epsilon^S+e s^E e^T\)、
+    \(g=(\epsilon^T)^{-1}d\)、\(h=(\epsilon^S)^{-1}e\) 以及
+    \(C^D=C^E+e^T(\epsilon^S)^{-1}e\)，并返回 reciprocal-identity 残差和条件数。
+    raw Berry derivative、tensorial-Voigt 和非对称 \(C/\epsilon\) 均显式拒绝；31 项
+    定向测试通过。这是热力学转换的研究 API，不代表任何后端已完成 \(d/g/h\) 实测
+    交叉验证。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `513 passed, 1158 warnings`；新增首/末力块
