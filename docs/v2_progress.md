@@ -497,6 +497,12 @@
     不能被误当作 VASP 压电 workflow。clamped/relaxed/failure 三项 collector
     测试通过。
 
+93. 用新 parser 对共享目录真实 3D SiC VASP `response/OUTCAR` 做只读回读：2 原子、
+    1 个 force block、非正交晶胞成功解析；该 `ISIF=0` BEC-only 输出没有应力行，
+    因而 parser 在显式 `require_stress=False` 下返回 `stress=None`，而 strain
+    collector 仍拒绝无应力数据。该边界使 BEC 审计和弹性审计不会相互冒充，细节已
+    补入 [`v2_vasp_sic_bec_audit_20260913.md`](v2_vasp_sic_bec_audit_20260913.md)。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `522 passed, 1158 warnings`；新增首/末力块

@@ -27,6 +27,12 @@ VASP 来源文件为：
 /home/zhuxd/vasp/zstar_vasp_validation_20260825/sic_dfpt/vasp_bec.json
 ```
 
+新 v2 OUTCAR parser 对该真实 `response/OUTCAR` 的只读回读为：2 个原子、1 个
+`TOTAL-FORCE` 块、三条非正交晶格向量均成功解析。由于该 BEC 输入使用 `ISIF=0`
+且不是应变任务，OUTCAR 没有 `in kB` 应力行。parser 在显式
+`require_stress=False` 下保留 `stress=None`，而 v2 strain collector 仍强制要求
+应力存在，避免把 BEC-only 输出误当作弹性观测。
+
 VASP 的 `vasp_bec.json` 已由现有 `zstar.vasp_bec.collect_vasp_bec` 生成；该
 collector 将 VASP OUTCAR 的“行=电场/极化、列=力/位移”张量转置为 ZStar
 约定的“行=位移、列=极化”。本次只读检查未改变这些文件。
@@ -66,4 +72,3 @@ Z*(C)  ≈ diag(-2.7009406336,-2.7009406336,-2.7009406336)
    物理设置，先完成一项 40 MPI × 1 OpenMP VASP reference smoke，再完成成对
    `+/-` 应变或内部位移，并把 OUTCAR/vasprun.xml 映射进 v2 `ResponseDocument`。
    在此之前不提升 VASP capability，也不写入正式材料压电值。
-

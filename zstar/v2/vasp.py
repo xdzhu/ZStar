@@ -131,7 +131,7 @@ class VaspObservations:
     """Parsed VASP observations before any v2 response fitting."""
 
     energy: float
-    stress: np.ndarray
+    stress: np.ndarray | None
     force_blocks: tuple[np.ndarray, ...]
     lattice_angstrom: np.ndarray
     natoms: int
@@ -142,10 +142,10 @@ class VaspObservations:
     provenance: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
-        stress = np.asarray(self.stress, dtype=float)
+        stress = None if self.stress is None else np.asarray(self.stress, dtype=float)
         lattice = np.asarray(self.lattice_angstrom, dtype=float)
-        if stress.shape != (3, 3) or not np.all(np.isfinite(stress)):
-            raise ValueError("stress must be a finite 3x3 tensor")
+        if stress is not None and (stress.shape != (3, 3) or not np.all(np.isfinite(stress))):
+            raise ValueError("stress must be a finite 3x3 tensor when present")
         if lattice.shape != (3, 3) or not np.all(np.isfinite(lattice)):
             raise ValueError("lattice_angstrom must be a finite 3x3 matrix")
         if int(self.natoms) <= 0:
@@ -176,12 +176,15 @@ def parse_vasp_outcar_observations(
     *,
     natoms: int | None = None,
     require_forces: bool = False,
+    require_stress: bool = True,
 ) -> VaspObservations:
     """Parse energy, stress, force blocks and lattice from one OUTCAR.
 
     ``natoms`` is required when the OUTCAR does not contain a parseable
     ``ions per type`` line.  Force blocks are optional for a clamped-ion
-    stress/energy audit unless ``require_forces=True``.
+    stress/energy audit unless ``require_forces=True``.  Stress can likewise be
+    optional for BEC-only OUTCARs (for example ``ISIF=0``) by setting
+    ``require_stress=False``; strain collection always requires it.
     """
 
     source = Path(path).expanduser().resolve()
@@ -199,13 +202,25 @@ def parse_vasp_outcar_observations(
         force_error = exc
     if require_forces and force_error is not None:
         raise force_error
+    stress: np.ndarray | None = None
+    stress_error: Exception | None = None
+    try:
+        stress = _parse_stress(text)
+    except ValueError as exc:
+        stress_error = exc
+    if require_stress and stress_error is not None:
+        raise stress_error
     return VaspObservations(
         energy=_parse_energy(text),
-        stress=_parse_stress(text),
+        stress=stress,
         force_blocks=force_blocks,
         lattice_angstrom=_parse_lattice(text),
         natoms=count,
-        provenance={"source_file": str(source), "force_parse_error": None if force_error is None else str(force_error)},
+        provenance={
+            "source_file": str(source),
+            "force_parse_error": None if force_error is None else str(force_error),
+            "stress_parse_error": None if stress_error is None else str(stress_error),
+        },
     )
 
 

@@ -62,5 +62,5 @@ def test_parse_vasp_observations_allows_missing_forces_for_stress_energy(tmp_pat
 def test_parse_vasp_observations_requires_energy_stress_lattice(tmp_path: Path):
     source = tmp_path / "OUTCAR"
     source.write_text("ions per type = 1\n", encoding="utf-8")
-    with pytest.raises(ValueError, match="TOTEN"):
+    with pytest.raises(ValueError, match="stress"):
         parse_vasp_outcar_observations(source)
