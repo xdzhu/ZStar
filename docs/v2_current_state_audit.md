@@ -68,6 +68,13 @@ Gamma 固定离子力拟合和已有多幅度只读审计另见
 `Gamma=-dF/deta` 的实际应变拟合及 `-Phi@Lambda` 对照，但不把同后端代数检查当作
 独立 IFC 或独立后端验证。
 
+这里需要明确避免重复造轮子：BEC、Gamma 声子/IFC、acoustic sum rule、PYATB 三方向
+极化以及 v1 已有的响应代数均视为继承基线。v2 不重新实现这些 v1 功能，而是审计
+它们与应变—力/应力拟合、engineering-Voigt、边界条件、单位和新 schema 的兼容性。
+如果 v1 的既有结果已经包含相同的 `Z*Lambda`、声学规范和 stress work-conjugacy
+证据，下一步应导入其 provenance 并做回归，不应重复提交同一物理计算。当前 Gate C
+剩余的是证据映射和独立后端/低对称/二维边界覆盖，而不是重新定义 BEC 或 Gamma。
+
 ## 5. 现状中的关键风险
 
 1. `shared_response.py` 的 v1 联合拟合仍以 3 个 Cartesian 位移分量为输入；v2 的

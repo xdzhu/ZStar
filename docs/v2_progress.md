@@ -436,6 +436,14 @@
     资源消耗为 0 core-hours。详细路径、限制和下一步 Gate C 入口见
     [`v2_independent_backend_capability_audit_20260913.md`](v2_independent_backend_capability_audit_20260913.md)。
 
+85. 澄清 v1/v2 边界：BEC、Gamma 声子/IFC、已有 acoustic-SR、PYATB 三方向极化
+    和 v1 的响应代数属于继承基线，不在 v2 重新发明。v2 当前所做的是把这些
+    已有结果接入应变—力/应力响应、显式单位/Voigt/边界条件和 calculator-neutral
+    schema，并检查 `Z*Lambda` 与 relaxed-ion 装配的输入是否可追溯。Gate C 中
+    的 Gamma/IFC/acoustic 项应读作“v2 接口兼容性与独立证据审计”，而不是再次
+    开发 BEC 或 Gamma 理论；若已有 v1 证据满足相同约定，应直接引用并做回归，
+    不重复计算。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `508 passed, 1158 warnings`；新增首/末力块
