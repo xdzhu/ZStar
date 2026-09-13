@@ -700,3 +700,13 @@ relaxed-ion 离子收敛标记均通过。
 仍为 conditional：可作为研究结果和文献量级对照，尚不能升级为稳定 CLI 或最终
 论文数据。详细结果见 `v2_abacus_gan_piezo_benchmark_20260913.md` 与
 `v2_abacus_gan_amplitude_audit_20260913.md`。
+
+随后针对 GaN `±0.0005` 中唯一不稳定的 xz shear 分量做了定向高精度审计：
+`scf_thr=1e-10`、`force_thr_ev=1e-4`，负点在 cu25、正点在 cu24，各一个
+`40 MPI × 1 OpenMP` ABACUS 任务；每个几何仍只运行一次 PYATB 并回读三方向极化。
+重建得到 `e15=-0.25415 C/m²`、`C44=91.84 GPa` 和 `d15=-2.767 pC/N`，与
+`±0.001/±0.002` 稳定值一致，确认原 `±0.0005` 异常是收敛噪声。cu26 曾因启动
+超时产生重复 40-rank 私有作业，已按进程组全部终止，未纳入结果；该资源事件和
+输入/输出 provenance 均不改变物理结论。机器可读记录见
+`examples/3D_Bulk/wurtzite_GaN_v2/results/high_precision_shear_audit.json`。
+全量回归现为 `537 passed, 1164 warnings`。

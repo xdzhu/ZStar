@@ -1,0 +1,57 @@
+{
+  "case": "wurtzite_GaN_v2",
+  "purpose": "targeted convergence audit for the relaxed-ion xz shear response",
+  "space_group": "P6_3mc",
+  "point_group": "6mm",
+  "dimensionality": 3,
+  "periodic_axes": ["x", "y", "z"],
+  "voigt_convention": ["xx", "yy", "zz", "2yz", "2xz", "2xy"],
+  "ion_relaxation": "relaxed-ion",
+  "scf_thr": 1e-10,
+  "force_thr_ev_per_angstrom": 0.0001,
+  "amplitude_engineering_strain": 0.0005,
+  "stages": [
+    {
+      "stage_id": "strain-005-",
+      "strain_vector": [0.0, 0.0, 0.0, 0.0, -0.0005, 0.0],
+      "node": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 120,
+      "returncode": 0,
+      "polarization_lattice_basis_C_per_m2": [0.00013228184387835792, 2.9587113817654452e-08, 1.3290927752761497],
+      "stress_raw_kbar": [[3.06659802, 0.0, 0.46379131], [0.0, 3.06891418, 0.0], [0.46379131, 0.0, -1.29752744]]
+    },
+    {
+      "stage_id": "strain-005+",
+      "strain_vector": [0.0, 0.0, 0.0, 0.0, 0.0005, 0.0],
+      "node": "cu24",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 121,
+      "returncode": 0,
+      "polarization_lattice_basis_C_per_m2": [-0.00012186853223522588, 2.819521006908294e-08, 1.3290930105110128],
+      "stress_raw_kbar": [[3.06681977, 0.0, -0.45458335], [0.0, 3.06887997, 0.0], [-0.45458335, 0.0, -1.297237]]
+    }
+  ],
+  "reference": {
+    "source": "run_gan_audit/relax_a0005/reference/pyatb/Out/Polarization/polarization.dat",
+    "polarization_lattice_basis_C_per_m2": [-7.131571670684658e-08, 5.663483655967665e-08, 1.3290579042628818]
+  },
+  "reconstructed": {
+    "polarization_cartesian_plus_minus_difference_C_per_m2": [-0.000254149613, -1.205424e-09, 1.71697441e-07],
+    "e15_C_per_m2": -0.254149613,
+    "C44_GPa": 91.837466,
+    "d15_pC_per_N": -2.76738486,
+    "rank": 1,
+    "residual_C_per_m2": 0.0,
+    "branch_matching": "same PYATB branch; no integer quantum shift applied"
+  },
+  "provenance": {
+    "backend": "ABACUS 3.10.0-LTS + PYATB",
+    "functional": "PBEsol",
+    "basis": "LCAO Dojo 8au",
+    "calculation": "40 MPI x 1 OpenMP per ABACUS/PYATB task",
+    "note": "cu26 duplicate launch was terminated before producing a result; no cu26 output is included"
+  }
+}
