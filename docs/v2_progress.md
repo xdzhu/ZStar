@@ -480,7 +480,14 @@
     机械边界、(C^E/C^D)、(s^E/s^D)、\(\epsilon^S/\epsilon^T\) 和
     \(\beta^S/\beta^T\) 的单位、坐标轴、Voigt 约定、离子状态、周期轴、后端和
     provenance。它不创建顶层 `ResponseDocument`，避免猜测结构维度；调用者必须
-    将其放入轴一致的文档。对应 schema 注释和测试已通过。
+   将其放入轴一致的文档。对应 schema 注释和测试已通过。
+
+91. 新增 calculator-neutral `zstar.v2.vasp.parse_vasp_outcar_observations`：从
+    VASP OUTCAR 读取实际 `TOTEN`、最后一个 `in kB` 六分量应力、全部
+    `TOTAL-FORCE (eV/Angst)` 块和最后一个 direct-lattice block；原始应力明确标记
+    为 `vasp-raw`，缺少力块时允许只做 stress/energy 审计，要求力块时给出失败。
+    三项 synthetic parser/failure 测试通过。该模块不执行 VASP、不转换 stress sign，
+    后续结果仍必须经 v2 的实际应变、单位和边界条件拟合。
 
 ## 证据状态
 
