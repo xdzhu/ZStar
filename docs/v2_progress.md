@@ -639,6 +639,22 @@ ABACUS 后端的 3D stress/energy 重建链闭合，但不是最终材料常数�
 40-rank 并行分解/扩展性，而不是应变序列化或输入文件损坏。该 diagnostic 输出仍不
 进入正式 ensemble 或材料结果。
 
+## 2026-09-13 GaN 3D 响应文档回读与资源审计
+
+对 wurtzite GaN 的已完成 `relax_a0005` 3D ensemble 做了离线
+`collect_pyatb_strain_response -> fit_response_document` 回读审计。单个几何只读取
+一次 PYATB `polarization.dat`，同时得到 a/b/c 三方向，再按每个 stage 的实际晶格
+基转换到 Cartesian；回读量包含 strain、force、stress、energy、internal displacement、
+branch-matched polarization 和 Cartesian polarization。baseline `±5e-4` 数据的
+raw piezo fit residual 为 `7.16%`，elastic residual 为 `1.26%`，Gamma residual
+为 `0.65%`，Lambda residual 为 `5.23%`，与既有 amplitude audit 一致；这些仍是
+研究审计，不提升 Gate C。修正 collector metadata，使完整三方向 Cartesian 极化显式
+标记为 `polarization_cartesian_collected=true`，并增加回归测试。
+
+资源复核确认此前 cu26 的 80-rank 峰值来自重复 runner，而非 v2 算法需要 80 MPI：
+两个独立 40-rank 进程组曾同时占用同一 stage。重复组已停止并归档，相关输出不进入
+任何结果；cu24/cu26 当前不再启动新的 ABACUS 任务，先完成算法和数据回读审计。
+
 基于 ABACUS/cu25 与既有 VASP/cu17/cu24/cu26 的两个 3D SiC ensemble，补充了同一
 `F-43m` 3 参数基下的 backend comparison：两者均为 rank 3/3，最大 stress residual
 分别为 `0.4889` 与 `0.0231 kbar`，energy residual 均约 `6e-8 eV`，stress/energy

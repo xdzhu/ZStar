@@ -842,6 +842,12 @@ def collect_pyatb_strain_response(
     metadata.update(
         {
             "polarization_collected": True,
+            # The PYATB adapter always assembles the three directional Berry
+            # values into Cartesian coordinates using the stage-specific
+            # lattice basis.  Keep this explicit in metadata so downstream
+            # audits do not mistake a complete collection for a directional-
+            # only result.
+            "polarization_cartesian_collected": True,
             "polarization_backend": "pyatb",
             "pyatb_run_count": len(samples),
             "pyatb_precision_required": require_precision,

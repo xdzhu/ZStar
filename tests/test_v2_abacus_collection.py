@@ -514,6 +514,7 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     document = collect_pyatb_strain_response(root)
     assert document.backend == "abacus+pyatb"
     assert document.metadata["polarization_backend"] == "pyatb"
+    assert document.metadata["polarization_cartesian_collected"] is True
     assert document.metadata["pyatb_run_count"] == 3
     np.testing.assert_allclose(
         document.quantity("polarization_directional").values,
