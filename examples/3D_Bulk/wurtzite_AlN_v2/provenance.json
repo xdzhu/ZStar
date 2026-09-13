@@ -1,0 +1,22 @@
+{
+  "schema": "zstar-v2-case-provenance",
+  "status": "research_gate_pending_literature_audit",
+  "case": "wurtzite_AlN_v2",
+  "backend": "ABACUS+PYATB",
+  "scheduler": "HF Slurm",
+  "job_id": "27678427",
+  "node": "node148",
+  "mpi_ranks": 32,
+  "omp_threads": 1,
+  "functional": "PBEsol",
+  "ecutwfc_Ry": 100,
+  "kmesh": "8x8x6",
+  "scf_thr": 1e-8,
+  "strain_amplitude": 1e-3,
+  "force_thr_eV_per_angstrom": 1e-3,
+  "geometry_count": 13,
+  "pyatb_runs": 13,
+  "polarization_route": "one PYATB run per geometry, three directions",
+  "results": "results/summary.json",
+  "response_document": "results/response_document.json"
+}
