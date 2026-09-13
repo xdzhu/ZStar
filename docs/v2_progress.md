@@ -418,14 +418,21 @@
     操作的原因写入 symmetry diagnostics；非标准晶胞或轻微异常操作不再静默进入
     intertwiner basis。
 
+82. 新增 `fit_response_document` calculator-neutral 结果封装层：从已收集的
+    `ResponseDocument` 读取实际应变和存在的 polarization/stress/force/displacement
+    观测，追加带 units、axes、boundary、provenance 和 rank/residual diagnostics 的
+    `piezoelectric_raw`、`elastic`、`strain_force_coupling`、`internal_strain`；stress
+    sign 必须显式提供，缺失观测不补零，重复拟合会被拒绝。该层仍不宣称 proper、
+    relaxed-ion 或独立后端验证完成。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `506 passed, 1158 warnings`；新增首/末力块
+* v2 独立 worktree 的完整回归为 `508 passed, 1158 warnings`；新增首/末力块
   解析后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
-  测试当前为 `113 passed`。
+  测试当前为 `115 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 113 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 115 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成

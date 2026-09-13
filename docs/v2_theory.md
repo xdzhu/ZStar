@@ -334,6 +334,15 @@ IFC+BEC 进入谐性晶格介电响应和 LO--TO/NAC；要获得 e、C、Lambda 
 任务，要获得 \(\epsilon^u\) 则要有电子电场 DFPT/有限场或相容的 PYATB 结果。任何
 缺少混合块的“响应重建”都必须标记 incomplete，而不是填零。
 
+`fit_response_document` 是这一原则的文档级实现：它只从已有
+`ResponseDocument` 中存在的 `strain_vector`、branch-matched Cartesian polarization、
+`stress_raw`、`forces_initial`/`forces` 和 `internal_displacement` 拟合相应块；缺失
+观测不补零。输出 quantity 复制输入的单位、周期轴和后端 provenance，并把
+`input_rank/allowed_rank/fit_rank/condition/residual/suggested_input_indices` 写入
+diagnostics。`stress_raw` 的 backend-dependent 符号必须由调用者显式提供；该层不执行
+proper-piezo 几何修正、acoustic gauge 投影或 `Z*Lambda` relaxed-ion 合成，这些仍是
+独立验证门。
+
 ## 8. 有限差分精度和实际扰动向量
 
 对任意参数向量 \(x\) 和观测 \(y(x)\)，单方向中心差分为

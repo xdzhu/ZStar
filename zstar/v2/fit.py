@@ -463,6 +463,7 @@ def fit_internal_strain_response(
     displacement_observations: np.ndarray | Iterable[object],
     *,
     reference_displacement: np.ndarray | Iterable[float] | None = None,
+    allowed_basis: IntertwinerBasis | None = None,
     sample_weights: Iterable[float] | None = None,
     svd_cutoff: float | None = None,
 ) -> LinearFitResult:
@@ -473,6 +474,8 @@ def fit_internal_strain_response(
     clamped strained structures.  The returned :class:`LinearFitResult` uses
     flattened ``(atom, cartesian)`` output rows; reshape its ``matrix`` to
     ``(atoms, 3, 6)`` for the tensor convention of the v2 response schema.
+    An optional ``allowed_basis`` constrains the flattened displacement output
+    to a validated space-group intertwiner subspace.
     No acoustic gauge is silently imposed: translation removal or a specified
     gauge must be performed explicitly before using ``Lambda`` in the relaxed
     piezoelectric/elastic algebra.
@@ -500,6 +503,7 @@ def fit_internal_strain_response(
     return fit_linear_response(
         strains,
         (displacements - reference).reshape(displacements.shape[0], -1),
+        allowed_basis=allowed_basis,
         sample_weights=sample_weights,
         svd_cutoff=svd_cutoff,
     )

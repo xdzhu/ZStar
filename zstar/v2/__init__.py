@@ -86,6 +86,7 @@ from .polarization import (
     pyatb_directional_to_cartesian,
     unwrap_polarization_path,
 )
+from .reconstruct import fit_response_document
 from .units import BOHR_RADIUS, ELECTRONVOLT, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
 
 __all__ = [
@@ -139,6 +140,7 @@ __all__ = [
     "fit_internal_strain_response",
     "fit_piezoelectric_response",
     "fit_strain_force_coupling",
+    "fit_response_document",
     "fit_piezoelectric_ensemble",
     "proper_piezoelectric_response",
     "intertwiner_basis",
