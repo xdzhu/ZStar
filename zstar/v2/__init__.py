@@ -87,6 +87,7 @@ from .polarization import (
     unwrap_polarization_path,
 )
 from .reconstruct import fit_response_document
+from .legacy import adapt_v1_response_record
 from .units import BOHR_RADIUS, ELECTRONVOLT, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
 
 __all__ = [
@@ -141,6 +142,7 @@ __all__ = [
     "fit_piezoelectric_response",
     "fit_strain_force_coupling",
     "fit_response_document",
+    "adapt_v1_response_record",
     "fit_piezoelectric_ensemble",
     "proper_piezoelectric_response",
     "intertwiner_basis",
