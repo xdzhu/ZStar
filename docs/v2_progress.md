@@ -484,10 +484,10 @@
 
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `513 passed, 1158 warnings`；新增首/末力块
+* v2 独立 worktree 的完整回归为 `522 passed, 1158 warnings`；新增首/末力块
   解析后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
-  测试当前为 `120 passed`。
+  测试当前为 `120+ passed`（本轮新增 electromechanical 形式转换测试）。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
 * v2 独立测试（当前收集 120 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
@@ -513,7 +513,8 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
   `P4mm` 六分量 `±1e-3` 审计已完成，允许子空间/秩、stress 符号与单位、能量曲率
   和 Λ 重建已有单后端证据。但在报告材料响应常数前，仍必须完成多幅度收敛、
   work-conjugacy 的独立复核和独立后端核对。当前节点审计表明 VASP 是候选独立
-  后端，但尚未完成输入、赝势和 collector 验证。
+  后端；已有 SiC BEC parser smoke，但尚未完成同结构输入、赝势、应变响应和
+  quantitative collector 验证。
 
 ## 下一步
 
@@ -533,6 +534,10 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 7. 先完成 VASP 输入/POTCAR provenance 与 calculator-neutral collector 的本地
    synthetic tests，再提交一项 40 MPI × 1 OpenMP reference smoke 和一对
    `+/-` 应变任务；不要把可执行文件探测结果直接升级为 Gate C 科学证据。
+8. 使用 `ElectromechanicalForms` 对已经通过单位/边界审计的 proper `e`、
+   \(C^E\) 和 \(\epsilon^S\) 做 schema 级派生量检查；先在合成矩阵验证
+   reciprocal identities，再把同一流程接入 3D `P4mm` 审计。未完成独立后端
+   定量核对前，不把派生 \(d/g/h\) 写成材料最终值。
 
 ## 2026-09-13 代数闭环增量
 
