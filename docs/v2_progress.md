@@ -655,6 +655,14 @@ raw piezo fit residual 为 `7.16%`，elastic residual 为 `1.26%`，Gamma residu
 两个独立 40-rank 进程组曾同时占用同一 stage。重复组已停止并归档，相关输出不进入
 任何结果；cu24/cu26 当前不再启动新的 ABACUS 任务，先完成算法和数据回读审计。
 
+随后将 proper-piezoelectric 装配接入 `fit_response_document` 的显式研究选项：默认
+行为仍只追加 `piezoelectric_raw`，调用者设置 `include_proper_piezoelectric=True` 时，
+才额外追加 `piezoelectric_geometric_correction` 和 `piezoelectric_proper`，并保存
+branch-matched reference、Voigt 约定、边界条件和拟合诊断。对已有 GaN `relax_a0005`
+离线 ensemble 的实际回读得到 baseline raw `e15=0.16365`、proper `e15=-0.50088`
+`C/m²`，与原 `±5e-4` amplitude audit 一致；该结果仍是幅度噪声审计，不改写采用的
+`±1e-3` GaN 候选值。定向与全量测试分别为 `3 passed` 和 `539 passed`。
+
 基于 ABACUS/cu25 与既有 VASP/cu17/cu24/cu26 的两个 3D SiC ensemble，补充了同一
 `F-43m` 3 参数基下的 backend comparison：两者均为 rank 3/3，最大 stress residual
 分别为 `0.4889` 与 `0.0231 kbar`，energy residual 均约 `6e-8 eV`，stress/energy
