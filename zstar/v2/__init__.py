@@ -2,10 +2,12 @@
 
 from .algebra import (
     acoustic_sum_rule_diagnostics,
+    InternalStrainSolution,
     internal_strain_response,
     relaxed_elastic,
     relaxed_piezoelectric,
     remove_acoustic_translation,
+    solve_internal_strain_response,
 )
 from .capabilities import BackendCapabilities, CapabilityError
 from .abacus import collect_abacus_stage, collect_abacus_strain_response, collect_pyatb_strain_response
@@ -98,6 +100,7 @@ __all__ = [
     "ELEMENTARY_CHARGE",
     "ELECTRONVOLT",
     "IntertwinerBasis",
+    "InternalStrainSolution",
     "LinearFitResult",
     "ProperPiezoelectricResult",
     "PerturbationStage",
@@ -150,6 +153,7 @@ __all__ = [
     "intertwiner_constraint_matrix",
     "intertwining_residual",
     "internal_strain_response",
+    "solve_internal_strain_response",
     "mechanical_stability",
     "periodic_strain_indices",
     "normalize_polarization",

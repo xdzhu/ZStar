@@ -21,6 +21,7 @@ from zstar.v2 import (
     relaxed_elastic,
     relaxed_piezoelectric,
     remove_acoustic_translation,
+    solve_internal_strain_response,
     match_polarization_ensemble,
 )
 
@@ -71,6 +72,38 @@ def test_internal_strain_response_can_reject_acoustic_sum_rule_violation():
     assert diagnostics["strain_force_coupling_compatible"] is False
     with pytest.raises(ValueError, match="acoustic sum rule"):
         relaxed_elastic(np.eye(6), phi, gamma, 1.0, check_acoustic=True)
+
+
+def test_internal_strain_solver_reports_equilibrium_and_translation_gauge():
+    phi = np.kron(np.array([[1.0, -1.0], [-1.0, 1.0]]), np.eye(3))
+    gamma = np.array(
+        [
+            [1.0, 0.2], [0.0, 0.1], [0.3, 0.4],
+            [-1.0, -0.2], [0.0, -0.1], [-0.3, -0.4],
+        ]
+    )
+    result = solve_internal_strain_response(
+        phi,
+        gamma,
+        check_acoustic=True,
+        acoustic_tolerance=1.0e-12,
+        residual_tolerance=1.0e-12,
+    )
+    np.testing.assert_allclose(result.equilibrium_residual, 0.0, atol=1.0e-12)
+    np.testing.assert_allclose(result.translation_gauge_residual, 0.0, atol=1.0e-12)
+    assert result.rank == 3
+    assert result.residual_max < 1.0e-12
+    assert result.residual_relative < 1.0e-12
+
+
+def test_internal_strain_solver_rejects_nontranslational_incompatible_gamma():
+    # A singular Phi with an extra null mode cannot balance this Gamma.  A
+    # pseudoinverse alone would silently return a least-squares displacement;
+    # the strict residual gate must reject it.
+    phi = np.diag([0.0, 1.0, 1.0])
+    gamma = np.array([[1.0], [0.0], [0.0]])
+    with pytest.raises(ValueError, match="equilibrium residual"):
+        solve_internal_strain_response(phi, gamma, residual_tolerance=1.0e-12)
 
 
 def test_stress_sign_conversion_rejects_backend_raw_and_flips_known_signs():

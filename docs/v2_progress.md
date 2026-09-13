@@ -508,3 +508,15 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 7. 先完成 VASP 输入/POTCAR provenance 与 calculator-neutral collector 的本地
    synthetic tests，再提交一项 40 MPI × 1 OpenMP reference smoke 和一对
    `+/-` 应变任务；不要把可执行文件探测结果直接升级为 Gate C 科学证据。
+
+## 2026-09-13 代数闭环增量
+
+新增 `solve_internal_strain_response` 研究 API。它与既有
+`internal_strain_response` 使用相同的 SVD 截断和最小范数解，但额外返回
+`Phi @ Lambda + Gamma` 平衡残差、相对残差、刚性平移规范残差、奇异值和有效秩；
+可用 `residual_tolerance` 明确拒绝含有未被 `Phi` 支持的非平移零模分量。这样
+伪逆不再被误当作力平衡证明，且旧 API 保持只返回 `Lambda` 的兼容行为。
+
+新增两项代数测试：平移兼容的 3D 两原子模型通过严格残差门；含额外零模且不可平衡
+的 `Gamma` 被明确拒绝。定向响应代数测试结果为 `25 passed`。该改动只增强 v2
+研究层，不改变 v1 入口或任何发布文件。

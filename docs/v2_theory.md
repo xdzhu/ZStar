@@ -260,6 +260,14 @@ Gamma.T @ Phi^+ @ Gamma / Omega  ->  eV/Angstrom^3  ->  GPa (or kbar)
 可以区分真实的平移零模、有限 SCF/拟合噪声和错误的原子索引或边界条件。即使 \(\Lambda\)
 采用 Moore--Penrose 最小范数解，响应文件仍应保存这些诊断及所用的 acoustic gauge。
 
+为避免把伪逆的最小二乘结果误报为力平衡解，研究 API 另提供
+`solve_internal_strain_response`。它在使用同一 SVD 截断求解
+`Phi @ Lambda + Gamma = 0` 的同时，返回平衡残差、相对残差、平移规范残差、奇异值和
+有效秩。生产门控可以传入 `residual_tolerance`：若 `Gamma` 含有未被 `Phi` 支持的非平移
+零模分量，调用会明确失败，并提示检查原子顺序、单位和边界条件。旧的
+`internal_strain_response` 仍只返回数值 `Lambda`，以保持研究草案的兼容性；它现在复用
+同一求解器，因而不会出现“诊断使用另一套伪逆”的不一致。
+
 还有一个不可省略的参考态条件：relaxed-ion 差分的零应变 reference 必须已经在
 同一电场/机械边界下满足内部力平衡（以及所采用边界下的应力条件），并且要记录其
 最大残余力、应力和空间群。若 reference 只是未弛豫的单点 SCF，±应变弛豫可能进入

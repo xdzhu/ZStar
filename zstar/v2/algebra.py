@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Iterable
 
 import numpy as np
@@ -115,6 +116,154 @@ def acoustic_sum_rule_diagnostics(
     }
 
 
+@dataclass(frozen=True)
+class InternalStrainSolution:
+    """Audited solution of ``Phi @ Lambda + Gamma = 0``.
+
+    ``lambda_response`` is the minimum-norm Cartesian response.  The other
+    fields are deliberately retained instead of being hidden behind a
+    pseudoinverse: a small residual can be numerical noise, while a large one
+    means that the supplied ``Phi``/``Gamma`` pair is not a realizable relaxed
+    equilibrium response (for example because of an atom-order or boundary
+    mismatch).
+    """
+
+    lambda_response: np.ndarray
+    equilibrium_residual: np.ndarray
+    translation_gauge_residual: np.ndarray
+    singular_values: np.ndarray
+    rank: int
+    residual_max: float
+    residual_rms: float
+    residual_relative: float
+    translation_gauge_max: float
+    svd_rcond: float
+
+    def __post_init__(self) -> None:
+        for name in (
+            "lambda_response",
+            "equilibrium_residual",
+            "translation_gauge_residual",
+            "singular_values",
+        ):
+            value = np.asarray(getattr(self, name), dtype=float)
+            if not np.all(np.isfinite(value)):
+                raise ValueError(f"{name} contains non-finite values")
+            object.__setattr__(self, name, value)
+        if int(self.rank) < 0:
+            raise ValueError("rank must be non-negative")
+        for name in (
+            "residual_max",
+            "residual_rms",
+            "residual_relative",
+            "translation_gauge_max",
+            "svd_rcond",
+        ):
+            value = float(getattr(self, name))
+            if not np.isfinite(value) or value < 0.0:
+                raise ValueError(f"{name} must be finite and non-negative")
+            object.__setattr__(self, name, value)
+
+
+def solve_internal_strain_response(
+    force_constants: np.ndarray,
+    strain_force_coupling: np.ndarray,
+    *,
+    svd_rcond: float = 1.0e-10,
+    check_acoustic: bool = False,
+    acoustic_tolerance: float = 1.0e-10,
+    residual_tolerance: float | None = None,
+) -> InternalStrainSolution:
+    """Solve and audit the internal-strain equilibrium equation.
+
+    The equation is ``Phi @ Lambda + Gamma = 0`` with the convention used by
+    :func:`fit_strain_force_coupling`, namely ``Gamma = -dF/deta``.  The
+    Moore--Penrose solution is used only after validating the shapes.  Unlike
+    :func:`internal_strain_response`, this function exposes the equilibrium
+    residual and the translation gauge so a caller can impose a production
+    acceptance threshold.  ``check_acoustic`` rejects violated translational
+    sum rules; ``residual_tolerance`` additionally rejects an incompatible
+    non-translational null-space component.
+    """
+
+    phi = _finite(force_constants, "force_constants")
+    gamma = _finite(strain_force_coupling, "strain_force_coupling")
+    if phi.ndim != 2 or phi.shape[0] != phi.shape[1]:
+        raise ValueError(f"force_constants must be square; got {phi.shape}")
+    if phi.shape[0] == 0 or phi.shape[0] % 3:
+        raise ValueError(
+            "force_constants dimension must be a positive multiple of 3 "
+            f"(3*natom); got {phi.shape[0]}"
+        )
+    if gamma.ndim != 2 or gamma.shape[0] != phi.shape[0]:
+        raise ValueError(
+            f"strain_force_coupling must have shape ({phi.shape[0]}, nstrain); "
+            f"got {gamma.shape}"
+        )
+    if not np.isfinite(svd_rcond) or float(svd_rcond) < 0.0:
+        raise ValueError("svd_rcond must be finite and non-negative")
+    if residual_tolerance is not None and (
+        not np.isfinite(residual_tolerance) or float(residual_tolerance) < 0.0
+    ):
+        raise ValueError("residual_tolerance must be finite and non-negative")
+
+    if check_acoustic:
+        diagnostics = acoustic_sum_rule_diagnostics(
+            phi, gamma, tolerance=acoustic_tolerance
+        )
+        if not diagnostics["compatible"]:
+            raise ValueError(
+                "force_constants/strain_force_coupling violate the acoustic "
+                "sum rule; inspect acoustic_sum_rule_diagnostics() or provide "
+                "a translationally compatible Gamma/Phi before relaxed-ion fitting"
+            )
+
+    # Keep the SVD here so the reported rank is tied to exactly the inverse
+    # used for Lambda, rather than inferred from a second decomposition.
+    u, singular_values, vh = np.linalg.svd(phi, full_matrices=False)
+    del u, vh  # the singular vectors are not part of the public diagnostic
+    if singular_values.size:
+        cutoff = float(svd_rcond) * float(singular_values[0])
+    else:  # guarded above, retained for defensive clarity
+        cutoff = 0.0
+    rank = int(np.count_nonzero(singular_values > cutoff))
+    inverse = np.linalg.pinv(phi, rcond=float(svd_rcond))
+    lambda_response = -inverse @ gamma
+    equilibrium_residual = phi @ lambda_response + gamma
+    residual_abs = np.abs(equilibrium_residual)
+    residual_max = float(np.max(residual_abs)) if residual_abs.size else 0.0
+    residual_rms = float(np.sqrt(np.mean(equilibrium_residual**2))) if equilibrium_residual.size else 0.0
+    gamma_scale = max(float(np.linalg.norm(gamma, ord=2)), 1.0)
+    residual_relative = residual_rms / gamma_scale
+    translations = _acoustic_translation_basis(phi.shape[0] // 3)
+    translation_gauge_residual = translations.T @ lambda_response
+    translation_gauge_max = (
+        float(np.max(np.abs(translation_gauge_residual)))
+        if translation_gauge_residual.size
+        else 0.0
+    )
+    solution = InternalStrainSolution(
+        lambda_response=lambda_response,
+        equilibrium_residual=equilibrium_residual,
+        translation_gauge_residual=translation_gauge_residual,
+        singular_values=singular_values,
+        rank=rank,
+        residual_max=residual_max,
+        residual_rms=residual_rms,
+        residual_relative=float(residual_relative),
+        translation_gauge_max=translation_gauge_max,
+        svd_rcond=float(svd_rcond),
+    )
+    if residual_tolerance is not None and solution.residual_relative > float(residual_tolerance):
+        raise ValueError(
+            "internal-strain equilibrium residual exceeds residual_tolerance; "
+            f"got relative residual {solution.residual_relative:.6g} > "
+            f"{float(residual_tolerance):.6g}; inspect Gamma/Phi axes, units, "
+            "and non-translational zero modes"
+        )
+    return solution
+
+
 def internal_strain_response(
     force_constants: np.ndarray,
     strain_force_coupling: np.ndarray,
@@ -132,27 +281,15 @@ def internal_strain_response(
     algebra-only behavior.
     """
 
-    phi = _finite(force_constants, "force_constants")
-    gamma = _finite(strain_force_coupling, "strain_force_coupling")
-    if phi.ndim != 2 or phi.shape[0] != phi.shape[1]:
-        raise ValueError(f"force_constants must be square; got {phi.shape}")
-    if gamma.ndim != 2 or gamma.shape[0] != phi.shape[0]:
-        raise ValueError(f"strain_force_coupling must have shape ({phi.shape[0]}, nstrain); got {gamma.shape}")
-    if not np.isfinite(svd_rcond) or svd_rcond < 0.0:
-        raise ValueError("svd_rcond must be finite and non-negative")
     if not isinstance(check_acoustic, (bool, np.bool_)):
         raise TypeError("check_acoustic must be a bool")
-    if check_acoustic:
-        diagnostics = acoustic_sum_rule_diagnostics(
-            phi, gamma, tolerance=acoustic_tolerance
-        )
-        if not diagnostics["compatible"]:
-            raise ValueError(
-                "force_constants/strain_force_coupling violate the acoustic "
-                "sum rule; inspect acoustic_sum_rule_diagnostics() or provide "
-                "a translationally compatible Gamma/Phi before relaxed-ion fitting"
-            )
-    return -np.linalg.pinv(phi, rcond=float(svd_rcond)) @ gamma
+    return solve_internal_strain_response(
+        force_constants,
+        strain_force_coupling,
+        svd_rcond=svd_rcond,
+        check_acoustic=check_acoustic,
+        acoustic_tolerance=acoustic_tolerance,
+    ).lambda_response
 
 
 def relaxed_piezoelectric(
