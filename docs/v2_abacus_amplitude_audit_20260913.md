@@ -35,6 +35,25 @@
 `e33` 约 0.5%；三者的 `P4mm` 禁止分量均由约束严格投影为零。这个结果支持
 “当前 BaTiO3 几何的线性响应已初步幅度收敛”，但不是普适误差上界。
 
+### Proper `e` reconstruction (research API)
+
+Using the `±1e-3` raw fit above and the tight-reference branch-matched
+polarization `P_ref=(7.0413e-8, 5.9921e-8, 0.395173895) C/m²`, the new
+`fit_proper_piezoelectric_response` API gives the explicit Vanderbilt geometric
+correction:
+
+```text
+e_proper (C/m²) =
+[[0, 0, 0, 0, 4.87889059, 0],
+ [0, 0, 0, 4.87889059, 0, 0],
+ [0.41114659, 0.41114659, 3.89091867, 0, 0, 0]]
+```
+
+The raw fit, correction and proper result remain separate objects. This is a
+deterministic post-processing reconstruction from the same finite-difference
+data, not an independent proper-piezoelectric calculation; it therefore does
+not by itself promote the BaTiO3 fixture to a validated material benchmark.
+
 弹性张量先将本次 ABACUS raw stress 按独立能量曲率审计确定为
 compression-positive，再显式转为 tension-positive；单位 `kbar`：
 
@@ -58,5 +77,6 @@ acoustic gauge。最大拟合残差为 `6.90e-6`、`1.63e-6` 和 `2.77e-6 Å`（
 
 幅度审计降低了有限差分截断误差疑虑，并复核了实际序列化应变、branch matching、
 单位、rank/residual、内部位移和机械稳定性。由于仍是单一材料、单一后端、单一
-参考相，Gate C 仍阻塞：下一步必须做独立后端/高精度参考交叉验证、应力
-work-conjugacy 独立核对和适用的多维度案例，然后才能冻结压电/弹性稳定接口。
+参考相，Gate C 仍阻塞：下一步应完成 proper/relaxed-ion 的规范审计、适用的多维度
+案例和定义匹配的文献或数据库对照；只有外部锚点不足时才启动独立后端。之后才能
+冻结压电/弹性稳定接口。

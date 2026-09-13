@@ -676,3 +676,8 @@ rank/residual 与 proper correction，不覆盖原始结果；非法 reference �
 结果一致性均有测试。全量回归为 `536 passed, 1164 warnings`。这使 BaTiO3 既有
 PYATB 六分量数据可以按同一 API 重建 proper `e`，但尚未因此开放稳定 CLI 或声明
 材料常数。
+
+将已有 BaTiO3/P4mm `±1e-3` raw fit 与 tight-reference branch-matched 极化代入该
+API，得到 proper `e` 的确定性后处理结果；raw、geometric correction 和 proper
+矩阵均保持独立保存。该步骤验证了公式和数据流，不把同一批数据重复包装成独立
+验证，也不改变 v1 的 BEC/IFC/PYATB 实现。
