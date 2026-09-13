@@ -190,6 +190,7 @@ def fit_response_document(
                     "reference_index": index,
                     "input_quantity": polarization.name,
                     "branch_matching_required": True,
+                    "piezoelectric_kind": "raw",
                     "definition": "dP_cartesian/dengineering_strain at fixed declared ion state",
                 },
                 diagnostics=_fit_diagnostics(fit),
@@ -202,6 +203,7 @@ def fit_response_document(
                 "reference_index": index,
                 "input_quantity": polarization.name,
                 "reference_polarization_C_per_m2": polarization.values[index].tolist(),
+                "piezoelectric_kind": "proper",
                 "definition": "Vanderbilt proper piezoelectric derivative",
             }
             proper_diagnostics = {

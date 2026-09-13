@@ -36,6 +36,7 @@ from .fit import (
     proper_piezoelectric_response,
 )
 from .electromechanical import ElectromechanicalForms, convert_piezoelectric_forms
+from .electromechanical_document import derive_electromechanical_forms
 from .mechanical import (
     ENGINEERING_VOIGT,
     convert_stress_sign,
@@ -150,6 +151,7 @@ __all__ = [
     "apply_strain",
     "convert_dielectric",
     "convert_piezoelectric_forms",
+    "derive_electromechanical_forms",
     "convert_values",
     "parse_vasp_outcar_observations",
     "fit_linear_response",

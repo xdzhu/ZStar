@@ -11,9 +11,11 @@ from zstar.v2 import (
     ResponseDocument,
     TensorQuantity,
     fit_response_document,
+    derive_electromechanical_forms,
     proper_piezoelectric_response,
     voigt_to_stress_tensor,
 )
+from zstar.v2.mechanical import ENGINEERING_VOIGT
 
 
 def _synthetic_document() -> tuple[ResponseDocument, dict[str, np.ndarray]]:
@@ -198,3 +200,92 @@ def test_fit_response_document_can_append_explicit_proper_piezoelectric_terms():
         "piezoelectric_geometric_correction",
         "piezoelectric_proper",
     ]
+
+
+def test_derive_electromechanical_forms_consumes_annotated_document_quantities():
+    document, expected = _synthetic_document()
+    reference = document.quantity("polarization_cartesian").values[0]
+    proper = proper_piezoelectric_response(expected["piezo"], reference).proper
+    quantities = list(document.quantities)
+    quantities.extend(
+        (
+            TensorQuantity(
+                name="piezoelectric_proper",
+                values=proper,
+                unit="C/m^2",
+                axes=("polarization_cartesian", "voigt_engineering"),
+                coordinate_system="cartesian_right_handed",
+                voigt_convention=ENGINEERING_VOIGT,
+                ion_relaxation="relaxed-ion",
+                boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+                provenance={"piezoelectric_kind": "proper"},
+            ),
+            TensorQuantity(
+                name="elastic",
+                values=expected["elastic"],
+                unit="Pa",
+                axes=("stress_voigt", "voigt_engineering"),
+                coordinate_system="cartesian_right_handed",
+                voigt_convention=ENGINEERING_VOIGT,
+                ion_relaxation="clamped-ion",
+                boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+            ),
+            TensorQuantity(
+                name="dielectric_input",
+                values=np.eye(3) * 8.0,
+                unit="relative",
+                axes=("electric_row", "electric_column"),
+                coordinate_system="cartesian_right_handed",
+                ion_relaxation="clamped-ion",
+                boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+            ),
+        )
+    )
+    annotated = replace(document, quantities=tuple(quantities))
+    converted = derive_electromechanical_forms(annotated)
+    assert converted.quantity("piezoelectric_d").shape == (3, 6)
+    assert converted.quantity("elastic_CE").unit == "Pa"
+    assert converted.quantity("dielectric_epsilonS").boundary_conditions.mechanical == "strain"
+    assert converted.metadata["electromechanical_inputs"] == [
+        "piezoelectric_proper",
+        "elastic",
+        "dielectric_input",
+    ]
+
+
+def test_derive_electromechanical_forms_rejects_unannotated_proper_or_boundary():
+    document, expected = _synthetic_document()
+    quantities = list(document.quantities)
+    quantities.extend(
+        (
+            TensorQuantity(
+                name="piezoelectric_proper",
+                values=expected["piezo"],
+                unit="C/m^2",
+                axes=("polarization_cartesian", "voigt_engineering"),
+                coordinate_system="cartesian_right_handed",
+                voigt_convention=ENGINEERING_VOIGT,
+                provenance={},
+            ),
+            TensorQuantity(
+                name="elastic",
+                values=expected["elastic"],
+                unit="Pa",
+                axes=("stress_voigt", "voigt_engineering"),
+                coordinate_system="cartesian_right_handed",
+                voigt_convention=ENGINEERING_VOIGT,
+                boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+            ),
+            TensorQuantity(
+                name="dielectric_input",
+                values=np.eye(3) * 8.0,
+                unit="relative",
+                axes=("electric_row", "electric_column"),
+                coordinate_system="cartesian_right_handed",
+                boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+            ),
+        )
+    )
+    annotated = replace(document, quantities=tuple(quantities))
+    with pytest.raises(ValueError, match="not explicitly marked proper"):
+        derive_electromechanical_forms(annotated)

@@ -41,6 +41,7 @@ intertwiner、结构对称性和可恢复 ensemble 原型；它们尚未构成�
 | `mechanical.py` | stress/strain、C/S、稳定性、engineering-Voigt 转换和显式 Cartesian/IEEE 弹性张量旋转（draft 已实现） | 生成结构文件 |
 | `piezo.py` | e、internal-strain、relaxed-ion 组合和 BC 检查（当前由 `algebra.py` 提供） | 计算电子响应 |
 | `electromechanical.py` | 在显式 SI、engineering-Voigt 和 proper-e 约定下转换 e/d/g/h，并构造 (C^E/C^D)、(s^E/s^D)、\(\epsilon^S/\epsilon^T\)；返回往返残差和条件数 | 猜测 calculator 单位、stress sign、Berry branch 或 improper→proper 修正 |
+| `electromechanical_document.py` | 从带单位/轴/边界/provenance 的 `ResponseDocument` 严格消费 proper-e、C^E 和 ε^S，并物化完整 reciprocal quantities；缺少显式 proper 标记或热力学边界时拒绝 | 把 v1 普通介电量或 raw Berry 导数默认为 ε^S/proper-e |
 | `reconstruct.py` | 从已收集的 calculator-neutral `ResponseDocument` 拟合并追加带单位/轴/边界/诊断的 raw piezo、elastic、Gamma 和 Lambda quantities（draft 已实现） | proper-piezo 修正、BEC/IFC 规范或外部后端验证 |
 | `legacy.py` | 将稳定 v1 `ResponseRecord` 显式适配为 v2 draft document，保留原始 convention/metadata/provenance，并对未知量要求显式边界条件 | 修改 v1 schema、猜测 stress sign 或离子状态 |
 | `ensemble.py` | 联合 polarization/force/stress/displacement task graph、v2 状态（draft 已实现） | 具体命令行 |

@@ -706,6 +706,14 @@ API，得到 proper `e` 的确定性后处理结果；raw、geometric correction
 矩阵均保持独立保存。该步骤验证了公式和数据流，不把同一批数据重复包装成独立
 验证，也不改变 v1 的 BEC/IFC/PYATB 实现。
 
+新增 `derive_electromechanical_forms` document-level 研究 API：它从已标注的
+`ResponseDocument` 读取 proper-e、`C^E` 和 `ε^S`，严格检查 3D、shape、engineering-Voigt、
+单位和热力学边界，再物化 `e/d/g/h`、`C^E/C^D`、`s^E/s^D`、`ε^S/ε^T` 与
+`β^S/β^T`。输入若未显式标记 `piezoelectric_kind=proper`、名称与派生输出冲突，或
+介电量仍是 `mechanical=not-applicable`，都会给出失败提示；没有猜测 v1 介电量的边界。
+新增 document-level synthetic success/failure 测试，确保该入口可在后续 GaN/其他材料
+获得明确 `ε^S` 后直接复用。
+
 ## 2026-09-13 ABACUS/PYATB 3D GaN 压电验证门与幅度审计
 
 选用文献锚点明确的纤锌矿 GaN（`P6_3mc`, `6mm`）作为首个 v2 机电响应门，
