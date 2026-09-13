@@ -253,6 +253,12 @@ def collect_abacus_strain_response(
     stage_names = ["reference"]
     for stage in ensemble.stages:
         stage_path = base / stage.stage_id
+        if stage.status in {"failed", "skipped"}:
+            action = "rerun the failed stage" if stage.status == "failed" else "remove the skipped stage or regenerate the ensemble"
+            raise ValueError(
+                f"cannot collect stage {stage.stage_id}: manifest status is {stage.status!r}; "
+                f"{action} before collecting a response"
+            )
         # A strain response is defined from one common reference internal
         # coordinate set.  In particular, relaxed-ion stages must not carry
         # stale coordinates from a previous strain relaxation: that creates a

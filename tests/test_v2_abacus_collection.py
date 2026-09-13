@@ -323,6 +323,41 @@ def test_collect_abacus_strain_response_rejects_declared_missing_stage(tmp_path)
         collect_abacus_strain_response(root)
 
 
+@pytest.mark.parametrize(
+    ("status", "message"),
+    [
+        ("failed", "rerun the failed stage"),
+        ("skipped", "remove the skipped stage or regenerate the ensemble"),
+    ],
+)
+def test_collect_abacus_strain_response_rejects_terminal_failed_stage_status(
+    tmp_path, status, message
+):
+    root = tmp_path / f"terminal-{status}"
+    _stage(root / "reference")
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        _stage(root / stage.stage_id, strain_vector=stage.requested_vector)
+    failed_stage = stages[0].__class__(
+        **{
+            **stages[0].to_dict(),
+            "actual_vector": stages[0].requested_vector,
+            "status": status,
+            "error": "synthetic terminal state",
+        }
+    )
+    manifest_stages = (failed_stage, *tuple(
+        stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+        for stage in stages[1:]
+    ))
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=manifest_stages,
+    ).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match=message):
+        collect_abacus_strain_response(root)
+
+
 def test_collect_abacus_strain_response_does_not_zero_fill_missing_energy(tmp_path):
     root = tmp_path / "ensemble"
     _stage(root / "reference", energy=False)

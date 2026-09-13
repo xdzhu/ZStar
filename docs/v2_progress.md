@@ -379,12 +379,18 @@
     dim2 拒绝和 dim0 合法 round-trip 测试，v2 schema 仍与 v1 `zstar-response` 1.0
     完全隔离。
 
+74. collector 现在拒绝 manifest 中明确标记为 `failed` 或 `skipped` 的终态 stage，
+    错误信息分别给出重跑失败 stage、移除 skipped stage 或重新生成 ensemble 的
+    最小动作；不会因为目录中残留输出而把失败/跳过状态静默提升为可收集结果。新增
+    两个 failure-matrix 回归测试。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `497 passed, 1155 warnings`（本地 editable install
-  仅用于提供 distribution metadata，没有上传或发布）；v2 定向测试当前为 `104 passed`。
+* v2 独立 worktree 的完整回归为 `499 passed, 1155 warnings`（本地 editable install
+  仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
+  测试当前为 `106 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 104 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 106 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
