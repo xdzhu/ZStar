@@ -47,9 +47,9 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 
 ### 1.6 v1 回归
 
-每次 v2 提交运行当前完整 suite。独立 worktree 当前实测为 `512 passed, 1158 warnings`，
+每次 v2 提交运行当前完整 suite。独立 worktree 当前实测为 `513 passed, 1158 warnings`，
 加入首/末力块解析、Gamma 力拟合 API、force/stress 对称表示、Cartesian rotation 审计、
-ResponseDocument 结果封装和 v1→v2 显式适配器后，v2 专项测试收集为 119 项。用户的其它工作树可能包含尚未合入
+ResponseDocument 结果封装、v1→v2 显式适配器和文件级迁移 API 后，v2 专项测试收集为 120 项。用户的其它工作树可能包含尚未合入
 v2 的额外测试或
 生成式案例，不能把那些数量直接当作本分支证据。测试
 必须验证 v1 canonical CLI、`response.json` 1.0、Unified
