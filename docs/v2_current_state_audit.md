@@ -96,3 +96,9 @@ units 和边界条件检查。
 Gate C 已完成 P4mm BaTiO3 的 clamped-ion、relaxed-ion、多幅度和 exact-geometry BEC
 ABACUS/PYATB 审计，但 acoustic gauge 的独立 Gamma/IFC、stress work-conjugacy、低
 对称材料、二维归一化和独立后端仍缺证据，因此尚未通过。
+
+共享节点的只读能力审计显示 cu17、cu24、cu25、cu26 均可见 ABACUS 3.10.0-LTS、
+VASP 6.3.2、Phonopy 和 Python 3.10.9；Quantum ESPRESSO 与 CP2K 可执行文件未在
+当前 PATH 中发现。VASP 目前只是候选独立后端，尚未完成 POTCAR provenance、输入
+一致性和 v2 strain/stress collector 验证；详情见
+[`v2_independent_backend_capability_audit_20260913.md`](v2_independent_backend_capability_audit_20260913.md)。
