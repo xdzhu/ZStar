@@ -505,7 +505,7 @@
 
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `522 passed, 1158 warnings`；新增首/末力块
+* v2 独立 worktree 的完整回归为 `528 passed, 1158 warnings`；新增首/末力块
   解析后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
   测试当前为 `120+ passed`（本轮新增 electromechanical 形式转换测试）。
