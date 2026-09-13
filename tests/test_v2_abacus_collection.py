@@ -525,6 +525,38 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     )
 
 
+def test_collect_pyatb_strain_response_uses_each_stage_lattice_basis(tmp_path):
+    root = tmp_path / "stage-specific-basis"
+    _stage(root / "reference")
+    _pyatb_output(root / "reference", (0.0, 0.0, 0.0))
+    stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
+    for stage in stages:
+        path = root / stage.stage_id
+        _stage(path, strain_vector=stage.requested_vector)
+        _pyatb_output(path, (1.0, 0.0, 0.0))
+        shear = 0.2 if stage.sign == "+" else -0.2
+        (path / "pyatb" / "Out" / "input.json").write_text(
+            json.dumps({"LATTICE": {"lattice_constant": 1.0,
+                                      "lattice_vector": [[1.0, 0.0, shear],
+                                                          [0.0, 1.0, 0.0],
+                                                          [0.0, 0.0, 1.0]]}}),
+            encoding="utf-8",
+        )
+    ResponseEnsemble(
+        reference_hash="synthetic",
+        stages=tuple(
+            stage.__class__(**{**stage.to_dict(), "actual_vector": stage.requested_vector})
+            for stage in stages
+        ),
+    ).write(root / "ensemble.json")
+
+    document = collect_pyatb_strain_response(root)
+    cartesian = document.quantity("polarization_cartesian").values
+    np.testing.assert_allclose(cartesian[1], [1.0 / np.sqrt(1.04), 0.0, -0.2 / np.sqrt(1.04)])
+    np.testing.assert_allclose(cartesian[2], [1.0 / np.sqrt(1.04), 0.0, 0.2 / np.sqrt(1.04)])
+    assert not np.allclose(cartesian[1], cartesian[2])
+
+
 def test_collect_pyatb_strain_response_normalizes_explicit_two_dimensional_polarization(tmp_path):
     root = tmp_path / "slab-ensemble"
     _stage(root / "reference")
