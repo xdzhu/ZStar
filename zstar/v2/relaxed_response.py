@@ -13,7 +13,7 @@ from typing import Any
 
 import numpy as np
 
-from .algebra import relaxed_piezoelectric
+from .algebra import relaxed_elastic, relaxed_piezoelectric, solve_internal_strain_response
 from .mechanical import ENGINEERING_VOIGT
 from .model import BoundaryConditions, ResponseDocument, TensorQuantity
 from .units import ELEMENTARY_CHARGE
@@ -279,3 +279,241 @@ def derive_relaxed_piezoelectric_response(
         metadata=metadata,
     )
 
+
+def _ordered_force_constants(quantity: TensorQuantity) -> np.ndarray:
+    """Return IFCs in ``(atom, force_cartesian, atom, displacement_cartesian)`` order."""
+
+    values = np.asarray(quantity.values, dtype=float)
+    if values.ndim != 4:
+        raise ValueError(
+            "force constants must have four explicit axes (atom_row, atom_column, force, displacement); "
+            f"got {values.shape}"
+        )
+    axes = tuple(str(axis).strip().lower() for axis in quantity.axes)
+    if len(axes) != 4:
+        raise ValueError("force constants require explicit atom/force/displacement axes")
+    atom_row = _axis_index(axes, {"atom_row", "force_atom", "site_row"}, "force constants row atom axis")
+    atom_column = _axis_index(
+        axes, {"atom_column", "displacement_atom", "site_column"}, "force constants column atom axis"
+    )
+    force = _axis_index(axes, {"force", "force_cartesian"}, "force constants force axis")
+    displacement = _axis_index(
+        axes, {"displacement", "displacement_cartesian"}, "force constants displacement axis"
+    )
+    if len({atom_row, atom_column, force, displacement}) != 4:
+        raise ValueError("force constants axes must identify distinct row/column/force/displacement axes")
+    ordered = np.transpose(values, (atom_row, force, atom_column, displacement))
+    if ordered.shape[1] != 3 or ordered.shape[3] != 3 or ordered.shape[0] != ordered.shape[2]:
+        raise ValueError(
+            "force constants must contain a square atom block with 3 force and 3 displacement components; "
+            f"got {ordered.shape}"
+        )
+    if not np.all(np.isfinite(ordered)):
+        raise ValueError("force constants contain non-finite values")
+    natoms = ordered.shape[0]
+    return ordered.reshape(3 * natoms, 3 * natoms)
+
+
+def _ordered_gamma(quantity: TensorQuantity, natoms: int) -> np.ndarray:
+    """Return strain-force coupling in ``(atom, cartesian, voigt)`` order."""
+
+    values = np.asarray(quantity.values, dtype=float)
+    if values.ndim != 3:
+        raise ValueError(f"strain-force coupling must have three explicit axes; got {values.shape}")
+    axes = tuple(str(axis).strip().lower() for axis in quantity.axes)
+    if len(axes) != 3:
+        raise ValueError("strain-force coupling requires explicit atom/cartesian/Voigt axes")
+    atom = _axis_index(axes, {"atom", "site"}, "strain-force coupling atom axis")
+    cartesian = _axis_index(
+        axes, {"cartesian", "force_cartesian", "displacement_cartesian"},
+        "strain-force coupling Cartesian axis",
+    )
+    voigt = _axis_index(axes, {"voigt_engineering", "engineering_voigt"}, "strain-force coupling Voigt axis")
+    if len({atom, cartesian, voigt}) != 3:
+        raise ValueError("strain-force coupling axes must identify distinct atom/Cartesian/Voigt axes")
+    ordered = np.transpose(values, (atom, cartesian, voigt))
+    if ordered.shape != (natoms, 3, 6):
+        raise ValueError(
+            "strain-force coupling must have shape (natom, 3, 6); "
+            f"got {ordered.shape}, expected ({natoms}, 3, 6)"
+        )
+    if not np.all(np.isfinite(ordered)):
+        raise ValueError("strain-force coupling contains non-finite values")
+    return ordered
+
+
+def _force_response_units(force_constants: TensorQuantity, gamma: TensorQuantity) -> tuple[str, str, str]:
+    """Infer a fully explicit energy/length basis for the unit-aware C fit."""
+
+    def parse(unit: str, power: int) -> tuple[str, str] | None:
+        canonical = _canonical_unit(unit).replace("å", "angstrom").replace("²", "^2")
+        canonical = canonical.replace("**", "^")
+        if power == 2:
+            patterns = {
+                "ev/angstrom^2": ("eV", "angstrom"),
+                "ev/angstrom2": ("eV", "angstrom"),
+                "j/m^2": ("J", "m"),
+                "j/m2": ("J", "m"),
+            }
+        else:
+            patterns = {
+                "ev/angstrom": ("eV", "angstrom"),
+                "j/m": ("J", "m"),
+            }
+        return patterns.get(canonical)
+
+    phi_basis = parse(force_constants.unit, 2)
+    gamma_basis = parse(gamma.unit, 1)
+    if phi_basis is None or gamma_basis is None or phi_basis != gamma_basis:
+        raise ValueError(
+            "force_constants and strain_force_coupling units must be a matched explicit "
+            "energy/length^2 and energy/length pair (supported: eV/angstrom^2 + "
+            "eV/angstrom, or J/m^2 + J/m); got "
+            f"{force_constants.unit!r} and {gamma.unit!r}"
+        )
+    energy, length = phi_basis
+    return energy, length, "angstrom3" if length == "angstrom" else "m3"
+
+
+def derive_relaxed_elastic_response(
+    document: ResponseDocument,
+    *,
+    clamped_elastic_name: str = "elastic",
+    force_constants_name: str = "force_constants",
+    strain_force_coupling_name: str = "strain_force_coupling",
+    volume_m3: float | None = None,
+    check_acoustic: bool = False,
+    acoustic_tolerance: float = 1.0e-10,
+    svd_rcond: float = 1.0e-10,
+) -> ResponseDocument:
+    """Append relaxed-ion elastic and equilibrium internal-strain quantities.
+
+    ``clamped_elastic_name`` is a clamped-ion, engineering-Voigt stiffness.
+    The IFC and Gamma quantities are consumed in their explicitly labelled
+    v1/v2 axis orders and matched eV/Angstrom (or J/m) units.  The result is
+    rejected when acoustic compatibility is requested but not satisfied; no
+    translational projection is applied implicitly.
+    """
+
+    if not isinstance(document, ResponseDocument):
+        raise TypeError("document must be a v2 ResponseDocument")
+    if document.dimensionality.value != 3 or tuple(document.dimensionality.periodic_axes) != ("x", "y", "z"):
+        raise ValueError("relaxed-ion bulk elastic assembly requires a three-dimensional periodic document")
+    clamped = _quantity(document, clamped_elastic_name)
+    c_values = np.asarray(clamped.values, dtype=float)
+    if c_values.shape != (6, 6):
+        raise ValueError(f"{clamped_elastic_name!r} must have shape (6, 6)")
+    _require_voigt(clamped, clamped_elastic_name)
+    if clamped.ion_relaxation != "clamped-ion":
+        raise ValueError(
+            f"{clamped_elastic_name!r} must be marked ion_relaxation='clamped-ion'; "
+            f"got {clamped.ion_relaxation!r}"
+        )
+    phi_quantity = _quantity(document, force_constants_name)
+    phi = _ordered_force_constants(phi_quantity)
+    gamma_quantity = _quantity(document, strain_force_coupling_name)
+    gamma = _ordered_gamma(gamma_quantity, phi.shape[0] // 3)
+    energy_unit, length_unit, volume_unit = _force_response_units(phi_quantity, gamma_quantity)
+    volume_si = _reference_volume_m3(document, volume_m3)
+    volume = volume_si / 1.0e-30 if volume_unit == "angstrom3" else volume_si
+    # Run the same audited solver used by the low-level algebra so rank and
+    # equilibrium diagnostics are retained alongside the material tensor.
+    solution = solve_internal_strain_response(
+        phi,
+        gamma.reshape(phi.shape[0], 6),
+        svd_rcond=svd_rcond,
+        check_acoustic=check_acoustic,
+        acoustic_tolerance=acoustic_tolerance,
+    )
+    relaxed, _lambda, correction = relaxed_elastic(
+        c_values,
+        phi,
+        gamma.reshape(phi.shape[0], 6),
+        volume,
+        svd_rcond=svd_rcond,
+        check_acoustic=False,
+        energy_unit=energy_unit,
+        length_unit=length_unit,
+        volume_unit=volume_unit,
+        elastic_unit=clamped.unit,
+    )
+    periodic_axes = document.dimensionality.periodic_axes
+    shared = {
+        "definition": "C_relaxed = C_clamped - Gamma.T Phi^+ Gamma / volume",
+        "clamped_elastic": clamped_elastic_name,
+        "force_constants": force_constants_name,
+        "strain_force_coupling": strain_force_coupling_name,
+        "force_constants_unit": phi_quantity.unit,
+        "strain_force_coupling_unit": gamma_quantity.unit,
+        "volume_m3": volume_si,
+        "voigt_convention": list(ENGINEERING_VOIGT),
+        "svd_rcond": float(svd_rcond),
+    }
+    diagnostics = {
+        "internal_strain_rank": int(solution.rank),
+        "internal_strain_residual_max": float(solution.residual_max),
+        "internal_strain_residual_rms": float(solution.residual_rms),
+        "internal_strain_residual_relative": float(solution.residual_relative),
+        "internal_strain_translation_gauge_max": float(solution.translation_gauge_max),
+        "elastic_internal_correction_max": float(np.max(np.abs(correction))),
+        "acoustic_checked": bool(check_acoustic),
+    }
+    elastic_quantity = TensorQuantity(
+        name="elastic_relaxed",
+        values=relaxed,
+        unit=clamped.unit,
+        axes=("stress_voigt", "voigt_engineering"),
+        coordinate_system=clamped.coordinate_system,
+        voigt_convention=ENGINEERING_VOIGT,
+        ion_relaxation="relaxed-ion",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+        periodic_axes=periodic_axes,
+        normalization=clamped.normalization,
+        source="ifc_internal_strain_relaxation",
+        backend=document.backend,
+        provenance={**shared, "term": "relaxed-stiffness"},
+        diagnostics=diagnostics,
+    )
+    correction_quantity = TensorQuantity(
+        name="elastic_internal_correction",
+        values=correction,
+        unit=clamped.unit,
+        axes=("stress_voigt", "voigt_engineering"),
+        coordinate_system=clamped.coordinate_system,
+        voigt_convention=ENGINEERING_VOIGT,
+        ion_relaxation="internal-contribution",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+        periodic_axes=periodic_axes,
+        normalization=clamped.normalization,
+        source="ifc_internal_strain_relaxation",
+        backend=document.backend,
+        provenance={**shared, "term": "clamped-minus-relaxed correction"},
+        diagnostics=diagnostics,
+    )
+    lambda_quantity = TensorQuantity(
+        name="internal_strain_equilibrium",
+        values=solution.lambda_response.reshape(phi.shape[0] // 3, 3, 6),
+        unit=length_unit,
+        axes=("atom", "cartesian", "voigt_engineering"),
+        coordinate_system=gamma_quantity.coordinate_system,
+        voigt_convention=ENGINEERING_VOIGT,
+        ion_relaxation="relaxed-ion",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+        periodic_axes=periodic_axes,
+        normalization="per_atom",
+        source="ifc_internal_strain_solver",
+        backend=document.backend,
+        provenance={**shared, "term": "Phi-pseudoinverse equilibrium Lambda"},
+        diagnostics=diagnostics,
+    )
+    additions = (elastic_quantity, correction_quantity, lambda_quantity)
+    existing = {quantity.name for quantity in document.quantities}
+    duplicates = sorted(existing.intersection(quantity.name for quantity in additions))
+    if duplicates:
+        raise ValueError("response document already contains derived quantity/quantities: " + ", ".join(duplicates))
+    metadata = dict(document.metadata)
+    metadata["relaxed_elastic_inputs"] = dict(shared)
+    metadata["fitted_quantities"] = list(metadata.get("fitted_quantities", ())) + [quantity.name for quantity in additions]
+    provenance = dict(document.provenance)
+    provenance["relaxed_elastic_assembly"] = {**shared, **diagnostics}
+    return replace(document, quantities=document.quantities + additions, provenance=provenance, metadata=metadata)

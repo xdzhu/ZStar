@@ -96,7 +96,10 @@ from .polarization import (
     unwrap_polarization_path,
 )
 from .reconstruct import fit_response_document
-from .relaxed_response import derive_relaxed_piezoelectric_response
+from .relaxed_response import (
+    derive_relaxed_elastic_response,
+    derive_relaxed_piezoelectric_response,
+)
 from .legacy import adapt_v1_response_file, adapt_v1_response_record
 from .units import BOHR_RADIUS, ELECTRONVOLT, EPSILON_0, ELEMENTARY_CHARGE, UnitConversionError, convert_dielectric, convert_values
 from .vasp import VaspObservations, collect_vasp_strain_response, parse_vasp_outcar_observations
@@ -154,6 +157,7 @@ __all__ = [
     "convert_piezoelectric_forms",
     "derive_electromechanical_forms",
     "derive_relaxed_piezoelectric_response",
+    "derive_relaxed_elastic_response",
     "convert_values",
     "parse_vasp_outcar_observations",
     "fit_linear_response",

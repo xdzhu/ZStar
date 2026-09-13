@@ -755,7 +755,7 @@ relaxed-ion 离子收敛标记均通过。
 超时产生重复 40-rank 私有作业，已按进程组全部终止，未纳入结果；该资源事件和
 输入/输出 provenance 均不改变物理结论。机器可读记录见
 `examples/3D_Bulk/wurtzite_GaN_v2/results/high_precision_shear_audit.json`。
-全量回归现为 `546 passed, 1164 warnings`。
+全量回归现为 `548 passed, 1164 warnings`。
 
 ## 2026-09-13 Berry branch 证据门加固
 
@@ -775,3 +775,10 @@ collector/reconstruct 回归共 `32 passed`。该改动只收紧 v2 研究入口
 `piezoelectric_relaxed`，带有 internal-contribution/relaxed-ion 标记、公式、输入名、
 体积和单位 provenance；匿名轴、错误边界、非三维结构和非 proper 输入均失败。新增
 3 个合成测试，覆盖 v1 轴顺序重排、数值 contraction 和失败门。
+
+同一模块随后加入 `derive_relaxed_elastic_response`：从显式 engineering-Voigt 的
+clamped-ion `C`、v1/v2 轴标注的 IFC `Phi` 和 `Gamma=-dF/deta` 组装
+`C_relaxed = C_clamped - Gamma.T Phi^+ Gamma / Omega`，同时输出平衡方程求解得到的
+`internal_strain_equilibrium` 与 `elastic_internal_correction`。它只接受匹配的
+eV/Angstrom（或 J/m）单位对，体积来源与 relaxed-piezo 入口一致；可选 acoustic
+检查失败时不做隐式投影。新增单位错配、Lambda/校正量和 rank diagnostics 测试。

@@ -10,6 +10,7 @@ from zstar.v2 import (
     BoundaryConditions,
     ResponseDocument,
     TensorQuantity,
+    derive_relaxed_elastic_response,
     derive_relaxed_piezoelectric_response,
     relaxed_piezoelectric,
 )
@@ -125,3 +126,87 @@ def test_document_relaxed_piezo_assembly_rejects_anonymous_bec_axes():
     )
     with pytest.raises(ValueError, match="explicit axes"):
         derive_relaxed_piezoelectric_response(document)
+
+
+def _elastic_document() -> ResponseDocument:
+    elastic = TensorQuantity(
+        name="elastic",
+        values=np.eye(6) * 100.0,
+        unit="GPa",
+        axes=("stress_voigt", "voigt_engineering"),
+        coordinate_system="cartesian_right_handed",
+        voigt_convention=ENGINEERING_VOIGT,
+        ion_relaxation="clamped-ion",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+    )
+    phi = np.diag([2.0, 3.0, 4.0]).reshape(1, 1, 3, 3)
+    force_constants = TensorQuantity(
+        name="force_constants",
+        values=phi,
+        unit="eV/angstrom^2",
+        axes=("atom_row", "atom_column", "force", "displacement"),
+        coordinate_system="cartesian_right_handed",
+        ion_relaxation="not-applicable",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="not-applicable"),
+    )
+    gamma = np.zeros((1, 3, 6), dtype=float)
+    gamma[0, 0, 0] = 0.2
+    gamma[0, 2, 2] = -0.3
+    coupling = TensorQuantity(
+        name="strain_force_coupling",
+        values=gamma,
+        unit="eV/angstrom",
+        axes=("atom", "cartesian", "voigt_engineering"),
+        coordinate_system="cartesian_right_handed",
+        voigt_convention=ENGINEERING_VOIGT,
+        ion_relaxation="clamped-ion",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+    )
+    return ResponseDocument(
+        backend="synthetic",
+        dimensionality=DimensionSpec(3),
+        quantities=(elastic, force_constants, coupling),
+        structure={"lattice_angstrom": np.diag([2.0, 3.0, 4.0]).tolist()},
+        provenance={"source": "synthetic"},
+    )
+
+
+def test_document_relaxed_elastic_assembly_solves_lambda_and_records_diagnostics():
+    document = _elastic_document()
+    result = derive_relaxed_elastic_response(document)
+    phi = np.diag([2.0, 3.0, 4.0])
+    gamma = np.zeros((3, 6), dtype=float)
+    gamma[0, 0] = 0.2
+    gamma[2, 2] = -0.3
+    expected_lambda = -np.linalg.inv(phi) @ gamma
+    expected_correction = gamma.T @ (-expected_lambda) / 24.0
+    np.testing.assert_allclose(
+        result.quantity("internal_strain_equilibrium").values.reshape(3, 6),
+        expected_lambda,
+    )
+    np.testing.assert_allclose(
+        result.quantity("elastic_internal_correction").values,
+        expected_correction * (1.602176634e-19 / 1.0e-30) / 1.0e9,
+    )
+    np.testing.assert_allclose(
+        result.quantity("elastic_relaxed").values,
+        np.eye(6) * 100.0 - result.quantity("elastic_internal_correction").values,
+    )
+    assert result.quantity("internal_strain_equilibrium").unit == "angstrom"
+    assert result.quantity("elastic_relaxed").ion_relaxation == "relaxed-ion"
+    assert result.quantity("elastic_relaxed").diagnostics["internal_strain_rank"] == 3
+
+
+def test_document_relaxed_elastic_assembly_rejects_unmatched_response_units():
+    document = _elastic_document()
+    coupling = document.quantity("strain_force_coupling")
+    bad = replace(coupling, unit="eV/angstrom^2")
+    document = replace(
+        document,
+        quantities=tuple(
+            bad if quantity.name == coupling.name else quantity
+            for quantity in document.quantities
+        ),
+    )
+    with pytest.raises(ValueError, match="matched explicit"):
+        derive_relaxed_elastic_response(document)
