@@ -154,6 +154,7 @@ def fit_energy_elastic_response(
     energy_unit: str = "eV",
     volume_unit: str = "angstrom^3",
     elastic_unit: str = "GPa",
+    allowed_basis: IntertwinerBasis | None = None,
     svd_cutoff: float | None = None,
 ) -> EnergyElasticFitResult:
     """Fit ``C`` from the total-energy curvature in engineering Voigt space.
@@ -161,8 +162,11 @@ def fit_energy_elastic_response(
     This is intentionally independent of :func:`fit_elastic_response`: it
     uses the quadratic energy model and the work-conjugate pairing
     ``sigma_voigt @ eta_engineering``.  The actual serialized strain vectors
-    are used verbatim.  An explicit energy/volume/output-unit triplet is
-    required so an eV/Angstrom^3 curvature cannot be mistaken for GPa.
+    are used verbatim.  When ``allowed_basis`` is supplied, the quadratic
+    Hessian is fitted in that symmetry-reduced, major-symmetric space; this is
+    required for ensembles that contain only independent strain directions.
+    An explicit energy/volume/output-unit triplet is required so an
+    eV/Angstrom^3 curvature cannot be mistaken for GPa.
     """
 
     strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
@@ -181,7 +185,25 @@ def fit_energy_elastic_response(
     if svd_cutoff is not None and (not np.isfinite(svd_cutoff) or float(svd_cutoff) < 0.0):
         raise ValueError("svd_cutoff must be finite and non-negative")
     density_unit = _energy_density_unit(energy_unit, volume_unit)
-    design = _quadratic_energy_design(strains)
+    # With a symmetry-complete strain ensemble the full quadratic model has
+    # 28 unknowns (six linear stresses plus 21 elastic entries).  A reduced
+    # space-group basis is essential when only symmetry-independent strain
+    # directions were calculated.  The basis is intersected with thermodynamic
+    # major symmetry before it is used as an energy Hessian basis.
+    elastic_basis = None
+    if allowed_basis is not None:
+        elastic_basis = _major_symmetric_basis(allowed_basis)
+        if elastic_basis.allowed_rank == 0:
+            raise ValueError("allowed_basis has no major-symmetric elastic degrees of freedom")
+        quadratic_columns = []
+        for index in range(elastic_basis.allowed_rank):
+            matrix = elastic_basis.matrix_from_coefficients(
+                np.eye(elastic_basis.allowed_rank, dtype=float)[index]
+            )
+            quadratic_columns.append(0.5 * np.einsum("si,ij,sj->s", strains, matrix, strains))
+        design = np.column_stack((np.ones(strains.shape[0]), strains, np.column_stack(quadratic_columns)))
+    else:
+        design = _quadratic_energy_design(strains)
     u, singular_values, vh = np.linalg.svd(design, full_matrices=False)
     del u, vh
     scale = float(singular_values[0]) if singular_values.size else 0.0
@@ -194,12 +216,31 @@ def fit_energy_elastic_response(
     )
     predicted = design @ coefficients
     residual = predicted - energies
-    # Coefficients 7..27 are the energy Hessian entries in the same symmetric
-    # Voigt convention.  Divide by Omega before converting the energy density.
-    curvature = np.zeros((6, 6), dtype=float)
-    for coefficient, (left, right) in zip(coefficients[7:], ((i, j) for i in range(6) for j in range(i, 6))):
-        curvature[left, right] = coefficient
-        curvature[right, left] = coefficient
+    # Coefficients after the intercept and six linear terms are the energy
+    # Hessian entries in the same symmetric Voigt convention.  Divide by
+    # Omega before converting the energy density.
+    if elastic_basis is None:
+        curvature = np.zeros((6, 6), dtype=float)
+        for coefficient, (left, right) in zip(
+            coefficients[7:], ((i, j) for i in range(6) for j in range(i, 6))
+        ):
+            curvature[left, right] = coefficient
+            curvature[right, left] = coefficient
+        allowed_rank = 28
+        fit_rank = input_rank
+    else:
+        curvature = sum(
+            coefficient * elastic_basis.matrix_from_coefficients(
+                np.eye(elastic_basis.allowed_rank, dtype=float)[index]
+            )
+            for index, coefficient in enumerate(coefficients[7:])
+        )
+        allowed_rank = elastic_basis.allowed_rank
+        quadratic_design = design[:, 7:]
+        quadratic_singular_values = np.linalg.svd(quadratic_design, compute_uv=False)
+        quadratic_scale = float(quadratic_singular_values[0]) if quadratic_singular_values.size else 0.0
+        quadratic_cutoff = (1.0e-12 if svd_cutoff is None else float(svd_cutoff)) * quadratic_scale
+        fit_rank = int(np.count_nonzero(quadratic_singular_values > quadratic_cutoff))
     raw = curvature / float(volume)
     elastic = convert_values(raw, density_unit, elastic_unit)
     condition = float(
@@ -214,8 +255,8 @@ def fit_energy_elastic_response(
         predicted_energy=predicted,
         residual=residual,
         input_rank=input_rank,
-        fit_rank=input_rank,
-        allowed_rank=28,
+        fit_rank=fit_rank,
+        allowed_rank=allowed_rank,
         singular_values=singular_values,
         condition_number=condition,
         residual_max=float(np.max(np.abs(residual))),
@@ -442,7 +483,19 @@ def _major_symmetric_basis(allowed_basis: IntertwinerBasis | None) -> Intertwine
     projected = constraints @ base
     _u, singular_values, vh = np.linalg.svd(projected, full_matrices=True)
     scale = float(singular_values[0]) if singular_values.size else 1.0
-    cutoff = max(projected.shape) * np.finfo(float).eps * max(scale, 1.0)
+    # Space-group rotations obtained from spglib are floating-point matrices.
+    # A constitutive basis that is analytically major-symmetric can therefore
+    # leave O(1e-11) antisymmetric noise after the intertwiner SVD.  Using only
+    # machine epsilon here incorrectly collapses cubic/tetragonal bases (for
+    # example, a cubic 3-parameter basis became rank one).  Keep the strict
+    # machine-precision cutoff for an unconstrained basis, but allow a small,
+    # explicit numerical symmetry tolerance when intersecting a supplied
+    # space-group basis; genuine violations are O(1) and remain visible.
+    numerical_symmetry_tolerance = 1.0e-10 if allowed_basis is not None else 0.0
+    cutoff = max(
+        max(projected.shape) * np.finfo(float).eps * max(scale, 1.0),
+        numerical_symmetry_tolerance,
+    )
     rank = int(np.count_nonzero(singular_values > cutoff))
     null_coefficients = vh[rank:].T.copy()
     symmetric_basis = base @ null_coefficients

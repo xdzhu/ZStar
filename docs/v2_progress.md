@@ -592,3 +592,20 @@ collector 反推出额外剪切并正确拒绝；随后按 `L' = L(I+eta)^T` 对
 
 随后加入非正交晶胞笛卡尔单轴应变回归测试，锁定 `L' = L(I+eta)^T` 约定，
 避免只修改一条晶格矢量而产生伪剪切。全量回归现为 `529 passed, 1158 warnings`。
+
+## 2026-09-13 3D SiC 完整中心应变审计
+
+在 cu17/cu24/cu26 上完成六个工程 Voigt 应变分量的正负中心差分（12 个阶段，
+每阶段 `40 MPI × 1 OpenMP`）。VASP collector 收集到 13 个完整观察；`F-43m`
+空间群的弹性响应基降为 3 个自由度。显式采用 VASP raw stress 的
+compression-positive 约定后，stress 拟合 rank 为 `6 -> 3/3`，残差
+`0.0231 kbar`；同一 3 参数基上的 energy 拟合 rank `10 -> 3/3`，最大能量残差
+`6.54e-8 eV`，两种曲率最大差 `4.67 GPa`。这通过了 3D 几何、对称基、collector
+和 reduced energy fitter 的研究审计，但因后端设置未完全匹配且尚无 ABINIT/QE
+独立高精度结果，Gate C 仍未通过。详见 `docs/v2_vasp_sic_fullstrain_20260913.md`。
+
+随后修正了带空间群弹性基的 major-symmetry 数值交集：spglib 旋转的约 `1e-11`
+舍入噪声不再把 cubic/F-43m 的三参数基错误压缩为一维；`fit_energy_elastic_response`
+也支持同一 major-symmetric reduced basis，使仅采样独立应变方向时能正确报告
+energy Hessian 的有效秩。新增 cubic stress/energy reduced-fit 回归；全量测试现为
+`531 passed, 1164 warnings`。

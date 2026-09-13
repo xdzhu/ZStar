@@ -9,6 +9,7 @@ from zstar.v2 import (
     allowed_response_basis,
     analyze_space_group,
     displacement_representation,
+    fit_elastic_response,
     fit_linear_response,
     polarization_representation,
     strain_representation,
@@ -120,6 +121,41 @@ def test_unified_strain_plan_accepts_force_and_tensorial_stress_outputs():
     }
     assert plan.identified_rank == 38
     assert plan.selected_indices == (0, 2, 3, 5)
+
+
+def test_cubic_elastic_basis_survives_major_symmetry_intersection():
+    """Numerical spglib rotations must not collapse the cubic C basis."""
+
+    structure = StructureSpec(
+        lattice=np.diag([5.43, 5.43, 5.43]),
+        fractional_positions=np.array([[0.0, 0.0, 0.0]]),
+        symbols=("Si",),
+    )
+    report = analyze_space_group(structure)
+    basis = allowed_response_basis(report, input_kind="strain", output_kind="stress")
+    assert basis.allowed_rank == 3
+
+    stiffness = np.array(
+        [
+            [500.0, 150.0, 150.0, 0.0, 0.0, 0.0],
+            [150.0, 500.0, 150.0, 0.0, 0.0, 0.0],
+            [150.0, 150.0, 500.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 200.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 200.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 200.0],
+        ]
+    )
+    strains = np.vstack((np.eye(6), -np.eye(6))) * 1.0e-3
+    result = fit_elastic_response(
+        strains,
+        strains @ stiffness.T,
+        allowed_basis=basis,
+        enforce_major_symmetry=True,
+    )
+    assert result.allowed_rank == 3
+    assert result.complete
+    np.testing.assert_allclose(result.matrix, stiffness, atol=1.0e-8)
+    assert result.residual_max < 1.0e-10
 
 
 def test_stress_representation_preserves_tensorial_shear_under_rotation():

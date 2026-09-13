@@ -25,6 +25,7 @@ from zstar.v2 import (
     solve_internal_strain_response,
     match_polarization_ensemble,
 )
+from zstar.v2.structure import StructureSpec, allowed_response_basis, analyze_space_group
 
 
 def test_remove_acoustic_translation_requires_explicit_positive_gauge_weights():
@@ -245,6 +246,43 @@ def test_fit_energy_elastic_response_reports_rank_deficiency():
     assert not result.complete
     assert result.input_rank == 3
     assert result.fit_rank < result.allowed_rank
+    assert result.residual_max < 1.0e-12
+
+
+def test_fit_energy_elastic_response_accepts_symmetry_reduced_elastic_basis():
+    """A six-pair central ensemble can fit a cubic Hessian after reduction."""
+
+    structure = StructureSpec(
+        lattice=np.diag([5.43, 5.43, 5.43]),
+        fractional_positions=np.array([[0.0, 0.0, 0.0]]),
+        symbols=("Si",),
+    )
+    report = analyze_space_group(structure)
+    basis = allowed_response_basis(report, input_kind="strain", output_kind="stress")
+    assert basis.allowed_rank == 3
+    elastic = sum(
+        coefficient * basis.matrix_from_coefficients(np.eye(3)[index])
+        for index, coefficient in enumerate((2.0, 3.0, 4.0))
+    )
+    # A pure-axis energy pair does not distinguish the cubic C12 cross term in
+    # a conventional Cartesian cell; include one mixed normal strain so the
+    # reduced quadratic design is genuinely rank-complete.
+    mixed = np.array([[1.0, 1.0, 0.0, 0.0, 0.0, 0.0], [-1.0, -1.0, 0.0, 0.0, 0.0, 0.0]])
+    strains = np.vstack((np.zeros((1, 6)), np.eye(6), -np.eye(6), mixed)) * 1.0e-2
+    volume = 20.0
+    energies = -4.0 + 0.5 * volume * np.einsum("si,ij,sj->s", strains, elastic, strains)
+    result = fit_energy_elastic_response(
+        strains,
+        energies,
+        volume=volume,
+        energy_unit="eV",
+        volume_unit="angstrom^3",
+        elastic_unit="eV/angstrom^3",
+        allowed_basis=basis,
+    )
+    assert result.allowed_rank == result.fit_rank == 3
+    assert result.complete
+    np.testing.assert_allclose(result.elastic, elastic, atol=1.0e-10)
     assert result.residual_max < 1.0e-12
 
 
