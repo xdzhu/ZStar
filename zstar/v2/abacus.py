@@ -787,6 +787,11 @@ def collect_pyatb_strain_response(
                     "stage_names": stage_names,
                     "lattice_vectors_angstrom": [lattice.tolist() for lattice in lattices],
                     "transformation": "v1-compatible lattice-basis linear combination",
+                    "branch_matched": True,
+                    "branch_matching_quantity": "polarization_directional_matched",
+                    "branch_reference_stage": 0,
+                    "branch_shift_max": int(np.max(np.abs(np.asarray(branch_shifts)))),
+                    "branch_residual_max": float(max(residuals)),
                 },
             ),
         )

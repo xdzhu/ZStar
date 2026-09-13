@@ -756,3 +756,13 @@ relaxed-ion 离子收敛标记均通过。
 输入/输出 provenance 均不改变物理结论。机器可读记录见
 `examples/3D_Bulk/wurtzite_GaN_v2/results/high_precision_shear_audit.json`。
 全量回归现为 `537 passed, 1164 warnings`。
+
+## 2026-09-13 Berry branch 证据门加固
+
+`fit_response_document` 现在拒绝没有显式 `provenance["branch_matched"] == true`
+的 `polarization_cartesian`，并校验可选 `branch_residual_max` 为有限非负数；因此
+wrapped Berry 值不会因形状正确而被误拟合成压电张量。PYATB 三方向单次运行的
+collector 在 Cartesian 极化量中写入 branch reference、shift 最大值、residual 最大值
+及对应 matched quantity，形成可追溯的输入契约。新增未匹配分支反例测试；相关
+collector/reconstruct 回归共 `32 passed`。该改动只收紧 v2 研究入口，不改动 v1 schema
+或 v1 CLI。

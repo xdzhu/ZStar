@@ -174,6 +174,29 @@ def test_fit_response_document_requires_explicit_stress_sign_and_rejects_duplica
         )
 
 
+def test_fit_response_document_rejects_unmatched_polarization_branch():
+    document, _ = _synthetic_document()
+    polarization = document.quantity("polarization_cartesian")
+    untrusted = replace(
+        polarization,
+        provenance={"stage_names": polarization.provenance["stage_names"]},
+    )
+    document = replace(
+        document,
+        quantities=tuple(
+            untrusted if quantity.name == "polarization_cartesian" else quantity
+            for quantity in document.quantities
+        ),
+    )
+    with pytest.raises(ValueError, match="branch-matching provenance"):
+        fit_response_document(
+            document,
+            include_elastic=False,
+            include_gamma=False,
+            include_internal_strain=False,
+        )
+
+
 def test_fit_response_document_can_append_explicit_proper_piezoelectric_terms():
     document, expected = _synthetic_document()
     fitted = fit_response_document(

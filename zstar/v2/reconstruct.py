@@ -151,6 +151,32 @@ def fit_response_document(
                 "polarization_cartesian must have shape (samples, 3) matching strain_vector; "
                 f"got {polarization.shape}"
             )
+        # A Cartesian Berry value is not a usable finite-difference
+        # observable merely because it has the right shape: wrapped values
+        # from different stages can differ by a polarization quantum.  The
+        # collector must therefore leave an explicit, auditable contract in
+        # provenance.  Do not infer this from the source/backend name, since
+        # hand-written or legacy documents may contain unwrapped-looking
+        # numbers without having performed branch matching.
+        if polarization.provenance.get("branch_matched") is not True:
+            raise ValueError(
+                "polarization_cartesian is missing explicit branch-matching "
+                "provenance; match every stage to the reference Berry branch "
+                "and set provenance['branch_matched']=true before fitting "
+                "a piezoelectric response"
+            )
+        branch_residual = polarization.provenance.get("branch_residual_max")
+        if branch_residual is not None:
+            try:
+                branch_residual_value = float(branch_residual)
+            except (TypeError, ValueError) as exc:
+                raise ValueError(
+                    "polarization_cartesian branch_residual_max must be numeric"
+                ) from exc
+            if not np.isfinite(branch_residual_value) or branch_residual_value < 0.0:
+                raise ValueError(
+                    "polarization_cartesian branch_residual_max must be finite and non-negative"
+                )
         if include_proper_piezoelectric:
             proper_fit = fit_proper_piezoelectric_response(
                 strains,
