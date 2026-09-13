@@ -622,3 +622,12 @@ C 拟合秩为 3/3，最大残差 `0.4889 kbar`；能量曲率拟合秩为 3/3�
 ABACUS 后端的 3D stress/energy 重建链闭合，但不是最终材料常数；仍需
 `symmetry=0` 复核、第二应变幅度及 ABINIT/QE 独立高精度基准，Gate C 继续阻塞。
 详见 [`v2_abacus_sic_fullstrain_20260913.md`](v2_abacus_sic_fullstrain_20260913.md)。
+
+## 2026-09-13 ABACUS `symmetry=0` follow-up
+
+为排除自动对称化影响，另准备了完全相同的 SiC `±0.005` 3D ensemble，仅将
+`symmetry` 改为 0。reference 和前两个 stage 可完成，但 `strain-002+` 在
+`DONE : INIT SCF` 后超过 10 分钟没有进入 `E_Harris`/SCF/stress 输出；确认工作目录
+只属于本轮 scratch 后停止该进程组，部分日志保留为失败审计，不进入拟合。该结果说明
+当前 ABACUS LCAO + 40 MPI 的 symmetry-off 组合存在运行阻塞，不能据此判定物理响应；
+后续若需 symmetry-off 对照，应先做受控的小 rank smoke 或采用已验证的并行分解。

@@ -102,3 +102,18 @@ mpirun -np 40 /home/zhuxd/Software/abacus/INSTALL/3.10.0-LTS/bin/abacus \
 
 Compact logs, inputs, and provenance remain in the remote scratch; large
 charge/matrix files are not copied into the repository.
+
+## Symmetry-off follow-up (failure audit)
+
+A matched second ensemble was prepared with `symmetry 0` to test whether the
+automatic symmetry path affected the result. The reference and first two strain
+stages completed with the same 40-rank launch. The next stage (`strain-002+`)
+then remained in ABACUS initialization for more than ten minutes: MPI children
+were active but no `E_Harris`, SCF-convergence, or stress block was written
+after `DONE : INIT SCF`. The process group was stopped only after verifying its
+working directory was exclusively this scratch; its partial log is retained
+remotely as a failed run and is excluded from every fit. This is a runtime
+compatibility/blocking observation for the `symmetry=0` + 40-MPI LCAO
+combination, not evidence that the elastic tensor changed. A future symmetry-off
+audit should first try a validated ABACUS decomposition (or a smaller smoke
+rank count) before another full ensemble.
