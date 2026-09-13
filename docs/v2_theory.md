@@ -214,6 +214,13 @@ relaxed-ion 组合。`remove_acoustic_translation` 提供等权或用户权重�
 internal-strain coupling 和 homogeneous-strain response 联合构成。实现时必须保留
 固定内部坐标的结构和每个弛豫结构的收敛力阈值。
 
+ABACUS 的离子弛豫日志可能包含多个 `TOTAL-FORCE` 块。v2 collector 保留首块
+`forces_initial` 和末块 `forces`：首块只有在它对应 `STRU_INITIAL` 的固定离子应变
+结构、且日志顺序得到验证时，才可作为 \(\Gamma=\partial^2E/\partial u\partial\eta\)
+的候选观测；末块用于离子收敛和最终结构诊断，不能代替 \(\Gamma\)。块数、首末
+最大力和结构路径写入 provenance。若日志不包含可识别的首块，必须停止独立
+Gamma 重建，而不是用弛豫终态零力填充。
+
 `Lambda` 的数值必须与长度单位一起保存。对于以 `C/m^2` 返回的实现，体积用
 `m^3`，并将 `Lambda` 显式转换为米；计算器输出的 `Angstrom` 数值不能直接代入
 `q_e/Omega`。v2 algebra API 使用 `internal_strain_unit` 明确这一转换，默认 `m`

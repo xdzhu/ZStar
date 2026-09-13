@@ -392,14 +392,19 @@
     在所有容差下返回空 dataset 时返回 `symmetry_untrusted` 且不允许建立约化计划。
     新增两条 monkeypatch synthetic 测试，保留分子 `dim=0` 的非周期特殊路径。
 
+77. ABACUS collector 现在解析并保留每个日志的全部 `TOTAL-FORCE` 块：末块继续用于
+    离子收敛，首块以 `forces_initial` 显式保存，附带块数和首末最大力诊断；relaxed-ion
+    文档额外写入该 quantity，但不自动宣称 Gamma 已完成。新增多块日志和 schema
+    回归，避免用弛豫终态零力替代应变—力耦合。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `502 passed, 1155 warnings`；新增空间群失败
-  契约后，本次全量回归已重新执行（本地 editable install
+* v2 独立 worktree 的完整回归为 `503 passed, 1155 warnings`；新增首/末力块
+  解析后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
-  测试当前为 `109 passed`。
+  测试当前为 `110 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 109 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 110 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成

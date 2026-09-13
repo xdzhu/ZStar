@@ -74,19 +74,36 @@ def _float_triplet(fields: list[str]) -> list[float] | None:
     return values if all(np.isfinite(values)) else None
 
 
-def _parse_forces(text: str, natoms: int) -> np.ndarray:
-    marker = "TOTAL-FORCE (eV/Angstrom)"
-    if marker not in text:
+def _parse_force_blocks(text: str, natoms: int) -> list[np.ndarray]:
+    """Parse every ABACUS force block in chronological output order."""
+
+    matches = list(re.finditer(r"TOTAL-FORCE\s*\(eV/Angstrom\)", text, flags=re.IGNORECASE))
+    if not matches:
         raise ValueError("ABACUS output does not contain TOTAL-FORCE (eV/Angstrom)")
-    rows: list[list[float]] = []
-    for line in text.rsplit(marker, 1)[1].splitlines():
-        values = _float_triplet(line.split())
-        if values is None:
-            continue
-        rows.append(values)
-        if len(rows) == natoms:
-            return np.asarray(rows, dtype=float)
-    raise ValueError(f"Expected {natoms} force rows after the final TOTAL-FORCE block; found {len(rows)}")
+    blocks: list[np.ndarray] = []
+    for match in matches:
+        rows: list[list[float]] = []
+        for line in text[match.end() :].splitlines():
+            values = _float_triplet(line.split())
+            if values is None:
+                if rows:
+                    break
+                continue
+            rows.append(values)
+            if len(rows) == natoms:
+                blocks.append(np.asarray(rows, dtype=float))
+                break
+        if len(rows) != natoms:
+            raise ValueError(
+                f"Expected {natoms} force rows after TOTAL-FORCE block; found {len(rows)}"
+            )
+    return blocks
+
+
+def _parse_forces(text: str, natoms: int) -> np.ndarray:
+    """Return the final ABACUS force block for convergence diagnostics."""
+
+    return _parse_force_blocks(text, natoms)[-1]
 
 
 def _parse_stress(text: str) -> np.ndarray:
@@ -185,7 +202,9 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
             raise ValueError(
                 f"ABACUS relaxed structure has {len(relaxed_structure)} atoms; expected {int(count)}"
             )
-    forces = _parse_forces(text, int(count))
+    force_blocks = _parse_force_blocks(text, int(count))
+    initial_forces = force_blocks[0]
+    forces = force_blocks[-1]
     stress = _parse_stress(text)
     energy = _parse_energy(text)
     force_max = float(np.max(np.linalg.norm(forces, axis=1)))
@@ -200,6 +219,9 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     return {
         "stage": directory.name,
         "forces": forces,
+        "initial_forces": initial_forces,
+        "force_blocks_count": len(force_blocks),
+        "initial_force_max_eV_per_angstrom": float(np.max(np.linalg.norm(initial_forces, axis=1))),
         "force_max_eV_per_angstrom": force_max,
         "stress": stress,
         "stress_max_abs_kbar": stress_max_abs,
@@ -368,6 +390,26 @@ def collect_abacus_strain_response(
             provenance={"stage_names": stage_names, "sign_convention": "backend-raw"},
         ),
     ]
+    if ion_relaxation == "relaxed-ion":
+        quantities.append(
+            TensorQuantity(
+                name="forces_initial",
+                values=np.asarray([record["initial_forces"] for record in records]),
+                unit="eV/angstrom",
+                axes=("stage", "atom", "cartesian"),
+                boundary_conditions=stress_boundary,
+                periodic_axes=dimensions.periodic_axes,
+                normalization="per_atom",
+                source="abacus_output_initial_force_block",
+                backend="abacus",
+                ion_relaxation="clamped-ion",
+                provenance={
+                    "stage_names": stage_names,
+                    "definition": "first TOTAL-FORCE block in each relaxed-ion log",
+                    "force_blocks_count": [record["force_blocks_count"] for record in records],
+                },
+            )
+        )
     energies = [record["energy"] for record in records]
     if all(value is not None for value in energies):
         quantities.append(
@@ -542,6 +584,8 @@ def collect_abacus_strain_response(
                 "input_structure_path": record["input_structure_path"],
                 "scf_iterations": record["scf_iterations"],
                 "force_max_eV_per_angstrom": record["force_max_eV_per_angstrom"],
+                "initial_force_max_eV_per_angstrom": record["initial_force_max_eV_per_angstrom"],
+                "force_blocks_count": record["force_blocks_count"],
                 "stress_max_abs_kbar": record["stress_max_abs_kbar"],
                 "energy": record["energy"],
                 "timing": record["timing"],

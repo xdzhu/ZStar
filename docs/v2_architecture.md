@@ -137,6 +137,13 @@ post-processing may replace `STRU` with `STRU_ION_D`; the immutable
 collection with a regenerate/restore action rather than silently combining
 outputs produced from different inputs.
 
+For relaxed-ion stages, the ABACUS collector retains both the first and final
+`TOTAL-FORCE` blocks. `forces_initial` is explicitly labeled as the candidate
+fixed-ion force response for a future Gamma fit; `forces` remains the final
+ionic-convergence observable. A Gamma reconstruction must still verify the
+initial block/`STRU_INITIAL` correspondence and cannot infer it from the final
+zero-force block.
+
 The optional `symmetry_reduce=True` preparation path calls
 `symmetry_adapted_input_plan`. It selects canonical strain directions from the
 combined rank of the requested polarization, strain/stress, and (for relaxed

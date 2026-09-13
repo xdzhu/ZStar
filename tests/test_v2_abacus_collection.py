@@ -108,6 +108,22 @@ def test_collect_abacus_stage_parses_force_stress_and_iterations(tmp_path):
     assert record["scf_iterations"] == 1
     assert record["scf_converged"] is True
     assert np.isclose(record["energy"], -274.1)
+    assert record["force_blocks_count"] == 1
+    np.testing.assert_allclose(record["initial_forces"], record["forces"])
+
+
+def test_collect_abacus_stage_keeps_initial_and_final_force_blocks(tmp_path):
+    stage = tmp_path / "relaxed-multi-block"
+    _stage(stage, relaxed=True)
+    log = stage / "OUT.POLAR" / "running_relax.log"
+    extra = _log().replace("0.0000000000", "0.1250000000", 1)
+    log.write_text(log.read_text(encoding="utf-8") + "\n" + extra + "\nRelaxation is converged!\n", encoding="utf-8")
+    record = collect_abacus_stage(stage)
+    assert record["force_blocks_count"] == 2
+    assert np.isclose(record["initial_force_max_eV_per_angstrom"], 0.0)
+    assert np.isclose(record["force_max_eV_per_angstrom"], 0.125)
+    assert np.isclose(record["initial_forces"][0, 0], 0.0)
+    assert np.isclose(record["forces"][0, 0], 0.125)
 
 
 def test_collect_abacus_stage_rejects_missing_stress(tmp_path):
@@ -184,7 +200,11 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     ).write(root / "ensemble.json")
     document = collect_abacus_strain_response(root)
     quantity = document.quantity("internal_displacement")
+    initial_forces = document.quantity("forces_initial")
     assert quantity.shape == (3, 5, 3)
+    assert initial_forces.shape == (3, 5, 3)
+    assert initial_forces.ion_relaxation == "clamped-ion"
+    assert initial_forces.provenance["definition"] == "first TOTAL-FORCE block in each relaxed-ion log"
     assert quantity.ion_relaxation == "relaxed-ion"
     assert quantity.provenance["acoustic_gauge"] == "unfixed_raw_displacement"
     np.testing.assert_allclose(quantity.values[0], 0.0)
