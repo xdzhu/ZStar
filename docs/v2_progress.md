@@ -525,5 +525,5 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 按 `E=E0+Omega*sigma0·eta+1/2 Omega eta·C·eta` 对实际工程 Voigt 应变做独立二次
 曲率拟合，显式处理 eV/Å³、J/m³ 与目标压力单位，返回参考应力、对称弹性矩阵、
 设计秩、条件数和能量残差。新增满秩 3D 合成模型及单轴秩不足测试；响应代数定向
-测试增至 `27 passed`，全量回归待本次提交后重新执行。该结果用于后续 ABACUS
+测试增至 `27 passed`，随后全量回归为 `517 passed, 1158 warnings`。该结果用于后续 ABACUS
 stress-vs-energy work-conjugacy 对照，尚未作为材料常数发布。
