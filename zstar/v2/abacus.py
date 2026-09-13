@@ -786,7 +786,7 @@ def collect_pyatb_strain_response(
                 provenance={
                     "stage_names": stage_names,
                     "lattice_vectors_angstrom": [lattice.tolist() for lattice in lattices],
-                    "transformation": "solve normalized lattice-direction projections",
+                    "transformation": "v1-compatible lattice-basis linear combination",
                 },
             ),
         )

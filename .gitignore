@@ -14,3 +14,9 @@ output/
 dispatch_accept*.stdout
 dispatch_accept*.stderr
 WorkCo-workJinming.Muhigh-kanalysis_*/
+examples/3D_Bulk/wurtzite_GaN_v2/run_template/
+examples/3D_Bulk/wurtzite_GaN_v2/run_gan/
+examples/3D_Bulk/wurtzite_GaN_v2/run_gan2/
+examples/3D_Bulk/wurtzite_GaN_v2/run_gan3/
+examples/3D_Bulk/wurtzite_GaN_v2/run_gan3_remote/
+examples/3D_Bulk/wurtzite_GaN_v2/*.tgz

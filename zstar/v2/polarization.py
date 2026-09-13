@@ -199,13 +199,16 @@ def pyatb_directional_to_cartesian(
     directional_values: Iterable[float],
     lattice_vectors: Iterable[Iterable[float]],
 ) -> np.ndarray:
-    """Recover Cartesian polarization from PYATB lattice-direction values.
+    """Recover Cartesian polarization from PYATB lattice-basis values.
 
-    PYATB's a/b/c scalars are projections on the normalized lattice vectors.
-    For a non-orthogonal cell, summing P_i * a_hat_i is not an inverse
-    transformation; solve U @ P_cart = P_directional with rows of U equal to
-    the normalized lattice vectors. Orthogonal cells reduce to the familiar
-    component-wise result.
+    PYATB's ``a/b/c`` Berry outputs are the three coefficients in the
+    lattice-direction basis used by the v1 polarization path.  They are not
+    three independent Cartesian projections.  Consequently the compatible
+    transformation is the linear combination ``P_cart = P_lattice @ U`` with
+    rows of ``U`` equal to the normalized real-space lattice vectors.  This is
+    essential for non-orthogonal cells: solving ``U @ P_cart = P_lattice``
+    would reinterpret the PYATB coefficients as projections and produces a
+    spurious shear piezoelectric response.
     """
 
     values = _finite_vector(directional_values, "directional_values")
@@ -219,13 +222,7 @@ def pyatb_directional_to_cartesian(
     rank = int(np.linalg.matrix_rank(directions))
     if rank != 3:
         raise ValueError("normalized lattice directions are rank-deficient")
-    condition = float(np.linalg.cond(directions))
-    if not np.isfinite(condition) or condition > 1.0e8:
-        raise ValueError(
-            "normalized lattice directions are ill-conditioned for a Cartesian "
-            f"polarization reconstruction (condition number {condition:.3e})"
-        )
-    return _finite_vector(np.linalg.solve(directions, values), "cartesian_polarization")
+    return _finite_vector(values @ directions, "cartesian_polarization")
 
 
 def _find_abacus_polarization_log(stage: Path, axis: str) -> Path:

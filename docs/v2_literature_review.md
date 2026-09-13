@@ -234,6 +234,19 @@ SiC polytype 研究（PRB 52, 3993, DOI `10.1103/PhysRevB.52.3993`）作为原�
 和拟合流程参考。QE/ABINIT 只保留为未来可选 oracle，不再为满足形式上的“第三个
 后端”而启动作业。
 
+### 3.4 首个正式压电验证门（2026-09-13）
+
+不把仓库中的每个材料都重复计算。为使 Gate C 有一个可审计的 3D 外部锚点，首个
+正式候选冻结为 wurtzite GaN（`P6_3mc`, point group `6mm`）。Bernardini--
+Fiorentini--Vanderbilt 的 Berry-phase 原始论文给出 wurtzite GaN 的 `e33=0.73`
+和 `e31=-0.49 C/m^2`，并明确讨论 clamped-ion 与 internal-strain 分解；其 2002
+直接应力响应论文进一步给出 GaN 的 GGA/LDA `d31`, `d33`, `d15`、由 `e C^{-1}`
+得到的间接值及多组实验值。由于实验包含外延夹持和自由悬空转换，文献本身报告的
+差异可达约 4--30%，因此 v2 必须先匹配边界条件、轴向、温度和 Voigt 剪切约定，
+再计算逐分量误差。候选门的详细输入、验收条件和不确定性说明见
+[`v2_piezo_benchmark_gate.md`](v2_piezo_benchmark_gate.md)。在 GaN 计算完成并通过
+该门之前，BaTiO3 仍只作为 P4mm 算法 fixture，不能写成已验证材料常数。
+
 ## 4. 调研问题拆分和待核查项
 
 | 问题 | 已知依据 | v2 设计决策 | 进入实现前的证据门 |

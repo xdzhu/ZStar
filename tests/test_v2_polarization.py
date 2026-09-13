@@ -316,14 +316,14 @@ def test_parse_pyatb_polarization_rejects_duplicate_or_missing_direction():
         )
 
 
-def test_pyatb_directional_to_cartesian_solves_nonorthogonal_projections():
+def test_pyatb_directional_to_cartesian_combines_nonorthogonal_lattice_basis():
     lattice = np.asarray([[2.0, 0.0, 0.0], [1.0, 2.0, 0.0], [0.0, 0.0, 3.0]])
     cartesian = np.asarray([1.5, -0.5, 2.0])
     directions = lattice / np.linalg.norm(lattice, axis=1)[:, None]
-    directional = directions @ cartesian
+    directional = np.asarray([1.5, -0.5, 2.0])
     np.testing.assert_allclose(
         pyatb_directional_to_cartesian(directional, lattice),
-        cartesian,
+        directional @ directions,
     )
 
 

@@ -1,0 +1,38 @@
+{
+  "case": "wurtzite_GaN_v2_piezo_gate",
+  "status": "completed_research_gate_conditional",
+  "branch": "zstar-v2-development",
+  "date": "2026-09-13",
+  "backend": "ABACUS 3.10.0-LTS + PYATB",
+  "structure_source": "Bernardini, Fiorentini and Vanderbilt, PRB 56 R10024 (1997), Table I",
+  "space_group_expected": "P6_3mc",
+  "point_group_expected": "6mm",
+  "dimensionality": 3,
+  "lattice_units": "bohr",
+  "strain_convention": "engineering Voigt (xx, yy, zz, yz*2, xz*2, xy*2)",
+  "scf_thr_initial": 1e-8,
+  "mpi": 40,
+  "omp": 1,
+  "assets": {
+    "pseudopotential_source": "$ABACUS_PP_DOJO/Ga.upf and N.upf",
+    "orbital_source": "$ABACUS_ORB_DOJO_8au/Ga_gga_8au_100Ry_2s2p2d1f.orb and N_gga_8au_100Ry_2s2p1d.orb",
+    "asset_policy": "copy into private run stages; do not commit"
+  },
+  "literature_anchors": [
+    {
+      "key": "BernardiniNitrides1997",
+      "doi": "10.1103/PhysRevB.56.R10024",
+      "values": {"e33_C_per_m2": 0.73, "e31_C_per_m2": -0.49}
+    },
+    {
+      "key": "BernardiniDirectDNitrides2002",
+      "url": "https://arxiv.org/abs/cond-mat/0202496",
+      "values": {"d31_pm_per_V_GGA": -1.4, "d33_pm_per_V_GGA": 2.7, "d15_pm_per_V_GGA": 1.8}
+    }
+  ],
+  "results": {
+    "artifact": "results/piezo_fit.json",
+    "report": "docs/v2_abacus_gan_piezo_benchmark_20260913.md",
+    "gate_decision": "conditional: e31/e33/e15 agree in order of magnitude; amplitude/convergence and clamped-ion audits remain"
+  }
+}

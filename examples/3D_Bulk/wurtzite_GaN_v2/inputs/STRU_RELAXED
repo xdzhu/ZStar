@@ -1,0 +1,30 @@
+ATOMIC_SPECIES
+Ga  69.7230 Ga.upf upf201
+N  14.0070 N.upf upf201
+
+NUMERICAL_ORBITAL
+Ga_gga_8au_100Ry_2s2p2d1f.orb
+N_gga_8au_100Ry_2s2p1d.orb
+
+LATTICE_CONSTANT
+1.8897261246
+
+LATTICE_VECTORS
+        3.1962301431        0.0000000000        0.0000000000
+       -1.5981150716        2.7680165003        0.0000000000
+        0.0000000000        0.0000000000        5.2213615618
+
+ATOMIC_POSITIONS
+Direct
+
+Ga #label
+0.0000   #magnetism
+2 #number of atoms
+        0.0000000000        0.0000000000        0.0000000000 m 1 1 1
+        0.6666666667        0.3333333333        0.5000000000 m 1 1 1
+
+N #label
+0.0000   #magnetism
+2 #number of atoms
+        0.0000000000        0.0000000000        0.3760000000 m 1 1 1
+        0.6666666667        0.3333333333        0.8760000000 m 1 1 1
