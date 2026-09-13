@@ -13,6 +13,8 @@
 * `rank`/条件数/残差和缺失方向可解释；
 * `e = e0 + qe/Omega * Z* Lambda`、
   `Crel = C0 - Lambda^T Phi Lambda/Omega` 数值一致；
+* 以 `E(eta)=E0+Omega*sigma0·eta+1/2 Omega eta·C·eta` 做独立能量曲率拟合，
+  并与 stress--strain 路径检查 work-conjugacy、剪切约定和晶胞体积；
 * e/d/g/h 转换往返误差低于浮点和给定输入误差；
 * BEC/IFC 轴转置、Voigt engineering shear 和 Cartesian rotation 可逆。
 
@@ -47,7 +49,7 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 
 ### 1.6 v1 回归
 
-每次 v2 提交运行当前完整 suite。独立 worktree 当前实测为 `513 passed, 1158 warnings`，
+每次 v2 提交运行当前完整 suite。独立 worktree 当前实测为 `517 passed, 1158 warnings`，
 加入首/末力块解析、Gamma 力拟合 API、force/stress 对称表示、Cartesian rotation 审计、
 ResponseDocument 结果封装、v1→v2 显式适配器和文件级迁移 API 后，v2 专项测试收集为 120 项。用户的其它工作树可能包含尚未合入
 v2 的额外测试或
