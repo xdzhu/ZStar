@@ -636,3 +636,11 @@ ABACUS 后端的 3D stress/energy 重建链闭合，但不是最终材料常数�
 重跑；32.12 s 内得到 SCF 收敛、stress 和最终能量，证明问题来自 `symmetry=0` 的
 40-rank 并行分解/扩展性，而不是应变序列化或输入文件损坏。该 diagnostic 输出仍不
 进入正式 ensemble 或材料结果。
+
+基于 ABACUS/cu25 与既有 VASP/cu17/cu24/cu26 的两个 3D SiC ensemble，补充了同一
+`F-43m` 3 参数基下的 backend comparison：两者均为 rank 3/3，最大 stress residual
+分别为 `0.4889` 与 `0.0231 kbar`，energy residual 均约 `6e-8 eV`，stress/energy
+曲率差分别为 `0.358` 与 `3.45 GPa`；stress-derived 矩阵最大差 `32.73 GPa`
+（5.80%）。由于 PAW-PBE 与 ONCV-LCAO 设置未匹配，这只是 collector/表示的一致性
+证据，不能替代 DFPT oracle 或正式材料常数。详见
+[`v2_sic_backend_comparison_20260913.md`](v2_sic_backend_comparison_20260913.md)。
