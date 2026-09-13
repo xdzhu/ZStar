@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pytest
 
 from zstar.v2 import (
     PerturbationStage,
     ResponseEnsemble,
+    V2_ENSEMBLE_SCHEMA,
+    V2_ENSEMBLE_SCHEMA_VERSION,
     V2StateStore,
     plan_central_stages,
 )
@@ -56,3 +60,16 @@ def test_stage_validation_rejects_unsafe_or_invalid_state(tmp_path):
         V2StateStore(tmp_path).path_for("../escape")
     with pytest.raises(ValueError, match="finite"):
         plan_central_stages(([np.nan],), kind="displacement")
+
+
+def test_ensemble_schema_version_is_explicit_and_rejects_unknown_version(tmp_path):
+    stages = plan_central_stages(([0.01, 0.0],), kind="strain", prefix="strain")
+    manifest = ResponseEnsemble(reference_hash="abc", stages=stages).write(tmp_path / "manifest.json")
+    data = manifest.read_text(encoding="utf-8")
+    assert f'"schema": "{V2_ENSEMBLE_SCHEMA}"' in data
+    assert f'"schema_version": "{V2_ENSEMBLE_SCHEMA_VERSION}"' in data
+    payload = json.loads(data)
+    payload["schema_version"] = "0.2"
+    (tmp_path / "future.json").write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(ValueError, match="unsupported v2 ensemble schema version"):
+        ResponseEnsemble.read(tmp_path / "future.json")

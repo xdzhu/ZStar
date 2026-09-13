@@ -384,13 +384,18 @@
     最小动作；不会因为目录中残留输出而把失败/跳过状态静默提升为可收集结果。新增
     两个 failure-matrix 回归测试。
 
+75. `ResponseEnsemble` 现在显式校验 `zstar-v2-ensemble` 的 schema version；未知版本
+    在读取时拒绝，并提示重新生成 manifest，避免未来不兼容字段被静默解释为当前语义。
+    schema 名称和版本常量从 v2 API 导出，新增 forward-version failure 测试。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `499 passed, 1155 warnings`（本地 editable install
+* v2 独立 worktree 的完整回归为 `500 passed, 1155 warnings`；新增 ensemble
+  version gate 后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
-  测试当前为 `106 passed`。
+  测试当前为 `107 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 106 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 107 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成

@@ -9,7 +9,14 @@ from .algebra import (
 )
 from .capabilities import BackendCapabilities, CapabilityError
 from .abacus import collect_abacus_stage, collect_abacus_strain_response, collect_pyatb_strain_response
-from .ensemble import PerturbationStage, ResponseEnsemble, V2StateStore, plan_central_stages
+from .ensemble import (
+    V2_ENSEMBLE_SCHEMA,
+    V2_ENSEMBLE_SCHEMA_VERSION,
+    PerturbationStage,
+    ResponseEnsemble,
+    V2StateStore,
+    plan_central_stages,
+)
 from .fit import (
     LinearFitResult,
     ProperPiezoelectricResult,
@@ -115,6 +122,8 @@ __all__ = [
     "collect_pyatb_polarization",
     "V2_SCHEMA_NAME",
     "V2_SCHEMA_VERSION",
+    "V2_ENSEMBLE_SCHEMA",
+    "V2_ENSEMBLE_SCHEMA_VERSION",
     "central_difference",
     "allowed_response_basis",
     "actual_strain",

@@ -12,6 +12,10 @@ import numpy as np
 from ..dimensions import DimensionSpec
 
 
+V2_ENSEMBLE_SCHEMA = "zstar-v2-ensemble"
+V2_ENSEMBLE_SCHEMA_VERSION = "0.1"
+
+
 def _vector(value: Iterable[float], name: str) -> tuple[float, ...]:
     array = np.asarray(tuple(value), dtype=float)
     if array.ndim != 1 or array.size == 0 or not np.all(np.isfinite(array)):
@@ -99,7 +103,7 @@ class ResponseEnsemble:
     reference_hash: str
     stages: tuple[PerturbationStage, ...]
     dimensionality: int = 3
-    schema_version: str = "0.1"
+    schema_version: str = V2_ENSEMBLE_SCHEMA_VERSION
     metadata: dict[str, Any] = field(default_factory=dict)
     periodic_axes: tuple[str, ...] | None = None
 
@@ -109,6 +113,11 @@ class ResponseEnsemble:
         dimensions = DimensionSpec(int(self.dimensionality), self.periodic_axes)
         object.__setattr__(self, "dimensionality", dimensions.value)
         object.__setattr__(self, "periodic_axes", dimensions.periodic_axes)
+        if self.schema_version != V2_ENSEMBLE_SCHEMA_VERSION:
+            raise ValueError(
+                f"unsupported v2 ensemble schema version {self.schema_version!r}; "
+                f"expected {V2_ENSEMBLE_SCHEMA_VERSION!r} or regenerate the ensemble"
+            )
         ids = [stage.stage_id for stage in self.stages]
         if len(set(ids)) != len(ids):
             raise ValueError(f"stage ids must be unique; got {ids}")
@@ -142,7 +151,7 @@ class ResponseEnsemble:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "schema": "zstar-v2-ensemble",
+            "schema": V2_ENSEMBLE_SCHEMA,
             "schema_version": self.schema_version,
             "reference_hash": self.reference_hash,
             "dimensionality": self.dimensionality,
@@ -162,8 +171,8 @@ class ResponseEnsemble:
     @classmethod
     def read(cls, path: str | Path) -> "ResponseEnsemble":
         data = json.loads(Path(path).read_text(encoding="utf-8"))
-        if data.get("schema") != "zstar-v2-ensemble":
-            raise ValueError("not a zstar-v2-ensemble manifest")
+        if data.get("schema") != V2_ENSEMBLE_SCHEMA:
+            raise ValueError(f"not a {V2_ENSEMBLE_SCHEMA} manifest")
         return cls(
             reference_hash=str(data["reference_hash"]),
             stages=tuple(PerturbationStage.from_dict(item) for item in data["stages"]),
