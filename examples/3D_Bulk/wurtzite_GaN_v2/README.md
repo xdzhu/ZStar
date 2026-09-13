@@ -3,8 +3,7 @@
 This is the first calculator-level v2 piezoelectric validation case. It remains a
 research case, not a stable CLI example; the completed result is conditional as
 documented in
-[`docs/v2_piezo_benchmark_gate.md`](../../../docs/v2_piezo_benchmark_gate.md)
-are met.
+[`docs/v2_piezo_benchmark_gate.md`](../../../docs/v2_piezo_benchmark_gate.md).
 
 The four-atom hexagonal Bravais primitive cell is oriented with `z || [0001]` and uses the
 `6mm` symmetry of wurtzite GaN. The planned response ensemble contains one
@@ -26,6 +25,13 @@ and clamped-ion audit is in `results/amplitude_audit.json` and
 [`docs/v2_abacus_gan_amplitude_audit_20260913.md`](../../../docs/v2_abacus_gan_amplitude_audit_20260913.md).
 The current recommended research step is `+/-0.001` engineering strain. The
 `+/-0.0005` set is a numerical-noise audit and `+/-0.002` is a nonlinearity audit.
+
+Only the proper `e` tensor and the mechanically derived `d` values are recorded
+for this case. `g`, `h`, `C^D`, and `epsilon^T` are intentionally not reported:
+the case does not yet contain an explicitly annotated `epsilon^S` tensor under
+the required thermodynamic boundary. Once such a dielectric result is added,
+`zstar.v2.derive_electromechanical_forms` can produce those reciprocal forms
+without changing the first-principles data.
 
 The directory intentionally does not contain pseudopotentials or orbitals.
 On the shared validation nodes use the Dojo Ga/N assets recorded in
