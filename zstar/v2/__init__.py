@@ -20,10 +20,12 @@ from .ensemble import (
     plan_central_stages,
 )
 from .fit import (
+    EnergyElasticFitResult,
     LinearFitResult,
     ProperPiezoelectricResult,
     central_difference,
     fit_elastic_response,
+    fit_energy_elastic_response,
     fit_internal_strain_response,
     fit_linear_response,
     fit_piezoelectric_ensemble,
@@ -102,6 +104,7 @@ __all__ = [
     "IntertwinerBasis",
     "InternalStrainSolution",
     "LinearFitResult",
+    "EnergyElasticFitResult",
     "ProperPiezoelectricResult",
     "PerturbationStage",
     "ResponseDocument",
@@ -141,6 +144,7 @@ __all__ = [
     "convert_values",
     "fit_linear_response",
     "fit_elastic_response",
+    "fit_energy_elastic_response",
     "fit_internal_strain_response",
     "fit_piezoelectric_response",
     "fit_strain_force_coupling",

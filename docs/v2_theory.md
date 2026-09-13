@@ -172,6 +172,21 @@ C^{\mathcal E,(0)}_{\mu\nu}
 \(C_{\mu\nu}=C_{\nu\mu}\)；柔顺矩阵 \(S^\mathcal E=(C^\mathcal E)^{-1}\)
 单位 Pa\(^{-1}\)，应在投影声学零模/固定边界后求逆。
 
+v2 同时保留独立的总能量曲率检验。对 engineering-Voigt 应变
+\(\eta=(\eta_1,\ldots,\eta_6)\)，采用 work-conjugate 展开
+\[
+ E(\eta)=E_0+\Omega\,\sigma_0^T\eta
+       +\tfrac12\Omega\,\eta^T C\eta+O(\eta^3).
+\]
+因此能量二次拟合中的剪切项使用未加倍的
+\(\sigma_{yz},\sigma_{xz},\sigma_{xy}\)，而应变列仍为
+\(2\epsilon_{yz},2\epsilon_{xz},2\epsilon_{xy}\)。
+`fit_energy_elastic_response` 直接对实际序列化应变向量拟合上述模型，显式返回
+\(E_0\)、\(\sigma_0\)、对称 \(C\)、设计矩阵秩和能量残差，并要求声明能量、体积和
+输出压力单位。它不替代应力拟合，而是用于检查两条独立路径是否满足
+work-conjugacy；若二者不一致，必须先检查应力符号、剪切约定、晶胞体积和有限应变
+高阶项，不能只报告其中较“好看”的结果。
+
 机械稳定性检查至少包括：对称化前后最大违例、对称/反对称特征值、最小特征值、
 条件数和适用的晶系 Born 稳定性不等式。2D 只对面内应变子空间给出 intrinsic 稳定性；
 slab 法向和分子体系不得自动套用 3D bulk 判据。

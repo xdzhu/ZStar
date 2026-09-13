@@ -10,6 +10,7 @@ import numpy as np
 from .mechanical import ENGINEERING_VOIGT, convert_stress_sign, stress_tensor_to_voigt
 from .polarization import MatchedPolarizationEnsemble
 from .symmetry import IntertwinerBasis
+from .units import convert_values
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,163 @@ class ProperPiezoelectricResult:
         object.__setattr__(self, "correction", correction)
         object.__setattr__(self, "proper", proper)
         object.__setattr__(self, "voigt_convention", convention)
+
+
+@dataclass(frozen=True)
+class EnergyElasticFitResult:
+    """Quadratic energy fit used as an independent elastic consistency check.
+
+    The fitted model is
+    ``E(eta) = E0 + Omega * sigma0 @ eta +
+    0.5 * Omega * eta.T @ C @ eta`` where ``eta`` is the engineering-Voigt
+    strain vector and the shear stress entries are *not* doubled.  ``elastic``
+    is returned in the explicitly requested pressure unit.  The fit does not
+    silently identify a rank-deficient strain set as a complete tensor.
+    """
+
+    elastic: np.ndarray
+    reference_stress: np.ndarray
+    reference_energy: float
+    predicted_energy: np.ndarray
+    residual: np.ndarray
+    input_rank: int
+    fit_rank: int
+    allowed_rank: int
+    singular_values: np.ndarray
+    condition_number: float
+    residual_max: float
+    residual_rms: float
+    energy_unit: str
+    volume_unit: str
+    elastic_unit: str
+
+    @property
+    def complete(self) -> bool:
+        return self.fit_rank >= self.allowed_rank
+
+
+def _energy_density_unit(energy_unit: str, volume_unit: str) -> str:
+    """Canonicalize the limited energy/volume combinations in the v2 table."""
+
+    energy = "".join(str(energy_unit).strip().lower().split())
+    energy_label = {
+        "ev": "ev",
+        "electronvolt": "ev",
+        "electronvolts": "ev",
+        "j": "j",
+        "joule": "j",
+        "joules": "j",
+    }.get(energy)
+    volume = "".join(str(volume_unit).strip().lower().split())
+    volume_label = {
+        "a^3": "angstrom3",
+        "a3": "angstrom3",
+        "å^3": "angstrom3",
+        "å3": "angstrom3",
+        "angstrom^3": "angstrom3",
+        "angstrom3": "angstrom3",
+        "m^3": "m3",
+        "m3": "m3",
+    }.get(volume)
+    if energy_label is None or volume_label is None:
+        raise ValueError("energy_unit must be eV or J and volume_unit must be Angstrom^3 or m^3")
+    return f"{energy_label}/{volume_label}"
+
+
+def _quadratic_energy_design(strains: np.ndarray) -> np.ndarray:
+    """Build the intercept/linear/symmetric-quadratic energy design matrix."""
+
+    samples = strains.shape[0]
+    pairs = [(left, right) for left in range(6) for right in range(left, 6)]
+    design = np.empty((samples, 1 + 6 + len(pairs)), dtype=float)
+    design[:, 0] = 1.0
+    design[:, 1:7] = strains
+    for offset, (left, right) in enumerate(pairs, start=7):
+        design[:, offset] = (
+            0.5 * strains[:, left] ** 2 if left == right
+            else strains[:, left] * strains[:, right]
+        )
+    return design
+
+
+def fit_energy_elastic_response(
+    actual_strains: Iterable[Iterable[float]],
+    energy_observations: Iterable[float],
+    *,
+    volume: float,
+    energy_unit: str = "eV",
+    volume_unit: str = "angstrom^3",
+    elastic_unit: str = "GPa",
+    svd_cutoff: float | None = None,
+) -> EnergyElasticFitResult:
+    """Fit ``C`` from the total-energy curvature in engineering Voigt space.
+
+    This is intentionally independent of :func:`fit_elastic_response`: it
+    uses the quadratic energy model and the work-conjugate pairing
+    ``sigma_voigt @ eta_engineering``.  The actual serialized strain vectors
+    are used verbatim.  An explicit energy/volume/output-unit triplet is
+    required so an eV/Angstrom^3 curvature cannot be mistaken for GPa.
+    """
+
+    strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
+    energies = np.asarray(tuple(energy_observations), dtype=float)
+    if strains.ndim != 2 or strains.shape[1] != 6 or strains.shape[0] == 0:
+        raise ValueError(f"actual_strains must have shape (samples, 6); got {strains.shape}")
+    if energies.shape != (strains.shape[0],):
+        raise ValueError(
+            "energy_observations must have shape (samples,) matching actual_strains; "
+            f"got {energies.shape}"
+        )
+    if not np.all(np.isfinite(strains)) or not np.all(np.isfinite(energies)):
+        raise ValueError("strain and energy observations must be finite")
+    if not np.isfinite(volume) or float(volume) <= 0.0:
+        raise ValueError("volume must be finite and positive")
+    if svd_cutoff is not None and (not np.isfinite(svd_cutoff) or float(svd_cutoff) < 0.0):
+        raise ValueError("svd_cutoff must be finite and non-negative")
+    density_unit = _energy_density_unit(energy_unit, volume_unit)
+    design = _quadratic_energy_design(strains)
+    u, singular_values, vh = np.linalg.svd(design, full_matrices=False)
+    del u, vh
+    scale = float(singular_values[0]) if singular_values.size else 0.0
+    cutoff = (1.0e-12 if svd_cutoff is None else float(svd_cutoff)) * scale
+    input_rank = int(np.count_nonzero(singular_values > cutoff))
+    # NumPy's ``rcond`` is relative to the largest singular value; ``cutoff``
+    # above is absolute and is used only for the reported rank.
+    coefficients, _, _, _ = np.linalg.lstsq(
+        design, energies, rcond=(1.0e-12 if svd_cutoff is None else float(svd_cutoff))
+    )
+    predicted = design @ coefficients
+    residual = predicted - energies
+    # Coefficients 7..27 are the energy Hessian entries in the same symmetric
+    # Voigt convention.  Divide by Omega before converting the energy density.
+    curvature = np.zeros((6, 6), dtype=float)
+    for coefficient, (left, right) in zip(coefficients[7:], ((i, j) for i in range(6) for j in range(i, 6))):
+        curvature[left, right] = coefficient
+        curvature[right, left] = coefficient
+    raw = curvature / float(volume)
+    elastic = convert_values(raw, density_unit, elastic_unit)
+    condition = float(
+        np.inf
+        if input_rank == 0 or singular_values[input_rank - 1] == 0.0
+        else singular_values[0] / singular_values[input_rank - 1]
+    )
+    return EnergyElasticFitResult(
+        elastic=elastic,
+        reference_stress=convert_values(coefficients[1:7] / float(volume), density_unit, elastic_unit),
+        reference_energy=float(coefficients[0]),
+        predicted_energy=predicted,
+        residual=residual,
+        input_rank=input_rank,
+        fit_rank=input_rank,
+        allowed_rank=28,
+        singular_values=singular_values,
+        condition_number=condition,
+        residual_max=float(np.max(np.abs(residual))),
+        residual_rms=float(np.sqrt(np.mean(residual**2))),
+        energy_unit=str(energy_unit),
+        volume_unit=str(volume_unit),
+        elastic_unit=str(elastic_unit),
+    )
 
 
 def central_difference(

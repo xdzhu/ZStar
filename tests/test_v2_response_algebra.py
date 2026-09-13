@@ -8,6 +8,7 @@ from zstar.v2 import (
     central_difference,
     convert_stress_sign,
     fit_elastic_response,
+    fit_energy_elastic_response,
     fit_strain_force_coupling,
     fit_internal_strain_response,
     fit_linear_response,
@@ -190,6 +191,61 @@ def test_fit_elastic_response_can_enforce_major_symmetry():
     assert result.fit_rank == 21
     assert result.complete
     assert result.residual_max < 1.0e-10
+
+
+def test_fit_energy_elastic_response_recovers_work_conjugate_curvature_and_units():
+    rng = np.random.default_rng(20260913)
+    strains = rng.normal(scale=0.08, size=(45, 6))
+    volume = 12.5
+    reference_stress = np.array([0.12, -0.08, 0.04, 0.01, -0.02, 0.03])
+    elastic_ev_a3 = np.array(
+        [
+            [2.20, 0.40, 0.30, 0.00, 0.00, 0.00],
+            [0.40, 2.10, 0.35, 0.00, 0.00, 0.00],
+            [0.30, 0.35, 2.50, 0.00, 0.00, 0.00],
+            [0.00, 0.00, 0.00, 0.90, 0.00, 0.00],
+            [0.00, 0.00, 0.00, 0.00, 0.95, 0.00],
+            [0.00, 0.00, 0.00, 0.00, 0.00, 0.85],
+        ]
+    )
+    reference_energy = -17.3
+    energies = (
+        reference_energy
+        + volume * (strains @ reference_stress)
+        + 0.5 * volume * np.einsum("si,ij,sj->s", strains, elastic_ev_a3, strains)
+    )
+    result = fit_energy_elastic_response(
+        strains,
+        energies,
+        volume=volume,
+        energy_unit="eV",
+        volume_unit="angstrom^3",
+        elastic_unit="eV/angstrom^3",
+    )
+    np.testing.assert_allclose(result.elastic, elastic_ev_a3, atol=1.0e-10)
+    np.testing.assert_allclose(result.reference_stress, reference_stress, atol=1.0e-10)
+    assert result.reference_energy == pytest.approx(reference_energy)
+    assert result.complete
+    assert result.input_rank == result.fit_rank == result.allowed_rank == 28
+    assert result.residual_max < 1.0e-10
+
+
+def test_fit_energy_elastic_response_reports_rank_deficiency():
+    strains = np.zeros((5, 6))
+    strains[:, 0] = np.linspace(-0.02, 0.02, 5)
+    energies = 1.0 + 0.5 * strains[:, 0] ** 2
+    result = fit_energy_elastic_response(
+        strains,
+        energies,
+        volume=1.0,
+        energy_unit="eV",
+        volume_unit="angstrom^3",
+        elastic_unit="GPa",
+    )
+    assert not result.complete
+    assert result.input_rank == 3
+    assert result.fit_rank < result.allowed_rank
+    assert result.residual_max < 1.0e-12
 
 
 def test_fit_elastic_response_rejects_non_boolean_major_symmetry_flag():

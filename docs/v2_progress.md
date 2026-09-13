@@ -520,3 +520,10 @@ MPI/OpenMP、wall time 和可复现实命令，并避免修改占位作业本身
 新增两项代数测试：平移兼容的 3D 两原子模型通过严格残差门；含额外零模且不可平衡
 的 `Gamma` 被明确拒绝。定向响应代数测试结果为 `25 passed`。该改动只增强 v2
 研究层，不改变 v1 入口或任何发布文件。
+
+随后新增 `fit_energy_elastic_response` 研究函数和 `EnergyElasticFitResult`。该函数
+按 `E=E0+Omega*sigma0·eta+1/2 Omega eta·C·eta` 对实际工程 Voigt 应变做独立二次
+曲率拟合，显式处理 eV/Å³、J/m³ 与目标压力单位，返回参考应力、对称弹性矩阵、
+设计秩、条件数和能量残差。新增满秩 3D 合成模型及单轴秩不足测试；响应代数定向
+测试增至 `27 passed`，全量回归待本次提交后重新执行。该结果用于后续 ABACUS
+stress-vs-energy work-conjugacy 对照，尚未作为材料常数发布。
