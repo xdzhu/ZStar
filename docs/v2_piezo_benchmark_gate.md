@@ -1,6 +1,6 @@
 # v2 压电正式 benchmark 门：wurtzite GaN
 
-**状态：候选案例已冻结，计算结果尚未产生；不构成材料结论。**
+**状态：候选案例已冻结，研究审计计算已完成；Gate C 仍为 conditional，不构成稳定功能或最终材料结论。**
 
 本文件把 v2 的第一个正式压电验证目标限制为一个 3D、绝缘、非中心对称且
 晶体对称性简单但非立方的体系：wurtzite GaN（空间群 `P6_3mc`，点群 `6mm`）。
@@ -69,13 +69,15 @@ Bernardini 和 Fiorentini 的直接应力响应研究给出 GaN 的 stress-piezo
 * clamped-ion、relaxed-ion、proper/improper 均带单位、Voigt、轴向和边界标签；
 * `e -> d` 与直接 stress/strain 定义的回算在数值误差内一致；
 * 至少与一组原始理论锚点和一组实验/数据库条目逐分量比较，并解释差异来源；
-* 至少一个扰动幅度和一次 `scf_thr` 精度审计通过；
+* 至少一个扰动幅度和一次 `scf_thr` 精度审计通过；当前已完成 `±0.0005/±0.001/±0.002`
+  与 clamped-ion `±0.001`，并完成 `scf_thr=1e-10` 的 xz 剪切审计；
 * provenance 记录节点、40 MPI × 1 OpenMP、SCF 次数、core-hours、wall time、
   失败/重启次数和输出哈希；
 * 结果仍需经过 v1 回归测试，不能修改 v1 接口或正式论文。
 
-在这些条件满足前，本案例的状态只能是 `research_audit`，不能开放稳定
-`zstar piezo` CLI，也不能声称“GaN 压电常数已被 ZStar 验证”。
+当前案例状态为 `research_audit_conditional`：幅度/精度/离子状态审计已完成，但
+完整生产 residual 门和独立后端交叉核对仍未满足。因此不能开放稳定 `zstar piezo`
+CLI，也不能声称“GaN 压电常数已被 ZStar 最终验证”。
 
 ## 5. 原始来源
 
@@ -89,4 +91,3 @@ Bernardini 和 Fiorentini 的直接应力响应研究给出 GaN 的 stress-piezo
   coefficients of GaN,” *Journal of Applied Physics* **111**, 013509 (2012), DOI
   [10.1063/1.3674271](https://doi.org/10.1063/1.3674271). This is an additional
   experimental source; its sign and boundary convention must be checked before use.
-
