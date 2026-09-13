@@ -668,3 +668,11 @@ IEEE cubic 轴后，stress `(C11,C12,C44)=(363.24,110.57,252.73)` GPa，相对�
 约定。函数不自动对称化或投影晶体点群，保留坐标变换前后的残差语义；新增任意旋转
 往返、非法旋转和 SiC primitive→IEEE cubic 回归测试。全量回归为 `534 passed,
 1164 warnings`。
+
+随后新增 `fit_proper_piezoelectric_response` 和 `ProperPiezoelectricFitResult`。该
+研究 API 先以 branch-matched Cartesian reference polarization 拟合 raw
+`dP/dengineering-strain`，再调用显式 Vanderbilt 几何修正，同时保留 raw fit 的
+rank/residual 与 proper correction，不覆盖原始结果；非法 reference 形状和 proper
+结果一致性均有测试。全量回归为 `536 passed, 1164 warnings`。这使 BaTiO3 既有
+PYATB 六分量数据可以按同一 API 重建 proper `e`，但尚未因此开放稳定 CLI 或声明
+材料常数。

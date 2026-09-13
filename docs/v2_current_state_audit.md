@@ -55,7 +55,7 @@ major-symmetry 交集的研究 API。`elastic`、`piezo`、`internal_strain` cap
 
 ```text
 pytest -q
-534 passed, 1164 warnings
+536 passed, 1164 warnings
 ```
 
 警告主要来自 spglib、Phonopy 和 fontTools 的弃用提示，没有失败测试。v2 专项测试
