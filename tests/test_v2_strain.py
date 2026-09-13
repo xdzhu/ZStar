@@ -80,6 +80,35 @@ def test_abacus_strain_preparation_expands_positive_basis_vectors_to_ordered_pai
         np.testing.assert_allclose(stages[2 * index + 1].requested_vector, np.eye(6)[index] * 1.0e-3)
 
 
+def test_apply_strain_oblique_cell_keeps_cartesian_uniaxial_strain_pure():
+    """A Cartesian normal strain must transform every oblique lattice row.
+
+    Editing only one lattice vector is a tempting but incorrect shortcut for
+    non-orthogonal cells: recovering the deformation then creates shear terms.
+    This regression locks the ``L' = L (I + eta)^T`` convention used by the
+    collector and by real VASP/POSCAR preparation.
+    """
+
+    structure = StructureSpec(
+        lattice=np.array(
+            [
+                [3.09674675, 0.0, 0.0],
+                [1.54837338, 2.68186135, 0.0],
+                [1.54837338, 0.89395379, 2.52848313],
+            ]
+        ),
+        fractional_positions=np.array([[0.0, 0.0, 0.0], [0.25, 0.25, 0.25]]),
+        symbols=("Si", "C"),
+    )
+    requested = np.array([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0])
+    strained = apply_strain(structure, requested)
+
+    np.testing.assert_allclose(actual_strain(structure.lattice, strained.lattice), requested, atol=1.0e-12)
+    # The second and third lattice vectors must acquire the same Cartesian x
+    # deformation; changing only the first row would fail this assertion.
+    np.testing.assert_allclose(strained.lattice[1:, 0], structure.lattice[1:, 0] * 1.001, atol=1.0e-12)
+
+
 def test_periodic_strain_indices_only_include_intrinsic_low_dimensional_modes():
     assert periodic_strain_indices(("x", "y", "z")) == (0, 1, 2, 3, 4, 5)
     assert periodic_strain_indices(("x", "y")) == (0, 1, 5)
