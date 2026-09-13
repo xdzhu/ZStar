@@ -1,7 +1,8 @@
 # wurtzite GaN v2 piezoelectric gate
 
-This is the first calculator-level v2 piezoelectric validation case. It is a
-research case, not a stable CLI example, until the Gate C conditions in
+This is the first calculator-level v2 piezoelectric validation case. It remains a
+research case, not a stable CLI example; the completed result is conditional as
+documented in
 [`docs/v2_piezo_benchmark_gate.md`](../../../docs/v2_piezo_benchmark_gate.md)
 are met.
 
@@ -19,6 +20,12 @@ Angstrom values because this repository uses `LATTICE_CONSTANT=1.889726`.
 They are not silently treated as a relaxed
 PBEsol equilibrium: the reference force/stress audit must pass before a
 material constant is reported.
+
+The completed first-pass result is in `results/piezo_fit.json`; the three-amplitude
+and clamped-ion audit is in `results/amplitude_audit.json` and
+[`docs/v2_abacus_gan_amplitude_audit_20260913.md`](../../../docs/v2_abacus_gan_amplitude_audit_20260913.md).
+The current recommended research step is `+/-0.001` engineering strain. The
+`+/-0.0005` set is a numerical-noise audit and `+/-0.002` is a nonlinearity audit.
 
 The directory intentionally does not contain pseudopotentials or orbitals.
 On the shared validation nodes use the Dojo Ga/N assets recorded in

@@ -19,4 +19,6 @@ examples/3D_Bulk/wurtzite_GaN_v2/run_gan/
 examples/3D_Bulk/wurtzite_GaN_v2/run_gan2/
 examples/3D_Bulk/wurtzite_GaN_v2/run_gan3/
 examples/3D_Bulk/wurtzite_GaN_v2/run_gan3_remote/
+examples/3D_Bulk/wurtzite_GaN_v2/run_gan_audit/
+examples/3D_Bulk/wurtzite_GaN_v2/run_gan_audit_remote/
 examples/3D_Bulk/wurtzite_GaN_v2/*.tgz

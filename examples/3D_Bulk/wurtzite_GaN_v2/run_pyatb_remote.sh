@@ -17,20 +17,25 @@ export OPENBLAS_NUM_THREADS="$OMP_NUM_THREADS"
 export I_MPI_FABRICS="${I_MPI_FABRICS:-shm:dapl}"
 
 if test "$#" -eq 0; then
-    set -- reference strain-*
+    set -- reference
+    for path in "$ROOT"/strain-*; do
+        test -d "$path" || continue
+        set -- "$@" "$(basename "$path")"
+    done
 fi
 for stage in "$@"; do
     d="$ROOT/$stage"
     test -d "$d" || { echo "missing stage $d" >&2; exit 2; }
     test -f "$d/.done40" || { echo "skip ABACUS-incomplete $stage"; continue; }
-    if test "$stage" != reference; then
-        test -f "$d/OUT.GAN/STRU_ION_D" || { echo "missing relaxed structure $stage" >&2; exit 3; }
+    compat=""
+    if test "$stage" != reference && test -f "$d/OUT.GAN/STRU_ION_D"; then
         test -f "$d/STRU_INITIAL" || cp "$d/STRU" "$d/STRU_INITIAL"
         cp "$d/OUT.GAN/STRU_ION_D" "$d/STRU"
         compat="$d/OUT.GAN/running_scf.log"
         cp "$d/OUT.GAN/running_relax.log" "$compat"
-    else
-        compat=""
+    elif test "$stage" != reference; then
+        # Clamped-ion stages intentionally retain their fixed strained STRU.
+        test -f "$d/STRU" || { echo "missing fixed structure $stage" >&2; exit 3; }
     fi
     if test -f "$d/pyatb/Out/Polarization/zstar_precision.json"; then
         test -z "$compat" || rm -f "$compat"

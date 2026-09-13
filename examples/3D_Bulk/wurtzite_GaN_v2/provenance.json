@@ -32,7 +32,9 @@
   ],
   "results": {
     "artifact": "results/piezo_fit.json",
+    "amplitude_audit": "results/amplitude_audit.json",
+    "amplitude_audit_report": "docs/v2_abacus_gan_amplitude_audit_20260913.md",
     "report": "docs/v2_abacus_gan_piezo_benchmark_20260913.md",
-    "gate_decision": "conditional: e31/e33/e15 agree in order of magnitude; amplitude/convergence and clamped-ion audits remain"
+    "gate_decision": "conditional: e33 stable; e31 shows large-amplitude nonlinearity; e15 is unstable at 0.0005 and stable near -0.254 at 0.001/0.002; strict convergence and clamped-ion interpretation remain"
   }
 }
