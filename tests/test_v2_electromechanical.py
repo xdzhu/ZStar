@@ -43,6 +43,38 @@ def test_electromechanical_forms_convert_relative_dielectric_and_gpa():
     np.testing.assert_allclose(result.epsilon_s, np.eye(3) * 4.0 * 8.8541878128e-12)
 
 
+def test_hexagonal_d33_includes_transverse_e31_compliance_coupling():
+    """The device-style d33 is not e33/C33 when lateral stress is relaxed."""
+
+    c11, c12, c13, c33, c44 = 390.0, 145.0, 106.0, 398.0, 105.0
+    c66 = 0.5 * (c11 - c12)
+    c_e = np.array(
+        [
+            [c11, c12, c13, 0.0, 0.0, 0.0],
+            [c12, c11, c13, 0.0, 0.0, 0.0],
+            [c13, c13, c33, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, c44, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, c44, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, c66],
+        ]
+    ) * 1.0e9
+    e31, e33 = -0.37, 0.66
+    e = np.zeros((3, 6))
+    e[2, 0] = e31
+    e[2, 1] = e31
+    e[2, 2] = e33
+    result = convert_piezoelectric_forms(
+        e, c_e, np.eye(3) * 10.0 * 8.8541878128e-12
+    )
+
+    expected = e31 * (result.s_e[0, 2] + result.s_e[1, 2]) + e33 * result.s_e[2, 2]
+    np.testing.assert_allclose(result.d[2, 2], expected, rtol=1.0e-13, atol=1.0e-30)
+    # The commonly quoted d33 must not be reduced to the uncoupled estimate.
+    assert not np.isclose(
+        result.d[2, 2], e33 / c33 / 1.0e9, rtol=1.0e-6, atol=1.0e-15
+    )
+
+
 def test_electromechanical_forms_materialize_annotated_quantities():
     result = convert_piezoelectric_forms(
         np.zeros((3, 6)), np.eye(6) * 100.0e9, np.eye(3) * 8.8541878128e-12
