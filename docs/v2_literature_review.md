@@ -222,6 +222,16 @@ FireWorks/atomate 任务和解析器保存 provenance；但其底层压电计算
 才决定是否实现 VASP/QE/ABINIT adapter。任何后端只有在输入、单位、张量轴、边界
 条件、对称性和独立参考均通过后，才能进入 v2 稳定能力矩阵。
 
+这里的“独立参考”不等于每个材料都必须再跑一个电子结构后端。若已有可靠的单晶
+实验值、原始第一性原理论文或权威数据库条目，文献/数据库可以直接作为外部数值
+锚点；必须同时记录晶体相、温度、坐标/IEEE 取向、Voigt 剪切约定、clamped/relaxed-ion
+状态、泛函和不确定度。2026-09-13 的 3C-SiC 审计采用这一策略：Lambrecht 等的
+cubic-SiC 研究（PRB 44, 3685, DOI `10.1103/PhysRevB.44.3685`）和 Wang 等的
+SiC polytype 研究（PRB 52, 3993, DOI `10.1103/PhysRevB.52.3993`）作为原始文献
+锚点，Materials Project 的 elasticity/piezoelectric methodology 作为坐标、稳定性
+和拟合流程参考。QE/ABINIT 只保留为未来可选 oracle，不再为满足形式上的“第三个
+后端”而启动作业。
+
 ## 4. 调研问题拆分和待核查项
 
 | 问题 | 已知依据 | v2 设计决策 | 进入实现前的证据门 |
@@ -249,8 +259,10 @@ FireWorks/atomate 任务和解析器保存 provenance；但其底层压电计算
    不修改现有 `zstar-response` 1.0 文件。
 5. **最小机电原型**：只在 Python API 稳定后设计 `piezo`/`elastic` CLI；先以 ABACUS
    小胞 smoke test 验证应变生成、收集和断点状态。
-6. **交叉验证**：用 VASP 或 ABINIT 的独立结果核对 tensor、单位和边界条件；记录输入、
-   任务数、SCF、core-hours、wall time、最大误差和 residual。
+6. **交叉验证**：优先使用已核验的原始实验/理论文献或权威数据库值核对 tensor、
+   单位和边界条件；只有在缺少合适外部锚点、或文献定义不完整时，才启动 VASP、
+   ABINIT 或 QE 的独立重算。无论采用哪种路径，都记录取向、定义、任务数、SCF、
+   core-hours、wall time、最大误差和 residual。
 7. **研究性路线**：phase/switching、finite-T、flexo、resonant Raman 分别过理论和
    证据门，未通过前只保留 roadmap。
 
