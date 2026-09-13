@@ -42,6 +42,14 @@ _KNOWN_DEFAULTS: dict[str, dict[str, Any]] = {
         # explicit row/column distinction in the adapted document.
         "axes": ("atom_row", "atom_column", "force", "displacement"),
     },
+    "raman_tensors": {
+        "boundary_conditions": BoundaryConditions(electric="E", mechanical="not-applicable"),
+        "ion_relaxation": "not-applicable",
+    },
+    "dielectric_displacement_derivatives": {
+        "boundary_conditions": BoundaryConditions(electric="E", mechanical="not-applicable"),
+        "ion_relaxation": "not-applicable",
+    },
 }
 
 _OVERRIDE_KEYS = {

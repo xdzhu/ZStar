@@ -98,11 +98,19 @@ def test_adapter_rejects_override_for_missing_quantity():
         adapt_v1_response_record(record, quantity_overrides={"stress_raw": {}})
 
 
-def test_tracked_v1_nanowire_record_adapts_known_quantities():
-    source = Path("examples/1D_Nanowire/BN_9_0/results/response.json")
+def test_tracked_v1_bulk_sic_record_adapts_known_quantities():
+    source = Path("examples/3D_Bulk/SiC/results/spectra/response.json")
     record = ResponseRecord.read(source)
     adapted = adapt_v1_response_record(record)
-    assert adapted.dimensionality.value == 1
-    assert adapted.dimensionality.periodic_axes == ("z",)
-    assert adapted.quantity("born_effective_charge").periodic_axes == ("z",)
-    assert adapted.quantity("supercell_electronic_dielectric").periodic_axes == ("z",)
+    assert adapted.dimensionality.value == 3
+    assert adapted.dimensionality.periodic_axes == ("x", "y", "z")
+    assert adapted.quantity("born_effective_charge").periodic_axes == ("x", "y", "z")
+    assert adapted.quantity("electronic_dielectric").periodic_axes == ("x", "y", "z")
+    force_constants = adapted.quantity("force_constants")
+    assert force_constants.axes == ("atom_row", "atom_column", "force", "displacement")
+    assert force_constants.provenance["legacy_metadata"] == {}
+    assert adapted.metadata["raman_diagnostics"]["acoustic_sum_rule_projected"] is False
+    np.testing.assert_allclose(
+        force_constants.values[0, 0],
+        np.asarray(record.quantity("force_constants").values)[0, 0],
+    )
