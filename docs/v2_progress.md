@@ -444,6 +444,11 @@
     开发 BEC 或 Gamma 理论；若已有 v1 证据满足相同约定，应直接引用并做回归，
     不重复计算。
 
+86. 新增 [`v2_v1_baseline_mapping.md`](v2_v1_baseline_mapping.md)，逐项标记 v1
+    能力的继承、v2 适配、新增响应块和待核验后端；特别区分 v1 Gamma phonon/IFC
+    与 v2 的应变—力耦合 `Gamma_{uη}`。后续 Gate C 只追踪 provenance 映射、
+    单位/表示兼容性和真正缺失的后端/边界证据，不再把 v1 物理算法列为待重做任务。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `508 passed, 1158 warnings`；新增首/末力块
