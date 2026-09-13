@@ -449,14 +449,20 @@
     与 v2 的应变—力耦合 `Gamma_{uη}`。后续 Gate C 只追踪 provenance 映射、
     单位/表示兼容性和真正缺失的后端/边界证据，不再把 v1 物理算法列为待重做任务。
 
+87. 新增 `zstar.v2.legacy.adapt_v1_response_record`：将稳定的 v1
+    `ResponseRecord` 显式适配为 v2 `ResponseDocument`，保留原始 schema、quantity
+    convention、metadata 和 provenance。已知 BEC/介电量只使用无歧义边界默认值；
+    未知量必须显式提供 `boundary_conditions` 与 `ion_relaxation`，避免 stress 符号
+    或离子状态被猜测。新增 3 项适配器测试；全量回归更新为 `511 passed`。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `508 passed, 1158 warnings`；新增首/末力块
+* v2 独立 worktree 的完整回归为 `511 passed, 1158 warnings`；新增首/末力块
   解析后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
-  测试当前为 `115 passed`。
+  测试当前为 `118 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 115 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 118 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
