@@ -2,7 +2,7 @@
 
 **状态：研究基线，不是已实现功能声明**
 **分支：`zstar-v2-development`**
-**核查日期：2026-09-12（Asia/Shanghai）**
+**核查日期：2026-09-13（Asia/Shanghai）**
 
 本文件是 v2 第一轮的调研基线。它只回答“哪些理论和软件事实已经有依据、哪些
 问题仍需验证、下一阶段怎样验证”，不把 roadmap 写成稳定 API，也不改变 v1 的
@@ -156,6 +156,71 @@ Lazzeri、Mauri 的双共振 graphene 计算则显式包含电子-光子、电�
 
 软件文档的用途是核对输入标签、输出位置和限制；压电、弹性、内应变的定义仍以
 原始论文和统一理论文档 [`v2_theory.md`](v2_theory.md) 为准。
+
+### 3.1 Elastool 的参考价值
+
+[ElasTool](https://github.com/zhongliliu/elastool) 是一个以 VASP 为主要计算后端的
+GPL-3 Python 工具，目标是自动计算二阶弹性常数和机械性质。其论文明确区分三类
+应变集合：OHESS（高效率应变矩阵）、ULICS（线性独立耦合应变）和 ASESS（单分量
+应变），并采用 stress--strain 方法；当前仓库还覆盖 2D/3D、有限温/压力及后处理
+可视化。实现中应变后可选择固定离子或再做固定晶胞离子弛豫，这一点对 v2 的
+clamped-ion/relaxed-ion 对照有直接借鉴意义。
+
+它对 ZStar v2 有三方面参考价值：
+
+1. **采样设计**：把 OHESS/ULICS/ASESS 作为 all-six control、效率基线和任务数
+   benchmark，而不是把“6 个方向”写死为唯一方案；这与 v2 的任意空间群 rank
+   选择可以互补。
+2. **弹性验证**：比较 stress--strain 和 energy--strain、应变幅度、应力精度、
+   2D 归一化及高温路径，帮助建立 v2 的误差预算和效率报告。
+3. **后处理边界**：它主要输出 (C) 及机械派生量，**不提供 v2 所需的 BEC--IFC--
+   \(\Lambda\)--piezo 统一响应块，也不替代 proper/improper、固定 \(E\)/固定 \(D\)
+   等电学边界审计**。因此只能借鉴算法和 benchmark 设计，不能直接把代码或其
+   VASP-centric 输入层移植为 v2 核心；其 GPL-3 许可证也要求避免未经审查的代码
+   复制。
+
+### 3.2 已有成熟压电/机电响应路线
+
+目前最适合作为 v2 科学“参考答案”的不是单独的弹性后处理器，而是能够在同一
+二阶响应框架中处理应变、电场、原子位移和力的 DFPT 软件：
+
+| 软件/工作流 | 已核查能力 | 对 ZStar v2 的建议角色 |
+|---|---|---|
+| **ABINIT + `anaddb`** | `rfstrs`、`piezoflag`、`instrflag`；可由 DDB 后处理 relaxed/clamped-ion 弹性、internal strain、(e,d,g,h)、介电和不同 (E/D) 边界量 | 首选科学 oracle；最完整地覆盖 v2 机电理论，但当前节点尚未发现可执行文件，需先做环境和输入验证 |
+| **Quantum ESPRESSO + `ph.x`/`thermo_pw`** | QE/PHonon 提供 BEC、介电、IFC；`thermo_pw` 有 Berry-phase 应变压电、clamped-ion 选项、内部坐标弛豫和弹性常数流程 | 第二独立开源路线；适合验证 v2 的单位、剪切和边界条件，但当前节点需先安装/探测 |
+| **VASP + py4vasp / atomate(2)** | VASP 有成熟线性响应 BEC/介电/压电路径；atomate/atomate2 提供标准化高通量输入、解析和 provenance | 实用交叉验证和工作流参考；VASP 本身是非开源商业后端，不能作为“开源算法”来源 |
+| **Phonopy** | 有限位移 IFC、空间群/置换对称化和 ASR | 继续复用 v1 的位移/IFC 基线；不是压电计算器 |
+| **MechElastic / ElasTool** | 读取 VASP、ABINIT、QE 的 (C_{ij})，机械稳定性和派生模量/可视化 | 只作为弹性结果的独立后处理和表示对照，不承担 piezo 物理定义 |
+
+ABINIT 官方文档明确把 phonon、电场和 strain 作为统一 DFPT 扰动，并由这些混合
+响应得到 elastic、internal-strain 和 piezoelectric quantities；其测试套件还覆盖
+不同定义的 (e,d,g,h)、固定电场/电位移弹性和 internal-strain。这使它比单纯
+stress--strain 工具更适合作为 v2 的理论与数值 oracle。
+
+QE 原生 `ph.x` 的强项是 BEC、介电和声子；`thermo_pw` 则提供更接近完整工作流的
+应变 Berry-phase 压电和弹性选项。需要注意二者是“可组合的工具链”，不能把
+`ph.x` 单独宣称为完整 (e/d/g/h) 工作流。
+
+Materials Project 的 atomate 工作流是很好的工程参考：其公开生产文档列出
+`wf_elastic_constant` 和 `wf_piezoelectric_constant`，并通过标准化 pymatgen 输入、
+FireWorks/atomate 任务和解析器保存 provenance；但其底层压电计算使用 VASP，故应
+借鉴任务图、失败恢复和数据审计，不应把它当作 calculator-neutral 的物理实现。
+
+### 3.3 给 v2 的明确路线
+
+建议采用“三层参考”而不是复制某一个仓库：
+
+1. **ABACUS/PYATB**：继续作为 v2 首要验证后端；每个几何一次 PYATB，保留 v1 的
+   三方向极化和 Unified 位移/力基线。
+2. **ABINIT `anaddb`**：作为完整机电张量和边界条件的首选独立 oracle；优先核对
+   BEC、IFC、internal strain、(e)、(d)、(g)、(h)、(C^E/C^D)。
+3. **QE/thermo_pw 或有许可的 VASP**：作为第二独立数值路线；ElasTool 的 OHESS/
+   ULICS/ASESS 用作应变采样效率和 stress--strain benchmark。
+
+具体执行顺序是：先把 Elastool 的三种应变集合做成**外部 benchmark 方案**，不把
+其代码并入核心；再用 ABINIT/QE 的 DFPT 输出设计 v2 的 `provenance` 映射；最后
+才决定是否实现 VASP/QE/ABINIT adapter。任何后端只有在输入、单位、张量轴、边界
+条件、对称性和独立参考均通过后，才能进入 v2 稳定能力矩阵。
 
 ## 4. 调研问题拆分和待核查项
 
