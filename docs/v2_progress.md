@@ -601,8 +601,9 @@ collector 反推出额外剪切并正确拒绝；随后按 `L' = L(I+eta)^T` 对
 compression-positive 约定后，stress 拟合 rank 为 `6 -> 3/3`，残差
 `0.0231 kbar`；同一 3 参数基上的 energy 拟合 rank `10 -> 3/3`，最大能量残差
 `6.54e-8 eV`，两种曲率最大差 `4.67 GPa`。这通过了 3D 几何、对称基、collector
-和 reduced energy fitter 的研究审计，但因后端设置未完全匹配且尚无 ABINIT/QE
-独立高精度结果，Gate C 仍未通过。详见 `docs/v2_vasp_sic_fullstrain_20260913.md`。
+和 reduced energy fitter 的研究审计，但因后端设置未完全匹配，Gate C 仍未通过；
+后续优先做同一后端的第二应变幅度和文献锚点映射，不把 ABINIT/QE 作为必做条件。
+详见 `docs/v2_vasp_sic_fullstrain_20260913.md`。
 
 随后修正了带空间群弹性基的 major-symmetry 数值交集：spglib 旋转的约 `1e-11`
 舍入噪声不再把 cubic/F-43m 的三参数基错误压缩为一维；`fit_energy_elastic_response`
@@ -620,7 +621,8 @@ C 拟合秩为 3/3，最大残差 `0.4889 kbar`；能量曲率拟合秩为 3/3�
 `6.14e-8 eV`，两者最大 C 分量差 `0.358 GPa`。所有阶段均达到 SCF 收敛并输出
 `TOTAL-STRESS (KBAR)`；总耗时 448.56 s（约 4.984 core-hours）。这证明了
 ABACUS 后端的 3D stress/energy 重建链闭合，但不是最终材料常数；仍需
-`symmetry=0` 复核、第二应变幅度及 ABINIT/QE 独立高精度基准，Gate C 继续阻塞。
+`symmetry=0` 复核和第二应变幅度，Gate C 继续阻塞。若目标材料没有定义匹配的
+文献/数据库锚点，再考虑 ABINIT/QE 独立高精度基准。
 详见 [`v2_abacus_sic_fullstrain_20260913.md`](v2_abacus_sic_fullstrain_20260913.md)。
 
 ## 2026-09-13 ABACUS `symmetry=0` follow-up
@@ -641,6 +643,9 @@ ABACUS 后端的 3D stress/energy 重建链闭合，但不是最终材料常数�
 `F-43m` 3 参数基下的 backend comparison：两者均为 rank 3/3，最大 stress residual
 分别为 `0.4889` 与 `0.0231 kbar`，energy residual 均约 `6e-8 eV`，stress/energy
 曲率差分别为 `0.358` 与 `3.45 GPa`；stress-derived 矩阵最大差 `32.73 GPa`
-（5.80%）。由于 PAW-PBE 与 ONCV-LCAO 设置未匹配，这只是 collector/表示的一致性
-证据，不能替代 DFPT oracle 或正式材料常数。详见
-[`v2_sic_backend_comparison_20260913.md`](v2_sic_backend_comparison_20260913.md)。
+（5.80%）。进一步将两个 primitive-cell 张量旋转到 IEEE cubic 轴，得到
+ABACUS `(363.40, 110.63, 252.79)` GPa、VASP `(383.49, 126.74, 264.27)` GPa，
+并与文献实验锚点 `(390, 142, 256)` GPa 比较。由于 PAW-PBE 与 ONCV-LCAO 设置未
+匹配，这仍是 collector/表示审计和文献锚定 benchmark，不是最终材料常数；不再为
+形式上的“第三后端”启动 ABINIT/QE。只有后续材料缺少定义匹配的外部锚点时，才考虑
+它们作为可选 oracle。详见 [`v2_sic_backend_comparison_20260913.md`](v2_sic_backend_comparison_20260913.md)。
