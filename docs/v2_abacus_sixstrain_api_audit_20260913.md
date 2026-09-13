@@ -53,6 +53,13 @@ benchmark，也不修改 v1 的入口或论文。计算对象为当前 v2 生成
 40 核折算约 120.8 core-hours）；这是资源记录，不是效率 benchmark。剪切阶段
 明显更慢，说明在报告效率前必须把节点 I/O、SCF 次数和离子步数分开统计。
 
+对共享目录中的真实 `running_relax.log` 做了只读 force-block 审计。各 stage 的
+`TOTAL-FORCE` 块数依次为 `strain-001±: 6/6`、`strain-002±: 6/6`、
+`strain-003±: 6/8`、`strain-004±: 13/13`、`strain-005±: 13/13`、
+`strain-006±: 1/1`。因此首块和末块不是抽象的重复字段：首块是候选固定离子
+应变力，末块是最终离子力；后续 Gamma 审计必须再验证首块与 `STRU_INITIAL` 的
+对应关系，不能用末块的近零力替代。
+
 ## collector 和响应重建
 
 本地 v2 collector 成功读取 13 个 stage（reference + 12 个正负扰动），并完成
@@ -101,6 +108,11 @@ C =
 质量/体积规范写成最终稳定接口。
 
 ## 重要代码修正
+
+v2 collector 现保存所有 force blocks 的数量、首块 `forces_initial` 和末块
+`forces`。relaxed-ion `ResponseDocument` 额外写入 `forces_initial` quantity，
+其单位为 eV/Angstrom、边界标记为 clamped-ion，并在 provenance 中记录块数和
+定义；这只是为 Gamma 重建保留观测，不代表 Gamma 已完成。
 
 PYATB 后处理会把原始 `STRU` 复制为 `STRU_INITIAL`，保留弛豫前 fractional
 coordinates。旧哈希把字面文件名也纳入摘要，会将这个合法别名误判为输入被改动。
