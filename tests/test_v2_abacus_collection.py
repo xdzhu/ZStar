@@ -516,6 +516,13 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     assert document.metadata["polarization_backend"] == "pyatb"
     assert document.metadata["polarization_cartesian_collected"] is True
     assert document.metadata["pyatb_run_count"] == 3
+    cartesian_provenance = document.quantity("polarization_cartesian").provenance
+    assert cartesian_provenance["branch_matched"] is True
+    assert cartesian_provenance["branch_matching_quantity"] == "polarization_directional_matched"
+    assert cartesian_provenance["branch_reference_stage"] == 0
+    assert cartesian_provenance["branch_shift_max"] == 0
+    assert np.isfinite(cartesian_provenance["branch_residual_max"])
+    assert cartesian_provenance["branch_residual_max"] == document.metadata["branch_residual_max"]
     np.testing.assert_allclose(
         document.quantity("polarization_directional").values,
         [[0.0, 0.0, 0.0], [0.1, 0.2, 0.3], [0.1, 0.2, 0.3]],
