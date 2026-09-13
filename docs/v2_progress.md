@@ -755,7 +755,7 @@ relaxed-ion 离子收敛标记均通过。
 超时产生重复 40-rank 私有作业，已按进程组全部终止，未纳入结果；该资源事件和
 输入/输出 provenance 均不改变物理结论。机器可读记录见
 `examples/3D_Bulk/wurtzite_GaN_v2/results/high_precision_shear_audit.json`。
-全量回归现为 `548 passed, 1164 warnings`。
+全量回归现为 `549 passed, 1164 warnings`。
 
 ## 2026-09-13 Berry branch 证据门加固
 
@@ -782,3 +782,5 @@ clamped-ion `C`、v1/v2 轴标注的 IFC `Phi` 和 `Gamma=-dF/deta` 组装
 `internal_strain_equilibrium` 与 `elastic_internal_correction`。它只接受匹配的
 eV/Angstrom（或 J/m）单位对，体积来源与 relaxed-piezo 入口一致；可选 acoustic
 检查失败时不做隐式投影。新增单位错配、Lambda/校正量和 rank diagnostics 测试。
+另有一个离线回归直接读取现有 3D SiC v1 `response.json`，验证 v1 BEC/IFC 轴标签可被
+安全消费；该检查不声称 SiC 已有 relaxed-ion 弹性材料常数，也不启动新的计算。

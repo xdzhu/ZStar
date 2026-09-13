@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -12,6 +13,7 @@ from zstar.v2 import (
     TensorQuantity,
     derive_relaxed_elastic_response,
     derive_relaxed_piezoelectric_response,
+    adapt_v1_response_file,
     relaxed_piezoelectric,
 )
 from zstar.v2.mechanical import ENGINEERING_VOIGT
@@ -210,3 +212,38 @@ def test_document_relaxed_elastic_assembly_rejects_unmatched_response_units():
     )
     with pytest.raises(ValueError, match="matched explicit"):
         derive_relaxed_elastic_response(document)
+
+
+def test_document_relaxed_elastic_accepts_tracked_v1_sic_ifc_and_bec_axes():
+    source = Path("examples/3D_Bulk/SiC/results/spectra/response.json")
+    document = adapt_v1_response_file(source)
+    elastic = TensorQuantity(
+        name="elastic",
+        values=np.eye(6) * 100.0,
+        unit="GPa",
+        axes=("stress_voigt", "voigt_engineering"),
+        coordinate_system="cartesian_right_handed",
+        voigt_convention=ENGINEERING_VOIGT,
+        ion_relaxation="clamped-ion",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+    )
+    gamma = TensorQuantity(
+        name="strain_force_coupling",
+        values=np.zeros((2, 3, 6)),
+        unit="eV/angstrom",
+        axes=("atom", "cartesian", "voigt_engineering"),
+        coordinate_system="cartesian_right_handed",
+        voigt_convention=ENGINEERING_VOIGT,
+        ion_relaxation="clamped-ion",
+        boundary_conditions=BoundaryConditions(electric="E", mechanical="strain"),
+    )
+    document = replace(
+        document,
+        quantities=document.quantities + (elastic, gamma),
+    )
+    result = derive_relaxed_elastic_response(document, volume_m3=1.0e-28)
+    np.testing.assert_allclose(result.quantity("elastic_relaxed").values, elastic.values)
+    np.testing.assert_allclose(result.quantity("internal_strain_equilibrium").values, 0.0)
+    assert result.quantity("force_constants").axes == (
+        "atom_row", "atom_column", "force", "displacement"
+    )
