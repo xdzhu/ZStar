@@ -681,3 +681,22 @@ PYATB 六分量数据可以按同一 API 重建 proper `e`，但尚未因此开�
 API，得到 proper `e` 的确定性后处理结果；raw、geometric correction 和 proper
 矩阵均保持独立保存。该步骤验证了公式和数据流，不把同一批数据重复包装成独立
 验证，也不改变 v1 的 BEC/IFC/PYATB 实现。
+
+## 2026-09-13 ABACUS/PYATB 3D GaN 压电验证门与幅度审计
+
+选用文献锚点明确的纤锌矿 GaN（`P6_3mc`, `6mm`）作为首个 v2 机电响应门，
+不扩展到多个材料。参考结构加六个工程应变分量的正负扰动，共 13 个几何；每个
+几何只运行一次 PYATB，同时输出 a/b/c 三方向 Berry 极化。ABACUS 使用 PBEsol/LCAO、
+`scf_thr=1e-8`、40 MPI×1 OpenMP，在 cu24/cu25/cu26 完成 relaxed-ion `±0.001`、
+`±0.0005`、`±0.002` 和 clamped-ion `±0.001` 共 36 个应变任务；所有 SCF 与
+relaxed-ion 离子收敛标记均通过。
+
+审计发现 PYATB 非正交晶格变换若误把 a/b/c 结果当成单位方向投影，会把 GaN 的
+`e15` 错放大到约 `−1.67 C/m²`。已恢复 v1 兼容的晶格基底线性组合，并增加回归
+测试。`±0.001` relaxed-ion proper 结果为 `e31=−0.3721`、`e33=0.6604`、
+`e15=−0.2543 C/m²`；由弹性矩阵得到 `d31=−1.230`、`d33=2.303`、
+`d15=−2.768 pC/N`。三个幅度显示 `e33` 稳定，`e31` 在大幅度出现约 9% 非线性，
+`e15` 在 `±0.0005` 受数值噪声影响而在 `±0.001/±0.002` 接近一致。因此 Gate C
+仍为 conditional：可作为研究结果和文献量级对照，尚不能升级为稳定 CLI 或最终
+论文数据。详细结果见 `v2_abacus_gan_piezo_benchmark_20260913.md` 与
+`v2_abacus_gan_amplitude_audit_20260913.md`。
