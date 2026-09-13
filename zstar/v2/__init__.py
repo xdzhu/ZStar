@@ -26,6 +26,7 @@ from .fit import (
     fit_linear_response,
     fit_piezoelectric_ensemble,
     fit_piezoelectric_response,
+    fit_strain_force_coupling,
     proper_piezoelectric_response,
 )
 from .mechanical import (
@@ -136,6 +137,7 @@ __all__ = [
     "fit_elastic_response",
     "fit_internal_strain_response",
     "fit_piezoelectric_response",
+    "fit_strain_force_coupling",
     "fit_piezoelectric_ensemble",
     "proper_piezoelectric_response",
     "intertwiner_basis",

@@ -144,6 +144,12 @@ ionic-convergence observable. A Gamma reconstruction must still verify the
 initial block/`STRU_INITIAL` correspondence and cannot infer it from the final
 zero-force block.
 
+The calculator-neutral `fit_strain_force_coupling` API consumes the retained initial
+force blocks and the actual serialized strain vectors to fit `Gamma = -dF/deta`. It
+accepts either `(stage, atom, cartesian)` or flattened force observations, keeps the
+force-unit convention explicit, and reports rank/residual diagnostics without claiming
+that an unverified initial block is a complete Gamma/IFC result.
+
 The optional `symmetry_reduce=True` preparation path calls
 `symmetry_adapted_input_plan`. It selects canonical strain directions from the
 combined rank of the requested polarization, strain/stress, and (for relaxed

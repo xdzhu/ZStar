@@ -349,6 +349,64 @@ def fit_elastic_response(
     )
 
 
+def fit_strain_force_coupling(
+    actual_strains: Iterable[Iterable[float]],
+    force_observations: np.ndarray | Iterable[object],
+    *,
+    reference_forces: np.ndarray | Iterable[float] | None = None,
+    allowed_basis: IntertwinerBasis | None = None,
+    sample_weights: Iterable[float] | None = None,
+    svd_cutoff: float | None = None,
+) -> LinearFitResult:
+    """Fit ``Gamma = -dF/deta`` from fixed-ion strain force observations.
+
+    ``force_observations`` may have shape ``(samples, atoms, 3)`` or a
+    flattened ``(samples, 3*atoms)`` representation.  The sign follows
+    ``F = -dE/du`` and therefore the fitted matrix is the energy Hessian
+    coupling ``Gamma = d^2E/(du deta)``.  For a nonzero residual reference
+    force, pass the force vector from the zero-strain geometry explicitly;
+    omitting it assumes the observations have already been reference-
+    subtracted.  The returned numeric unit is the force unit of the input
+    observations (per unit engineering strain).
+    """
+
+    strains = np.asarray(tuple(tuple(row) for row in actual_strains), dtype=float)
+    forces = np.asarray(force_observations, dtype=float)
+    if forces.ndim == 3 and forces.shape[-1] == 3 and forces.shape[-2] > 0:
+        forces = forces.reshape(forces.shape[0], -1)
+    if forces.ndim != 2 or forces.shape[0] == 0 or forces.shape[1] == 0:
+        raise ValueError(
+            "force_observations must have shape (samples, atoms, 3) or "
+            f"(samples, 3*atoms); got {forces.shape}"
+        )
+    if strains.ndim != 2 or strains.shape[1] != 6:
+        raise ValueError(f"actual_strains must have shape (samples, 6); got {strains.shape}")
+    if strains.shape[0] != forces.shape[0]:
+        raise ValueError(
+            f"strain/force sample counts differ: {strains.shape[0]} and {forces.shape[0]}"
+        )
+    if not np.all(np.isfinite(strains)) or not np.all(np.isfinite(forces)):
+        raise ValueError("strain and force observations must be finite")
+    reference = (
+        np.zeros(forces.shape[1], dtype=float)
+        if reference_forces is None
+        else np.asarray(reference_forces, dtype=float)
+    )
+    if reference.ndim == 2 and reference.shape[-1] == 3:
+        reference = reference.reshape(-1)
+    if reference.shape != (forces.shape[1],) or not np.all(np.isfinite(reference)):
+        raise ValueError(
+            "reference_forces must have shape (3*atoms,) or (atoms, 3) and be finite"
+        )
+    return fit_linear_response(
+        strains,
+        -(forces - reference),
+        allowed_basis=allowed_basis,
+        sample_weights=sample_weights,
+        svd_cutoff=svd_cutoff,
+    )
+
+
 def fit_piezoelectric_response(
     actual_strains: Iterable[Iterable[float]],
     polarization_observations: np.ndarray | Iterable[object],

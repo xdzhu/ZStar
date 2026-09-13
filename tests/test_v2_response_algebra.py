@@ -8,6 +8,7 @@ from zstar.v2 import (
     central_difference,
     convert_stress_sign,
     fit_elastic_response,
+    fit_strain_force_coupling,
     fit_internal_strain_response,
     fit_linear_response,
     fit_piezoelectric_ensemble,
@@ -161,6 +162,42 @@ def test_fit_elastic_response_can_enforce_major_symmetry():
 def test_fit_elastic_response_rejects_non_boolean_major_symmetry_flag():
     with pytest.raises(TypeError, match="enforce_major_symmetry"):
         fit_elastic_response([[0.0] * 6], [[0.0] * 6], enforce_major_symmetry=1)
+
+
+def test_fit_strain_force_coupling_recovers_gamma_with_force_sign_and_reference():
+    strains = np.array(
+        [
+            [0.0] * 6,
+            [0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [-0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
+    )
+    gamma = np.zeros((3, 6))
+    gamma[:, 0] = [2.0, -3.0, 4.0]
+    reference = np.array([0.4, -0.2, 0.1])
+    forces = reference - strains @ gamma.T
+
+    flat_result = fit_strain_force_coupling(
+        strains,
+        forces,
+        reference_forces=reference,
+    )
+    tensor_result = fit_strain_force_coupling(
+        strains,
+        forces.reshape(3, 1, 3),
+        reference_forces=reference.reshape(1, 3),
+    )
+    np.testing.assert_allclose(flat_result.matrix[:, 0], gamma[:, 0], atol=1.0e-12)
+    np.testing.assert_allclose(tensor_result.matrix, flat_result.matrix, atol=1.0e-12)
+    assert flat_result.residual_max < 1.0e-12
+    assert flat_result.input_rank == 1
+    assert flat_result.fit_rank == 3
+    assert not flat_result.complete
+
+    with pytest.raises(ValueError, match=r"shape \(samples, 6\)"):
+        fit_strain_force_coupling([[0.0] * 5], [[0.0, 0.0, 0.0]])
+    with pytest.raises(ValueError, match="reference_forces"):
+        fit_strain_force_coupling(strains, forces, reference_forces=[0.0, 1.0])
 
 
 def test_fit_piezoelectric_response_requires_branch_matched_si_polarization():

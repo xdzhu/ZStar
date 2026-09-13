@@ -397,14 +397,20 @@
     文档额外写入该 quantity，但不自动宣称 Gamma 已完成。新增多块日志和 schema
     回归，避免用弛豫终态零力替代应变—力耦合。
 
+78. 新增 calculator-neutral `fit_strain_force_coupling`：消费首块固定离子力和实际
+    序列化的 engineering-Voigt 应变，按 `Gamma = -dF/deta` 拟合 `(atom, cartesian)`
+    行顺序，支持 `(stage, atom, cartesian)`/展平输入、零应变参考力、rank/residual
+    诊断和 shape/finite 失败门。该 API 仅完成数值拟合，不绕过 `STRU_INITIAL` 对应性、
+    acoustic-SR、正负扰动和独立 IFC/后端验证。
+
 ## 证据状态
 
-* v2 独立 worktree 的完整回归为 `503 passed, 1155 warnings`；新增首/末力块
+* v2 独立 worktree 的完整回归为 `504 passed, 1155 warnings`；新增首/末力块
   解析后，本次全量回归已重新执行（本地 editable install
   仅用于提供 distribution metadata，没有上传或发布）；加入终态失败契约后，v2 定向
-  测试当前为 `110 passed`。
+  测试当前为 `111 passed`。
   警告均为 spglib/phonopy 等现有依赖的弃用提示，没有失败。
-* v2 独立测试（当前收集 110 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
+* v2 独立测试（当前收集 111 项）覆盖 schema round-trip、单位、Voigt、稳定性、实际
   扰动差分、intertwiner、rank/residual、acoustic-SR、relaxed-ion 代数、cubic/P1/
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成

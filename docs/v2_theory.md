@@ -221,6 +221,17 @@ ABACUS 的离子弛豫日志可能包含多个 `TOTAL-FORCE` 块。v2 collector 
 最大力和结构路径写入 provenance。若日志不包含可识别的首块，必须停止独立
 Gamma 重建，而不是用弛豫终态零力填充。
 
+`fit_strain_force_coupling` 将这些首块力与实际序列化的 engineering-Voigt 应变
+配对，拟合
+\[
+\Gamma=-\frac{\partial F}{\partial\eta},
+\]
+因为 \(F=-\partial E/\partial u\)。输入可以是 `(stage, atom, cartesian)` 或展平的
+`(stage, 3*atom)`，并可显式减去零应变参考力；输出行顺序固定为
+`(atom, cartesian)`，数值单位沿用输入力单位。该 API 只完成线性拟合和
+rank/residual 诊断，不把首块自动提升为已验证的 Gamma：仍需确认首块与
+`STRU_INITIAL` 的对应关系、acoustic sum rule、正负应变配对以及独立 IFC/后端证据。
+
 `Lambda` 的数值必须与长度单位一起保存。对于以 `C/m^2` 返回的实现，体积用
 `m^3`，并将 `Lambda` 显式转换为米；计算器输出的 `Angstrom` 数值不能直接代入
 `q_e/Omega`。v2 algebra API 使用 `internal_strain_unit` 明确这一转换，默认 `m`
