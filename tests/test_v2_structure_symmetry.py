@@ -12,6 +12,7 @@ from zstar.v2 import (
     fit_elastic_response,
     fit_linear_response,
     polarization_representation,
+    rotate_elastic_tensor,
     strain_representation,
     stress_representation,
     stress_tensor_to_voigt,
@@ -174,6 +175,67 @@ def test_stress_representation_preserves_tensorial_shear_under_rotation():
         stress_tensor_to_voigt(transformed),
         atol=1.0e-12,
     )
+
+
+def test_rotate_elastic_tensor_round_trips_engineering_voigt_matrix():
+    angle = np.deg2rad(37.0)
+    rotation = np.array(
+        [
+            [np.cos(angle), -np.sin(angle), 0.0],
+            [np.sin(angle), np.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ]
+    )
+    elastic = np.array(
+        [
+            [210.0, 71.0, 64.0, 3.0, 5.0, 7.0],
+            [71.0, 225.0, 69.0, 11.0, 13.0, 17.0],
+            [64.0, 69.0, 240.0, 19.0, 23.0, 29.0],
+            [3.0, 11.0, 19.0, 82.0, 31.0, 37.0],
+            [5.0, 13.0, 23.0, 31.0, 91.0, 41.0],
+            [7.0, 17.0, 29.0, 37.0, 41.0, 103.0],
+        ]
+    )
+    rotated = rotate_elastic_tensor(elastic, rotation)
+    recovered = rotate_elastic_tensor(rotated, rotation.T)
+    np.testing.assert_allclose(recovered, elastic, atol=1.0e-10)
+
+
+def test_rotate_elastic_tensor_maps_sic_primitive_fit_to_cubic_axes():
+    # The rhombohedral primitive-cell matrix from the 3D SiC ABACUS audit.
+    elastic = np.array(
+        [
+            [489.8088, 68.4934, 26.3579, 59.5886, 0.0, 0.0],
+            [68.4934, 489.8088, 26.3579, -59.5886, 0.0, 0.0],
+            [26.3579, 26.3579, 531.9443, 0.0, 0.0, 0.0],
+            [59.5886, -59.5886, 0.0, 168.5222, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 168.5222, 59.5886],
+            [0.0, 0.0, 0.0, 0.0, 59.5886, 210.6577],
+        ]
+    )
+    rotation = np.array(
+        [
+            [0.7071067811865476, -0.4082482904638631, 0.5773502691896258],
+            [0.0, 0.8164965809277261, 0.5773502691896258],
+            [-0.7071067811865476, -0.4082482904638631, 0.5773502691896258],
+        ]
+    )
+    cubic = rotate_elastic_tensor(elastic, rotation)
+    np.testing.assert_allclose(cubic[0, 0], 363.4023, atol=2.0e-3)
+    np.testing.assert_allclose(cubic[0, 1], 110.6289, atol=2.0e-3)
+    np.testing.assert_allclose(cubic[3, 3], 252.7932, atol=2.0e-3)
+    np.testing.assert_allclose(cubic[0, 3:], 0.0, atol=2.0e-6)
+    np.testing.assert_allclose(cubic[3:, :3], 0.0, atol=2.0e-6)
+
+
+def test_rotate_elastic_tensor_rejects_non_rotation_and_nonengineering_voigt():
+    with pytest.raises(ValueError, match="orthogonal"):
+        rotate_elastic_tensor(np.eye(6), np.eye(3) * 2.0)
+    improper = np.diag([-1.0, 1.0, 1.0])
+    with pytest.raises(ValueError, match="determinant"):
+        rotate_elastic_tensor(np.eye(6), improper)
+    with pytest.raises(ValueError, match="engineering Voigt"):
+        rotate_elastic_tensor(np.eye(6), np.eye(3), voigt_convention=("xx",) * 6)
 
 
 def test_symmetry_adapted_strain_plan_keeps_all_components_for_p1():

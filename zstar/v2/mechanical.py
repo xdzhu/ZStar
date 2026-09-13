@@ -8,6 +8,19 @@ import numpy as np
 
 
 ENGINEERING_VOIGT = ("xx", "yy", "zz", "yz", "xz", "xy")
+_VOIGT_PAIRS = ((0, 0), (1, 1), (2, 2), (1, 2), (0, 2), (0, 1))
+
+
+def _rotation3(value: np.ndarray | Iterable[Iterable[float]], name: str = "rotation") -> np.ndarray:
+    """Validate a Cartesian orthogonal rotation used for tensor transforms."""
+
+    matrix = _matrix3(value, name)
+    if not np.allclose(matrix.T @ matrix, np.eye(3), atol=1.0e-10, rtol=0.0):
+        raise ValueError(f"{name} must be orthogonal")
+    determinant = float(np.linalg.det(matrix))
+    if not np.isclose(determinant, 1.0, atol=1.0e-10, rtol=0.0):
+        raise ValueError(f"{name} must be a proper rotation with determinant +1; got {determinant:.16g}")
+    return matrix
 
 
 def periodic_strain_indices(periodic_axes: Iterable[str]) -> tuple[int, ...]:
@@ -152,6 +165,69 @@ def voigt_to_stress_tensor(voigt: Iterable[float]) -> np.ndarray:
         ],
         dtype=float,
     )
+
+
+def _voigt_to_elastic_tensor(elastic: np.ndarray) -> np.ndarray:
+    """Expand engineering-Voigt stiffness into a Cartesian fourth-rank tensor.
+
+    The six-vector convention is stress ``(xx, yy, zz, yz, xz, xy)`` against
+    engineering strain ``(xx, yy, zz, 2yz, 2xz, 2xy)``.  Filling all minor
+    permutations makes the expansion valid for both normal and shear entries
+    without introducing an undocumented factor of two.
+    """
+
+    tensor = np.zeros((3, 3, 3, 3), dtype=float)
+    for row, (i, j) in enumerate(_VOIGT_PAIRS):
+        for column, (k, l) in enumerate(_VOIGT_PAIRS):
+            value = float(elastic[row, column])
+            for ii, jj in {(i, j), (j, i)}:
+                for kk, ll in {(k, l), (l, k)}:
+                    tensor[ii, jj, kk, ll] = value
+    return tensor
+
+
+def _elastic_tensor_to_voigt(tensor: np.ndarray) -> np.ndarray:
+    """Compress a Cartesian fourth-rank stiffness using engineering Voigt axes."""
+
+    return np.asarray(
+        [[tensor[i, j, k, l] for (k, l) in _VOIGT_PAIRS] for (i, j) in _VOIGT_PAIRS],
+        dtype=float,
+    )
+
+
+def rotate_elastic_tensor(
+    elastic: np.ndarray | Iterable[Iterable[float]],
+    rotation: np.ndarray | Iterable[Iterable[float]],
+    *,
+    voigt_convention: Iterable[str] = ENGINEERING_VOIGT,
+) -> np.ndarray:
+    """Rotate a stiffness matrix between right-handed Cartesian frames.
+
+    ``rotation`` maps old Cartesian components to new components and must be a
+    proper orthogonal matrix.  The returned matrix remains in the engineering
+    convention ``(xx, yy, zz, 2yz, 2xz, 2xy)``.  The operation is a pure
+    coordinate transformation: it does not symmetrize, project, or impose a
+    crystal class.  A caller that wants a cubic/hexagonal projection must do
+    so explicitly and retain the pre-projection residual.
+    """
+
+    values = np.asarray(elastic, dtype=float)
+    if values.shape != (6, 6):
+        raise ValueError(f"elastic must have shape (6, 6); got {values.shape}")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("elastic contains non-finite values")
+    convention = tuple(str(item) for item in voigt_convention)
+    if convention != ENGINEERING_VOIGT:
+        raise ValueError(
+            "elastic rotation currently requires engineering Voigt convention "
+            f"{ENGINEERING_VOIGT}; got {convention}"
+        )
+    matrix = _rotation3(rotation)
+    fourth_rank = _voigt_to_elastic_tensor(values)
+    transformed = np.einsum(
+        "ia,jb,kc,ld,abcd->ijkl", matrix, matrix, matrix, matrix, fourth_rank, optimize=True
+    )
+    return _elastic_tensor_to_voigt(transformed)
 
 
 def mechanical_stability(
