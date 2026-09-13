@@ -63,6 +63,11 @@ fixture、BEC/IFC 轴顺序、单位/Voigt、低维归一化
 该结果是 v2 每个阶段必须保持的回归门；警告升级或依赖版本变化时需单独记录，不能把
 警告当作物理验证。
 
+Gamma 固定离子力拟合和已有多幅度只读审计另见
+[`v2_gamma_force_audit_20260913.md`](v2_gamma_force_audit_20260913.md)；它报告
+`Gamma=-dF/deta` 的实际应变拟合及 `-Phi@Lambda` 对照，但不把同后端代数检查当作
+独立 IFC 或独立后端验证。
+
 ## 5. 现状中的关键风险
 
 1. `shared_response.py` 的 v1 联合拟合仍以 3 个 Cartesian 位移分量为输入；v2 的

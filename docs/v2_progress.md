@@ -403,6 +403,12 @@
     诊断和 shape/finite 失败门。该 API 仅完成数值拟合，不绕过 `STRU_INITIAL` 对应性、
     acoustic-SR、正负扰动和独立 IFC/后端验证。
 
+79. 用已有共享目录结果完成 `±5e-4` 与 `±2.5e-4` 的离线 Gamma 多幅度审计：两组
+    拟合矩阵最大差 `1.36580e-3 eV/Å`、RMS `1.85499e-4 eV/Å`；与已有
+    `-Phi@Lambda` 代数重建的差异约 `6.97e-2 eV/Å`。该结果支持幅度斜率已趋稳，
+    但仍是同一 ABACUS 后端链路，不能替代首块对应性、独立 IFC/后端和 acoustic gauge
+    闭合；完整数值与块数记录见 [`v2_gamma_force_audit_20260913.md`](v2_gamma_force_audit_20260913.md)。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `504 passed, 1155 warnings`；新增首/末力块
@@ -415,6 +421,7 @@
   molecule symmetry 和 restart store。
 * 进入 Gate C 前没有提交 ABACUS/VASP/QE 任务；随后按用户授权在 cu24–cu26 直接完成
   一组三阶段 ABACUS smoke，详细记录见 [`v2_abacus_smoke_20260912.md`](v2_abacus_smoke_20260912.md)。
+  之后只读复用了已有六分量、多幅度输出；没有为 Gamma 审计重复提交大任务。
 
 ## 资源状态
 
