@@ -39,10 +39,12 @@
     "polarization_lattice_basis_C_per_m2": [-7.131571670684658e-08, 5.663483655967665e-08, 1.3290579042628818]
   },
   "reconstructed": {
-    "polarization_cartesian_plus_minus_difference_C_per_m2": [-0.000254149613, -1.205424e-09, 1.71697441e-07],
-    "e15_C_per_m2": -0.254149613,
+    "polarization_cartesian_plus_minus_difference_C_per_m2": [0.000410396758334813, -1.20542399646259e-09, 2.37830960703178e-07],
+    "e15_improper_C_per_m2": 0.410396758334813,
+    "proper_geometric_correction_e15_C_per_m2": -0.664528952131441,
+    "e15_C_per_m2": -0.254132193796628,
     "C44_GPa": 91.837466,
-    "d15_pC_per_N": -2.76738486,
+    "d15_pC_per_N": -2.76719519,
     "rank": 1,
     "residual_C_per_m2": 0.0,
     "branch_matching": "same PYATB branch; no integer quantum shift applied"

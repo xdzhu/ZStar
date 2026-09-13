@@ -54,7 +54,9 @@ Bernardini、Fiorentini 和 Vanderbilt 的原始 Berry-phase 工作给出 GaN
 针对 `±0.0005` 下异常的 `e15`，又完成了只包含 `strain-005±` 的定向审计：
 `scf_thr=1e-10`、`force_thr_ev=1e-4`，负点在 cu25、正点在 cu24，各使用一个
 `40 MPI × 1 OpenMP` ABACUS 任务；每个几何仍只运行一次 PYATB 并回读三方向极化。
-重建得到 `e15=-0.25415 C/m²`、`C44=91.84 GPa`、`d15=-2.767 pC/N`，与
+按每个几何自身的非正交晶格基底转换后，raw/improper 中心差分为
+`e15=+0.41040 C/m²`；施加 reference-branch proper 几何项 `-0.66453 C/m²` 后，
+得到 `e15=-0.25413 C/m²`、`C44=91.84 GPa`、`d15=-2.767 pC/N`，与
 `±0.001/±0.002` 的稳定值一致。因此原 `±0.0005` 异常判定为收敛噪声，而非
 晶格基底变换或压电公式错误。原始输入/输出摘要见
 `examples/3D_Bulk/wurtzite_GaN_v2/results/high_precision_shear_audit.json`。

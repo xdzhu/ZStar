@@ -25,9 +25,11 @@
    应力/极化数值噪声或收敛门槛不足的警告。
    随后对 `strain-005±` 做了定向高精度审计：`scf_thr=1e-10`、`force_thr_ev=1e-4`，
    每个几何一个 40-MPI×1-OpenMP ABACUS 任务，并继续用一次 PYATB 同时回读三方向
-   极化。cu25 负点和 cu24 正点均正常完成，中心差分得到 `e15=-0.25415 C/m²`，
-   应力差得到 `C44=91.84 GPa`，因而 `d15=-2.767 pC/N`。这与 ±0.001/±0.002
-   的稳定值一致，确认原异常来自收敛噪声而非晶格基底变换或压电公式。机器可读
+   极化。cu25 负点和 cu24 正点均正常完成；按各自几何晶格基底转换后，中心差分的
+   raw/improper `e15=+0.41040 C/m²`，再施加 reference-branch 的 proper 几何项
+   `-0.66453 C/m²`，得到 `e15=-0.25413 C/m²`。应力差得到 `C44=91.84 GPa`，
+   因而 `d15=-2.767 pC/N`。这与 ±0.001/±0.002 的稳定值一致，确认原异常来自
+   收敛噪声而非晶格基底变换或压电公式。机器可读
    记录见 [`high_precision_shear_audit.json`](../examples/3D_Bulk/wurtzite_GaN_v2/results/high_precision_shear_audit.json)。
 4. clamped-ion 与 relaxed-ion 差异很大是预期的：前者冻结内部相对坐标，后者允许
    内部应变弛豫；不能把 clamped-ion 数值直接当作实验器件系数。
