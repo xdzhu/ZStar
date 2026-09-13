@@ -116,4 +116,7 @@ remotely as a failed run and is excluded from every fit. This is a runtime
 compatibility/blocking observation for the `symmetry=0` + 40-MPI LCAO
 combination, not evidence that the elastic tensor changed. A future symmetry-off
 audit should first try a validated ABACUS decomposition (or a smaller smoke
-rank count) before another full ensemble.
+rank count) before another full ensemble. As a control, the same
+`strain-002+` inputs completed at `4 MPI x 1 OMP` in 32.12 s with identical
+convergence, stress, and energy markers; the blocker is therefore parallel
+decomposition/scaling rather than malformed v2 serialization.

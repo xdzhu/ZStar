@@ -631,3 +631,8 @@ ABACUS 后端的 3D stress/energy 重建链闭合，但不是最终材料常数�
 只属于本轮 scratch 后停止该进程组，部分日志保留为失败审计，不进入拟合。该结果说明
 当前 ABACUS LCAO + 40 MPI 的 symmetry-off 组合存在运行阻塞，不能据此判定物理响应；
 后续若需 symmetry-off 对照，应先做受控的小 rank smoke 或采用已验证的并行分解。
+
+随后将阻塞的 `strain-002+` 输入复制为独立 diagnostic stage，以 `4 MPI × 1 OpenMP`
+重跑；32.12 s 内得到 SCF 收敛、stress 和最终能量，证明问题来自 `symmetry=0` 的
+40-rank 并行分解/扩展性，而不是应变序列化或输入文件损坏。该 diagnostic 输出仍不
+进入正式 ensemble 或材料结果。
