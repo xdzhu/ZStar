@@ -660,6 +660,9 @@ IEEE cubic 轴后，stress `(C11,C12,C44)=(363.24,110.57,252.73)` GPa，相对�
 单一 ABACUS 后端的 clamped-ion 证据，不直接升级为普适材料常数。详见
 [`v2_abacus_sic_fullstrain_20260913.md`](v2_abacus_sic_fullstrain_20260913.md)。
 
+该第二幅度 ensemble 的阶段 wall time 总和为 `446.79 s`，按 40 MPI 计约
+`4.964 core-hours`；单阶段范围 `21.74--46.33 s`，并已将计时来源写入审计文档。
+
 新增 `zstar.v2.rotate_elastic_tensor`：在明确的 engineering-Voigt 约定下，将
 6×6 stiffness 展开为 Cartesian 四阶张量，执行给定右手正交旋转，再压回同一 Voigt
 约定。函数不自动对称化或投影晶体点群，保留坐标变换前后的残差语义；新增任意旋转
