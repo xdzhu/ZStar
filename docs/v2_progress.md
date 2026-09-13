@@ -467,6 +467,14 @@
     定向测试通过。这是热力学转换的研究 API，不代表任何后端已完成 \(d/g/h\) 实测
     交叉验证。
 
+89. 复用共享目录中已经完成的 3D SiC VASP `LEPSILON` 结果做只读 BEC backend
+    smoke：VASP stored `Z*(Si)=2.68952 e`、`Z*(C)=-2.68952 e`、
+    `epsilon_inf=6.996889 I`，声学和严格为零；与 ABACUS v1 SiC 记录的 Si
+    `2.7009406 e` 和 `6.867069 I` 相比，当前未匹配 PAW/ONCV、晶格、k 点、cutoff、
+    `EDIFF` 设置下分别约 `0.423%` 和 `1.89%`。该证据只验证 VASP parser/轴转置和
+    数量级，不提升 Gate C，也不涉及压电张量；详细来源和限制见
+    [`v2_vasp_sic_bec_audit_20260913.md`](v2_vasp_sic_bec_audit_20260913.md)。
+
 ## 证据状态
 
 * v2 独立 worktree 的完整回归为 `513 passed, 1158 warnings`；新增首/末力块
