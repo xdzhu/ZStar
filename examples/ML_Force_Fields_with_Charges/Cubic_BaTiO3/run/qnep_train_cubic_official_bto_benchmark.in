@@ -1,0 +1,21 @@
+# Short timing/convergence benchmark for the official BaTiO3-style qNEP
+# settings.  This is not the production candidate; it is capped at 5,000
+# generations to measure G1 one- versus four-A30 scaling before a long run.
+version      4
+type         3 Ba O Ti
+model_type   0
+charge_mode  1
+cutoff       6 4
+n_max        8 6
+basis_size   8 6
+l_max        4 0
+neuron       40
+lambda_e     1.0
+lambda_f     1.0
+lambda_v     0.1
+lambda_q     0.1
+lambda_z     0.1
+batch        134
+population   50
+generation   5000
+output_interval 1000

@@ -1,0 +1,25 @@
+# Official qNEP BaTiO3-style recipe, adapted to the small cubic-only ZStar
+# compatibility set.  The published BTO model used 500,000 SNES generations
+# with these descriptor and loss settings (qNEP SI, Supplementary Note 8).
+# This file is intentionally a high-quality candidate, not a claim that the
+# small 167-frame data set reproduces the published production model.
+version      4
+type         3 Ba O Ti
+model_type   0
+charge_mode  1
+cutoff       6 4
+n_max        8 6
+basis_size   8 6
+l_max        4 0
+neuron       40
+lambda_e     1.0
+lambda_f     1.0
+lambda_v     0.1
+lambda_q     0.1
+lambda_z     0.1
+# The split has 134 training structures; full-batch avoids noisy updates on
+# this small set while remaining well within one A30's memory.
+batch        134
+population   50
+generation   500000
+output_interval 1000
