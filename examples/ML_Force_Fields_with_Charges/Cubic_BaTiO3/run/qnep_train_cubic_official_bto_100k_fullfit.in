@@ -1,0 +1,22 @@
+# Official qNEP BaTiO3-style recipe, full-fit diagnostic on all 167 cubic frames.
+# The same file is supplied as train.xyz and test.xyz intentionally: metrics
+# from this run measure in-sample fit only and must not be reported as test
+# generalization. Raw DFT labels are copied unchanged.
+version      4
+type         3 Ba O Ti
+model_type   0
+charge_mode  1
+cutoff       6 4
+n_max        8 6
+basis_size   8 6
+l_max        4 0
+neuron       40
+lambda_e     1.0
+lambda_f     1.0
+lambda_v     0.1
+lambda_q     0.1
+lambda_z     0.1
+batch        167
+population   50
+generation   100000
+output_interval 1000
