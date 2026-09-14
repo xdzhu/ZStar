@@ -88,6 +88,7 @@ agent skill 固化了不应随语言模型变化的关键约束：
 | 参考态优先 | 位移 BEC 之前完成 `0.no-move` 并通过绝缘性门控。 |
 | 低维分流 | 一维纳米线与二维薄膜沿周期轴使用 Berry 响应，沿开放轴使用 cube 偶极积分。 |
 | 一维边界 | 可执行沿 `z` 周期的 ABACUS + PYATB BEC 与 Gamma 点光谱；没有真正 1D Coulomb cutoff 时，不得宣称有限波矢极性声子已经完成。 |
+| 三维有限波矢声子 | 使用 `zstar phonon pre --spectrum` 生成 Phonopy 位移并收集力，将匹配的 `BORN` 传给 `zstar phonon spectrum`；分别报告未加 NAC、加 NAC 和叠加对比结果。通过 `--input` 保留用户的 CPU/GPU `INPUT`；三维 bulk 优先采用 `OMP_NUM_THREADS=1` 并增加 MPI ranks。 |
 | 断点续算 | 复用 `.zstar` 状态并重复同一串行执行命令。 |
 | Raman 差分 | 默认复用 Unified 位移响应；正、负简正坐标位移仅作为 Separate 对照。 |
 | 完成判据 | 检查指定产物、状态记录、单位和物理约定。 |

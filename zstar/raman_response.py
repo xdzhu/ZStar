@@ -62,7 +62,7 @@ def project_raman_modes(derivative, eigenvectors, masses):
     return np.einsum('nabc,mnc->mab', derivative, vectors)
 
 
-def internal_mode_indices(modes, dimension):
+def internal_mode_indices(modes, dimension, *, allow_imaginary=False):
     """Separate rigid motions by mass-weighted overlaps, not a frequency cutoff."""
     if dimension not in (0, 1, 2, 3):
         raise ValueError('dimensionality must be 0, 1, 2, or 3')
@@ -83,8 +83,11 @@ def internal_mode_indices(modes, dimension):
     if np.any((overlap >= .2) & (overlap <= .8)) or np.count_nonzero(overlap > .8) != rank:
         raise ValueError('Ambiguous rigid/vibrational mode mixing; inspect the equilibrium structure and Hessian')
     selected = np.flatnonzero(overlap < .2)
-    if not len(selected) or np.any(modes.frequencies_cm1[selected] <= 0):
+    unstable = selected[modes.frequencies_cm1[selected] <= 0]
+    if not len(selected) or (len(unstable) and not allow_imaginary):
         raise ValueError('Unstable internal vibrations; no stable harmonic spectrum can be reported')
     return selected, dict(rigid_mode_numbers=(np.flatnonzero(overlap > .8)+1).tolist(),
                          rigid_frequencies_cm1=modes.frequencies_cm1[overlap > .8].tolist(),
+                         unstable_internal_mode_numbers=(unstable+1).tolist(),
+                         unstable_internal_frequencies_cm1=modes.frequencies_cm1[unstable].tolist(),
                          rigid_overlaps=overlap.tolist())

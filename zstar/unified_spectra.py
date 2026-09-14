@@ -188,7 +188,7 @@ def run(root, **kwargs):
 
 def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
             max_frequency=None, incident_polarization=None,
-            scattered_polarization=None, plot=True):
+            scattered_polarization=None, plot=True, allow_imaginary=False):
     root = Path(root).resolve()
     response, data, options = source(root)
     if not (response/'qpoints.yaml').exists() or not (response/'BEC.dat').exists():
@@ -200,7 +200,9 @@ def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
         raise ValueError('Phonon modes and Unified ensemble have different atom counts')
     delta = modes.positions_fractional-np.asarray(atoms.scaled_positions)
     np.testing.assert_allclose((delta-np.rint(delta))@np.asarray(atoms.cell), 0., atol=1e-6)
-    selected, audit = internal_mode_indices(modes, data['dimension'])
+    selected, audit = internal_mode_indices(
+        modes, data['dimension'], allow_imaginary=allow_imaginary
+    )
     numbers = (selected+1).tolist()
     common = dict(broadening_cm1=broadening, max_frequency_cm1=max_frequency,
                   points=points, allow_imaginary=True)
@@ -292,6 +294,7 @@ def run_cli(action, arguments, root):
         p.add_argument('--max-frequency', type=float)
         p.add_argument('--incident-polarization', type=float, nargs=3)
         p.add_argument('--scattered-polarization', type=float, nargs=3)
+        p.add_argument('--allow-imaginary', action='store_true')
         p.add_argument('--no-plot', action='store_true')
     a = p.parse_args(arguments)
     if action == 'run':
@@ -309,5 +312,6 @@ def run_cli(action, arguments, root):
                          max_frequency=a.max_frequency,
                          incident_polarization=a.incident_polarization,
                          scattered_polarization=a.scattered_polarization,
-                         plot=not a.no_plot)
+                         plot=not a.no_plot,
+                         allow_imaginary=a.allow_imaginary)
     print(json.dumps(result, indent=2))

@@ -32,7 +32,7 @@ aliases. New documentation and automation should use the short canonical verbs.
 | `zstar response` | `validate/import-bec/import-abacus/import-phonopy/intrinsic` | Calculator-neutral response documents and intrinsic low-dimensional response. |
 | `zstar density` | `vasp-cube/qe-input/qe-sidecar/cp2k-block/sidecar` | Density-export adapters and provenance sidecars. |
 | `zstar stru` | `convert/wyckoff` | Structure conversion and symmetry inspection. |
-| `zstar data` | `db/qnep` | Traceable BEC/High-K databases and qNEP training-data export. |
+| `zstar data` | `inspect/select/annotate/validate/export/db/qnep` | Sparse-BEC charge-aware datasets, traceable BEC/High-K databases, and qNEP training-data export. |
 | `zstar skill` | `install/path/preflight` | Install or inspect the packaged agent skill and run non-mutating preflight checks. |
 | `zstar pot` | option-driven | Axis profiles, plane maps, directional profiles, vacuum steps, and mirror asymmetry. |
 
@@ -147,6 +147,11 @@ zstar phonon stat --root .
 zstar phonon post --root . --stru STRU --physical-dim 3
 cp path/to/BORN .
 zstar phonon spectrum --root . --nac
+
+# Compare two completed with-NAC spectra (e.g. DFT baseline and qNEP-compatible)
+zstar phonon compare --reference dft/phonon_spectrum_result.json \
+  --candidate qnep/phonon_spectrum_result.json \
+  --output results/figures/cubic_bto_phonon_overlay.pdf
 ```
 
 `--input` defaults to `INPUT` and accepts a user-provided ABACUS CPU or GPU

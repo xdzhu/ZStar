@@ -310,6 +310,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                              default=1e-3)
     parser_deal.add_argument('--solo', action='store_true',
                              help='Running type of deal_polar: set solo for only polar')
+    parser_deal.add_argument('--bec-only', action='store_true',
+                             help='Collect sparse BEC tensors without requiring static dielectric output (unified workflows).')
     deal_calc = parser_deal.add_mutually_exclusive_group()
     deal_calc.add_argument('--abacus', action='store_true',
                            help='Use ABACUS for NSCF Berry phase.')
@@ -2672,6 +2674,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             running_type=running_type,
             displacement_angstrom=getattr(args, 'displacement', None),
             molecular_source=getattr(args, 'molecular_source', 'pyatb'),
+            bec_only=getattr(args, 'bec_only', False),
         )
         if calc_flag:
             kwargs['nscf_calculator'] = calc_flag

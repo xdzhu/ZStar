@@ -1,5 +1,8 @@
 # qNEP 训练数据接口
 
+关于计算器无关 frame 格式、温度/晶相分层、显式稀疏 BEC mask 和 cubic
+BaTiO3 Level 1 示例，另见[带电荷机器学习力场兼容性](charge_aware_mlff_zh.md)。
+
 GPUMD qNEP 是带动态电荷和长程静电作用的 NEP4 模型。训练时**不要求**提供
 原子静态电荷标签；普通训练数据仍然是总能、逐原子力以及可选的 virial/应力。
 逐原子波恩有效电荷是额外的可选监督量，在 extended XYZ 中写为 `bec:R:9`。

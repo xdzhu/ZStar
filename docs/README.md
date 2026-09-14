@@ -70,8 +70,6 @@ calculators, and advanced analysis.
 
 ![ZStar workflow](paper_figures/unified_workflow.png)
 
-The workflow figure is also available as a vector PDF: [unified workflow](paper_figures/unified_workflow.pdf).
-
 ## Measured Efficiency
 
 ![Measured Separate and Unified workflow costs](paper_figures/unified_efficiency_benchmarks.png)
@@ -94,7 +92,7 @@ from both routes. Exact counts and timing provenance are available in the
 | BEC/APT and Gamma phonons from the same calculations | [Unified BEC and phonons](research/shared_response/USAGE.md) | `zstar bec pre/run/stat/post` |
 | IR and Raman from the Unified calculations | [Unified spectroscopy](unified_spectroscopy.md) | `zstar spectra pre/run/stat/post` |
 | Static and frequency-dependent dielectric response | [Dielectric response](dielectric_response.md) | `zstar dielectric static/freq/optics` |
-| Supercell phonons and mode labels | [Command reference](cli_reference.md#representative-lifecycles) | `zstar phonon pre/run/post/irrep` |
+| Finite-q phonon bands, DOS and NAC | [Phonon spectrum guide](phonon_spectrum.md) | `zstar phonon pre/run/post/spectrum` |
 | Potential maps, profiles and vacuum steps | [Electrostatic potential](potential_examples.md) | `zstar pot` |
 | Configure executables, MPI/OMP and PP/orbitals | [Configuration and assets](cli_reference.md#calculator-configuration) | `zstar config` |
 | Shell, Slurm and Torque/PBS execution | [Job headers](job_headers.md) | `zstar bec/phonon/spectra job` |
@@ -144,4 +142,5 @@ Consult [backend capabilities](calculator_independent_backends.md) before using
 [VASP](vasp_bec.md), [CP2K](cp2k_bec.md), or the QE adapters. Their documented
 native routes do not automatically inherit ABACUS matrix reuse. See also
 [High-K/BEC datasets](highk_bec_database.md), [qNEP export](qnep_dataset.md),
+[charge-aware ML force-field compatibility](charge_aware_mlff.md),
 and [output-name compatibility](bec_output_compatibility.md).

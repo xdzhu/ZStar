@@ -86,12 +86,13 @@ def test_unified_post_accepts_polarized_geometry(tmp_path, monkeypatch, capsys):
     unified_spectra.run_cli('post', [
         '--temperature', '80', '--laser-nm', '633', '--max-frequency', '900',
         '--incident-polarization', '1', '0', '0',
-        '--scattered-polarization', '0', '1', '0', '--no-plot',
+        '--scattered-polarization', '0', '1', '0', '--allow-imaginary', '--no-plot',
     ], tmp_path)
     assert received['laser'] == 633
     assert received['max_frequency'] == 900
     assert received['incident_polarization'] == [1.0, 0.0, 0.0]
     assert received['scattered_polarization'] == [0.0, 1.0, 0.0]
+    assert received['allow_imaginary'] is True
     assert received['plot'] is False
     assert '"ok": true' in capsys.readouterr().out
 
@@ -140,6 +141,18 @@ def test_public_kernel_reproduces_retained_four_dimensional_evidence(case, dimen
     assert len(selected) == len(modes.frequencies_cm1) - (6 if dimension == 0 else 4 if dimension == 1 else 3)
     assert np.min(modes.frequencies_cm1[selected]) > 0
     assert len(audit['rigid_mode_numbers']) + len(selected) == len(modes.frequencies_cm1)
+
+
+def test_internal_mode_selection_can_retain_an_unstable_phase_branch():
+    root = Path(__file__).parents[1]/'docs/research/unified_spectroscopy_20260906/evidence/HfO2/unified'
+    modes = spectra.load_gamma_modes(root/'qpoints.yaml')
+    stable, _ = internal_mode_indices(modes, 3)
+    modes.frequencies_thz[stable[0]] = -abs(modes.frequencies_thz[stable[0]])
+    with pytest.raises(ValueError, match='Unstable internal vibrations'):
+        internal_mode_indices(modes, 3)
+    selected, audit = internal_mode_indices(modes, 3, allow_imaginary=True)
+    assert stable[0] in selected
+    assert int(stable[0] + 1) in audit['unstable_internal_mode_numbers']
 
 
 def test_cached_response_checks_output_and_source(tmp_path):

@@ -62,8 +62,6 @@ zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式�
 
 ![ZStar 工作流](paper_figures/unified_workflow.png)
 
-矢量 PDF 版本见：[统一工作流图](paper_figures/unified_workflow.pdf)。
-
 ## 实测计算效率
 
 ![Separate 与 Unified 工作流实测核时](paper_figures/unified_efficiency_benchmarks.png)
@@ -83,7 +81,7 @@ zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式�
 | 同一套计算得到 BEC/APT 与 Gamma 声子 | [Unified BEC 与声子](research/shared_response/USAGE.zh-CN.md) | `zstar bec pre/run/stat/post` |
 | Unified 计算得到 IR 与 Raman | [Unified 谱学](unified_spectroscopy.zh-CN.md) | `zstar spectra pre/run/stat/post` |
 | 静态及频率相关介电响应 | [介电响应](dielectric_response.zh-CN.md) | `zstar dielectric static/freq/optics` |
-| 超胞声子、频率及模式分类 | [命令参考](cli_reference.zh-CN.md) | `zstar phonon pre/run/post/irrep` |
+| 有限波矢声子能带、DOS 与 NAC | [声子谱教程](phonon_spectrum.zh-CN.md) | `zstar phonon pre/run/post/spectrum` |
 | 平面静电势、线剖面与真空电势差 | [静电势](potential_examples.zh-CN.md) | `zstar pot` |
 | 可执行文件、MPI/OMP、赝势与轨道 | [配置及资源解析](cli_reference.zh-CN.md) | `zstar config` |
 | Shell、Slurm、Torque/PBS 脚本 | [作业 header](job_headers.zh-CN.md) | `zstar bec/phonon/spectra job` |
@@ -130,4 +128,5 @@ PyPI 的 wheel 和源码包都不含案例。命令预览、离线重建与重�
 使用 [VASP](vasp_bec_zh.md)、[CP2K](cp2k_bec.zh-CN.md)、QE 前，请先查阅
 [后端能力](calculator_independent_backends.zh-CN.md)。原生计算路线不会自动
 获得 ABACUS 的矩阵复用能力。另见 [High-K/BEC 数据集](highk_bec_database.zh-CN.md)、
-[qNEP 导出](qnep_dataset_zh.md)和[输出文件兼容说明](bec_output_compatibility.md)。
+[qNEP 导出](qnep_dataset_zh.md)、[带电荷机器学习力场兼容性](charge_aware_mlff_zh.md)
+和[输出文件兼容说明](bec_output_compatibility.md)。

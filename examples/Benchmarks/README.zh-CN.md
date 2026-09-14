@@ -16,7 +16,7 @@ python examples/3D_Bulk/cubic_BaTiO3/verify.py
 实际计算需要配置 ABACUS 与 PYATB。离线核验在临时副本中重建 BEC、Gamma
 频率和静态响应，不调用 DFT，不覆盖原始结果。每个材料具有独立的 `run/`
 输入、`results/` 已有结果，以及执行时建立的 `work/`。
-安装 `zstar==0.3.1` 并使用相同 GitHub 标签下的冻结案例输入。
+安装 ZStar 并使用仓库中的冻结案例输入。
 
 Unified 从同一批位移 SCF 同时获得 BEC 和 Gamma 力常数。Separate 的机时
 包含 Cartesian BEC 与另外实际执行的力计算。立方 BTO 历史计时采用 forward，

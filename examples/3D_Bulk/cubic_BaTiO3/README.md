@@ -6,7 +6,7 @@ control. All calculations have completed; the raw outputs are included.
 
 ## Run
 
-Install `zstar==0.3.1` and PYATB; a common Python environment is the simplest setup.
+Install ZStar and PYATB in the same Python environment; this is the simplest setup.
 Configure the ABACUS executable and MPI/OMP settings using `zstar config`.
 Then, from this directory:
 
@@ -98,3 +98,7 @@ of monotonic command durations times 40/3600. Relaxation, Raman, finite-q
 phonons, and archive verification are excluded. Separate force SCFs start
 from atomic charge and do not export unnecessary Hamiltonians or densities;
 both BEC routes initialize displacements from local reference-charge copies.
+
+The optional finite-q phonon and NAC example is provided separately in
+`phonon_spectrum/`; see its README for the clean inputs, BORN handoff, and
+the three band/DOS plots.

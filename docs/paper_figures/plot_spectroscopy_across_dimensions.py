@@ -452,6 +452,7 @@ def draw_spectrum(
     reference_label: str,
     reference_broadening: float,
     sampled_reference: np.ndarray | None = None,
+    component_columns: tuple[tuple[str, tuple[int, ...], str, str], ...] | None = None,
 ) -> None:
     frequency = data[:, 0]
     color = COLORS[kind]
@@ -475,16 +476,45 @@ def draw_spectrum(
         zorder=2,
         label=reference_label,
     )
-    intensity = normalize(data[:, -1])
-    ax.fill_between(frequency, intensity, color=color, alpha=0.12, linewidth=0, zorder=3)
-    zstar_line, = ax.plot(
-        frequency,
-        intensity,
-        color=color,
-        linewidth=1.3,
-        zorder=4,
-        label="ZStar",
-    )
+    component_lines = []
+    if component_columns is None:
+        intensity = normalize(data[:, -1])
+        ax.fill_between(frequency, intensity, color=color, alpha=0.12, linewidth=0, zorder=3)
+        zstar_line, = ax.plot(
+            frequency,
+            intensity,
+            color=color,
+            linewidth=1.3,
+            zorder=4,
+            label="ZStar",
+        )
+        annotation_intensity = intensity
+        legend_handles = (zstar_line, reference_line)
+    else:
+        component_intensities = []
+        for label, columns, component_color, line_style in component_columns:
+            component_intensity = normalize(np.sum(data[:, list(columns)], axis=1))
+            component_intensities.append(component_intensity)
+            ax.fill_between(
+                frequency,
+                component_intensity,
+                color=component_color,
+                alpha=0.08,
+                linewidth=0,
+                zorder=3,
+            )
+            line, = ax.plot(
+                frequency,
+                component_intensity,
+                color=component_color,
+                linewidth=1.3,
+                linestyle=line_style,
+                zorder=4,
+                label=label,
+            )
+            component_lines.append(line)
+        annotation_intensity = np.max(np.vstack(component_intensities), axis=0)
+        legend_handles = tuple(component_lines) + (reference_line,)
 
     last_peak = -np.inf
     collision_level = 0
@@ -496,7 +526,7 @@ def draw_spectrum(
         else:
             collision_level = 0
         index = int(np.argmin(np.abs(frequency - peak)))
-        y_value = float(intensity[index])
+        y_value = float(annotation_intensity[index])
         y_axes = float(placement[0]) if placement else 0.86 - 0.14 * (collision_level % 2)
         x_shift = float(placement[1]) if len(placement) > 1 else 0.0
         label_x = peak + x_shift * (xlim[1] - xlim[0])
@@ -529,17 +559,18 @@ def draw_spectrum(
         top=True,
         right=True,
     )
+    split_legend = component_columns is not None
     ax.legend(
-        handles=(zstar_line, reference_line),
+        handles=legend_handles,
         loc="lower center",
-        bbox_to_anchor=(0.5, 1.075),
-        ncol=2,
+        bbox_to_anchor=(0.5, 1.015 if split_legend else 1.075),
+        ncol=2 if split_legend else len(legend_handles),
         frameon=False,
-        handlelength=1.8,
-        handletextpad=0.45,
-        columnspacing=1.15,
+        handlelength=1.55 if split_legend else 1.8,
+        handletextpad=0.35 if split_legend else 0.45,
+        columnspacing=0.75 if split_legend else 1.15,
         borderaxespad=0.0,
-        fontsize=8.2,
+        fontsize=7.7 if split_legend else 8.2,
     )
 
 
@@ -640,6 +671,7 @@ def build_figure(
                 (15, r"$\nu_3(F_2)$", 0.72, -0.176),
             ],
             "raman_labels": [
+                (7, r"$\nu_4(F_2)$", 0.82, 0.045),
                 (10, r"$\nu_2(E)$", 0.55, 0.129),
                 (12, r"$\nu_1(A_1)$", 0.82, -0.167),
                 (15, r"$\nu_3(F_2)$", 0.92, 0.042),
@@ -665,14 +697,17 @@ def build_figure(
             "raman_xlim": (20, 660),
             "ir_labels": [
                 (19, r"$A_1$", 0.43, -0.060),
+                (34, r"$A_1$", 0.72, 0.020),
                 (43, r"$A_1$", 0.87, -0.080),
                 (55, r"$A_1$", 0.54, 0.055),
             ],
             "raman_labels": [
                 (17, r"$A_1$", 0.86, -0.055),
-                (21, r"$B_1$", 0.58, -0.005),
                 (24, r"$A_2$", 0.70, 0.035),
-                (29, r"$B_2$", 0.82, 0.070),
+                (39, r"$A_1$", 0.58, -0.025),
+                (41, r"$B_2$", 0.86, 0.050),
+                (55, r"$A_1$", 0.62, -0.020),
+                (57, r"$B_2$", 0.84, 0.045),
             ],
             "reference_key": "unused_GaAs",
             "reference_broadening": {"ir": 7.0, "raman": 7.0},
@@ -696,6 +731,10 @@ def build_figure(
                 (6, r"$E'$", 0.92, -0.167),
                 (9, r"$A_2''$", 0.55, -0.098),
             ],
+            "ir_components": (
+                ("ZStar in-plane", (1, 2), COLORS["ir"], "-"),
+                ("ZStar out-of-plane", (3,), COLORS["ir"], "--"),
+            ),
             "raman_labels": [
                 (4, r"$E''$", 0.62, 0.189),
                 (6, r"$E'$", 0.92, -0.103),
@@ -721,12 +760,13 @@ def build_figure(
             "ir_xlim": (70, 730),
             "raman_xlim": (70, 730),
             "ir_labels": [
-                (6, r"$E_u$", 0.78, 0.091),
+                (4, r"$E_u$", 0.78, 0.091),
                 (10, r"$A_{2u}$", 0.92, -0.119),
                 (13, r"$E_u$", 0.73, -0.101),
             ],
             "raman_labels": [
-                (4, r"$E_g$", 0.60, 0.082),
+                (6, r"$E_g$", 0.60, 0.082),
+                (8, r"$B_{1g}$", 0.72, 0.040),
                 (9, r"$A_{1g}$", 0.92, -0.100),
                 (11, r"$E_g$", 0.65, -0.099),
                 (15, r"$B_{1g}$", 0.78, -0.109),
@@ -822,6 +862,7 @@ def build_figure(
             system["reference_broadening"]["ir"],
             np.loadtxt(system["ir_reference"])[:, [0, system["ir_reference_column"]]]
             if "ir_reference" in system else None,
+            system.get("ir_components"),
         )
         draw_spectrum(
             axes[row, 2],

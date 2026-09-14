@@ -1,5 +1,9 @@
 # qNEP training-data bridge
 
+For the calculator-neutral frame schema, temperature/phase stratification,
+explicit sparse-BEC masks, and the cubic BaTiO3 Level 1 example, see
+[Compatibility with charge-aware machine-learning force fields](charge_aware_mlff.md).
+
 GPUMD qNEP is a charge-aware NEP4 model with long-range electrostatics. Target
 atomic charges are **not required**. Its ordinary training labels remain total
 energy, atomic forces, and optional virial/stress. Per-atom Born effective

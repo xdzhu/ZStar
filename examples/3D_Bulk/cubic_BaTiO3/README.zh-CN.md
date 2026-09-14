@@ -6,7 +6,7 @@
 
 ## 一键运行
 
-安装 `zstar==0.3.1`，将 PYATB 安装在同一 Python 环境是最简单的设置，并通过
+安装 ZStar，将 PYATB 安装在同一 Python 环境是最简单的设置，并通过
 `zstar config` 设置 ABACUS 路径与 MPI/OMP 配置，然后执行：
 
 ```bash

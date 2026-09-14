@@ -9,6 +9,7 @@ import numpy as np
 from zstar.phonon_spectrum import (
     _axis_ticks,
     _continuous_distances,
+    compare_phonon_spectra,
     infer_supercell,
     parse_periodic_axes,
     parse_supercell,
@@ -18,6 +19,28 @@ from zstar.phonon_gen import run_phonopy_and_process_files
 
 
 class PhononSpectrumTests(unittest.TestCase):
+    def test_compare_spectra_requires_matching_nac_paths_and_writes_overlay(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            payload = {
+                "frequency_unit": "THz",
+                "labels": ["Gamma", "X"],
+                "with_nac": {
+                    "distances": [[0.0, 1.0]],
+                    "frequencies": [[[1.0, 2.0], [1.5, 2.5]]],
+                },
+            }
+            reference = root / "reference.json"
+            candidate = root / "candidate.json"
+            reference.write_text(json.dumps(payload), encoding="utf-8")
+            candidate.write_text(json.dumps({**payload, "with_nac": {
+                **payload["with_nac"], "frequencies": [[[1.1, 2.1], [1.6, 2.6]]]
+            }}), encoding="utf-8")
+            result = compare_phonon_spectra(reference, candidate, root / "overlay.pdf")
+            self.assertEqual(result["branches"], 2)
+            self.assertAlmostEqual(result["rmse"], 0.1)
+            self.assertTrue((root / "overlay.pdf").is_file())
+            self.assertTrue((root / "overlay.png").is_file())
     def test_auto_supercell_exceeds_threshold_only_on_periodic_axes(self):
         repeats = infer_supercell(
             np.diag([3.0, 5.0, 12.0]), dimensionality=2, minimum_length=10.0

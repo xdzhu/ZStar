@@ -202,6 +202,25 @@ def test_joint_post_roundtrip_and_asymmetric_born_convention(tmp_path, monkeypat
     loaded = phonopy.load(str(output / 'phonopy.yaml'), is_nac=False)
     np.testing.assert_allclose(loaded.force_constants.transpose(0,2,1,3).reshape(6,6), hessian, atol=1e-8)
 
+    # Sparse-label campaigns may not request an optical/static-dielectric run.
+    # BEC-only collection must still emit tensors while skipping NAC artifacts.
+    import shutil
+    bec_only = tmp_path / 'bec_only'
+    shutil.copytree(output, bec_only)
+    for stale in ('BORN', 'response.json'):
+        (bec_only / stale).unlink()
+    monkeypatch.setattr(
+        'zstar.pyatb_compat.read_static_dielectric',
+        lambda *a: (_ for _ in ()).throw(FileNotFoundError('optical output intentionally absent')),
+    )
+    result_bec = collect_shared_abacus(bec_only, bec_only=True)
+    assert result_bec['bec_only'] is True
+    assert result_bec['static_response_validated'] is False
+    assert (bec_only / 'BEC.dat').is_file()
+    assert (bec_only / 'BEC.rep.dat').is_file()
+    assert not (bec_only / 'BORN').exists()
+    assert not (bec_only / 'response.json').exists()
+
 
 def test_nested_relative_basis_files_are_staged_and_referenced(tmp_path):
     source = tmp_path / 'STRU'

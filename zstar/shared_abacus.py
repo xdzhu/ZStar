@@ -227,7 +227,7 @@ def read_forces(stage):
     natoms = len(read_structure(stage / "STRU"))
     try:
         values = np.asarray(read_abacus_output(str(logs[0])))
-    except (IndexError, TypeError, ValueError):
+    except (IndexError, TypeError, UnboundLocalError, ValueError):
         values = _read_force_block(text, natoms)
     if values.shape != (natoms, 3) or not np.all(np.isfinite(values)):
         values = _read_force_block(text, natoms)
@@ -316,7 +316,15 @@ def _dipole_changes(root, manifest, diagnostics=None):
     return responses
 
 
-def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction=None):
+def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction=None, bec_only=False):
+    """Collect a shared finite-displacement response.
+
+    ``bec_only`` is useful for sparse response labels: it writes BEC tensors
+    without requiring a PYATB optical/static-dielectric output.  A dielectric
+    remains mandatory when NAC/BORN data are requested.
+    """
+    if bec_only and forces_only:
+        raise ValueError("bec_only and forces_only are mutually exclusive")
     from phonopy.file_IO import write_FORCE_CONSTANTS, write_FORCE_SETS
     from .response_schema import ResponseQuantity, ResponseRecord, response_record_from_bec_result
     from .dimensions import dimension_spec
@@ -350,7 +358,7 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     write_FORCE_CONSTANTS(projected.force_constants, filename=str(root / "FORCE_CONSTANTS"))
     phonon.force_constants = projected.force_constants
     dielectric = None
-    if not forces_only or nac:
+    if (not forces_only and not bec_only) or nac:
         from .pyatb_compat import read_static_dielectric
         dielectric, _ = read_static_dielectric(reference / "pyatb")
     if nac:
@@ -380,7 +388,8 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
               "born_projected_e": None if forces_only else projected.born.tolist(),
               "frequencies_THz": phonon.qpoints.frequencies[0].tolist(),
               "dipole_integration_diagnostics": dipole_diagnostics,
-              "static_response_validated": False}
+              "static_response_validated": dielectric is not None,
+              "bec_only": bool(bec_only)}
     output['source_hashes'] = {}
     for name in ['0.no-move']+[s['name'] for s in manifest['stages']]:
         patterns = ['OUT.*/running_scf.log']
@@ -398,12 +407,6 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     if not forces_only:
         from .deal_polar import _write_born_for_phonopy
         independent = phonon.symmetry.get_independent_atoms()
-        # BORN follows Phonopy's polarization-first convention. Legacy indexed
-        # ZStar tables remain displacement-first for backward compatibility.
-        _write_born_for_phonopy(dielectric, projected.born[independent], root / "BORN")
-        born_lines = (root / "BORN").read_text().splitlines()
-        born_lines[0] = "# ZStar shared response: Z[polarization,displacement]; units e"
-        (root / "BORN").write_text("\n".join(born_lines) + "\n", encoding="utf-8")
         for name, values in (("BEC.raw.dat", raw.born), ("BEC.dat", projected.born)):
             lines = ["# atom species Z[displacement,polarization]; units e"]
             lines.extend(f"{i + 1} {s} " + " ".join(f"{v:.8f}" for v in z.T.ravel())
@@ -415,18 +418,29 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             lines.extend(f"{i + 1} {atoms.symbols[i]} " + " ".join(f"{v:.8f}" for v in values[i].T.ravel())
                          for i in independent)
             (root / name).write_text("\n".join(lines) + "\n", encoding="utf-8")
-        base = response_record_from_bec_result({
-            "backend": "abacus", "method": "shared_finite_displacement",
-            "tensor_convention": "rows=displacement; columns=polarization",
-            "atoms": [{"label": s, "tensor": z.T.tolist()} for s, z in zip(atoms.symbols, projected.born)],
-            "epsilon_infinity": dielectric.tolist(),
-        }, dimensionality=manifest["dimension"])
-        ResponseRecord(backend="abacus", dimensionality=dimension_spec(manifest["dimension"]),
-            quantities=(*base.quantities,
-                        ResponseQuantity("force_constants", projected.force_constants, "eV/angstrom^2", "Gamma_cell", ("atom", "atom", "force", "displacement"))),
-            provenance={"ensemble_manifest": MANIFEST, "manifest_sha256": _digest(root / MANIFEST),
-                        "result": result_path.name},
-            structure={"symbols": atoms.symbols, "cell_angstrom": atoms.cell, "scaled_positions": atoms.scaled_positions},
-            metadata={"raw_diagnostics": raw.diagnostics, "scope": "Gamma", "asr_projected": True}).write(root / "response.json")
+        if dielectric is not None:
+            # BORN follows Phonopy's polarization-first convention. Legacy
+            # indexed ZStar tables remain displacement-first for compatibility.
+            _write_born_for_phonopy(dielectric, projected.born[independent], root / "BORN")
+            born_lines = (root / "BORN").read_text().splitlines()
+            born_lines[0] = "# ZStar shared response: Z[polarization,displacement]; units e"
+            (root / "BORN").write_text("\n".join(born_lines) + "\n", encoding="utf-8")
+            base = response_record_from_bec_result({
+                "backend": "abacus", "method": "shared_finite_displacement",
+                "tensor_convention": "rows=displacement; columns=polarization",
+                "atoms": [{"label": s, "tensor": z.T.tolist()} for s, z in zip(atoms.symbols, projected.born)],
+                "epsilon_infinity": dielectric.tolist(),
+            }, dimensionality=manifest["dimension"])
+            ResponseRecord(backend="abacus", dimensionality=dimension_spec(manifest["dimension"]),
+                quantities=(*base.quantities,
+                            ResponseQuantity("force_constants", projected.force_constants, "eV/angstrom^2", "Gamma_cell", ("atom", "atom", "force", "displacement"))),
+                provenance={"ensemble_manifest": MANIFEST, "manifest_sha256": _digest(root / MANIFEST),
+                            "result": result_path.name},
+                structure={"symbols": atoms.symbols, "cell_angstrom": atoms.cell, "scaled_positions": atoms.scaled_positions},
+                metadata={"raw_diagnostics": raw.diagnostics, "scope": "Gamma", "asr_projected": True}).write(root / "response.json")
+        elif not bec_only:
+            raise ValueError("Static dielectric output is required unless bec_only=True")
+        else:
+            print("[INFO] BEC-only collection: static dielectric/BORN/response.json skipped")
     print(f"[SHARED] Collected {len(observations)} displacements; {result_path}")
     return output

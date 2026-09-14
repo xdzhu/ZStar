@@ -97,7 +97,10 @@ def symmetry_operations(phonon: Phonopy, *, dimension: int = 3):
     for w, t in zip(phonon.symmetry.symmetry_operations["rotations"],
                     phonon.symmetry.symmetry_operations["translations"]):
         r = cell.T @ w @ np.linalg.inv(cell.T)
-        if not np.allclose(r.T @ r, np.eye(3), atol=1e-7, rtol=0):
+        # Public force-field archives often round non-orthogonal lattice
+        # vectors to ~1e-7--1e-6 in Cartesian units.  Allow that numerical
+        # noise while still rejecting genuinely non-isometric operations.
+        if not np.allclose(r.T @ r, np.eye(3), atol=1e-6, rtol=0):
             raise ValueError("Approximate lattice symmetry is nonorthogonal; refine the structure or lower --symmprec")
         # Periodic and open directions have different electrostatic boundaries.
         if dimension in (1, 2):

@@ -630,17 +630,24 @@ displacement set, whose real-space interactions cannot resolve a dispersion.
 
 ### 1. Generate phonon calculations
 
-In a phonon working directory containing `STRU`, `KPT`, and an `INPUT` with `cal_force 1`:
+In a phonon working directory containing `STRU`, `KPT`, and an ABACUS input with
+`cal_force 1` (use `--input INPUT-GPU` to preserve a GPU-specific input):
 
 ```bash
-zstar phonon pre --root . --calculator abacus \
-  --stru STRU --dim "2 2 2" --symmprec 1e-3
+zstar phonon pre --spectrum --root . --calculator abacus \
+  --stru STRU --input INPUT --supercell "2 2 2" --physical-dim 3 --symmprec 1e-3
 zstar phonon run --root .
 ```
 
 Run every generated `disp-*` force calculation with the selected execution system.
 `zstar phonon pre` does not require or duplicate an `abacus_x.sh`; if one is
 present it is copied only as an optional convenience.
+
+The selected input is staged as `INPUT` in each displacement directory without
+editing calculator-specific settings such as `ks_solver`. For 3D bulk jobs,
+prefer MPI ranks with `OMP_NUM_THREADS=1`; low-dimensional and molecular jobs
+may benefit from a more OpenMP-heavy allocation. The scheduler header and
+execution configuration determine the actual resource layout.
 
 ### 2. Post-process forces and classify Gamma modes
 
@@ -659,8 +666,15 @@ For non-analytical corrections, copy the BEC workflow's `BORN` into the phonon d
 
 ```bash
 cp ../polar/BORN .
-zstar phonon post --root . --nac
+zstar phonon spectrum --root . --nac
 ```
+
+If no supercell is given, periodic directions are repeated until each lattice
+vector is strictly longer than 10 Angstrom. The high-symmetry path is generated
+from Seekpath with spglib symmetry data. The default bulk output consists of
+separate w/o NAC and with NAC band/DOS PDFs plus a blue/red comparison PDF;
+`--no-nac` writes only the uncorrected plot. NAC is not applied to slabs,
+nanowires, or molecules.
 
 ### 3. Static and frequency-dependent dielectric response
 
@@ -915,7 +929,7 @@ Commands, interpretation limits, and the SnS/SnSe/SnTe directional examples are 
 | Command | Purpose |
 | --- | --- |
 | `zstar bec pre/job/run/stat/post` | Polarization, APT/BEC, `BORN`, resume state, and scheduler drivers. |
-| `zstar phonon pre/job/run/stat/post/irrep` | Displacements, serial forces, force constants, frequencies, and irreps. |
+| `zstar phonon pre/job/run/stat/post/irrep/spectrum` | Displacements, serial forces, force constants, frequencies, irreps, finite-q bands, and DOS. |
 | `zstar spectra pre/job/run/stat/post` | Calculator-aware IR and Raman workflows. |
 | `zstar dielectric static/freq/optics` | Static, vibrational, and electronic dielectric response. |
 | `zstar backend list` | List capabilities and optionally check executables/plugins. |
@@ -923,7 +937,8 @@ Commands, interpretation limits, and the SnS/SnSe/SnTe directional examples are 
 | `zstar response` | Validate and normalize calculator-neutral response data. |
 | `zstar density` | Prepare density-export adapters and provenance sidecars. |
 | `zstar stru convert/wyckoff` | Convert structures or inspect Wyckoff positions. |
-| `zstar data db/qnep` | Manage a traceable BEC/High-K database or export qNEP data. |
+| `zstar data inspect/select/annotate/validate/export` | Prepare, audit, sparsely label, and export charge-aware ML-force-field data (qNEP-compatible). |
+| `zstar data db/qnep` | Manage a traceable BEC/High-K database or use the legacy qNEP bridge. |
 | `zstar skill install/path/preflight` | Install the agent skill or inspect a workspace. |
 | `zstar pot` | Plot potential profiles/maps, vacuum steps, and mirror asymmetry. |
 

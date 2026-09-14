@@ -37,14 +37,78 @@ ACTION_ALIASES = {
 
 FAMILY_HELP = {
     "bec": "pre, job, run, stat, post",
-    "phonon": "pre, job, run, stat, post, irrep, spectrum",
+    "phonon": "pre, job, run, stat, post, irrep, spectrum, compare",
     "spectra": "pre, job, run, stat, post",
     "dielectric": "static, freq, optics",
     "stru": "convert, wyckoff",
-    "data": "db, qnep",
+    "data": "db, qnep, inspect, select, annotate, validate, export",
     "skill": "install, path, preflight",
     "config": "init, show, set, check",
 }
+
+
+def _run_charge_aware_data(arguments: Sequence[str]) -> None:
+    """Run calculator-neutral sparse-BEC dataset actions."""
+    from .charge_aware_dataset import (
+        annotate_bec_dataset,
+        dataset_manifest,
+        export_qnep_xyz,
+        read_charge_dataset,
+        select_charge_frames,
+        validate_charge_dataset,
+    )
+
+    if not arguments or arguments[0] in {"-h", "--help"}:
+        print("usage: zstar data {inspect,select,annotate,validate,export} [options]")
+        return
+    action = arguments[0]
+    parser = argparse.ArgumentParser(prog=f"zstar data {action}")
+    parser.add_argument("--input", required=True)
+    parser.add_argument(
+        "--metadata",
+        default=None,
+        help="Optional DeepMD metadata CSV with frame_id,temperature,phase_label columns.",
+    )
+    if action == "inspect":
+        args = parser.parse_args(arguments[1:])
+        print(json.dumps(dataset_manifest(read_charge_dataset(args.input, metadata=args.metadata), args.input), indent=2))
+        return
+    if action == "validate":
+        parser.add_argument("--report", default=None)
+        args = parser.parse_args(arguments[1:])
+        report = validate_charge_dataset(args.input, report_output=args.report, metadata=args.metadata)
+        print(json.dumps(report, indent=2))
+        if not report["valid"]:
+            raise SystemExit(1)
+        return
+    parser.add_argument("--output", required=True)
+    if action == "select":
+        parser.add_argument("--count", type=int, default=None)
+        parser.add_argument("--ratio", type=float, default=None)
+        parser.add_argument("--seed", type=int, default=0)
+        parser.add_argument("--phase", action="append", dest="phases", default=None)
+        parser.add_argument("--temperature-bin", action="append", dest="temperature_bins", type=float, default=None)
+        args = parser.parse_args(arguments[1:])
+        result = select_charge_frames(
+            args.input,
+            args.output,
+            count=args.count,
+            ratio=args.ratio,
+            seed=args.seed,
+            phases=args.phases,
+            temperature_bins=args.temperature_bins,
+            metadata=args.metadata,
+        )
+    elif action == "annotate":
+        parser.add_argument("--map", dest="mapping", required=True)
+        args = parser.parse_args(arguments[1:])
+        result = annotate_bec_dataset(args.input, args.output, args.mapping)
+    elif action == "export":
+        args = parser.parse_args(arguments[1:])
+        result = export_qnep_xyz(args.input, args.output)
+    else:
+        raise SystemExit(f"Unknown zstar data action: {action}")
+    print(json.dumps(result, indent=2))
 
 
 def _print_family_help(family: str) -> None:
@@ -331,11 +395,30 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         _print_family_help("phonon")
         return
     action = ACTION_ALIASES.get(arguments[0], arguments[0])
-    if action not in {"pre", "run", "stat", "post", "irrep", "job", "spectrum"}:
+    if action not in {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "compare"}:
         raise SystemExit(f"Unknown zstar phonon action: {arguments[0]}")
     rest = list(arguments[1:])
     root = str(_option(rest, "--root", default="."))
     root_path = Path(root).resolve()
+    if action == "compare":
+        from .phonon_spectrum import compare_phonon_spectra
+
+        parser = argparse.ArgumentParser(prog="zstar phonon compare")
+        parser.add_argument("--reference", required=True, help="DFT/reference phonon_spectrum_result.json")
+        parser.add_argument("--candidate", required=True, help="Candidate phonon_spectrum_result.json")
+        parser.add_argument("--output", required=True, help="Overlay PDF path")
+        parser.add_argument("--reference-label", default="DFT baseline (with NAC)")
+        parser.add_argument("--candidate-label", default="qNEP-compatible (with NAC)")
+        args = parser.parse_args(rest)
+        result = compare_phonon_spectra(
+            args.reference,
+            args.candidate,
+            args.output,
+            reference_label=args.reference_label,
+            candidate_label=args.candidate_label,
+        )
+        print(json.dumps(result, indent=2))
+        return
     if action == "spectrum":
         from .phonon_spectrum import run_phonon_spectrum
 
@@ -543,7 +626,7 @@ def handle_canonical_cli(arguments: Sequence[str], legacy: LegacyRunner) -> bool
     if family == "bec":
         _run_bec(rest, legacy)
         return True
-    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum"}
+    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "compare"}
     if family == "phonon" or (
         family == "ph" and rest and rest[0] in phonon_actions | {"-h", "--help"}
     ):
@@ -585,6 +668,9 @@ def handle_canonical_cli(arguments: Sequence[str], legacy: LegacyRunner) -> bool
     if family == "data":
         if not rest or rest[0] in {"-h", "--help"}:
             _print_family_help("data")
+            return True
+        if rest[0] in {"inspect", "select", "annotate", "validate", "export"}:
+            _run_charge_aware_data(rest)
             return True
         if rest[0] not in {"qnep", "db"}:
             raise SystemExit(f"Unknown zstar data action: {rest[0]}")

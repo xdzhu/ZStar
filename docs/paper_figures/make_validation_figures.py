@@ -791,6 +791,7 @@ def _plot_tiled_planar_map(
     arrow_label: str,
     tile: bool = True,
     color_limit: float | None = None,
+    colorbar_axis=None,
 ) -> None:
     x_coord, y_coord, values, vector_a, vector_b, origin = _load_planar_map(path)
     limit = color_limit if color_limit is not None else float(np.percentile(np.abs(values), 98.0))
@@ -865,9 +866,10 @@ def _plot_tiled_planar_map(
     axis.set_ylabel(r"$y$ ($\AA$)")
     axis.set_title(title, loc="left", pad=4)
     style_data_axis(axis)
-    colorbar_axis = make_axes_locatable(axis).append_axes(
-        "right", size="4.2%", pad=0.04
-    )
+    if colorbar_axis is None:
+        colorbar_axis = make_axes_locatable(axis).append_axes(
+            "right", size="4.2%", pad=0.04
+        )
     colorbar = fig.colorbar(image, cax=colorbar_axis, orientation="vertical")
     colorbar.set_label(r"$V-\langle V\rangle$ (eV)")
     colorbar_axis.tick_params(
@@ -985,19 +987,28 @@ def make_potential_examples(data_root: Path, output: Path) -> dict:
     """Compare slab-normal and in-plane potential signatures in 2D systems."""
 
     root = data_root / "potential"
-    fig = plt.figure(figsize=(7.2, 8.1), constrained_layout=True)
-    fig.set_constrained_layout_pads(wspace=0.18, hspace=0.06)
-    grid = fig.add_gridspec(3, 2, height_ratios=(0.85, 1.14, 1.12))
+    fig = plt.figure(figsize=(7.5, 6.85), constrained_layout=True)
+    fig.set_constrained_layout_pads(w_pad=0.02, h_pad=0.02, wspace=0.04, hspace=0.018)
+    grid = fig.add_gridspec(
+        3,
+        4,
+        width_ratios=(1.0, 0.028, 1.0, 0.028),
+        height_ratios=(0.78, 0.94, 0.82),
+    )
     ax_mos2_z = fig.add_subplot(grid[0, 0])
-    ax_in2se3_z = fig.add_subplot(grid[0, 1])
+    ax_in2se3_z = fig.add_subplot(grid[0, 2])
     ax_ges_map = fig.add_subplot(grid[1, 0])
-    ax_reference_map = fig.add_subplot(grid[1, 1])
+    ax_ges_colorbar = fig.add_subplot(grid[1, 1])
+    ax_reference_map = fig.add_subplot(grid[1, 2])
+    ax_reference_colorbar = fig.add_subplot(grid[1, 3])
     ges_profile_grid = grid[2, 0].subgridspec(
-        2, 1, height_ratios=(2.2, 1.0), hspace=0.08
+        2, 1, height_ratios=(2.2, 1.0), hspace=0.0
     )
     ax_ges_profile = fig.add_subplot(ges_profile_grid[0, 0])
     ax_ges_odd = fig.add_subplot(ges_profile_grid[1, 0], sharex=ax_ges_profile)
-    reference_grid = grid[2, 1].subgridspec(2, 1, height_ratios=(2.2, 1.0), hspace=0.08)
+    reference_grid = grid[2, 2].subgridspec(
+        2, 1, height_ratios=(2.2, 1.0), hspace=0.0
+    )
     ax_reference_profile = fig.add_subplot(reference_grid[0, 0])
     ax_reference_odd = fig.add_subplot(reference_grid[1, 0], sharex=ax_reference_profile)
 
@@ -1075,10 +1086,12 @@ def make_potential_examples(data_root: Path, output: Path) -> dict:
         arrow_label=r"$a$",
         tile=True,
         color_limit=map_limit,
+        colorbar_axis=ax_ges_colorbar,
     )
     _plot_tiled_planar_map(fig, ax_reference_map, root / "GeS_nonpolar" / "xy_map.dat",
                           title=r"GeS: nonpolar reference ($3\times3$)", arrow_label=r"$a$",
-                          tile=True, color_limit=map_limit)
+                          tile=True, color_limit=map_limit,
+                          colorbar_axis=ax_reference_colorbar)
     _, _, _, odd, metric, center, periods = load_mirror_asymmetry(root, "MoS2", "a.dat")
     mos2_mirror = {"metric": metric, "odd_rms_eV": float(np.sqrt(np.mean(odd**2))),
                    "optimized_center_fraction": center, "input_periods_folded": periods}
@@ -1113,7 +1126,46 @@ def make_potential_examples(data_root: Path, output: Path) -> dict:
             ax_reference_profile,
         ),
     ):
-        panel_label(axis, label, x=-0.25, y=1.10)
+        panel_label(axis, label, x=-0.21, y=1.10)
+
+    # Constrained layout accounts for labels and colorbars first. Lock the
+    # quantitative axes afterward so every row has identical column widths
+    # and corresponding panels share exact vertical coordinates.
+    fig.canvas.draw()
+    fig.set_layout_engine(None)
+    left_anchor = ax_ges_map.get_position()
+    right_anchor = ax_reference_map.get_position()
+    for axis in (ax_mos2_z, ax_ges_profile, ax_ges_odd):
+        position = axis.get_position()
+        axis.set_position([left_anchor.x0, position.y0, left_anchor.width, position.height])
+    for axis in (ax_in2se3_z, ax_reference_profile, ax_reference_odd):
+        position = axis.get_position()
+        axis.set_position([right_anchor.x0, position.y0, right_anchor.width, position.height])
+    for left_axis, right_axis in (
+        (ax_mos2_z, ax_in2se3_z),
+        (ax_ges_map, ax_reference_map),
+        (ax_ges_profile, ax_reference_profile),
+        (ax_ges_odd, ax_reference_odd),
+    ):
+        left_position = left_axis.get_position()
+        right_position = right_axis.get_position()
+        right_axis.set_position(
+            [right_position.x0, left_position.y0, right_position.width, left_position.height]
+        )
+    for map_axis, colorbar_axis in (
+        (ax_ges_map, ax_ges_colorbar),
+        (ax_reference_map, ax_reference_colorbar),
+    ):
+        map_position = map_axis.get_position()
+        colorbar_position = colorbar_axis.get_position()
+        colorbar_axis.set_position(
+            [
+                colorbar_position.x0,
+                map_position.y0,
+                colorbar_position.width,
+                map_position.height,
+            ]
+        )
 
     files = save_figure(fig, output, "potential_examples_2d")
     plt.close(fig)

@@ -9,7 +9,7 @@ directories are intentionally excluded.
 
 | Directory | Scope | Cases |
 |---|---|---|
-| `3D_Bulk/` | bulk BEC and dielectric response | tetragonal and cubic BaTiO3, HfO2, 3C-SiC |
+| `3D_Bulk/` | bulk BEC, dielectric response, and finite-q phonons | tetragonal and cubic BaTiO3, HfO2, 3C-SiC |
 | `2D_Slab/` | slab and vacuum-independent sheet response | MoS2, hBN, alpha-In2Se3 |
 | `1D_Nanowire/` | periodic one-dimensional response | BN(9,0), Sb2S3; earlier GaAs example |
 | `0D_Molecules/` | molecular APT, IR, and Raman | H2O, CH4, CO2 |

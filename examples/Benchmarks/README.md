@@ -29,8 +29,8 @@ python examples/3D_Bulk/cubic_BaTiO3/verify.py
 The first command requires configured ABACUS and PYATB. Verification uses
 temporary copies of archived outputs and requires neither solver.
 Each material has clean `run/` inputs and basis files, archived `results/`,
-and a separate `work/` for new execution. Install `zstar==0.3.1` and use
-the matching GitHub tag for frozen example inputs.
+and a separate `work/` for new execution. Install ZStar and use the matching
+repository state for frozen example inputs.
 
 ## Timing definition
 

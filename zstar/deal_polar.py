@@ -1737,6 +1737,7 @@ def main(
     running_type=None,
     displacement_angstrom=None,
     molecular_source="pyatb",
+    bec_only=False,
 ):
 
     if running_type == 'solo':
@@ -1767,7 +1768,7 @@ def main(
     if Path(MANIFEST).is_file():
         if displacement_angstrom is not None:
             raise ValueError('Unified responses use actual STRU displacement vectors; do not override --displacement during postprocessing')
-        return collect_shared_abacus('.')
+        return collect_shared_abacus('.', bec_only=bec_only)
 
     if displacement_angstrom is None:
         half_displacement, displacement_source = _infer_displacement_angstrom()

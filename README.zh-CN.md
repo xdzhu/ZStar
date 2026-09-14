@@ -571,17 +571,23 @@ zstar bec post --root vasp_bec
 
 ### 1. 生成声子位移任务
 
-在包含 `STRU`、`KPT` 以及已设置 `cal_force 1` 的 `INPUT` 的声子目录中执行：
+在包含 `STRU`、`KPT` 以及带有 `cal_force 1` 的 ABACUS 输入文件的声子目录中执行。
+若使用 GPU 输入文件，可通过 `--input INPUT-GPU` 保留其设置：
 
 ```bash
-zstar phonon pre --root . --calculator abacus \
-  --stru STRU --dim "2 2 2" --symmprec 1e-3
+zstar phonon pre --spectrum --root . --calculator abacus \
+  --stru STRU --input INPUT --supercell "2 2 2" --physical-dim 3 --symmprec 1e-3
 zstar phonon run --root .
 ```
 
 随后按照选定运行环境完成全部 `disp-*` 目录中的力计算。`zstar phonon pre`
 不要求也不会强制复制 `abacus_x.sh`；若当前目录确有该脚本，则只把它作为
 可选便利文件复制。
+
+选定的输入文件会在每个位移目录中作为 `INPUT` 使用，但不会被改写，因而
+`ks_solver` 等计算器相关参数仍由用户控制。三维 bulk 通常优先采用
+`OMP_NUM_THREADS=1` 并增加 MPI ranks；低维体系和分子则可能更适合更多 OpenMP
+线程。实际资源组合由作业头文件和执行配置决定。
 
 ### 2. 后处理力并查看 Gamma 模式分类
 
@@ -599,8 +605,13 @@ Phonopy 无法可靠解析的模式会标记为 `Unresolved`，而不会被直�
 
 ```bash
 cp ../polar/BORN .
-zstar phonon post --root . --nac
+zstar phonon spectrum --root . --nac
 ```
+
+不指定扩胞时，周期性方向会自动扩展到每个晶格矢量严格大于 10 Angstrom。
+高对称路径由 Seekpath 生成，并采用 spglib 的对称性数据。三维体材料默认
+分别写出未加 NAC、加 NAC 的能带与 DOS 图，以及蓝红叠加对比图；`--no-nac`
+只生成未修正图。NAC 不对二维、纳米线或分子启用。
 
 ### 3. 静态与频率相关介电响应
 
@@ -838,7 +849,7 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 | 命令 | 功能 |
 | --- | --- |
 | `zstar bec pre/job/run/stat/post` | 极化、APT/BEC、`BORN`、续算状态和任务脚本。 |
-| `zstar phonon pre/job/run/stat/post/irrep` | 位移、串行力计算、力常数、频率和不可约表示。 |
+| `zstar phonon pre/job/run/stat/post/irrep/spectrum` | 位移、串行力计算、力常数、频率、不可约表示、有限波矢能带和 DOS。 |
 | `zstar spectra pre/job/run/stat/post` | 计算器感知的 IR 与 Raman 工作流。 |
 | `zstar dielectric static/freq/optics` | 静态、振动及电子介电响应。 |
 | `zstar backend list` | 列出能力，并可检查程序或插件。 |
@@ -846,7 +857,8 @@ zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
 | `zstar response` | 校验并统一计算器无关响应数据。 |
 | `zstar density` | 生成电荷密度导出适配器和来源 sidecar。 |
 | `zstar stru convert/wyckoff` | 转换结构或检查 Wyckoff 位置。 |
-| `zstar data db/qnep` | 管理可追溯 BEC/High-K 数据库或导出 qNEP 数据。 |
+| `zstar data inspect/select/annotate/validate/export` | 准备、审计、稀疏标注并导出带电荷机器学习力场数据（兼容 qNEP）。 |
+| `zstar data db/qnep` | 管理可追溯 BEC/High-K 数据库或使用旧 qNEP 桥接入口。 |
 | `zstar skill install/path/preflight` | 安装 agent skill 或检查工作区。 |
 | `zstar pot` | 绘制势曲线/平面图、真空势差和镜面非对称度。 |
 

@@ -49,6 +49,7 @@ __all__ = [
     "calc_kappa",
     "agent_skill",
     "bec_database",
+    "charge_aware_dataset",
     "cp2k_bec",
     "deal_polar",
     "density_adapters",

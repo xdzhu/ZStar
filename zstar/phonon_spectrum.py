@@ -559,3 +559,95 @@ def run_phonon_spectrum(
         json.dumps(_jsonable(result), indent=2), encoding="utf-8"
     )
     return result
+
+
+def compare_phonon_spectra(
+    reference: str | Path,
+    candidate: str | Path,
+    output: str | Path,
+    *,
+    reference_label: str = "DFT baseline (with NAC)",
+    candidate_label: str = "qNEP-compatible (with NAC)",
+) -> dict:
+    """Overlay two completed spectrum-result JSON files.
+
+    This is deliberately calculator-neutral: ZStar compares archived band
+    data but does not call GPUMD/qNEP.  Both files must use the same q-path,
+    point count, branch count, and frequency unit.  The metadata in the
+    result files should document whether the NAC is external or native.
+    """
+    reference_path = Path(reference).resolve()
+    candidate_path = Path(candidate).resolve()
+    ref = json.loads(reference_path.read_text(encoding="utf-8"))
+    cand = json.loads(candidate_path.read_text(encoding="utf-8"))
+    if ref.get("frequency_unit") != cand.get("frequency_unit"):
+        raise ValueError("phonon frequency units do not match")
+    if ref.get("labels") != cand.get("labels"):
+        raise ValueError("phonon q-path labels do not match")
+    ref_data = ref.get("with_nac")
+    cand_data = cand.get("with_nac")
+    if ref_data is None or cand_data is None:
+        raise ValueError("both spectrum results must contain with_nac data")
+    ref_dist = [np.asarray(item, dtype=float) for item in ref_data["distances"]]
+    cand_dist = [np.asarray(item, dtype=float) for item in cand_data["distances"]]
+    if len(ref_dist) != len(cand_dist):
+        raise ValueError("phonon q-path segment counts do not match")
+    ref_freq = [np.asarray(item, dtype=float) for item in ref_data["frequencies"]]
+    cand_freq = [np.asarray(item, dtype=float) for item in cand_data["frequencies"]]
+    if any(a.shape != b.shape or not np.allclose(a, b) or x.shape != y.shape for a, b, x, y in zip(ref_dist, cand_dist, ref_freq, cand_freq)):
+        raise ValueError("phonon q-point grids or band shapes do not match")
+    deltas = np.concatenate([(b - a).reshape(-1) for a, b in zip(ref_freq, cand_freq)])
+    target = Path(output).resolve()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(7.2, 4.5))
+    colors = ("#2f6da8", "#c64c4c")
+    for data, color, label in ((ref_data, colors[0], reference_label), (cand_data, colors[1], candidate_label)):
+        for segment_index, (distance, freq) in enumerate(zip(ref_dist, data["frequencies"])):
+            values = np.asarray(freq, dtype=float)
+            for band_index in range(values.shape[1]):
+                ax.plot(distance, values[:, band_index], color=color, linewidth=1.0,
+                        label=label if segment_index == 0 and band_index == 0 else None)
+    ticks, texts = _axis_ticks(ref_dist, ref["labels"], ref.get("connections"))
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(texts)
+    ax.set_xlabel("Wave vector")
+    ax.set_ylabel(f"Frequency ({ref.get('frequency_unit', 'THz')})")
+    ax.set_ylim(-8.0, 25.0)
+    ax.grid(axis="y", color="0.88", linewidth=0.5)
+    ax.legend(frameon=False, loc="upper left")
+    for position in ticks:
+        ax.axvline(position, color="0.78", linewidth=0.45, zorder=0)
+    # A small Gamma-point inset makes LO--TO differences visible without
+    # hiding the full dispersion.  Use the first point of the first segment.
+    inset = ax.inset_axes([0.62, 0.08, 0.34, 0.30])
+    for data, color in ((ref_data, colors[0]), (cand_data, colors[1])):
+        values = np.asarray(data["frequencies"][0], dtype=float)[0]
+        inset.plot(np.arange(len(values)), values, "o", color=color, ms=2.8)
+    inset.set_title("Γ point", fontsize=8)
+    inset.tick_params(labelsize=7)
+    inset.set_xticks([])
+    fig.savefig(target, bbox_inches="tight")
+    fig.savefig(target.with_suffix(".png"), dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    summary = {
+        "schema": "zstar-phonon-comparison",
+        "reference": str(reference_path),
+        "candidate": str(candidate_path),
+        "reference_label": reference_label,
+        "candidate_label": candidate_label,
+        "frequency_unit": ref.get("frequency_unit", "THz"),
+        "qpath_labels": ref.get("labels"),
+        "branches": int(ref_freq[0].shape[1]),
+        "points": int(sum(len(item) for item in ref_dist)),
+        "mae": float(np.mean(np.abs(deltas))),
+        "rmse": float(np.sqrt(np.mean(deltas * deltas))),
+        "max_abs_error": float(np.max(np.abs(deltas))),
+        "outputs": [str(target), str(target.with_suffix(".png"))],
+    }
+    target.with_suffix(".json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    return summary

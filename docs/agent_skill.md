@@ -96,6 +96,7 @@ The skill encodes the non-obvious invariants that should survive model changes:
 | Reference first | Complete and gate `0.no-move` before displaced BEC stages. |
 | Dimensional split | Use Berry response along periodic axes and cube-integrated dipoles along open axes for 1D wires and 2D slabs. |
 | 1D boundary | Run the implemented `z`-periodic ABACUS + PYATB BEC and Gamma-spectroscopy route, but do not claim finite-wavevector polar phonons without a genuine 1D Coulomb cutoff. |
+| Finite-q bulk phonons | Use `zstar phonon pre --spectrum`, collect Phonopy forces, then pass a compatible `BORN` to `zstar phonon spectrum`; report w/o NAC, with NAC, and overlay outputs separately. Preserve a user-selected CPU/GPU `INPUT` with `--input`; prefer MPI with `OMP_NUM_THREADS=1` for 3D bulk. |
 | Resumability | Reuse `.zstar` state and repeat the same serial executor command. |
 | Raman derivative | Use the Unified displacement responses by default; reserve positive/negative normal-mode pairs for a Separate control. |
 | Completion | Check named files, state records, units, and physical convention. |

@@ -119,24 +119,6 @@
       }
     },
     {
-      "figure": "spectroscopy_across_dimensions",
-      "files": {
-        "png": "spectroscopy_across_dimensions.png",
-        "pdf": "spectroscopy_across_dimensions.pdf",
-        "svg": "spectroscopy_across_dimensions.svg",
-        "powerpoint_svg": "spectroscopy_across_dimensions_powerpoint.svg",
-        "tiff": "spectroscopy_across_dimensions.tiff"
-      },
-      "layout": "4 rows by 3 columns",
-      "completed_systems": [
-        "HfO$_2$",
-        "MoS$_2$",
-        "Sb$_2$S$_3$",
-        "CH$_4$"
-      ],
-      "placeholder": false
-    },
-    {
       "figure": "unified_efficiency_benchmarks",
       "files": {
         "pdf": "unified_efficiency_benchmarks.pdf",
@@ -147,6 +129,23 @@
       },
       "source_data": "source_data/unified_efficiency_benchmarks.csv",
       "layout": "two stacked paired-bar panels normalized to the Separate cost for each case",
+      "placeholder": false
+    },
+    {
+      "figure": "spectroscopy_across_dimensions",
+      "files": {
+        "png": "spectroscopy_across_dimensions.png",
+        "pdf": "spectroscopy_across_dimensions.pdf",
+        "svg": "spectroscopy_across_dimensions.svg",
+        "powerpoint_svg": "spectroscopy_across_dimensions_powerpoint.svg",
+        "tiff": "spectroscopy_across_dimensions.tiff"
+      },
+      "layout": "3 rows by 3 columns",
+      "completed_systems": [
+        "HfO$_2$",
+        "MoS$_2$",
+        "CH$_4$"
+      ],
       "placeholder": false
     }
   ],

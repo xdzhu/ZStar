@@ -31,7 +31,7 @@ pre -> job (optional) -> run -> stat -> post
 | `zstar response` | `validate/import-bec/import-abacus/import-phonopy/intrinsic` | 计算器无关响应文档及低维本征响应。 |
 | `zstar density` | `vasp-cube/qe-input/qe-sidecar/cp2k-block/sidecar` | 电荷密度导出适配器与来源 sidecar。 |
 | `zstar stru` | `convert/wyckoff` | 结构转换与对称性检查。 |
-| `zstar data` | `db/qnep` | 可追溯 BEC/High-K 数据库和 qNEP 训练数据。 |
+| `zstar data` | `inspect/select/annotate/validate/export/db/qnep` | 稀疏 BEC 带电荷数据集、可追溯 BEC/High-K 数据库和 qNEP 训练数据。 |
 | `zstar skill` | `install/path/preflight` | 安装或检查随包发布的 agent skill，并执行只读预检查。 |
 | `zstar pot` | 选项驱动 | 轴向曲线、平面图、方向曲线、真空势差和镜面对称破缺。 |
 
@@ -141,6 +141,11 @@ zstar phonon stat --root .
 zstar phonon post --root . --stru STRU --physical-dim 3
 cp path/to/BORN .
 zstar phonon spectrum --root . --nac
+
+# 对比两套已完成的 with-NAC 声子谱（例如 DFT baseline 与 qNEP-compatible）
+zstar phonon compare --reference dft/phonon_spectrum_result.json \
+  --candidate qnep/phonon_spectrum_result.json \
+  --output results/figures/cubic_bto_phonon_overlay.pdf
 ```
 
 `--input` 默认为 `INPUT`，也接受用户提供的 ABACUS CPU 或 GPU 输入文件。
