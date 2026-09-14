@@ -516,6 +516,8 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     assert document.metadata["polarization_backend"] == "pyatb"
     assert document.metadata["polarization_cartesian_collected"] is True
     assert document.metadata["pyatb_run_count"] == 3
+    assert document.symmetry["reference_observed"]["operation_count"] > 0
+    assert document.metadata["symmetry_audit"]["representation_source"] == "observed_reference"
     cartesian_provenance = document.quantity("polarization_cartesian").provenance
     assert cartesian_provenance["branch_matched"] is True
     assert cartesian_provenance["branch_matching_quantity"] == "polarization_directional_matched"

@@ -72,6 +72,7 @@ from .structure import (
     analyze_space_group,
     displacement_representation,
     polarization_representation,
+    space_group_report_to_dict,
     strain_representation,
     symmetry_adapted_input_plan,
 )
@@ -152,6 +153,7 @@ __all__ = [
     "actual_strain",
     "acoustic_sum_rule_diagnostics",
     "analyze_space_group",
+    "space_group_report_to_dict",
     "apply_strain",
     "convert_dielectric",
     "convert_piezoelectric_forms",

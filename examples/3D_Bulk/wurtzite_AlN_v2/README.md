@@ -17,3 +17,8 @@ tasks, one OpenMP thread per task, no node exclusivity).  On 235 run
 `tools/v2_piezo_235_direct.sh` inside the allocated compute node (40 MPI × 1
 OMP); it does not submit PBS jobs.  The driver is resumable through its stage
 markers, so do not start a second copy for the same case root.
+
+The preparation record uses ideal `P6_3mc` operations.  The collected reference
+structure must still pass the persisted tolerance audit: in the current run it
+is `Cmc2_1` at `symprec=1e-5` and `1e-4`, so the result remains research-only
+until that small relaxation-induced symmetry break is resolved.

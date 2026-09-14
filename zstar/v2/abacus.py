@@ -23,6 +23,95 @@ from .polarization import (
     pyatb_directional_to_cartesian,
 )
 from .strain import actual_strain
+from .structure import StructureSpec, analyze_space_group, space_group_report_to_dict
+
+
+def _augment_reference_symmetry(
+    preparation_symmetry: Mapping[str, Any],
+    reference_structure: Any,
+    dimensions: DimensionSpec,
+) -> dict[str, Any]:
+    """Record preparation and observed-reference symmetry as separate facts.
+
+    A relaxed-ion ensemble may start from a structure whose small numerical
+    relaxation breaks the ideal preparation space group at tight tolerances.
+    The response representation must continue to use the serialized
+    preparation operations, while the observed structure is reported for an
+    explicit gate rather than being silently promoted to (or projected onto)
+    the ideal group.
+    """
+
+    data = dict(preparation_symmetry)
+    intended = dict(preparation_symmetry)
+    try:
+        reference_spec = StructureSpec(
+            lattice=np.asarray(reference_structure.cell, dtype=float),
+            fractional_positions=np.asarray(reference_structure.scaled_positions, dtype=float),
+            symbols=tuple(str(symbol) for symbol in reference_structure.symbols),
+            dimensionality=dimensions,
+        )
+        observed = analyze_space_group(reference_spec)
+        observed_data: dict[str, Any] = space_group_report_to_dict(observed)
+
+        # Older preparation manifests recorded the symbol and operation count
+        # but not the operations themselves.  Recover the intended operation
+        # set from the same reference at the serialized preparation tolerance
+        # when it is unambiguous; this upgrades provenance without changing
+        # the response representation or hiding a tight-tolerance mismatch.
+        if preparation_symmetry and not preparation_symmetry.get("operations"):
+            preparation_tolerance = float(preparation_symmetry.get("symprec", 0.0) or 0.0)
+            if preparation_tolerance > 0.0:
+                intended_report = analyze_space_group(
+                    reference_spec,
+                    symprec_grid=(preparation_tolerance,),
+                )
+                if (
+                    intended_report.space_group == preparation_symmetry.get("space_group")
+                    and intended_report.operation_count == int(
+                        preparation_symmetry.get("operation_count", intended_report.operation_count)
+                    )
+                ):
+                    intended_serialized = space_group_report_to_dict(intended_report)
+                    intended = {**intended, **intended_serialized}
+                    data = {**data, "operations": intended_serialized["operations"]}
+    except Exception as exc:  # pragma: no cover - defensive provenance path
+        observed_data = {
+            "status": "analysis_failed",
+            "space_group": None,
+            "symprec": None,
+            "operation_count": 0,
+            "diagnostics": {
+                "reason": str(exc),
+                "type": type(exc).__name__,
+            },
+        }
+    if preparation_symmetry:
+        data["intended_preparation"] = intended
+    data["reference_observed"] = observed_data
+    intended_group = data.get("space_group")
+    observed_group = observed_data.get("space_group")
+    data["comparison"] = {
+        "intended_space_group": intended_group,
+        "observed_reference_space_group": observed_group,
+        "same_space_group": (
+            intended_group is not None
+            and observed_group is not None
+            and str(intended_group) == str(observed_group)
+        ),
+        "representation_source": (
+            "intended_preparation"
+            if preparation_symmetry
+            else "observed_reference"
+        ),
+        "status": (
+            "consistent"
+            if intended_group is not None
+            and observed_group is not None
+            and str(intended_group) == str(observed_group)
+            else "requires_audit"
+        ),
+    }
+    return data
 
 
 def _verify_input_hash(directory: Path, expected: str, *, label: str) -> None:
@@ -579,6 +668,11 @@ def collect_abacus_strain_response(
         if not isinstance(loaded_symmetry, dict):
             raise ValueError(f"v2 symmetry report must be a JSON object: {symmetry_path}")
         symmetry_data = loaded_symmetry
+    # Keep the symmetry used to plan the ensemble distinct from a fresh audit
+    # of the serialized reference structure.  In particular, a relaxed-ion
+    # reference can be numerically below the preparation tolerance; the
+    # collector must expose that mismatch instead of silently averaging it.
+    symmetry_data = _augment_reference_symmetry(symmetry_data, reference_structure, dimensions)
     provenance = {
         "reference_hash": ensemble.reference_hash,
         "stage_names": stage_names,
@@ -637,6 +731,7 @@ def collect_abacus_strain_response(
             "ion_relaxation": ion_relaxation,
             "reference_force_max_eV_per_angstrom": reference_force_max,
             "internal_displacement_collected": internal_displacements is not None,
+            "symmetry_audit": dict(symmetry_data.get("comparison", {})),
         },
     )
 

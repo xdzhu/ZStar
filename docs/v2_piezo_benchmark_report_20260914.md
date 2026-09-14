@@ -34,8 +34,10 @@ marker 断点续算，禁止并行启动第二个相同 root。
 `d31=−2.75`、`d33=6.43`、`d15=−3.33`。这与直接 stress-piezo 文献的
 `d31=−2.1`、`d33=5.4`、`d15=2.9`（Bernardini–Fiorentini）在量级上相符，
 但 `d15` 的符号必须先统一坐标手性。弹性矩阵正定，最小特征值为 `112.25 GPa`。
-proper 压电 fit residual 为 `0.53%`，弹性 residual 为 `0.37%`；因此这是已完成
-计算但仍处于 literature-audit gate 的结果。
+proper 压电 fit residual 为 `0.53%`，弹性 residual 为 `0.37%`。收集阶段新增的
+结构审计显示：准备记录的 `P6_3mc` 仅在 `symprec=1e-3` 下恢复，最终参考结构在
+`1e-5/1e-4` 下为 `Cmc2_1`。因此 AlN 也是“计算完成、待对称性与文献审计”，
+不能把 12 操作的理想空间群约束当作已经由弛豫结构证明。
 
 ### zinc-blende GaAs（HF，job 27678336，node139）
 
@@ -80,7 +82,7 @@ PYATB，40 MPI × 1 OMP）。proper 结果为 `e31(x)=−0.6021`、`e31(y)=−0.
 
 ## 当前 gate
 
-AlN 和 GaAs 已完成“计算闭环 + 内部 rank/residual/稳定性检查”，尚未完成独立
-后端交叉计算和全部文献约定映射；ZnO 的高精度闭环已完成，但仍未通过 residual
-与最终结构对称性 gate。故当前不能开放稳定的 `zstar piezo` 用户入口，也不能
-把这些数值写成 v2 论文的最终普适结论。
+GaAs 已完成“计算闭环 + 内部 rank/residual/稳定性检查”，但仍需独立后端交叉
+计算和完整文献约定映射；AlN 与 ZnO 的高精度闭环已完成，但最终参考结构相对
+准备空间群存在紧容差对称性破缺，且 ZnO 尚未通过 residual gate。故当前不能
+开放稳定的 `zstar piezo` 用户入口，也不能把这些数值写成 v2 论文的最终普适结论。

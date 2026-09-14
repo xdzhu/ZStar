@@ -96,6 +96,41 @@ class SpaceGroupReport:
         return len(self.operations)
 
 
+def space_group_report_to_dict(report: SpaceGroupReport) -> dict[str, object]:
+    """Serialize a symmetry report, including the exact operations used.
+
+    The preparation report is part of the response provenance.  Persisting
+    only a space-group symbol and operation count is insufficient for an
+    audit: atom permutations, fractional translations, and Cartesian
+    rotations determine the response representation.  Keep this serializer
+    calculator-neutral so collectors can also record an independently
+    observed relaxed-structure report without changing the v1 schema.
+    """
+
+    if not isinstance(report, SpaceGroupReport):
+        raise TypeError("report must be a SpaceGroupReport")
+    operations = [
+        {
+            "rotation_fractional": np.asarray(operation.rotation_fractional, dtype=int).tolist(),
+            "translation_fractional": np.asarray(operation.translation_fractional, dtype=float).tolist(),
+            "rotation_cartesian": np.asarray(operation.rotation_cartesian, dtype=float).tolist(),
+            "permutation": list(operation.permutation),
+        }
+        for operation in report.operations
+    ]
+    return {
+        "status": report.status,
+        "symprec": float(report.symprec),
+        "space_group": report.space_group,
+        "hall_number": report.hall_number,
+        "equivalent_atoms": list(report.equivalent_atoms),
+        "representatives": list(report.representatives),
+        "operation_count": report.operation_count,
+        "operations": operations,
+        "diagnostics": report.diagnostics,
+    }
+
+
 @dataclass(frozen=True)
 class SymmetryInputPlan:
     """Minimal canonical input directions that identify allowed responses.

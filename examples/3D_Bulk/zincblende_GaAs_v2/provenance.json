@@ -22,6 +22,11 @@
   "restart_count": 3,
   "runtime_note": "The final Slurm job resumed two ABACUS stages from an earlier attempt; runtime sum is an audit of files in the case root.",
   "polarization_route": "one PYATB run per geometry, three directions",
+  "symmetry_audit": {
+    "intended_preparation_space_group": "F-43m",
+    "observed_reference_space_group": "F-43m",
+    "status": "consistent"
+  },
   "results": "results/summary.json",
   "response_document": "results/response_document.json"
 }

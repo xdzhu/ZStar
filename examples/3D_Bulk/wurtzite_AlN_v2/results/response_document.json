@@ -1,7 +1,7 @@
 {
   "schema": "zstar-v2-response",
   "schema_version": "0.1",
-  "created_at": "2026-09-13T17:32:37.517541+00:00",
+  "created_at": "2026-09-14T01:35:00.842932+00:00",
   "backend": "abacus+pyatb",
   "dimensionality": {
     "value": 3,
@@ -90,6 +90,1407 @@
       ],
       "boundary_compatible_operations": 12,
       "rejected_operation_reasons": []
+    },
+    "operations": [
+      {
+        "rotation_fractional": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          -0.0,
+          -0.0,
+          -0.0
+        ],
+        "rotation_cartesian": [
+          [
+            0.9999999999999999,
+            -1.1102230246251565e-16,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            1,
+            -1,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          0.6666666668000001,
+          0.33332117030000014,
+          0.5
+        ],
+        "rotation_cartesian": [
+          [
+            0.49999999999999983,
+            -0.8660765175270277,
+            0.0
+          ],
+          [
+            0.8659742930584591,
+            0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          1,
+          0,
+          3,
+          2
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            0,
+            -1,
+            0
+          ],
+          [
+            1,
+            -1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          1.2163300000200827e-05,
+          0.9999878371000002,
+          0.0
+        ],
+        "rotation_cartesian": [
+          [
+            -0.5000000000000001,
+            -0.8660765175270276,
+            0.0
+          ],
+          [
+            0.8659742930584591,
+            -0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            -1,
+            0,
+            0
+          ],
+          [
+            0,
+            -1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          0.6666909930000002,
+          0.33333333360000017,
+          0.5
+        ],
+        "rotation_cartesian": [
+          [
+            -0.9999999999999999,
+            1.1102230246251565e-16,
+            0.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          1,
+          0,
+          3,
+          2
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            -1,
+            1,
+            0
+          ],
+          [
+            -1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          2.432620000003549e-05,
+          1.2163300000089805e-05,
+          0.0
+        ],
+        "rotation_cartesian": [
+          [
+            -0.49999999999999983,
+            0.8660765175270277,
+            0.0
+          ],
+          [
+            -0.8659742930584591,
+            -0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            -1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          0.6666788296999999,
+          0.3333454965,
+          0.5
+        ],
+        "rotation_cartesian": [
+          [
+            0.5000000000000001,
+            0.8660765175270276,
+            0.0
+          ],
+          [
+            -0.8659742930584591,
+            0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          1,
+          0,
+          3,
+          2
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          0.6666788296999999,
+          0.33332117030000014,
+          0.5
+        ],
+        "rotation_cartesian": [
+          [
+            -0.5000000000000001,
+            0.8660765175270276,
+            0.0
+          ],
+          [
+            0.8659742930584591,
+            0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          1,
+          0,
+          3,
+          2
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            -1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          -0.0,
+          0.9999878371000002,
+          -0.0
+        ],
+        "rotation_cartesian": [
+          [
+            0.49999999999999983,
+            0.8660765175270277,
+            0.0
+          ],
+          [
+            0.8659742930584591,
+            -0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            1,
+            -1,
+            0
+          ],
+          [
+            0,
+            -1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          0.6666666668000001,
+          0.33333333360000017,
+          0.5
+        ],
+        "rotation_cartesian": [
+          [
+            0.9999999999999999,
+            2.220446049250313e-16,
+            0.0
+          ],
+          [
+            0.0,
+            -1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          1,
+          0,
+          3,
+          2
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            0,
+            -1,
+            0
+          ],
+          [
+            -1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          1.2163300000200827e-05,
+          1.2163300000089805e-05,
+          0.0
+        ],
+        "rotation_cartesian": [
+          [
+            0.5000000000000001,
+            -0.8660765175270276,
+            0.0
+          ],
+          [
+            -0.8659742930584591,
+            -0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            -1,
+            0,
+            0
+          ],
+          [
+            -1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          0.6666909930000002,
+          0.3333454965,
+          0.5
+        ],
+        "rotation_cartesian": [
+          [
+            -0.49999999999999983,
+            -0.8660765175270277,
+            0.0
+          ],
+          [
+            -0.8659742930584591,
+            0.5,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          1,
+          0,
+          3,
+          2
+        ]
+      },
+      {
+        "rotation_fractional": [
+          [
+            -1,
+            1,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "translation_fractional": [
+          2.432620000003549e-05,
+          0.0,
+          0.0
+        ],
+        "rotation_cartesian": [
+          [
+            -0.9999999999999999,
+            -2.220446049250313e-16,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "permutation": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "intended_preparation": {
+      "status": "stable",
+      "symprec": 0.001,
+      "space_group": "P6_3mc",
+      "hall_number": 480,
+      "equivalent_atoms": [
+        0,
+        0,
+        2,
+        2
+      ],
+      "representatives": [
+        0,
+        2
+      ],
+      "operation_count": 12,
+      "diagnostics": {
+        "candidate_count": 1,
+        "candidate_signatures": [
+          {
+            "symprec": 0.001,
+            "space_group": "P6_3mc",
+            "hall_number": 480,
+            "operation_count": 12
+          }
+        ],
+        "boundary_compatible_operations": 12,
+        "rejected_operation_reasons": []
+      },
+      "operations": [
+        {
+          "rotation_fractional": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "rotation_cartesian": [
+            [
+              0.9999999999999999,
+              -1.1102230246251565e-16,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              1,
+              -1,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666666668000001,
+            0.33332117030000014,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              0.49999999999999983,
+              -0.8660765175270277,
+              0.0
+            ],
+            [
+              0.8659742930584591,
+              0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              1,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            1.2163300000200827e-05,
+            0.9999878371000002,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              -0.5000000000000001,
+              -0.8660765175270276,
+              0.0
+            ],
+            [
+              0.8659742930584591,
+              -0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666909930000002,
+            0.33333333360000017,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              -0.9999999999999999,
+              1.1102230246251565e-16,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              1,
+              0
+            ],
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            2.432620000003549e-05,
+            1.2163300000089805e-05,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              -0.49999999999999983,
+              0.8660765175270277,
+              0.0
+            ],
+            [
+              -0.8659742930584591,
+              -0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              -1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666788296999999,
+            0.3333454965,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              0.5000000000000001,
+              0.8660765175270276,
+              0.0
+            ],
+            [
+              -0.8659742930584591,
+              0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666788296999999,
+            0.33332117030000014,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              -0.5000000000000001,
+              0.8660765175270276,
+              0.0
+            ],
+            [
+              0.8659742930584591,
+              0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            -0.0,
+            0.9999878371000002,
+            -0.0
+          ],
+          "rotation_cartesian": [
+            [
+              0.49999999999999983,
+              0.8660765175270277,
+              0.0
+            ],
+            [
+              0.8659742930584591,
+              -0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              1,
+              -1,
+              0
+            ],
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666666668000001,
+            0.33333333360000017,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              0.9999999999999999,
+              2.220446049250313e-16,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            1.2163300000200827e-05,
+            1.2163300000089805e-05,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              0.5000000000000001,
+              -0.8660765175270276,
+              0.0
+            ],
+            [
+              -0.8659742930584591,
+              -0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              -1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666909930000002,
+            0.3333454965,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              -0.49999999999999983,
+              -0.8660765175270277,
+              0.0
+            ],
+            [
+              -0.8659742930584591,
+              0.5,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            2.432620000003549e-05,
+            0.0,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              -0.9999999999999999,
+              -2.220446049250313e-16,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    "reference_observed": {
+      "status": "stable",
+      "symprec": 1e-05,
+      "space_group": "Cmc2_1",
+      "hall_number": 176,
+      "equivalent_atoms": [
+        0,
+        0,
+        2,
+        2
+      ],
+      "representatives": [
+        0,
+        2
+      ],
+      "operation_count": 4,
+      "operations": [
+        {
+          "rotation_fractional": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            -0.0,
+            -0.0,
+            -0.0
+          ],
+          "rotation_cartesian": [
+            [
+              0.9999999999999999,
+              -1.1102230246251565e-16,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666666667000003,
+            0.33333333360000017,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              -0.9999999999999999,
+              1.1102230246251565e-16,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            -9.999978622943217e-11,
+            0.0,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              -0.9999999999999999,
+              -2.220446049250313e-16,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              1,
+              -1,
+              0
+            ],
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666666668000001,
+            0.33333333360000017,
+            0.5
+          ],
+          "rotation_cartesian": [
+            [
+              0.9999999999999999,
+              2.220446049250313e-16,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        }
+      ],
+      "diagnostics": {
+        "candidate_count": 3,
+        "candidate_signatures": [
+          {
+            "symprec": 1e-05,
+            "space_group": "Cmc2_1",
+            "hall_number": 176,
+            "operation_count": 4
+          },
+          {
+            "symprec": 0.0001,
+            "space_group": "Cmc2_1",
+            "hall_number": 176,
+            "operation_count": 4
+          },
+          {
+            "symprec": 0.001,
+            "space_group": "P6_3mc",
+            "hall_number": 480,
+            "operation_count": 12
+          }
+        ],
+        "boundary_compatible_operations": 4,
+        "rejected_operation_reasons": []
+      }
+    },
+    "comparison": {
+      "intended_space_group": "P6_3mc",
+      "observed_reference_space_group": "Cmc2_1",
+      "same_space_group": false,
+      "representation_source": "intended_preparation",
+      "status": "requires_audit"
     }
   },
   "functional": "pbesol",
@@ -3677,6 +5078,13 @@
     "ion_relaxation": "relaxed-ion",
     "reference_force_max_eV_per_angstrom": 0.0001386824856671166,
     "internal_displacement_collected": true,
+    "symmetry_audit": {
+      "intended_space_group": "P6_3mc",
+      "observed_reference_space_group": "Cmc2_1",
+      "same_space_group": false,
+      "representation_source": "intended_preparation",
+      "status": "requires_audit"
+    },
     "polarization_backend": "pyatb",
     "pyatb_run_count": 13,
     "pyatb_precision_required": true,

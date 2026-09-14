@@ -5,6 +5,15 @@
   "backend": "abacus+pyatb",
   "functional": "pbesol",
   "space_group": "P6_3mc",
+  "intended_preparation_space_group": "P6_3mc",
+  "observed_reference_space_group": "Cmc2_1",
+  "symmetry_audit": {
+    "intended_space_group": "P6_3mc",
+    "observed_reference_space_group": "Cmc2_1",
+    "same_space_group": false,
+    "representation_source": "intended_preparation",
+    "status": "requires_audit"
+  },
   "dimensionality": {
     "value": 3,
     "label": "bulk",

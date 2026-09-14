@@ -1,6 +1,6 @@
 {
   "schema": "zstar-v2-case-provenance",
-  "status": "research_gate_pending_literature_audit",
+  "status": "completed_research_gate_pending_symmetry_and_literature_audit",
   "case": "wurtzite_AlN_v2",
   "backend": "ABACUS+PYATB",
   "scheduler": "HF Slurm",
@@ -21,6 +21,12 @@
   "restartable": true,
   "restart_count": 0,
   "polarization_route": "one PYATB run per geometry, three directions",
+  "symmetry_audit": {
+    "intended_preparation_space_group": "P6_3mc",
+    "observed_reference_space_group": "Cmc2_1",
+    "status": "requires_audit",
+    "note": "The prepared P6_3mc operations are retained for representation fitting; the relaxed reference is Cmc2_1 at symprec=1e-5 and 1e-4, and P6_3mc only at 1e-3."
+  },
   "results": "results/summary.json",
   "response_document": "results/response_document.json"
 }

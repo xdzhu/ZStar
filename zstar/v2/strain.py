@@ -15,7 +15,12 @@ import numpy as np
 from ..dimensions import dimension_spec
 from .ensemble import PerturbationStage, ResponseEnsemble, plan_central_stages
 from .mechanical import periodic_strain_indices, strain_tensor_to_voigt, voigt_to_strain_tensor
-from .structure import StructureSpec, analyze_space_group, symmetry_adapted_input_plan
+from .structure import (
+    StructureSpec,
+    analyze_space_group,
+    space_group_report_to_dict,
+    symmetry_adapted_input_plan,
+)
 
 
 def apply_strain(structure: StructureSpec, strain_voigt: Iterable[float]) -> StructureSpec:
@@ -89,16 +94,7 @@ def _input_hash(directory: Path) -> str:
 
 
 def _report_dict(report) -> dict:
-    return {
-        "status": report.status,
-        "symprec": report.symprec,
-        "space_group": report.space_group,
-        "hall_number": report.hall_number,
-        "equivalent_atoms": list(report.equivalent_atoms),
-        "representatives": list(report.representatives),
-        "operation_count": report.operation_count,
-        "diagnostics": report.diagnostics,
-    }
+    return space_group_report_to_dict(report)
 
 
 def _set_input_parameter(path: Path, key: str, value: str) -> None:

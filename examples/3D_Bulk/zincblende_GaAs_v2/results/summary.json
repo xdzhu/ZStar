@@ -5,6 +5,15 @@
   "backend": "abacus+pyatb",
   "functional": "pbesol",
   "space_group": "F-43m",
+  "intended_preparation_space_group": "F-43m",
+  "observed_reference_space_group": "F-43m",
+  "symmetry_audit": {
+    "intended_space_group": "F-43m",
+    "observed_reference_space_group": "F-43m",
+    "same_space_group": true,
+    "representation_source": "intended_preparation",
+    "status": "consistent"
+  },
   "dimensionality": {
     "value": 3,
     "label": "bulk",

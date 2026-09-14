@@ -161,6 +161,24 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
 * 磁性、带门控外场、带电胞或自旋轨道耦合只在 backend 明确提供相应磁空间群/场
   对称时约化；当前 v1 的非磁性限制应原样保留并在 v2 preflight 中说明。
 
+### 5.1 准备空间群与观测参考空间群的双报告
+
+`symmetry.json` 现在持久化每个被接受操作的 fractional rotation、fractional
+translation、Cartesian rotation 和 species-preserving atom permutation，而不只
+保存国际符号与操作数。响应收集时对序列化 reference `STRU` 重新扫描
+`symprec=(1e-5,1e-4,1e-3)`，并在同一 calculator-neutral 文档中分别写入：
+
+* `symmetry` 顶层：准备阶段用于生成表示和扰动计划的 **intended_preparation**；
+* `symmetry.reference_observed`：收集阶段从实际 reference 结构得到的报告；
+* `symmetry.comparison`：两者的空间群、表示来源和 `consistent`/
+  `requires_audit` 状态；
+* `metadata.symmetry_audit` 与结果 summary 中的对应摘要。
+
+因此，微小弛豫破缺不会被静默投影回理想空间群。只有 comparison 为
+`consistent`，且张量 residual/rank 及边界条件均通过，才可以把理想操作用于稳定
+结论；否则必须保留 raw 结果并进入 symmetry audit。当前 AlN/ZnO 的实际归档正是
+这种 `P6_3mc`（准备）/`Cmc2_1`（紧容差 reference）分离案例。
+
 ## 6. 低维和分子处理
 
 `dim=3` 可使用完整三维空间群。`dim=2` 要求操作保持 slab normal 和周期平面，

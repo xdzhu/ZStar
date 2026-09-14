@@ -12,6 +12,7 @@ from zstar.v2 import (
     fit_elastic_response,
     fit_linear_response,
     polarization_representation,
+    space_group_report_to_dict,
     rotate_elastic_tensor,
     strain_representation,
     stress_representation,
@@ -38,6 +39,28 @@ def test_cubic_space_group_builds_representation_and_forbids_piezo():
     assert strain_representation(report, 0).shape == (6, 6)
     piezo_basis = allowed_response_basis(report, input_kind="strain", output_kind="polarization")
     assert piezo_basis.allowed_rank == 0
+
+
+def test_space_group_report_serialization_retains_operations_for_audit():
+    structure = StructureSpec(
+        lattice=np.diag([5.43, 5.43, 5.43]),
+        fractional_positions=np.array([[0.0, 0.0, 0.0]]),
+        symbols=("Si",),
+    )
+    report = analyze_space_group(structure)
+    serialized = space_group_report_to_dict(report)
+    assert serialized["space_group"] == "Pm-3m"
+    assert serialized["operation_count"] == 48
+    assert len(serialized["operations"]) == 48
+    operation = serialized["operations"][0]
+    assert set(operation) == {
+        "rotation_fractional",
+        "translation_fractional",
+        "rotation_cartesian",
+        "permutation",
+    }
+    assert operation["permutation"] == [0]
+    assert len(serialized["diagnostics"]["candidate_signatures"]) == 3
 
 
 def test_p1_structure_keeps_all_response_degrees_of_freedom():
