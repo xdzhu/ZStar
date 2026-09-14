@@ -86,3 +86,16 @@ minute on two A30 GPUs, so wall time is expected to be roughly 8--10 hours (to
 be refined from later checkpoints). This parallel run is an explicitly
 requested candidate, not evidence that the staged 100k -> 300k stopping gate
 has already been passed.
+
+## 100k checkpoint audit
+
+The G1 four-GPU run completed 100,000 generations and was evaluated on the
+held-out 33-frame split. The resulting errors are 0.0183 eV/atom energy MAE,
+0.2921 eV/A force MAE, and 0.1040 e BEC MAE (BEC evaluated on 85 labelled atom
+rows). The corresponding 222 phonon overlay gives 6.53 THz MAE without NAC and
+5.95 THz MAE with NAC against the archived DFT/PBEsol reference. These values
+are not an improvement over the 5,000-generation timing candidate (force MAE
+0.2540 eV/A, BEC MAE 0.0813 e), so the staged gate for automatically extending
+the G1 checkpoint to 300k is not satisfied. The 100k model and both NAC
+overlays are retained as an audit result; they are not presented as a
+production-quality force field.
