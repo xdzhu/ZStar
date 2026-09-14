@@ -30,7 +30,7 @@
     "quantity_status": {
       "piezoelectric_proper": "allowed_subspace_violation",
       "elastic": "consistent",
-      "strain_force_coupling": "allowed_subspace_violation",
+      "strain_force_coupling": "consistent",
       "internal_strain": "allowed_subspace_violation"
     },
     "proper_projection_residual_relative": 0.0070884923420083965,

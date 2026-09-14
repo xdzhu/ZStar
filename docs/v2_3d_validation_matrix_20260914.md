@@ -27,8 +27,8 @@ GaN 是此前冻结的首个候选 benchmark，单独记录在
 
 | 体系 | 计算资源/闭环 | G0 | G1 | G2 | G3 响应闭合 | G4 文献/独立核验 | 当前结论 |
 |---|---|---:|---:|---:|---|---|---|
-| wurtzite AlN (`P6_3mc`) | HF，13 stage + 13 PYATB | PASS | PASS | PASS；最小特征值 112.25 GPa | **CONDITIONAL**：proper piezo 与 elastic 通过；Gamma coupling、internal-strain 为 `allowed_subspace_violation` | PENDING | 计算完成，不能作为最终材料常数 |
-| wurtzite ZnO (`P6_3mc`) | 235/cu17，40 MPI×1 OMP，13 stage + 13 PYATB | PASS | PASS | PASS；最小特征值 39.87 GPa | **FAIL/CONDITIONAL**：proper piezo 相对投影残差约 0.71%（raw fit residual 14.2%）；Gamma coupling、internal-strain 未通过 | PENDING | 需要响应质量审计/必要时重算 |
+| wurtzite AlN (`P6_3mc`) | HF，13 stage + 13 PYATB | PASS | PASS | PASS；最小特征值 112.25 GPa | **CONDITIONAL**：proper piezo、elastic、Gamma coupling 通过；internal-strain 仍约 3.19% 投影残差 | PENDING | 计算完成，不能作为最终材料常数 |
+| wurtzite ZnO (`P6_3mc`) | 235/cu17，40 MPI×1 OMP，13 stage + 13 PYATB | PASS | PASS | PASS；最小特征值 39.87 GPa | **FAIL/CONDITIONAL**：proper piezo 相对投影残差约 0.71%（raw fit residual 14.2%）；Gamma 已通过，internal-strain 仍约 2.94% 投影残差 | PENDING | 需要响应质量审计/必要时重算 |
 | zinc-blende GaAs (`F-43m`) | HF，13 stage + 13 PYATB | PASS | PASS | PASS；最小特征值 56.12 GPa | **PASS（内部）**：四类响应均 `consistent`；proper piezo 投影相对残差约 `5.9e-6` | PENDING | 最接近可升级的研究 benchmark，但仍非稳定功能 |
 
 数值来自各案例 `results/summary.json`；完整矩阵、张量、输入协议及文献锚点见
@@ -56,9 +56,10 @@ collector（输出写入 `tmp/recollect-*`，没有启动 ABACUS/PYATB）。AlN�
 
 ## 进入下一阶段的条件
 
-1. **先修算法质量，不先扩 CLI**：定位 AlN/ZnO 的 Gamma/internal-strain 对称性
-   违例来源（原子对应、力的坐标约定、弛豫后的内部位移和 acoustic gauge），并
-   用离线完整采样或新的受限重建测试证明修复有效。
+1. **先修算法质量，不先扩 CLI**：共同不变度量 Cartesian 表示已修正 AlN/ZnO
+   Gamma 的假阳性违例；仍需定位 internal-strain 的真实残差来源（原子对应、力的
+   坐标约定、弛豫后的内部位移和 acoustic gauge），并用离线完整采样或新的受限
+   重建测试证明修复有效。
 2. **再做外部核验**：逐分量完成 AlN、ZnO、GaAs 的文献表格，统一 `e`/`d`、轴向、
    符号和 clamped/relaxed 边界；不为了“对上文献”任意改坐标或删分量。
 3. **最后才升级状态**：只有 G0--G4 全部通过，且 v1 回归测试保持通过，案例才

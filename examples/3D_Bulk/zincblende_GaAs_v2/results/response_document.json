@@ -1,7 +1,7 @@
 {
   "schema": "zstar-v2-response",
   "schema_version": "0.1",
-  "created_at": "2026-09-14T01:55:08.977324+00:00",
+  "created_at": "2026-09-14T04:31:17.438473+00:00",
   "backend": "abacus+pyatb",
   "dimensionality": {
     "value": 3,
@@ -9953,7 +9953,7 @@
     },
     "reference_observed": {
       "status": "stable",
-      "symprec": 1e-05,
+      "symprec": 0.001,
       "space_group": "F-43m",
       "hall_number": 512,
       "equivalent_atoms": [
@@ -14870,20 +14870,8 @@
         }
       ],
       "diagnostics": {
-        "candidate_count": 3,
+        "candidate_count": 1,
         "candidate_signatures": [
-          {
-            "symprec": 1e-05,
-            "space_group": "F-43m",
-            "hall_number": 512,
-            "operation_count": 96
-          },
-          {
-            "symprec": 0.0001,
-            "space_group": "F-43m",
-            "hall_number": 512,
-            "operation_count": 96
-          },
           {
             "symprec": 0.001,
             "space_group": "F-43m",
@@ -14894,7 +14882,8 @@
         "boundary_compatible_operations": 96,
         "rejected_operation_reasons": [],
         "operation_orthogonalization_max_error": 0.0,
-        "operation_orthogonalization_applied": false
+        "operation_orthogonalization_applied": false,
+        "operational_symprec_source": "fixed_v2_symprec"
       }
     },
     "comparison": {
@@ -19614,7 +19603,8 @@
       "status": "available",
       "space_group": "F-43m",
       "operation_count": 96,
-      "relative_tolerance": 1e-05,
+      "relative_tolerance": 0.001,
+      "acoustic_gauge": "raw",
       "comparison": {
         "intended_space_group": "F-43m",
         "observed_reference_space_group": "F-43m",
@@ -19699,7 +19689,8 @@
       "status": "available",
       "space_group": "F-43m",
       "operation_count": 96,
-      "relative_tolerance": 1e-05,
+      "relative_tolerance": 0.001,
+      "acoustic_gauge": "raw",
       "comparison": {
         "intended_space_group": "F-43m",
         "observed_reference_space_group": "F-43m",

@@ -160,8 +160,12 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
   v2 还显式检查每个 Cartesian rotation 的正交性和 \(|\det R|=1\)；不满足容差的
   操作被拒绝并记录 `non_orthogonal_rotation`，不会进入 intertwiner basis。
   对在明确 `symprec` 内被接受、但因晶格小数舍入而偏离正交的操作，表示层采用
-  polar/SVD 最近正交矩阵，并记录 `operation_orthogonalization_max_error`；这只
-  消除表示的 metric round-off，不会提升实际结构的空间群，也不会覆盖观测 residual。
+  先把 fractional metric 投影到所有被接受操作共同保持的不变 metric，再用一个
+  Procrustes/polar 因子构造整组 Cartesian rotations，并记录
+  `operation_metric_projection_max_error` 和 `operation_orthogonalization_max_error`。
+  这一步消除的是表示层的 metric round-off 和近零奇异值，不会改变 `symprec=1e-3`
+  的空间群判断，也不会覆盖观测 residual；单独对每个操作做 SVD 已被证明会把
+  AlN/ZnO 的允许 Gamma 模式误报为禁戒分量。
 * 磁性、带门控外场、带电胞或自旋轨道耦合只在 backend 明确提供相应磁空间群/场
   对称时约化；当前 v1 的非磁性限制应原样保留并在 v2 preflight 中说明。
 

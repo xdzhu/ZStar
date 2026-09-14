@@ -838,10 +838,12 @@ cutoff 属于另一类数值参数，不与空间群 `symprec` 混同。
 矩阵；从原始 ensemble 目录分别重新运行 collector 后，`e`、`C`、`Lambda`、Gamma
 四个张量与归档结果逐元素最大差均为 `0.0`，确认结果链条可重放。
 
-内部响应闭合并未全部通过：GaAs 的 proper piezo、elastic、Gamma 和 internal-strain
-均为 `consistent`；AlN 的 proper piezo/elastic 通过，但 Gamma 与 internal-strain
-仍为 `allowed_subspace_violation`；ZnO 的 proper piezo、Gamma 与 internal-strain
-仍未通过，proper raw fit residual 约 `14.2%`。三者尚未完成逐分量文献约定映射，因而
+初版逐操作 Cartesian 正交化在 AlN/ZnO 上产生了近零奇异值，造成 Gamma 的假阳性
+对称性违例。现已加入共同不变度量表示并通过近似六方 metric 单元测试；重收集后
+AlN/ZnO 的 Gamma 均为 `consistent`。GaAs 的 proper piezo、elastic、Gamma 和
+internal-strain 仍均为 `consistent`；AlN/ZnO 的 internal-strain 仍分别约 3.19%
+和 2.94% 投影残差，不能标为通过。ZnO 的 proper raw fit residual 仍约 `14.2%`。
+三者尚未完成逐分量文献约定映射，因而
 均不能写成最终材料常数或稳定 CLI 结论。具体 gate、数值和下一步见
 `docs/v2_3d_validation_matrix_20260914.md`。
 

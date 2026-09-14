@@ -38,7 +38,9 @@ marker 断点续算，禁止并行启动第二个相同 root。
 proper 压电 fit residual 为 `0.53%`，弹性 residual 为 `0.37%`。收集阶段和准备
 阶段统一采用 v2 固定 `symprec=1e-3`，最终参考结构识别为 `P6_3mc`。因此 AlN
 仍是“计算完成、待响应 residual 与文献审计”，不能把另一套未被 v2 采用的严格
-容差结果误写成真实相变。
+容差结果误写成真实相变。共同不变度量 Cartesian 表示修正后，Gamma
+force--strain intertwiner 已通过；internal-strain 仍保留约 3.19% 投影残差，尚未
+通过。
 以 intended 操作做的独立受限基底审计（不替换 raw 张量）给出 proper 投影残差
 `3.19e-4 C/m²`，elastic 投影残差 `1.50 kbar`；这些数值只作为后处理诊断。
 
@@ -55,7 +57,7 @@ proper 压电 fit residual 为 `0.53%`，弹性 residual 为 `0.37%`。收集阶
 
 ### wurtzite ZnO（235，cu17）
 
-完整的 `force_thr=1e-4 eV/Å` 应变审计已在 cu17 完成（13 个几何、13 次
+完整的应变审计已在 cu17 完成（13 个几何、13 次
 PYATB，40 MPI × 1 OMP）。proper 结果为 `e31(x)=−0.6021`、`e31(y)=−0.6153`、
 `e33=1.2663`、`e15(xz)=−0.4724`、`e15(yz)=−0.4782 C/m²`；由 `e(C^E)^{-1}`
 得到 `d31=−5.82/−6.00`、`d33=12.38`、`d15=−11.82/−11.99 pm/V`。弹性矩阵
@@ -70,7 +72,9 @@ PYATB，40 MPI × 1 OMP）。proper 结果为 `e31(x)=−0.6021`、`e31(y)=−0.
 tolerance 下相符。该结果仍归档为“完成计算、待响应 residual 与文献审计”，不
 作为普适材料结论。受限 proper 基底投影残差为
 `6.57e-3 C/m²`（相对 `0.71%`），elastic 投影残差为 `1.17 kbar`；这说明
-高精度应变计算已明显改善，但不能抵消 intended/observed 空间群不一致。
+共同不变度量 Cartesian 表示修正后 Gamma force--strain 已通过，但 internal-strain
+仍有约 2.94% 投影残差。高精度应变计算已明显改善，但不能抵消 proper fit residual
+和 internal-strain 尚未通过的问题。
 
 ## 文献锚点
 
@@ -90,7 +94,7 @@ tolerance 下相符。该结果仍归档为“完成计算、待响应 residual 
 ## 当前 gate
 
 GaAs 已完成“计算闭环 + 内部 rank/residual/稳定性检查”，但仍需独立后端交叉
-计算和完整文献约定映射；AlN 与 ZnO 的高精度闭环已完成，operational symmetry
-comparison 已与准备容差一致，但严格 probe 与响应 residual 仍需审计，且 ZnO 尚未
-通过 residual gate。故当前不能
+计算和完整文献约定映射；AlN 与 ZnO 的 13-stage 闭环已完成，operational symmetry
+comparison 已与准备容差一致。共同不变度量表示修正后，二者 Gamma 已通过，但
+internal-strain 仍未通过，ZnO 的 proper piezo 也尚未通过 residual gate。故当前不能
 开放稳定的 `zstar piezo` 用户入口，也不能把这些数值写成 v2 论文的最终普适结论。

@@ -18,7 +18,8 @@
     "status": "available",
     "space_group": "F-43m",
     "operation_count": 96,
-    "relative_tolerance": 1e-05,
+    "relative_tolerance": 0.001,
+    "acoustic_gauge": "raw",
     "comparison": {
       "intended_space_group": "F-43m",
       "observed_reference_space_group": "F-43m",

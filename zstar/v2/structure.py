@@ -306,6 +306,66 @@ def _boundary_compatible(rotation: np.ndarray, dimensionality: DimensionSpec, to
     return True
 
 
+def _canonicalize_cartesian_operations(
+    structure: StructureSpec,
+    operations: Iterable[SpaceGroupOperation],
+) -> tuple[tuple[SpaceGroupOperation, ...], tuple[float, ...]]:
+    """Build one mutually consistent Cartesian representation of a group.
+
+    A relaxed or rounded cell can be accepted by the physical ``symprec``
+    while its metric is not exactly invariant under the integer fractional
+    rotations returned by spglib.  Orthogonalizing each operation separately
+    then leaves an almost-null (but non-zero) constraint subspace and can make
+    a valid response look symmetry-forbidden.  Project the fractional metric
+    onto the common invariant metric first, and use one Procrustes factor for
+    all operations.  This changes only the numerical representation algebra;
+    atom mappings and the physical ``symprec=1e-3`` decision are untouched.
+    """
+
+    values = tuple(operations)
+    if not values:
+        return (), ()
+    cartesian_basis = np.asarray(structure.lattice, dtype=float).T
+    metric = cartesian_basis.T @ cartesian_basis
+    invariant_metric = sum(
+        np.asarray(operation.rotation_fractional, dtype=float).T
+        @ metric
+        @ np.asarray(operation.rotation_fractional, dtype=float)
+        for operation in values
+    ) / float(len(values))
+    invariant_metric = 0.5 * (invariant_metric + invariant_metric.T)
+    eigenvalues, eigenvectors = np.linalg.eigh(invariant_metric)
+    if np.min(eigenvalues) <= 0.0 or not np.all(np.isfinite(eigenvalues)):
+        raise ValueError("space-group invariant metric is not positive definite")
+    metric_root = eigenvectors @ np.diag(np.sqrt(eigenvalues)) @ eigenvectors.T
+    metric_inverse = np.linalg.inv(metric_root)
+    # Polar factor of the map from the invariant metric frame to the
+    # serialized Cartesian frame.  A single factor preserves group products.
+    left, _singular, right = np.linalg.svd(cartesian_basis @ metric_inverse)
+    cartesian_factor = left @ right
+    canonical: list[SpaceGroupOperation] = []
+    errors: list[float] = []
+    for operation in values:
+        fractional_rotation = np.asarray(operation.rotation_fractional, dtype=float)
+        rotation = (
+            cartesian_factor
+            @ metric_root
+            @ fractional_rotation
+            @ metric_inverse
+            @ cartesian_factor.T
+        )
+        canonical.append(
+            SpaceGroupOperation(
+                rotation_fractional=operation.rotation_fractional,
+                translation_fractional=operation.translation_fractional,
+                rotation_cartesian=rotation,
+                permutation=operation.permutation,
+            )
+        )
+        errors.append(float(np.linalg.norm(rotation - operation.rotation_cartesian)))
+    return tuple(canonical), tuple(errors)
+
+
 def analyze_space_group(
     structure: StructureSpec,
     *,
@@ -391,6 +451,11 @@ def analyze_space_group(
                 continue
             operations.append(SpaceGroupOperation(rotation, translation, rotation_cartesian, permutation))
         equivalent = tuple(int(value) for value in _dataset_value(dataset, "equivalent_atoms"))
+        operations, canonicalization_errors = _canonicalize_cartesian_operations(
+            structure,
+            operations,
+        )
+        orthogonalization_errors.extend(canonicalization_errors)
         candidates.append((
             tolerance,
             str(_dataset_value(dataset, "international")),
@@ -399,6 +464,7 @@ def analyze_space_group(
             tuple(operations),
             tuple(rejected_operations),
             tuple(orthogonalization_errors),
+            max(canonicalization_errors) if canonicalization_errors else 0.0,
         ))
     if not candidates:
         return SpaceGroupReport(
@@ -445,6 +511,8 @@ def analyze_space_group(
             "operation_orthogonalization_applied": bool(
                 any(error > 1.0e-14 for error in best[6])
             ),
+            "operation_metric_projection_max_error": float(best[7]),
+            "operation_metric_projection_applied": bool(best[7] > 1.0e-14),
         },
     )
 

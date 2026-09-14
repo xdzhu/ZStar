@@ -407,6 +407,18 @@ def test_accepted_approximate_hex_metric_is_orthogonalized_for_representations()
             np.eye(3),
             atol=1.0e-12,
         )
+    # The common invariant-metric projection must also make all Cartesian
+    # operations one group representation.  Without it, the rounded metric
+    # leaves spurious near-null constraints and the displacement <- strain
+    # basis is numerically ill-conditioned.
+    displacement_basis = allowed_response_basis(
+        report,
+        input_kind="strain",
+        output_kind="displacement",
+    )
+    assert displacement_basis.allowed_rank == 8
+    assert displacement_basis.singular_values[-1] < 1.0e-10
+    assert report.diagnostics["operation_metric_projection_applied"] is True
 
 
 def test_periodic_symmetry_analysis_rejects_missing_spglib(monkeypatch):
