@@ -1,0 +1,98 @@
+{
+  "schema": "zstar-qnep-training-validation",
+  "run_dir": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_500k_g2_checkpoint50k",
+  "training_scope": "cubic BaTiO3 only; small compatibility model",
+  "gpumd_version": "5.7",
+  "charge_mode": 1,
+  "parity": {
+    "train_energy": {
+      "rows": 134,
+      "mae": 0.016119402985077785,
+      "rmse": 0.020700061287674133,
+      "max_abs": 0.06600000000003092,
+      "r2": 0.5270594824734914,
+      "units": "eV/atom",
+      "filtered_sentinel_rows": 0
+    },
+    "test_energy": {
+      "rows": 33,
+      "mae": 0.018636363636370803,
+      "rmse": 0.02163961014605029,
+      "max_abs": 0.04899999999997817,
+      "r2": -0.01210479309323187,
+      "units": "eV/atom",
+      "filtered_sentinel_rows": 0
+    },
+    "train_force": {
+      "rows": 1580,
+      "mae": 0.19267598132510544,
+      "rmse": 0.35826419503745205,
+      "max_abs": 2.6013477000000003,
+      "r2": 0.4339557060491487,
+      "units": "eV/Angstrom",
+      "filtered_sentinel_rows": 0
+    },
+    "test_force": {
+      "rows": 1005,
+      "mae": 0.27302595735250557,
+      "rmse": 0.4944914415414979,
+      "max_abs": 5.393724,
+      "r2": -0.13365775113914058,
+      "units": "eV/Angstrom",
+      "filtered_sentinel_rows": 0
+    },
+    "train_stress": {
+      "rows": 26,
+      "mae": 0.5366165471495449,
+      "rmse": 1.0407334192875681,
+      "max_abs": 5.350859999999999,
+      "r2": 0.9579506088015907,
+      "units": "eV/Angstrom^3",
+      "filtered_sentinel_rows": 108
+    },
+    "test_stress": {
+      "rows": 24,
+      "mae": 3.010618739737451,
+      "rmse": 8.519478474511523,
+      "max_abs": 30.014599999999998,
+      "r2": -2.7667968234540417,
+      "units": "eV/Angstrom^3",
+      "filtered_sentinel_rows": 9
+    },
+    "train_virial": {
+      "rows": 26,
+      "mae": 0.04404052918188333,
+      "rmse": 0.08511452348726403,
+      "max_abs": 0.44990499999999994,
+      "r2": 0.9609518969830287,
+      "units": "eV/atom",
+      "filtered_sentinel_rows": 108
+    },
+    "test_virial": {
+      "rows": 24,
+      "mae": 0.25746075350550524,
+      "rmse": 0.7366162017177298,
+      "max_abs": 2.59975,
+      "r2": -2.8993395307588594,
+      "units": "eV/atom",
+      "filtered_sentinel_rows": 9
+    }
+  },
+  "train_bec": {
+    "labeled_atom_rows": 90,
+    "mae_e": 0.00846070840684565,
+    "rmse_e": 0.0222514274483048,
+    "max_abs_e": 0.16876999999999998,
+    "r2": 0.9999257819180261
+  },
+  "test_bec": {
+    "labeled_atom_rows": 85,
+    "mae_e": 0.056062813470588245,
+    "rmse_e": 0.07736399040937335,
+    "max_abs_e": 0.34913999999999934,
+    "r2": 0.9991643316642203
+  },
+  "loss_log": "loss.out",
+  "model": "nep.txt",
+  "note": "BEC output contains zero target rows for frames without a BEC label; metrics use only nonzero target rows."
+}
