@@ -158,6 +158,9 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
   tensor 输出统一到用户声明坐标系，不能混用 fractional rotation。
   v2 还显式检查每个 Cartesian rotation 的正交性和 \(|\det R|=1\)；不满足容差的
   操作被拒绝并记录 `non_orthogonal_rotation`，不会进入 intertwiner basis。
+  对在明确 `symprec` 内被接受、但因晶格小数舍入而偏离正交的操作，表示层采用
+  polar/SVD 最近正交矩阵，并记录 `operation_orthogonalization_max_error`；这只
+  消除表示的 metric round-off，不会提升实际结构的空间群，也不会覆盖观测 residual。
 * 磁性、带门控外场、带电胞或自旋轨道耦合只在 backend 明确提供相应磁空间群/场
   对称时约化；当前 v1 的非磁性限制应原样保留并在 v2 preflight 中说明。
 
@@ -176,7 +179,11 @@ translation、Cartesian rotation 和 species-preserving atom permutation，而�
 
 因此，微小弛豫破缺不会被静默投影回理想空间群。只有 comparison 为
 `consistent`，且张量 residual/rank 及边界条件均通过，才可以把理想操作用于稳定
-结论；否则必须保留 raw 结果并进入 symmetry audit。当前 AlN/ZnO 的实际归档正是
+结论；否则必须保留 raw 结果并进入 symmetry audit。`tools/collect_v2_piezo_case.py`
+的 `symmetry_response_audit` 对已拟合的 proper piezo、elastic、Gamma 和
+internal-strain 矩阵做独立的受限基底投影；它只写入 projection/intertwining
+residual，不替换 raw 张量。默认相对 Frobenius gate 为 `1e-5`，可通过研究脚本的
+`--symmetry-relative-tolerance` 显式调整并随 summary 保存。当前 AlN/ZnO 的实际归档正是
 这种 `P6_3mc`（准备）/`Cmc2_1`（紧容差 reference）分离案例。
 
 ## 6. 低维和分子处理

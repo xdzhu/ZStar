@@ -14,6 +14,57 @@
     "representation_source": "intended_preparation",
     "status": "consistent"
   },
+  "symmetry_response_audit": {
+    "status": "available",
+    "space_group": "F-43m",
+    "operation_count": 96,
+    "relative_tolerance": 1e-05,
+    "comparison": {
+      "intended_space_group": "F-43m",
+      "observed_reference_space_group": "F-43m",
+      "same_space_group": true,
+      "representation_source": "intended_preparation",
+      "status": "consistent"
+    },
+    "quantities": {
+      "piezoelectric_proper": {
+        "allowed_rank": 1,
+        "projection_residual_max": 9.106667674478812e-07,
+        "projection_residual_rms": 6.306061307903893e-07,
+        "projection_residual_relative": 5.879610420196152e-06,
+        "forbidden_component_max": 9.106667674478812e-07,
+        "intertwining_residual": 4.378465503080894e-06,
+        "status": "consistent"
+      },
+      "elastic": {
+        "allowed_rank": 3,
+        "projection_residual_max": 3.0666659540656838e-06,
+        "projection_residual_rms": 6.272550294867378e-07,
+        "projection_residual_relative": 1.530352325547997e-09,
+        "forbidden_component_max": 3.0666659540656838e-06,
+        "intertwining_residual": 6.517858813540796e-06,
+        "status": "consistent"
+      },
+      "strain_force_coupling": {
+        "allowed_rank": 2,
+        "projection_residual_max": 3.730349362740526e-14,
+        "projection_residual_rms": 6.602115425407664e-15,
+        "projection_residual_relative": 2.1443349769808413e-15,
+        "forbidden_component_max": 3.730349362740526e-14,
+        "intertwining_residual": 0.0,
+        "status": "consistent"
+      },
+      "internal_strain": {
+        "allowed_rank": 2,
+        "projection_residual_max": 3.991251773527438e-14,
+        "projection_residual_rms": 1.4314627260892446e-14,
+        "projection_residual_relative": 9.298637156502135e-14,
+        "forbidden_component_max": 3.991251773527438e-14,
+        "intertwining_residual": 2.7974324602552134e-13,
+        "status": "consistent"
+      }
+    }
+  },
   "dimensionality": {
     "value": 3,
     "label": "bulk",

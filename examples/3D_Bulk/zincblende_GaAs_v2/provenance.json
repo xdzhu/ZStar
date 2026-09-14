@@ -27,6 +27,12 @@
     "observed_reference_space_group": "F-43m",
     "status": "consistent"
   },
+  "symmetry_response_audit": {
+    "status": "available",
+    "relative_tolerance": 1e-5,
+    "proper_projection_residual_relative": 5.879610420196152e-06,
+    "elastic_projection_residual_relative": 1.530352325547997e-09
+  },
   "results": "results/summary.json",
   "response_document": "results/response_document.json"
 }

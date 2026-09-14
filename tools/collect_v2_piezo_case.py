@@ -9,6 +9,7 @@ raw output to the tension-positive thermodynamic convention before fitting.
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 import json
 from pathlib import Path
 import sys
@@ -19,6 +20,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from zstar.v2.abacus import collect_pyatb_strain_response
 from zstar.v2.reconstruct import fit_response_document
+from zstar.v2.structure import (
+    allowed_response_basis,
+    space_group_report_from_dict,
+)
+from zstar.v2.symmetry import intertwining_residual
+from zstar.v2.mechanical import stress_representation
+from zstar.v2.structure import (
+    displacement_representation,
+    polarization_representation,
+    strain_representation,
+)
 from zstar.v2.units import convert_values
 
 
@@ -29,10 +41,145 @@ def _quantity(document, name):
         return None
 
 
+def _symmetry_response_audit(
+    document,
+    *,
+    relative_tolerance: float = 1.0e-5,
+) -> dict[str, object]:
+    """Compare measured tensors with the persisted space-group subspaces.
+
+    The ordinary fitted quantities remain untouched: for example,
+    ``piezoelectric_proper`` is the branch-matched finite-difference result.
+    This audit separately projects that result onto the intended symmetry
+    basis and reports the forbidden/violating component.  Proper piezoelectric
+    symmetry is audited after the geometric correction; applying an
+    intertwiner directly to the improper derivative would be physically wrong.
+    """
+
+    if not np.isfinite(relative_tolerance) or relative_tolerance <= 0.0:
+        raise ValueError("symmetry relative_tolerance must be finite and positive")
+    try:
+        report = space_group_report_from_dict(dict(document.symmetry))
+    except (TypeError, ValueError) as exc:
+        return {
+            "status": "unavailable",
+            "reason": str(exc),
+            "quantities": {},
+        }
+    quantity_specs = {
+        "piezoelectric_proper": ("polarization", False),
+        "elastic": ("stress", True),
+        "strain_force_coupling": ("force", False),
+        "internal_strain": ("displacement", False),
+    }
+    audit: dict[str, object] = {
+        "status": "available",
+        "space_group": report.space_group,
+        "operation_count": report.operation_count,
+        "relative_tolerance": float(relative_tolerance),
+        "comparison": dict(document.symmetry.get("comparison", {})),
+        "quantities": {},
+    }
+    input_representations = [
+        strain_representation(report, index) for index in range(report.operation_count)
+    ]
+    for quantity_name, (output_kind, major_symmetric) in quantity_specs.items():
+        quantity = _quantity(document, quantity_name)
+        if quantity is None:
+            continue
+        values = np.asarray(quantity.values, dtype=float)
+        matrix = values
+        if values.ndim == 3 and values.shape[-1] == 6:
+            matrix = values.reshape(values.shape[0] * values.shape[1], 6)
+        basis = allowed_response_basis(
+            report,
+            input_kind="strain",
+            output_kind=output_kind,
+        )
+        if major_symmetric:
+            # The elastic response is already major-symmetrized by the main
+            # collector.  The audit basis must use the same thermodynamic
+            # intersection; asking fit_elastic_response is unnecessary here
+            # because only the stored matrix is being diagnosed.
+            from zstar.v2.fit import _major_symmetric_basis
+
+            basis = _major_symmetric_basis(basis)
+        if matrix.shape != (basis.output_dimension, basis.input_dimension):
+            raise ValueError(
+                f"{quantity_name} shape {matrix.shape} is incompatible with "
+                f"the {report.space_group} {output_kind} basis "
+                f"{basis.output_dimension, basis.input_dimension}"
+            )
+        flat = matrix.reshape(-1, order="F")
+        if basis.allowed_rank:
+            coefficients, *_ = np.linalg.lstsq(basis.basis, flat, rcond=None)
+            projected = basis.matrix_from_coefficients(coefficients)
+        else:
+            projected = np.zeros_like(matrix)
+        difference = projected - matrix
+        matrix_norm = float(np.linalg.norm(matrix))
+        output = {
+            "allowed_rank": int(basis.allowed_rank),
+            "projection_residual_max": float(np.max(np.abs(difference))),
+            "projection_residual_rms": float(np.sqrt(np.mean(difference**2))),
+            "projection_residual_relative": (
+                float(np.linalg.norm(difference) / matrix_norm)
+                if matrix_norm > 0.0
+                else float(np.linalg.norm(difference))
+            ),
+            "forbidden_component_max": float(np.max(np.abs(difference))),
+            "intertwining_residual": float(
+                intertwining_residual(
+                    matrix,
+                    input_representations,
+                    {
+                        "polarization": [
+                            polarization_representation(report, index)
+                            for index in range(report.operation_count)
+                        ],
+                        "stress": [
+                            # Stress is tensorial and the basis itself carries
+                            # the correct non-engineering shear representation.
+                            stress_representation(report.operations[index].rotation_cartesian)
+                            for index in range(report.operation_count)
+                        ],
+                        "force": [
+                            displacement_representation(report, index)
+                            for index in range(report.operation_count)
+                        ],
+                        "displacement": [
+                            displacement_representation(report, index)
+                            for index in range(report.operation_count)
+                        ],
+                    }[output_kind],
+                )
+            ),
+            "status": (
+                "consistent"
+                if (
+                    matrix_norm == 0.0
+                    or float(np.linalg.norm(difference) / matrix_norm) <= float(relative_tolerance)
+                )
+                else "allowed_subspace_violation"
+            ),
+        }
+        audit["quantities"][quantity_name] = output
+    comparison = audit.get("comparison", {})
+    if isinstance(comparison, dict) and comparison.get("status") != "consistent":
+        audit["status"] = "conditional_intended_symmetry"
+    return audit
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
     parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument(
+        "--symmetry-relative-tolerance",
+        type=float,
+        default=1.0e-5,
+        help="relative Frobenius tolerance for the post-fit symmetry audit",
+    )
     args = parser.parse_args()
     root = args.root.resolve()
     output = (args.output or (root / "results")).resolve()
@@ -48,6 +195,21 @@ def main() -> int:
         include_elastic=True,
         include_gamma=True,
         include_internal_strain=True,
+    )
+    symmetry_response_audit = _symmetry_response_audit(
+        fitted,
+        relative_tolerance=args.symmetry_relative_tolerance,
+    )
+    fitted = replace(
+        fitted,
+        provenance={
+            **fitted.provenance,
+            "symmetry_response_audit": symmetry_response_audit,
+        },
+        metadata={
+            **fitted.metadata,
+            "symmetry_response_audit": symmetry_response_audit,
+        },
     )
     fitted.write(output / "response_document.json")
 
@@ -66,6 +228,7 @@ def main() -> int:
         "intended_preparation_space_group": fitted.symmetry.get("space_group"),
         "observed_reference_space_group": fitted.symmetry.get("reference_observed", {}).get("space_group"),
         "symmetry_audit": dict(fitted.symmetry.get("comparison", {})),
+        "symmetry_response_audit": symmetry_response_audit,
         "dimensionality": fitted.dimensionality.to_dict(),
         "stage_count": int(fitted.metadata.get("stage_count", 0)),
         "pyatb_run_count": int(fitted.metadata.get("pyatb_run_count", 0)),

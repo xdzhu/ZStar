@@ -27,6 +27,12 @@
     "status": "requires_audit",
     "note": "The prepared P6_3mc operations are retained for representation fitting; the relaxed reference is Cmc2_1 at symprec=1e-5 and 1e-4, and P6_3mc only at 1e-3."
   },
+  "symmetry_response_audit": {
+    "status": "conditional_intended_symmetry",
+    "relative_tolerance": 1e-5,
+    "proper_projection_residual_relative": 0.00018883306331370054,
+    "elastic_projection_residual_relative": 0.00023509142108504041
+  },
   "results": "results/summary.json",
   "response_document": "results/response_document.json"
 }

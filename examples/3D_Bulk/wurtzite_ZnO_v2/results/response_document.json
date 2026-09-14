@@ -1,7 +1,7 @@
 {
   "schema": "zstar-v2-response",
   "schema_version": "0.1",
-  "created_at": "2026-09-14T01:35:03.564100+00:00",
+  "created_at": "2026-09-14T01:56:26.821907+00:00",
   "backend": "abacus+pyatb",
   "dimensionality": {
     "value": 3,
@@ -164,13 +164,13 @@
         ],
         "rotation_cartesian": [
           [
-            0.500000000015387,
-            -0.8658283566350395,
+            0.4999999902908965,
+            -0.8660254093899926,
             0.0
           ],
           [
-            0.8662224957782678,
-            0.4999999999846131,
+            0.8660254093899925,
+            0.4999999902908962,
             0.0
           ],
           [
@@ -211,13 +211,13 @@
         ],
         "rotation_cartesian": [
           [
-            -0.49999999998461303,
-            -0.8658283566350394,
+            -0.4999999902908962,
+            -0.8660254093899923,
             0.0
           ],
           [
-            0.8662224957782678,
-            -0.5000000000153869,
+            0.8660254093899921,
+            -0.49999999029089626,
             0.0
           ],
           [
@@ -305,13 +305,13 @@
         ],
         "rotation_cartesian": [
           [
-            -0.500000000015387,
-            0.8658283566350395,
+            -0.4999999902908965,
+            0.8660254093899926,
             0.0
           ],
           [
-            -0.8662224957782678,
-            -0.4999999999846131,
+            -0.8660254093899925,
+            -0.4999999902908962,
             0.0
           ],
           [
@@ -352,13 +352,13 @@
         ],
         "rotation_cartesian": [
           [
-            0.49999999998461303,
-            0.8658283566350394,
+            0.4999999902908962,
+            0.8660254093899923,
             0.0
           ],
           [
-            -0.8662224957782678,
-            0.5000000000153869,
+            -0.8660254093899921,
+            0.49999999029089626,
             0.0
           ],
           [
@@ -399,13 +399,13 @@
         ],
         "rotation_cartesian": [
           [
-            -0.49999999998461303,
-            0.8658283566528028,
+            -0.4999999902755101,
+            0.8660254093988753,
             0.0
           ],
           [
-            0.8662224957782678,
-            0.4999999999846131,
+            0.8660254093988753,
+            0.4999999902755101,
             0.0
           ],
           [
@@ -446,13 +446,13 @@
         ],
         "rotation_cartesian": [
           [
-            0.500000000015387,
-            0.8658283566172762,
+            0.4999999903062824,
+            0.8660254093811094,
             0.0
           ],
           [
-            0.8662224957782678,
-            -0.5000000000153869,
+            0.8660254093811095,
+            -0.4999999903062822,
             0.0
           ],
           [
@@ -494,11 +494,11 @@
         "rotation_cartesian": [
           [
             1.0,
-            -3.5526581676492697e-11,
+            -1.7763290838246348e-11,
             0.0
           ],
           [
-            0.0,
+            -1.7763290838246348e-11,
             -1.0,
             0.0
           ],
@@ -540,13 +540,13 @@
         ],
         "rotation_cartesian": [
           [
-            0.49999999998461303,
-            -0.8658283566528028,
+            0.4999999902755101,
+            -0.8660254093988753,
             0.0
           ],
           [
-            -0.8662224957782678,
-            -0.4999999999846131,
+            -0.8660254093988753,
+            -0.4999999902755101,
             0.0
           ],
           [
@@ -587,13 +587,13 @@
         ],
         "rotation_cartesian": [
           [
-            -0.500000000015387,
-            -0.8658283566172762,
+            -0.4999999903062824,
+            -0.8660254093811094,
             0.0
           ],
           [
-            -0.8662224957782678,
-            0.5000000000153869,
+            -0.8660254093811095,
+            0.4999999903062822,
             0.0
           ],
           [
@@ -635,11 +635,11 @@
         "rotation_cartesian": [
           [
             -1.0,
-            3.5526581676492697e-11,
+            1.7763290838246348e-11,
             0.0
           ],
           [
-            0.0,
+            1.7763290838246348e-11,
             1.0,
             0.0
           ],
@@ -684,7 +684,9 @@
           }
         ],
         "boundary_compatible_operations": 12,
-        "rejected_operation_reasons": []
+        "rejected_operation_reasons": [],
+        "operation_orthogonalization_max_error": 0.00027869847482123183,
+        "operation_orthogonalization_applied": true
       },
       "operations": [
         {
@@ -759,13 +761,13 @@
           ],
           "rotation_cartesian": [
             [
-              0.500000000015387,
-              -0.8658283566350395,
+              0.4999999902908965,
+              -0.8660254093899926,
               0.0
             ],
             [
-              0.8662224957782678,
-              0.4999999999846131,
+              0.8660254093899925,
+              0.4999999902908962,
               0.0
             ],
             [
@@ -806,13 +808,13 @@
           ],
           "rotation_cartesian": [
             [
-              -0.49999999998461303,
-              -0.8658283566350394,
+              -0.4999999902908962,
+              -0.8660254093899923,
               0.0
             ],
             [
-              0.8662224957782678,
-              -0.5000000000153869,
+              0.8660254093899921,
+              -0.49999999029089626,
               0.0
             ],
             [
@@ -900,13 +902,13 @@
           ],
           "rotation_cartesian": [
             [
-              -0.500000000015387,
-              0.8658283566350395,
+              -0.4999999902908965,
+              0.8660254093899926,
               0.0
             ],
             [
-              -0.8662224957782678,
-              -0.4999999999846131,
+              -0.8660254093899925,
+              -0.4999999902908962,
               0.0
             ],
             [
@@ -947,13 +949,13 @@
           ],
           "rotation_cartesian": [
             [
-              0.49999999998461303,
-              0.8658283566350394,
+              0.4999999902908962,
+              0.8660254093899923,
               0.0
             ],
             [
-              -0.8662224957782678,
-              0.5000000000153869,
+              -0.8660254093899921,
+              0.49999999029089626,
               0.0
             ],
             [
@@ -994,13 +996,13 @@
           ],
           "rotation_cartesian": [
             [
-              -0.49999999998461303,
-              0.8658283566528028,
+              -0.4999999902755101,
+              0.8660254093988753,
               0.0
             ],
             [
-              0.8662224957782678,
-              0.4999999999846131,
+              0.8660254093988753,
+              0.4999999902755101,
               0.0
             ],
             [
@@ -1041,13 +1043,13 @@
           ],
           "rotation_cartesian": [
             [
-              0.500000000015387,
-              0.8658283566172762,
+              0.4999999903062824,
+              0.8660254093811094,
               0.0
             ],
             [
-              0.8662224957782678,
-              -0.5000000000153869,
+              0.8660254093811095,
+              -0.4999999903062822,
               0.0
             ],
             [
@@ -1089,11 +1091,11 @@
           "rotation_cartesian": [
             [
               1.0,
-              -3.5526581676492697e-11,
+              -1.7763290838246348e-11,
               0.0
             ],
             [
-              0.0,
+              -1.7763290838246348e-11,
               -1.0,
               0.0
             ],
@@ -1135,13 +1137,13 @@
           ],
           "rotation_cartesian": [
             [
-              0.49999999998461303,
-              -0.8658283566528028,
+              0.4999999902755101,
+              -0.8660254093988753,
               0.0
             ],
             [
-              -0.8662224957782678,
-              -0.4999999999846131,
+              -0.8660254093988753,
+              -0.4999999902755101,
               0.0
             ],
             [
@@ -1182,13 +1184,13 @@
           ],
           "rotation_cartesian": [
             [
-              -0.500000000015387,
-              -0.8658283566172762,
+              -0.4999999903062824,
+              -0.8660254093811094,
               0.0
             ],
             [
-              -0.8662224957782678,
-              0.5000000000153869,
+              -0.8660254093811095,
+              0.4999999903062822,
               0.0
             ],
             [
@@ -1230,11 +1232,11 @@
           "rotation_cartesian": [
             [
               -1.0,
-              3.5526581676492697e-11,
+              1.7763290838246348e-11,
               0.0
             ],
             [
-              0.0,
+              1.7763290838246348e-11,
               1.0,
               0.0
             ],
@@ -1390,11 +1392,11 @@
           "rotation_cartesian": [
             [
               -1.0,
-              3.5526581676492697e-11,
+              1.7763290838246348e-11,
               0.0
             ],
             [
-              0.0,
+              1.7763290838246348e-11,
               1.0,
               0.0
             ],
@@ -1437,11 +1439,11 @@
           "rotation_cartesian": [
             [
               1.0,
-              -3.5526581676492697e-11,
+              -1.7763290838246348e-11,
               0.0
             ],
             [
-              0.0,
+              -1.7763290838246348e-11,
               -1.0,
               0.0
             ],
@@ -1482,7 +1484,9 @@
           }
         ],
         "boundary_compatible_operations": 4,
-        "rejected_operation_reasons": []
+        "rejected_operation_reasons": [],
+        "operation_orthogonalization_max_error": 2.512108681582573e-11,
+        "operation_orthogonalization_applied": true
       }
     },
     "comparison": {
@@ -5065,6 +5069,57 @@
         "internal_strain"
       ],
       "stress_sign": "compression-positive"
+    },
+    "symmetry_response_audit": {
+      "status": "conditional_intended_symmetry",
+      "space_group": "P6_3mc",
+      "operation_count": 12,
+      "relative_tolerance": 1e-05,
+      "comparison": {
+        "intended_space_group": "P6_3mc",
+        "observed_reference_space_group": "Cmc2_1",
+        "same_space_group": false,
+        "representation_source": "intended_preparation",
+        "status": "requires_audit"
+      },
+      "quantities": {
+        "piezoelectric_proper": {
+          "allowed_rank": 3,
+          "projection_residual_max": 0.006574496691724274,
+          "projection_residual_rms": 0.0027939132241605012,
+          "projection_residual_relative": 0.0070884923420083965,
+          "forbidden_component_max": 0.006574496691724274,
+          "intertwining_residual": 0.020036639370470656,
+          "status": "allowed_subspace_violation"
+        },
+        "elastic": {
+          "allowed_rank": 5,
+          "projection_residual_max": 1.171803499955331,
+          "projection_residual_rms": 0.5277941010191117,
+          "projection_residual_relative": 0.0006668622036345665,
+          "forbidden_component_max": 1.171803499955331,
+          "intertwining_residual": 5.239335770388388,
+          "status": "allowed_subspace_violation"
+        },
+        "strain_force_coupling": {
+          "allowed_rank": 6,
+          "projection_residual_max": 8.062099264793355,
+          "projection_residual_rms": 3.072566711848875,
+          "projection_residual_relative": 0.7208755040441842,
+          "forbidden_component_max": 8.062099264793355,
+          "intertwining_residual": 0.03647127728095999,
+          "status": "allowed_subspace_violation"
+        },
+        "internal_strain": {
+          "allowed_rank": 6,
+          "projection_residual_max": 0.6753854902713046,
+          "projection_residual_rms": 0.20584587936013202,
+          "projection_residual_relative": 0.684608986559606,
+          "forbidden_component_max": 0.6753854902713046,
+          "intertwining_residual": 0.13276648113287354,
+          "status": "allowed_subspace_violation"
+        }
+      }
     }
   },
   "restart_state": {
@@ -5099,6 +5154,57 @@
       "elastic",
       "strain_force_coupling",
       "internal_strain"
-    ]
+    ],
+    "symmetry_response_audit": {
+      "status": "conditional_intended_symmetry",
+      "space_group": "P6_3mc",
+      "operation_count": 12,
+      "relative_tolerance": 1e-05,
+      "comparison": {
+        "intended_space_group": "P6_3mc",
+        "observed_reference_space_group": "Cmc2_1",
+        "same_space_group": false,
+        "representation_source": "intended_preparation",
+        "status": "requires_audit"
+      },
+      "quantities": {
+        "piezoelectric_proper": {
+          "allowed_rank": 3,
+          "projection_residual_max": 0.006574496691724274,
+          "projection_residual_rms": 0.0027939132241605012,
+          "projection_residual_relative": 0.0070884923420083965,
+          "forbidden_component_max": 0.006574496691724274,
+          "intertwining_residual": 0.020036639370470656,
+          "status": "allowed_subspace_violation"
+        },
+        "elastic": {
+          "allowed_rank": 5,
+          "projection_residual_max": 1.171803499955331,
+          "projection_residual_rms": 0.5277941010191117,
+          "projection_residual_relative": 0.0006668622036345665,
+          "forbidden_component_max": 1.171803499955331,
+          "intertwining_residual": 5.239335770388388,
+          "status": "allowed_subspace_violation"
+        },
+        "strain_force_coupling": {
+          "allowed_rank": 6,
+          "projection_residual_max": 8.062099264793355,
+          "projection_residual_rms": 3.072566711848875,
+          "projection_residual_relative": 0.7208755040441842,
+          "forbidden_component_max": 8.062099264793355,
+          "intertwining_residual": 0.03647127728095999,
+          "status": "allowed_subspace_violation"
+        },
+        "internal_strain": {
+          "allowed_rank": 6,
+          "projection_residual_max": 0.6753854902713046,
+          "projection_residual_rms": 0.20584587936013202,
+          "projection_residual_relative": 0.684608986559606,
+          "forbidden_component_max": 0.6753854902713046,
+          "intertwining_residual": 0.13276648113287354,
+          "status": "allowed_subspace_violation"
+        }
+      }
+    }
   }
 }

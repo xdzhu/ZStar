@@ -14,6 +14,57 @@
     "representation_source": "intended_preparation",
     "status": "requires_audit"
   },
+  "symmetry_response_audit": {
+    "status": "conditional_intended_symmetry",
+    "space_group": "P6_3mc",
+    "operation_count": 12,
+    "relative_tolerance": 1e-05,
+    "comparison": {
+      "intended_space_group": "P6_3mc",
+      "observed_reference_space_group": "Cmc2_1",
+      "same_space_group": false,
+      "representation_source": "intended_preparation",
+      "status": "requires_audit"
+    },
+    "quantities": {
+      "piezoelectric_proper": {
+        "allowed_rank": 3,
+        "projection_residual_max": 0.00031946400786511203,
+        "projection_residual_rms": 9.122520861314234e-05,
+        "projection_residual_relative": 0.00018883306331370054,
+        "forbidden_component_max": 0.00031946400786511203,
+        "intertwining_residual": 0.0006775279608810594,
+        "status": "allowed_subspace_violation"
+      },
+      "elastic": {
+        "allowed_rank": 5,
+        "projection_residual_max": 1.5009123999780059,
+        "projection_residual_rms": 0.29782579557561034,
+        "projection_residual_relative": 0.00023509142108504041,
+        "forbidden_component_max": 1.5009123999780059,
+        "intertwining_residual": 3.436677778030885,
+        "status": "allowed_subspace_violation"
+      },
+      "strain_force_coupling": {
+        "allowed_rank": 6,
+        "projection_residual_max": 11.679437121370501,
+        "projection_residual_rms": 4.425803821743888,
+        "projection_residual_relative": 0.7111990788672062,
+        "forbidden_component_max": 11.679437121370501,
+        "intertwining_residual": 0.01314766594380819,
+        "status": "allowed_subspace_violation"
+      },
+      "internal_strain": {
+        "allowed_rank": 6,
+        "projection_residual_max": 0.4141310043540311,
+        "projection_residual_rms": 0.14523638715087217,
+        "projection_residual_relative": 0.6771747634349512,
+        "forbidden_component_max": 0.4141310043540311,
+        "intertwining_residual": 0.10677878838136794,
+        "status": "allowed_subspace_violation"
+      }
+    }
+  },
   "dimensionality": {
     "value": 3,
     "label": "bulk",

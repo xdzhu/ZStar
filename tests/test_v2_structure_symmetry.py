@@ -13,6 +13,7 @@ from zstar.v2 import (
     fit_linear_response,
     polarization_representation,
     space_group_report_to_dict,
+    space_group_report_from_dict,
     rotate_elastic_tensor,
     strain_representation,
     stress_representation,
@@ -61,6 +62,13 @@ def test_space_group_report_serialization_retains_operations_for_audit():
     }
     assert operation["permutation"] == [0]
     assert len(serialized["diagnostics"]["candidate_signatures"]) == 3
+    restored = space_group_report_from_dict(serialized)
+    assert restored.space_group == report.space_group
+    assert restored.operation_count == report.operation_count
+    np.testing.assert_allclose(
+        restored.operations[7].rotation_cartesian,
+        report.operations[7].rotation_cartesian,
+    )
 
 
 def test_p1_structure_keeps_all_response_degrees_of_freedom():
@@ -373,6 +381,32 @@ def test_operation_permutation_uses_bipartite_matching_for_near_degenerate_sites
         tolerance=5.0e-8,
     )
     assert permutation == (1, 0)
+
+
+def test_accepted_approximate_hex_metric_is_orthogonalized_for_representations():
+    # The a2 length is intentionally rounded by 1e-4 A.  It remains in the
+    # 1e-3-A preparation tolerance, but using the raw Cartesian transform
+    # would inject a spurious non-orthogonal rotation into the basis.
+    structure = StructureSpec(
+        lattice=np.array(
+            [[3.112, 0.0, 0.0], [-1.556, 2.69491, 0.0], [0.0, 0.0, 4.982]]
+        ),
+        fractional_positions=np.array(
+            [[0.0, 0.0, 0.0], [2.0 / 3.0, 1.0 / 3.0, 0.5], [0.0, 0.0, 0.3821],
+             [2.0 / 3.0, 1.0 / 3.0, 0.8821]]
+        ),
+        symbols=("A", "A", "B", "B"),
+    )
+    report = analyze_space_group(structure, symprec_grid=(1.0e-3,))
+    assert report.space_group == "P6_3mc"
+    assert report.diagnostics["operation_orthogonalization_applied"] is True
+    assert report.diagnostics["operation_orthogonalization_max_error"] > 1.0e-8
+    for operation in report.operations:
+        np.testing.assert_allclose(
+            operation.rotation_cartesian.T @ operation.rotation_cartesian,
+            np.eye(3),
+            atol=1.0e-12,
+        )
 
 
 def test_periodic_symmetry_analysis_rejects_missing_spglib(monkeypatch):

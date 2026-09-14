@@ -24,6 +24,12 @@
   "restart_count": 0,
   "polarization_route": "one PYATB run per geometry, three directions",
   "symmetry_note": "The preparation symmetry record is P6_3mc at symprec=1e-3; the relaxed reference shows tiny symmetry breaking at tighter tolerances and therefore remains conditional until the symmetry audit is resolved.",
+  "symmetry_response_audit": {
+    "status": "conditional_intended_symmetry",
+    "relative_tolerance": 1e-5,
+    "proper_projection_residual_relative": 0.0070884923420083965,
+    "elastic_projection_residual_relative": 0.0006668622036345665
+  },
   "results": "results/summary.json",
   "response_document": "results/response_document.json"
 }

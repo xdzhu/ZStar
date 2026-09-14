@@ -131,6 +131,70 @@ def space_group_report_to_dict(report: SpaceGroupReport) -> dict[str, object]:
     }
 
 
+def space_group_report_from_dict(data: dict[str, object]) -> SpaceGroupReport:
+    """Deserialize a persisted report for representation-level audits."""
+
+    if not isinstance(data, dict):
+        raise TypeError("space-group report must be a mapping")
+    raw_operations = data.get("operations", ())
+    if not isinstance(raw_operations, (list, tuple)) or not raw_operations:
+        raise ValueError(
+            "persisted symmetry report has no operations; regenerate the preparation "
+            "manifest with v2 operation serialization before a constrained audit"
+        )
+    operations: list[SpaceGroupOperation] = []
+    atom_count = len(tuple(data.get("equivalent_atoms", ())))
+    for index, raw in enumerate(raw_operations):
+        if not isinstance(raw, dict):
+            raise ValueError(f"symmetry operation {index} must be an object")
+        try:
+            rotation_fractional = np.asarray(raw["rotation_fractional"], dtype=int)
+            translation_fractional = np.asarray(raw["translation_fractional"], dtype=float)
+            rotation_cartesian = np.asarray(raw["rotation_cartesian"], dtype=float)
+            permutation = tuple(int(value) for value in raw["permutation"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError(f"invalid persisted symmetry operation {index}") from exc
+        if rotation_fractional.shape != (3, 3):
+            raise ValueError(f"symmetry operation {index} fractional rotation must be 3x3")
+        if translation_fractional.shape != (3,) or rotation_cartesian.shape != (3, 3):
+            raise ValueError(f"symmetry operation {index} has invalid translation/Cartesian rotation shape")
+        if atom_count and len(permutation) != atom_count:
+            raise ValueError(
+                f"symmetry operation {index} permutation length {len(permutation)} "
+                f"does not match atom count {atom_count}"
+            )
+        operations.append(
+            SpaceGroupOperation(
+                rotation_fractional=rotation_fractional,
+                translation_fractional=translation_fractional,
+                rotation_cartesian=rotation_cartesian,
+                permutation=permutation,
+            )
+        )
+    try:
+        symprec = float(data.get("symprec", 0.0))
+        hall_number = data.get("hall_number")
+        hall = None if hall_number is None else int(hall_number)
+        equivalent = tuple(int(value) for value in data.get("equivalent_atoms", ()))
+        representatives = tuple(int(value) for value in data.get("representatives", ()))
+    except (TypeError, ValueError) as exc:
+        raise ValueError("invalid persisted symmetry report metadata") from exc
+    if not equivalent:
+        equivalent = tuple(range(atom_count))
+    if not representatives:
+        representatives = tuple(index for index, value in enumerate(equivalent) if value == index)
+    return SpaceGroupReport(
+        status=str(data.get("status", "unknown")),
+        symprec=symprec,
+        space_group=None if data.get("space_group") is None else str(data.get("space_group")),
+        hall_number=hall,
+        equivalent_atoms=equivalent,
+        representatives=representatives,
+        operations=tuple(operations),
+        diagnostics=dict(data.get("diagnostics", {})),
+    )
+
+
 @dataclass(frozen=True)
 class SymmetryInputPlan:
     """Minimal canonical input directions that identify allowed responses.
@@ -274,6 +338,7 @@ def analyze_space_group(
         translations = np.asarray(_dataset_value(dataset, "translations"), dtype=float)
         operations: list[SpaceGroupOperation] = []
         rejected_operations: list[str] = []
+        orthogonalization_errors: list[float] = []
         cartesian_basis = structure.lattice.T
         inverse_basis = np.linalg.inv(cartesian_basis)
         for rotation, translation in zip(rotations, translations):
@@ -281,15 +346,29 @@ def analyze_space_group(
             if permutation is None:
                 rejected_operations.append("atom_mapping")
                 continue
-            rotation_cartesian = cartesian_basis @ rotation @ inverse_basis
+            raw_rotation_cartesian = cartesian_basis @ rotation @ inverse_basis
             orthogonality_error = float(
-                np.max(np.abs(rotation_cartesian.T @ rotation_cartesian - np.eye(3)))
+                np.max(np.abs(raw_rotation_cartesian.T @ raw_rotation_cartesian - np.eye(3)))
             )
-            determinant_error = abs(abs(float(np.linalg.det(rotation_cartesian))) - 1.0)
+            determinant_error = abs(abs(float(np.linalg.det(raw_rotation_cartesian))) - 1.0)
             operation_tolerance = max(tolerance * 10.0, 1.0e-7)
             if orthogonality_error > operation_tolerance or determinant_error > operation_tolerance:
                 rejected_operations.append("non_orthogonal_rotation")
                 continue
+            # A slightly non-ideal lattice can make a crystallographic
+            # operation non-orthogonal at the 1e-5--1e-4 level even though
+            # spglib accepted it at the requested preparation tolerance.  Use
+            # the nearest orthogonal matrix for representation algebra and
+            # retain the correction magnitude as an auditable diagnostic; do
+            # not let metric round-off create fake symmetry-forbidden terms.
+            left, _singular, right = np.linalg.svd(raw_rotation_cartesian)
+            rotation_cartesian = left @ right
+            if np.linalg.det(rotation_cartesian) * np.linalg.det(raw_rotation_cartesian) < 0.0:
+                rejected_operations.append("rotation_determinant_flip")
+                continue
+            orthogonalization_errors.append(
+                float(np.linalg.norm(rotation_cartesian - raw_rotation_cartesian))
+            )
             if not _boundary_compatible(rotation_cartesian, structure.dimensionality):
                 rejected_operations.append("boundary_mixing")
                 continue
@@ -302,6 +381,7 @@ def analyze_space_group(
             equivalent,
             tuple(operations),
             tuple(rejected_operations),
+            tuple(orthogonalization_errors),
         ))
     if not candidates:
         return SpaceGroupReport(
@@ -342,6 +422,12 @@ def analyze_space_group(
             ],
             "boundary_compatible_operations": len(best[4]),
             "rejected_operation_reasons": list(best[5]),
+            "operation_orthogonalization_max_error": (
+                max(best[6]) if best[6] else 0.0
+            ),
+            "operation_orthogonalization_applied": bool(
+                any(error > 1.0e-14 for error in best[6])
+            ),
         },
     )
 
