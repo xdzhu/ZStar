@@ -1,0 +1,11 @@
+{
+  "schema": "zstar-qnep-phonon-results",
+  "model": "nep.txt",
+  "sqrt_epsilon_infinity": 2.6215609999998,
+  "epsilon_infinity": 6.872582076719951,
+  "force_constant_source": "GPUMD qNEP dump_bec.xyz",
+  "bec_source": "GPUMD qNEP no-move dump_bec.xyz",
+  "supercell_atoms": 40,
+  "primitive_atoms": 5,
+  "nac_protocol": "Phonopy NAC using qNEP BEC and electronic dielectric scalar"
+}

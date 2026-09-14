@@ -1,0 +1,40 @@
+{
+  "schema": "zstar-qnep-two-nac-overlays",
+  "frequency_unit": "THz",
+  "qpath_labels": [
+    "$\\Gamma$",
+    "$\\mathrm{X}$",
+    "$\\mathrm{M}$",
+    "$\\Gamma$",
+    "$\\mathrm{R}$",
+    "$\\mathrm{X}$"
+  ],
+  "common_y_limits_thz": [
+    -15.166791814933513,
+    40.04472306177416
+  ],
+  "source": {
+    "dft": "D:\\Work\\Code\\zstar\\examples\\3D_Bulk\\cubic_BaTiO3\\phonon_spectrum\\results\\phonon_spectrum_result.json",
+    "qnep": "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_100k\\qnep_phonon_spectrum_result.json"
+  },
+  "without_nac": {
+    "mae_thz": 6.528572876966557,
+    "rmse_thz": 7.363315357839835,
+    "max_abs_thz": 24.405349074598313,
+    "n_values": 7575
+  },
+  "with_nac": {
+    "mae_thz": 5.954574481567956,
+    "rmse_thz": 6.461140742546896,
+    "max_abs_thz": 14.683946755048716,
+    "n_values": 7575
+  },
+  "outputs": [
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_100k\\figures\\cubic_BaTiO3_official_bto_100k_DFT_vs_qNEP_without_NAC.png",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_100k\\figures\\cubic_BaTiO3_official_bto_100k_DFT_vs_qNEP_without_NAC.pdf",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_100k\\figures\\cubic_BaTiO3_official_bto_100k_DFT_vs_qNEP_with_NAC.png",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_100k\\figures\\cubic_BaTiO3_official_bto_100k_DFT_vs_qNEP_with_NAC.pdf",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_100k\\figures\\cubic_BaTiO3_official_bto_100k_DFT_vs_qNEP_NAC_split.png",
+    "D:\\Work\\Code\\zstar\\examples\\ML_Force_Fields_with_Charges\\Cubic_BaTiO3\\results\\qnep_training\\official_bto_hq_100k\\figures\\cubic_BaTiO3_official_bto_100k_DFT_vs_qNEP_NAC_split.pdf"
+  ]
+}
