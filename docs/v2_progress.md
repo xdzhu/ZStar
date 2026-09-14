@@ -259,6 +259,34 @@
     次数、张量、能量曲率和机械稳定性记录见
     `v2_abacus_sixstrain_api_audit_20260913.md`。
 
+53. 在不新增节点竞争的前提下完成 3D 明星材料候选的结果归档：HF 上 AlN 与 GaAs
+    各完成 13 个几何/13 次 PYATB，235 的 cu17 上完成 ZnO 的完整 `force_thr=1e-4`
+    应变审计（13 个几何/13 次 PYATB，40 MPI × 1 OMP）。每个几何的一次 PYATB
+    输出均包含三个 Berry 极化方向；结果和节点/运行时间写入对应案例 provenance。
+    235 的 qstat 复核显示 cu24/cu25/cu26 正被既有 40 核作业占用，cu17 无残留 v2
+    进程；本阶段没有重复启动或抢占任务。
+
+54. 发现并修正 symmetry audit 的两个算法缺口。首先，`symmetry.json` 与
+    `ResponseDocument.symmetry` 现在保留完整的 fractional/cartesian rotations、
+    translations 和 species-preserving atom permutations；collector 另外写入
+    `reference_observed` 与 `comparison`，明确区分准备阶段 intended 空间群和
+    实际 reference 结构的紧容差空间群。其次，对在明确 `symprec` 内被接受但因
+    晶格小数舍入而略不正交的操作使用 SVD 最近正交矩阵，并记录修正范数，避免
+    metric round-off 被误判成物理对称性破缺。
+
+55. 新增研究后处理 `symmetry_response_audit`：对 proper piezo（先做 proper 几何
+    修正）、elastic、Gamma 和 internal-strain 分别投影到 persisted intertwiner
+    basis，记录 allowed rank、forbidden component、projection/intertwining residual，
+    但不替换 raw 张量。默认相对 Frobenius gate 为 `1e-5`，可显式调整并随 summary
+    保存。GaAs 的 intended/observed `F-43m` 和四类响应通过该内部一致性检查；AlN
+    与 ZnO 的 intended `P6_3mc` / observed `Cmc2_1` 仍标记为 conditional，不能
+    升级为稳定材料结论。
+
+56. 本轮代码与归档结果的完整回归为 `551 passed, 1198 warnings`。当前分支仍为
+    `zstar-v2-development`，main、v1 正式论文、PyPI 和 GitHub release 均未修改。
+    下一步仍先解决 relaxed reference 的 symmetry/声学规范与文献映射，再决定是否
+    需要新的计算；不在未通过算法 gate 前扩展 CLI 或批量提交任务。
+
 53. 完整 collector 回读成功：输入哈希、`STRU_INITIAL` 分数坐标、实际 cell 应变、
     force/stress/energy、内部位移和 13 次 PYATB 均通过。`P4mm` 允许子空间秩为
     3（压电）和 6（major-symmetric 弹性）；直接 relaxed-ion improper `e` 最大
