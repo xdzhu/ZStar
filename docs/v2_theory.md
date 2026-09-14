@@ -365,6 +365,30 @@ IFC+BEC 进入谐性晶格介电响应和 LO--TO/NAC；要获得 e、C、Lambda 
 diagnostics。`stress_raw` 的 backend-dependent 符号必须由调用者显式提供；该层不执行
 proper-piezo 几何修正、acoustic gauge 投影或 `Z*Lambda` relaxed-ion 合成，这些仍是
 独立验证门。
+
+### 声学规范与 relaxed-ion 响应
+
+由固定胞弛豫得到的内部位移满足
+\[
+u_{i\beta}(\eta)\;\sim\;u_{i\beta}(\eta)+t_\beta(\eta),
+\]
+其中任意与应变相关的整体平移 \(t_\beta\) 都不改变相对内部坐标，却会改变直接
+拟合的 Lambda。实现必须显式声明规范，例如等权规范
+\[
+u^{\rm gauge}_{i\beta}=u_{i\beta}-\frac1N\sum_j u_{j\beta},
+\]
+或一个有明确质量/约束来源的质量加权规范。v2 默认保存 raw 位移并在 provenance
+中写明 `acoustic_gauge=unfixed_raw_displacement`；`fit_internal_strain_response`
+不自动投影平移，也不把某一规范当作物理真值。研究审计的
+`--acoustic-gauge equal-weight` 只生成独立的 Lambda 拟合和 residual，保留
+`raw_quantity_unchanged=true`。在声学规范、内部坐标、空间群 comparison 和
+`Phi` 的 acoustic sum rule 都通过前，不得将该 Lambda 用于最终的 `Z*Lambda` 或
+relaxed-ion 弹性修正。
+
+对当前 wurtzite 归档，等权平移幅度约为 \(10^{-10}\) Å，而 intended/observed
+空间群不一致造成的 allowed-subspace residual 为主导项；因此声学去平移是必要的
+可追溯审计选项，但不是掩盖结构对称性破缺的修复手段。
+
 当文档声明 `relaxed-ion` 而没有 `forces_initial` 时，结果层会拒绝使用末块
 `forces` 拟合 Gamma；末块只能作为离子收敛观测，必须重新收集带可识别首块的日志。
 

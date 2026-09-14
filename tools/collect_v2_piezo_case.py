@@ -19,6 +19,8 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from zstar.v2.abacus import collect_pyatb_strain_response
+from zstar.v2.algebra import remove_acoustic_translation
+from zstar.v2.fit import fit_internal_strain_response
 from zstar.v2.reconstruct import fit_response_document
 from zstar.v2.structure import (
     allowed_response_basis,
@@ -45,6 +47,7 @@ def _symmetry_response_audit(
     document,
     *,
     relative_tolerance: float = 1.0e-5,
+    acoustic_gauge: str = "raw",
 ) -> dict[str, object]:
     """Compare measured tensors with the persisted space-group subspaces.
 
@@ -58,6 +61,8 @@ def _symmetry_response_audit(
 
     if not np.isfinite(relative_tolerance) or relative_tolerance <= 0.0:
         raise ValueError("symmetry relative_tolerance must be finite and positive")
+    if acoustic_gauge not in {"raw", "equal-weight"}:
+        raise ValueError("acoustic_gauge must be 'raw' or 'equal-weight'")
     try:
         report = space_group_report_from_dict(dict(document.symmetry))
     except (TypeError, ValueError) as exc:
@@ -77,6 +82,7 @@ def _symmetry_response_audit(
         "space_group": report.space_group,
         "operation_count": report.operation_count,
         "relative_tolerance": float(relative_tolerance),
+        "acoustic_gauge": acoustic_gauge,
         "comparison": dict(document.symmetry.get("comparison", {})),
         "quantities": {},
     }
@@ -164,6 +170,72 @@ def _symmetry_response_audit(
             ),
         }
         audit["quantities"][quantity_name] = output
+
+    # Relaxed-ion coordinates carry an arbitrary acoustic translation.  Keep
+    # the collected/fitted ``internal_strain`` quantity untouched and expose a
+    # separate, opt-in equal-weight gauge audit.  This is intentionally not a
+    # mass-weighted gauge: masses and the corresponding dynamical convention
+    # are not guaranteed to be present in a calculator-neutral document.
+    if acoustic_gauge == "equal-weight":
+        displacement = _quantity(document, "internal_displacement")
+        strain_quantity = _quantity(document, "strain_vector")
+        if displacement is not None and strain_quantity is not None:
+            displacements = np.asarray(displacement.values, dtype=float)
+            strains = np.asarray(strain_quantity.values, dtype=float)
+            translations = np.mean(displacements, axis=1)
+            gauged = remove_acoustic_translation(displacements)
+            reference_index = displacement.provenance.get("reference_index")
+            if reference_index is None:
+                reference_index = int(np.argmin(np.linalg.norm(strains, axis=1)))
+            reference_index = int(reference_index)
+            fit = fit_internal_strain_response(
+                strains,
+                gauged,
+                reference_displacement=gauged[reference_index],
+            )
+            matrix = fit.matrix
+            basis = allowed_response_basis(
+                report,
+                input_kind="strain",
+                output_kind="displacement",
+            )
+            flat = matrix.reshape(-1, order="F")
+            coefficients, *_ = np.linalg.lstsq(basis.basis, flat, rcond=None)
+            projected = basis.matrix_from_coefficients(coefficients)
+            difference = projected - matrix
+            matrix_norm = float(np.linalg.norm(matrix))
+            projection_relative = (
+                float(np.linalg.norm(difference) / matrix_norm)
+                if matrix_norm > 0.0
+                else float(np.linalg.norm(difference))
+            )
+            audit["internal_strain_acoustic_gauge"] = {
+                "status": (
+                    "consistent"
+                    if projection_relative <= float(relative_tolerance)
+                    else "allowed_subspace_violation"
+                ),
+                "gauge": "equal-weight-mean-translation-removal",
+                "reference_index": reference_index,
+                "translation_max_angstrom": float(np.max(np.linalg.norm(translations, axis=1))),
+                "translation_rms_angstrom": float(
+                    np.sqrt(np.mean(np.linalg.norm(translations, axis=1) ** 2))
+                ),
+                "fit_residual_max": float(fit.residual_max),
+                "fit_residual_rms": float(fit.residual_rms),
+                "fit_residual_relative": float(fit.residual_relative),
+                "allowed_rank": int(basis.allowed_rank),
+                "projection_residual_max": float(np.max(np.abs(difference))),
+                "projection_residual_rms": float(np.sqrt(np.mean(difference**2))),
+                "projection_residual_relative": projection_relative,
+                "raw_quantity_unchanged": True,
+            }
+        else:
+            audit["internal_strain_acoustic_gauge"] = {
+                "status": "unavailable",
+                "reason": "internal_displacement or strain_vector is missing",
+                "raw_quantity_unchanged": True,
+            }
     comparison = audit.get("comparison", {})
     if isinstance(comparison, dict) and comparison.get("status") != "consistent":
         audit["status"] = "conditional_intended_symmetry"
@@ -179,6 +251,12 @@ def main() -> int:
         type=float,
         default=1.0e-5,
         help="relative Frobenius tolerance for the post-fit symmetry audit",
+    )
+    parser.add_argument(
+        "--acoustic-gauge",
+        choices=("raw", "equal-weight"),
+        default="raw",
+        help="internal-strain audit gauge; raw leaves relaxed translations untouched",
     )
     args = parser.parse_args()
     root = args.root.resolve()
@@ -199,6 +277,7 @@ def main() -> int:
     symmetry_response_audit = _symmetry_response_audit(
         fitted,
         relative_tolerance=args.symmetry_relative_tolerance,
+        acoustic_gauge=args.acoustic_gauge,
     )
     fitted = replace(
         fitted,

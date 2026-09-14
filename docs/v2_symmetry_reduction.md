@@ -186,6 +186,24 @@ residual，不替换 raw 张量。默认相对 Frobenius gate 为 `1e-5`，可�
 `--symmetry-relative-tolerance` 显式调整并随 summary 保存。当前 AlN/ZnO 的实际归档正是
 这种 `P6_3mc`（准备）/`Cmc2_1`（紧容差 reference）分离案例。
 
+### 5.2 relaxed-ion 的声学规范审计
+
+固定胞弛豫得到的内部位移只在去除整体平移后才具有唯一的
+`Lambda = d u_internal / d eta` 表示。整体平移不是一个可由空间群约化自动
+决定的物理响应；质量加权、等权和固定某个原子的规范分别对应不同的坐标约定。
+因此 v2 的默认 `internal_strain` 保留收集到的 raw 位移，
+`fit_response_document` 不静默施加 acoustic gauge。
+
+研究脚本可用 `--acoustic-gauge equal-weight` 启动独立审计：对每个应变阶段减去
+三维原子位移的等权平均平移，再重新拟合 Lambda，并在
+`symmetry_response_audit.internal_strain_acoustic_gauge` 中记录参考 stage、平移幅度、
+拟合 residual、allowed-subspace projection residual 和
+`raw_quantity_unchanged=true`。该选项不会覆盖 raw Lambda，也不把审计结果写成稳定
+材料常数；只有在质量定义、内部坐标规范和对称性 comparison 均明确后，才可将某种
+规范用于 relaxed-ion `Z*Lambda` 或弹性内部修正。当前 AlN/ZnO 的等权平移仅约
+`1e-10 Å`，不能解释其较大的对称性 residual；主要问题仍是参考结构的实际对称性
+低于准备阶段理想空间群。
+
 ## 6. 低维和分子处理
 
 `dim=3` 可使用完整三维空间群。`dim=2` 要求操作保持 slab normal 和周期平面，
