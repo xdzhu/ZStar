@@ -65,3 +65,24 @@ References: [qNEP Supporting Information](https://materialsmodeling.org/assets/p
 [GPUMD `nep.in` documentation](https://gpumd.org/nep/input_files/nep_in.html),
 [GPUMD `charge_mode` documentation](https://gpumd.org/nep/input_parameters/charge_mode.html),
 and [the public qNEP Zenodo record](https://zenodo.org/records/18335947).
+
+## Independent G2 500k candidate (started 2026-09-14)
+
+At the user's request, an independent full 500,000-generation run was started
+on G2 while the G1 100k diagnostic run remains untouched. G2 GPUs 4 and 5 are
+NVIDIA A30 (24,576 MiB each) and were idle at launch; GPUs 0--3 were occupied
+by unrelated processes and were not used. The run directory is
+`/home/zhuxd/zstar-qnep-compat/dft_only_cubic_corrected_becpair_20260914/official_bto_hq_500k_g2`,
+with PID 2658926 and the same 134/33 train/test split and official BTO
+hyperparameters. The source data are copied byte-for-byte (SHA256 is recorded
+in `official_bto_hq_500k_g2_run_20260914.json`); no energy shift or label
+rewrite was applied.
+
+The G2 node did not expose the CUDA 12.3 cuBLAS/cuFFT libraries required by the
+existing GPUMD 5.7 binary. The required runtime libraries were copied into the
+user's isolated `cuda12.3-runtime` directory; the shared system environment was
+not changed. The first observed rate was approximately 1,000 generations per
+minute on two A30 GPUs, so wall time is expected to be roughly 8--10 hours (to
+be refined from later checkpoints). This parallel run is an explicitly
+requested candidate, not evidence that the staged 100k -> 300k stopping gate
+has already been passed.

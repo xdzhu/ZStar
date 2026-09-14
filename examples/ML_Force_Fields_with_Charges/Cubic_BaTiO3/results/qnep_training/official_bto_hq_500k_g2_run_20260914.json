@@ -1,0 +1,22 @@
+{
+  "status": "running",
+  "started_at": "2026-09-14T10:03:00+08:00",
+  "host": "G2",
+  "gpu_indices": [4, 5],
+  "gpu_model": "NVIDIA A30",
+  "gpu_memory_mib": 24576,
+  "pid": 2658926,
+  "binary": "/home/zhuxd/gpumd-qnep-v5.7/GPUMD-5.7/src/nep",
+  "run_directory": "/home/zhuxd/zstar-qnep-compat/dft_only_cubic_corrected_becpair_20260914/official_bto_hq_500k_g2",
+  "config": "qnep_train_cubic_official_bto.in",
+  "generations": 500000,
+  "dataset": {
+    "train_frames": 134,
+    "test_frames": 33,
+    "train_sha256": "78396007a9a65101709e96418d419d4b4a07bf72748cbfa250d82774d9b661d5",
+    "test_sha256": "7088442e04abd77e4ad20f97a5655e60503953aaf7fb3ce04bb7835ed1cb9238"
+  },
+  "cuda_runtime": "/home/zhuxd/zstar-qnep-compat/cuda12.3-runtime",
+  "launch": "CUDA_VISIBLE_DEVICES=4,5 OMP_NUM_THREADS=1 LD_LIBRARY_PATH=/home/zhuxd/zstar-qnep-compat/cuda12.3-runtime:/usr/local/cuda-12.6/targets/x86_64-linux/lib nohup nep",
+  "notes": "Independent 500k candidate requested by user; G1 100k staged run remains untouched. Raw energies and forces are unmodified. This run is not yet staged-gate validated."
+}
