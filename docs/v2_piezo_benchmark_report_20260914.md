@@ -8,9 +8,10 @@
 
 ZnO、AlN 使用 wurtzite `P6_3mc` 晶胞（`z || [0001]`），GaAs 使用显式的
 8 原子 zinc-blende `F-43m` 晶胞。三者均为 PBEsol、Dojo-NC-FR 8-au LCAO、
-100 Ry、`scf_thr=1e-8`、六个工程应变分量各取 `±1e-3`。AlN/GaAs 的离子
-弛豫阈值为 `1e-3 eV/Å`；ZnO 参考态为 `1e-3 eV/Å`，而应变结构的最终审计
-采用 `1e-4 eV/Å`。每个几何只运行一次 PYATB，读取同一输出中的三个 Berry
+100 Ry、`scf_thr=1e-8`、六个工程应变分量各取 `±1e-3`。三个案例的 ABACUS
+输入均记录 `force_thr_ev=1e-3 eV/Å`；ZnO 应变结构的若干最终残余力偶然低于
+`1e-4 eV/Å`，这是观测到的收敛结果，不应倒写成配置阈值或高精度算法门。每个
+几何只运行一次 PYATB，读取同一输出中的三个 Berry
 极化方向；ABACUS 原始应力先从 compression-positive 转为张力正号。
 
 HF 通过 Slurm 运行 32 MPI × 1 OMP，未申请节点独占；235 在已分配的计算节点

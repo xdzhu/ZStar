@@ -829,3 +829,22 @@ eV/Angstrom（或 J/m）单位对，体积来源与 relaxed-piezo 入口一致�
 空间群均按 `1e-3` 重新归档为 `P6_3mc`。响应 residual gate 默认也统一为 `1e-3`，
 但 rank、拟合 residual 和机械稳定性仍需独立通过。数值线性代数的 machine-scale
 cutoff 属于另一类数值参数，不与空间群 `symprec` 混同。
+
+## 2026-09-14 三个 3D 体系验证状态复核
+
+对当前 3D 扩展批次的 wurtzite AlN、wurtzite ZnO 和 zinc-blende GaAs 做了
+“计算闭环”和“科学验证”分层审计。三个案例都具备 13 个 ABACUS stage、13 次
+一次性三方向 PYATB、`branch_shift_max=0`、完整输入/单位/provenance 和正定弹性
+矩阵；从原始 ensemble 目录分别重新运行 collector 后，`e`、`C`、`Lambda`、Gamma
+四个张量与归档结果逐元素最大差均为 `0.0`，确认结果链条可重放。
+
+内部响应闭合并未全部通过：GaAs 的 proper piezo、elastic、Gamma 和 internal-strain
+均为 `consistent`；AlN 的 proper piezo/elastic 通过，但 Gamma 与 internal-strain
+仍为 `allowed_subspace_violation`；ZnO 的 proper piezo、Gamma 与 internal-strain
+仍未通过，proper raw fit residual 约 `14.2%`。三者尚未完成逐分量文献约定映射，因而
+均不能写成最终材料常数或稳定 CLI 结论。具体 gate、数值和下一步见
+`docs/v2_3d_validation_matrix_20260914.md`。
+
+资源复核未启动新大任务：235 的 cu17 空闲，cu24/cu25/cu26 仍有既有 40 核作业；
+HF 当前有其他用户的 Slurm 作业。下一步先定位 AlN/ZnO relaxed-ion 内部响应残差，
+明确是否需要以更严格离子收敛重算，再做文献/独立后端核验。
