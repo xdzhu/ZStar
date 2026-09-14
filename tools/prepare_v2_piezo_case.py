@@ -15,7 +15,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from zstar.v2.strain import prepare_abacus_strain_ensemble
+from zstar.v2.strain import V2_SYMPREC, prepare_abacus_strain_ensemble
 
 
 def main() -> int:
@@ -25,10 +25,19 @@ def main() -> int:
     parser.add_argument("--pseudopotential-dir", type=Path, required=True)
     parser.add_argument("--orbital-dir", type=Path, required=True)
     parser.add_argument("--amplitude", type=float, default=1.0e-3)
-    parser.add_argument("--symprec", type=float, default=1.0e-3)
+    parser.add_argument(
+        "--symprec",
+        type=float,
+        default=V2_SYMPREC,
+        help="fixed v2 symmetry tolerance (must be 1e-3 Angstrom)",
+    )
     parser.add_argument("--scf-thr", type=float, default=1.0e-8)
     parser.add_argument("--ion-relaxation", choices=("clamped-ion", "relaxed-ion"), default="relaxed-ion")
     args = parser.parse_args()
+    if args.symprec != V2_SYMPREC:
+        raise SystemExit(
+            f"v2 requires --symprec {V2_SYMPREC:g}; refusing {args.symprec:g}"
+        )
     source = args.source.resolve()
     output = args.output.resolve()
     if output.exists() and any(output.iterdir()):

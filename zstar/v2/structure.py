@@ -21,6 +21,12 @@ except Exception:  # pragma: no cover - dependency is declared by the package
     spglib = None
 
 
+# v2 uses one physical symmetry tolerance throughout preparation, atom
+# mapping, and response reconstruction.  Numerical linear-algebra cutoffs
+# elsewhere in the package are not symmetry-identification tolerances.
+V2_SYMPREC = 1.0e-3
+
+
 def _array(value: object, shape: tuple[int, ...], name: str) -> np.ndarray:
     array = np.asarray(value, dtype=float)
     if array.shape != shape:
@@ -303,9 +309,15 @@ def _boundary_compatible(rotation: np.ndarray, dimensionality: DimensionSpec, to
 def analyze_space_group(
     structure: StructureSpec,
     *,
-    symprec_grid: Iterable[float] = (1.0e-5, 1.0e-4, 1.0e-3),
+    symprec_grid: Iterable[float] = (V2_SYMPREC,),
 ) -> SpaceGroupReport:
-    """Identify a stable space group and validate it against dimensionality."""
+    """Identify a space group using the fixed v2 ``symprec=1e-3`` policy.
+
+    ``symprec_grid`` remains as a compatibility-shaped argument for callers
+    that pass an iterable, but v2 deliberately rejects other physical
+    symmetry thresholds.  This prevents a stricter or looser caller from
+    changing atom equivalence classes and response bases mid-workflow.
+    """
 
     if structure.dimensionality.value == 0:
         identity = SpaceGroupOperation(
@@ -331,6 +343,11 @@ def analyze_space_group(
         tolerance = float(value)
         if not np.isfinite(tolerance) or tolerance <= 0.0:
             raise ValueError("symprec_grid values must be finite and positive")
+        if tolerance != V2_SYMPREC:
+            raise ValueError(
+                "v2 requires symprec=1e-3 for all space-group and atom-mapping operations; "
+                f"got {tolerance:g}"
+            )
         dataset = spglib.get_symmetry_dataset(structure.spglib_cell(), symprec=tolerance)
         if dataset is None:
             continue

@@ -538,7 +538,7 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     )
 
 
-def test_observed_symmetry_uses_preparation_tolerance_and_keeps_tight_probe():
+def test_observed_symmetry_uses_fixed_v2_tolerance():
     data = json.loads(
         Path("examples/3D_Bulk/wurtzite_AlN_v2/results/response_document.json")
         .read_text(encoding="utf-8")
@@ -550,14 +550,13 @@ def test_observed_symmetry_uses_preparation_tolerance_and_keeps_tight_probe():
         symbols=tuple(structure["symbols"]),
     )
     preparation = dict(data["symmetry"])
-    # The tracked reference has ~1e-4 fractional-coordinate round-off.  The
-    # declared 1e-3 preparation tolerance recovers the intended P6_3mc group,
-    # while the old tight probe remains visible as a diagnostic only.
+    # The tracked reference has ~1e-4 fractional-coordinate round-off.  v2
+    # uses the single declared 1e-3 tolerance for both preparation and audit.
     result = _augment_reference_symmetry(preparation, reference, DimensionSpec(3))
     assert result["reference_observed"]["space_group"] == "P6_3mc"
     assert result["reference_observed"]["symprec"] == pytest.approx(1.0e-3)
-    tight = result["reference_observed"]["diagnostics"]["tight_probe"]
-    assert tight["space_group"] == "Cmc2_1"
+    assert result["reference_observed"]["diagnostics"]["operational_symprec_source"] == "fixed_v2_symprec"
+    assert "tight_probe" not in result["reference_observed"]["diagnostics"]
     assert result["comparison"]["status"] == "consistent"
 
 

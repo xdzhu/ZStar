@@ -23,7 +23,7 @@ from .polarization import (
     pyatb_directional_to_cartesian,
 )
 from .strain import actual_strain
-from .structure import StructureSpec, analyze_space_group, space_group_report_to_dict
+from .structure import V2_SYMPREC, StructureSpec, analyze_space_group, space_group_report_to_dict
 
 
 def _augment_reference_symmetry(
@@ -49,6 +49,11 @@ def _augment_reference_symmetry(
             preparation_tolerance = float(preparation_symmetry.get("symprec", 0.0) or 0.0)
         except (TypeError, ValueError):
             preparation_tolerance = 0.0
+        if preparation_tolerance != V2_SYMPREC:
+            raise ValueError(
+                "v2 requires symprec=1e-3 in the preparation manifest; "
+                f"got {preparation_tolerance:g}"
+            )
     try:
         reference_spec = StructureSpec(
             lattice=np.asarray(reference_structure.cell, dtype=float),
@@ -56,39 +61,18 @@ def _augment_reference_symmetry(
             symbols=tuple(str(symbol) for symbol in reference_structure.symbols),
             dimensionality=dimensions,
         )
-        # The observed-reference report must use the same declared tolerance
-        # as preparation when one is available.  Otherwise numerical coordinate
-        # noise can turn an intended P6_3mc structure into a false Cmc2_1
-        # mismatch merely because the audit picked a tighter default probe.
+        # The observed-reference report uses the same fixed tolerance as every
+        # other v2 symmetry operation.  A second tolerance is not allowed to
+        # change atom equivalence classes or the response representation.
         observed_grid = (
             (preparation_tolerance,)
             if preparation_tolerance > 0.0
-            else (1.0e-5, 1.0e-4, 1.0e-3)
+            else (V2_SYMPREC,)
         )
         observed = analyze_space_group(reference_spec, symprec_grid=observed_grid)
         observed_data: dict[str, Any] = space_group_report_to_dict(observed)
-        if preparation_tolerance > 0.0:
-            # Preserve the conservative tight-probe result as evidence, but do
-            # not use it as the operational comparison or response basis.
-            try:
-                tight = analyze_space_group(
-                    reference_spec,
-                    symprec_grid=(1.0e-5, 1.0e-4, 1.0e-3),
-                )
-                observed_data.setdefault("diagnostics", {})["tight_probe"] = {
-                    "symprec_grid": [1.0e-5, 1.0e-4, 1.0e-3],
-                    "space_group": tight.space_group,
-                    "symprec": float(tight.symprec),
-                    "operation_count": tight.operation_count,
-                    "status": tight.status,
-                    "candidate_signatures": list(
-                        tight.diagnostics.get("candidate_signatures", ())
-                    ),
-                }
-            except Exception as exc:  # pragma: no cover - defensive audit path
-                observed_data.setdefault("diagnostics", {})["tight_probe_error"] = str(exc)
         observed_data.setdefault("diagnostics", {})["operational_symprec_source"] = (
-            "preparation_symprec" if preparation_tolerance > 0.0 else "default_grid"
+            "fixed_v2_symprec" if preparation_tolerance > 0.0 else "fixed_v2_default"
         )
     except Exception as exc:  # pragma: no cover - defensive provenance path
         observed_data = {
@@ -397,6 +381,17 @@ def collect_abacus_strain_response(
 
     base = Path(root).resolve()
     ensemble = ResponseEnsemble.read(base / "ensemble.json")
+    declared_symprec = ensemble.metadata.get("symprec")
+    if declared_symprec is not None:
+        try:
+            declared_symprec = float(declared_symprec)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("v2 ensemble metadata symprec must be numeric") from exc
+        if declared_symprec != V2_SYMPREC:
+            raise ValueError(
+                "v2 requires symprec=1e-3 in ensemble metadata; "
+                f"got {declared_symprec:g}"
+            )
     reference = base / "reference"
     _verify_input_hash(
         reference,
@@ -720,9 +715,8 @@ def collect_abacus_strain_response(
             raise ValueError(f"v2 symmetry report must be a JSON object: {symmetry_path}")
         symmetry_data = loaded_symmetry
     # Keep the symmetry used to plan the ensemble distinct from a fresh audit
-    # of the serialized reference structure.  In particular, a relaxed-ion
-    # reference can be numerically below the preparation tolerance; the
-    # collector must expose that mismatch instead of silently averaging it.
+    # of the serialized reference structure, while using the same fixed v2
+    # tolerance so atom equivalence classes cannot drift between stages.
     symmetry_data = _augment_reference_symmetry(symmetry_data, reference_structure, dimensions)
     provenance = {
         "reference_hash": ensemble.reference_hash,

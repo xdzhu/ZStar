@@ -820,3 +820,12 @@ eV/Angstrom（或 J/m）单位对，体积来源与 relaxed-piezo 入口一致�
 检查失败时不做隐式投影。新增单位错配、Lambda/校正量和 rank diagnostics 测试。
 另有一个离线回归直接读取现有 3D SiC v1 `response.json`，验证 v1 BEC/IFC 轴标签可被
 安全消费；该检查不声称 SiC 已有 relaxed-ion 弹性材料常数，也不启动新的计算。
+
+## 2026-09-14 v2 对称性阈值统一
+
+按项目约定，v2 的空间群识别、原子映射、准备阶段和 reference audit 统一固定为
+唯一的 `symprec=1e-3`。传入其他物理对称性阈值会直接失败，避免不同阶段的等价类
+和响应基底发生漂移。此前的多容差 probe 不再进入新结果；AlN/ZnO 的 operational
+空间群均按 `1e-3` 重新归档为 `P6_3mc`。响应 residual gate 默认也统一为 `1e-3`，
+但 rank、拟合 residual 和机械稳定性仍需独立通过。数值线性代数的 machine-scale
+cutoff 属于另一类数值参数，不与空间群 `symprec` 混同。

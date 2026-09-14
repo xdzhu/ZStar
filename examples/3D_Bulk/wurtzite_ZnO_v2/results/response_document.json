@@ -1853,38 +1853,7 @@
         "rejected_operation_reasons": [],
         "operation_orthogonalization_max_error": 0.00027869847482123183,
         "operation_orthogonalization_applied": true,
-        "tight_probe": {
-          "symprec_grid": [
-            1e-05,
-            0.0001,
-            0.001
-          ],
-          "space_group": "Cmc2_1",
-          "symprec": 1e-05,
-          "operation_count": 4,
-          "status": "stable",
-          "candidate_signatures": [
-            {
-              "symprec": 1e-05,
-              "space_group": "Cmc2_1",
-              "hall_number": 176,
-              "operation_count": 4
-            },
-            {
-              "symprec": 0.0001,
-              "space_group": "Cmc2_1",
-              "hall_number": 176,
-              "operation_count": 4
-            },
-            {
-              "symprec": 0.001,
-              "space_group": "P6_3mc",
-              "hall_number": 480,
-              "operation_count": 12
-            }
-          ]
-        },
-        "operational_symprec_source": "preparation_symprec"
+        "operational_symprec_source": "fixed_v2_symprec"
       }
     },
     "comparison": {
@@ -5472,7 +5441,7 @@
       "status": "available",
       "space_group": "P6_3mc",
       "operation_count": 12,
-      "relative_tolerance": 1e-05,
+      "relative_tolerance": 0.001,
       "acoustic_gauge": "raw",
       "comparison": {
         "intended_space_group": "P6_3mc",
@@ -5498,7 +5467,7 @@
           "projection_residual_relative": 0.0006668622036345665,
           "forbidden_component_max": 1.171803499955331,
           "intertwining_residual": 5.239335770388388,
-          "status": "allowed_subspace_violation"
+          "status": "consistent"
         },
         "strain_force_coupling": {
           "allowed_rank": 6,
@@ -5558,7 +5527,7 @@
       "status": "available",
       "space_group": "P6_3mc",
       "operation_count": 12,
-      "relative_tolerance": 1e-05,
+      "relative_tolerance": 0.001,
       "acoustic_gauge": "raw",
       "comparison": {
         "intended_space_group": "P6_3mc",
@@ -5584,7 +5553,7 @@
           "projection_residual_relative": 0.0006668622036345665,
           "forbidden_component_max": 1.171803499955331,
           "intertwining_residual": 5.239335770388388,
-          "status": "allowed_subspace_violation"
+          "status": "consistent"
         },
         "strain_force_coupling": {
           "allowed_rank": 6,

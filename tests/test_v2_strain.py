@@ -279,6 +279,19 @@ def test_abacus_strain_preparation_rejects_invalid_scf_threshold(tmp_path):
         )
 
 
+def test_abacus_strain_preparation_rejects_nonstandard_symprec(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    with pytest.raises(ValueError, match="requires symprec=1e-3"):
+        prepare_abacus_strain_ensemble(
+            tmp_path / "bad-symprec",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+            symprec=1.0e-4,
+        )
+
+
 def test_abacus_strain_preparation_rejects_unknown_ion_relaxation(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     with pytest.raises(ValueError, match="ion_relaxation"):

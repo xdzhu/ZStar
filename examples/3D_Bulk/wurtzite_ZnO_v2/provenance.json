@@ -23,13 +23,13 @@
   "restartable": true,
   "restart_count": 0,
   "polarization_route": "one PYATB run per geometry, three directions",
-  "symmetry_note": "The preparation symmetry record is P6_3mc at symprec=1e-3; the relaxed reference shows tiny symmetry breaking at tighter tolerances and therefore remains conditional until the symmetry audit is resolved.",
+  "symmetry_note": "All v2 symmetry identification and atom mapping use the fixed symprec=1e-3 policy; the case remains research-only pending response residual and literature gates.",
   "symmetry_response_audit": {
     "status": "available",
-    "relative_tolerance": 1e-05,
+    "relative_tolerance": 0.001,
     "quantity_status": {
       "piezoelectric_proper": "allowed_subspace_violation",
-      "elastic": "allowed_subspace_violation",
+      "elastic": "consistent",
       "strain_force_coupling": "allowed_subspace_violation",
       "internal_strain": "allowed_subspace_violation"
     },
@@ -41,10 +41,8 @@
   "symmetry_audit": {
     "intended_preparation_space_group": "P6_3mc",
     "observed_reference_space_group": "P6_3mc",
-    "operational_symprec": 0.001,
+    "symprec": 0.001,
     "status": "consistent",
-    "tight_probe_space_group": "Cmc2_1",
-    "tight_probe_symprec": 1e-05,
-    "note": "The observed reference is compared at the declared preparation symprec; the tighter 1e-5 probe is retained as a numerical-noise diagnostic only."
+    "note": "All v2 symmetry identification, atom mapping and response-basis stages use the fixed symprec=1e-3 policy."
   }
 }

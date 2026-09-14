@@ -31,7 +31,9 @@ existing response record:
    not from vacuum alone. Reject molecular uniform periodic strain; restrict 2D
    and 1D responses to explicitly defined intrinsic directions and normalization.
 2. Check atom ordering, lattice handedness, species, structure hash, expected
-   space group, symmetry tolerance stability, and whether the system is insulating.
+   space group, and enforce the v2 fixed `symprec=1e-3` policy for every
+   periodic symmetry/atom-mapping operation. Reject a manifest that carries a
+   different physical symmetry threshold, and check whether the system is insulating.
    A metallic Berry-polarization ensemble cannot enter the piezoelectric path.
 3. Check the available calculator and assets (`ABACUS + PYATB` is the preferred
    validation route; VASP is an optional independent audit only when POTCAR and

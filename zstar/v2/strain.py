@@ -16,6 +16,7 @@ from ..dimensions import dimension_spec
 from .ensemble import PerturbationStage, ResponseEnsemble, plan_central_stages
 from .mechanical import periodic_strain_indices, strain_tensor_to_voigt, voigt_to_strain_tensor
 from .structure import (
+    V2_SYMPREC,
     StructureSpec,
     analyze_space_group,
     space_group_report_to_dict,
@@ -267,6 +268,11 @@ def prepare_abacus_strain_ensemble(
         raise ValueError("amplitude must be finite and positive")
     if not np.isfinite(float(symprec)) or float(symprec) <= 0.0:
         raise ValueError("symprec must be finite and positive")
+    if float(symprec) != V2_SYMPREC:
+        raise ValueError(
+            "v2 requires symprec=1e-3 for all space-group and atom-mapping operations; "
+            f"got {float(symprec):g}"
+        )
     relaxation = str(ion_relaxation).strip().lower()
     if relaxation not in {"clamped-ion", "relaxed-ion"}:
         raise ValueError("ion_relaxation must be 'clamped-ion' or 'relaxed-ion'")

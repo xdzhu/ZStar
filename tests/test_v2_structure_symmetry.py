@@ -61,7 +61,7 @@ def test_space_group_report_serialization_retains_operations_for_audit():
         "permutation",
     }
     assert operation["permutation"] == [0]
-    assert len(serialized["diagnostics"]["candidate_signatures"]) == 3
+    assert len(serialized["diagnostics"]["candidate_signatures"]) == 1
     restored = space_group_report_from_dict(serialized)
     assert restored.space_group == report.space_group
     assert restored.operation_count == report.operation_count
@@ -77,7 +77,7 @@ def test_p1_structure_keeps_all_response_degrees_of_freedom():
         fractional_positions=np.array([[0.13, 0.27, 0.31], [0.61, 0.22, 0.79]]),
         symbols=("A", "B"),
     )
-    report = analyze_space_group(structure, symprec_grid=(1.0e-5, 1.0e-4))
+    report = analyze_space_group(structure, symprec_grid=(1.0e-3,))
     assert report.status == "stable"
     assert report.space_group == "P1"
     assert report.operation_count == 1
@@ -275,7 +275,7 @@ def test_symmetry_adapted_strain_plan_keeps_all_components_for_p1():
         fractional_positions=np.array([[0.13, 0.27, 0.31], [0.61, 0.22, 0.79]]),
         symbols=("A", "B"),
     )
-    report = analyze_space_group(structure, symprec_grid=(1.0e-5, 1.0e-4))
+    report = analyze_space_group(structure, symprec_grid=(1.0e-3,))
     plan = symmetry_adapted_input_plan(report, input_kind="strain", output_kinds=("polarization", "strain"))
     assert plan.complete
     assert plan.selected_indices == tuple(range(6))
@@ -433,8 +433,18 @@ def test_symmetry_analysis_marks_empty_spglib_dataset_untrusted(monkeypatch):
             return None
 
     monkeypatch.setattr(structure_module, "spglib", EmptySpglib())
-    report = analyze_space_group(structure, symprec_grid=(1.0e-5,))
+    report = analyze_space_group(structure, symprec_grid=(1.0e-3,))
     assert report.status == "symmetry_untrusted"
     assert report.operations == ()
     with pytest.raises(ValueError, match="without operations"):
         symmetry_adapted_input_plan(report, input_kind="strain")
+
+
+def test_v2_symmetry_policy_rejects_nonstandard_symprec():
+    structure = StructureSpec(
+        lattice=np.diag([4.0, 4.0, 4.0]),
+        fractional_positions=np.array([[0.0, 0.0, 0.0]]),
+        symbols=("X",),
+    )
+    with pytest.raises(ValueError, match="requires symprec=1e-3"):
+        analyze_space_group(structure, symprec_grid=(1.0e-4,))

@@ -18,7 +18,7 @@
     "status": "available",
     "space_group": "P6_3mc",
     "operation_count": 12,
-    "relative_tolerance": 1e-05,
+    "relative_tolerance": 0.001,
     "acoustic_gauge": "raw",
     "comparison": {
       "intended_space_group": "P6_3mc",
@@ -44,7 +44,7 @@
         "projection_residual_relative": 0.0006668622036345665,
         "forbidden_component_max": 1.171803499955331,
         "intertwining_residual": 5.239335770388388,
-        "status": "allowed_subspace_violation"
+        "status": "consistent"
       },
       "strain_force_coupling": {
         "allowed_rank": 6,

@@ -147,8 +147,9 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
 
 ## 5. 空间群识别不稳定和非标准晶胞
 
-* 在 `symprec` 候选网格（例如 `1e-6 ... 1e-2 Angstrom`）重复识别；要求国际符号、
-  Hall number、原子映射和周期子空间在容差窗口内稳定。
+* v2 的空间群识别、原子映射和周期子空间统一固定为 `symprec=1e-3 Angstrom`；
+  不允许不同阶段用另一物理容差重新定义等价类。若需研究数值敏感性，应在外部
+  审计中记录，但不得改变正式 v2 response basis。
 * 若结构优化留下微小破缺，默认使用实际低对称结构；只有用户明确选择
   `idealize_reference` 且能量/坐标偏差通过阈值检查时才允许升高对称。
 * 若 `spglib` 返回 `None`、映射非双射、元素标签冲突、旋转非正交、操作混合周期与
@@ -168,9 +169,8 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
 
 `symmetry.json` 现在持久化每个被接受操作的 fractional rotation、fractional
 translation、Cartesian rotation 和 species-preserving atom permutation，而不只
-保存国际符号与操作数。响应收集时对序列化 reference `STRU` 以准备阶段声明的
-`symprec` 重新扫描；若准备 manifest 没有有效容差，才回退到
-`symprec=(1e-5,1e-4,1e-3)`，并在同一 calculator-neutral 文档中分别写入：
+保存国际符号与操作数。响应收集时对序列化 reference `STRU` 始终以固定的
+`symprec=1e-3` 重新扫描，并在同一 calculator-neutral 文档中分别写入：
 
 * `symmetry` 顶层：准备阶段用于生成表示和扰动计划的 **intended_preparation**；
 * `symmetry.reference_observed`：收集阶段从实际 reference 结构得到的报告；
@@ -178,17 +178,15 @@ translation、Cartesian rotation 和 species-preserving atom permutation，而�
   `requires_audit` 状态；
 * `metadata.symmetry_audit` 与结果 summary 中的对应摘要。
 
-因此，准备容差内的坐标舍入不会被过严的二次 probe 误报成降对称，但真正超出准备
-容差的破缺仍会被报告。观测报告的 diagnostics 另外保留 `tight_probe`（默认网格的
-最紧结果）及其 candidate signatures，供数值噪声审计。只有 comparison 为
+因此，准备容差内的坐标舍入不会被另一套阈值误报成降对称，但真正超出 `1e-3`
+的破缺仍会被报告。只有 comparison 为
 `consistent`，且张量 residual/rank 及边界条件均通过，才可以把理想操作用于稳定
 结论；否则必须保留 raw 结果并进入 symmetry audit。`tools/collect_v2_piezo_case.py`
 的 `symmetry_response_audit` 对已拟合的 proper piezo、elastic、Gamma 和
 internal-strain 矩阵做独立的受限基底投影；它只写入 projection/intertwining
-residual，不替换 raw 张量。默认相对 Frobenius gate 为 `1e-5`，可通过研究脚本的
-`--symmetry-relative-tolerance` 显式调整并随 summary 保存。当前 AlN/ZnO 的严格
-`1e-5` probe 仍显示 `Cmc2_1`，但在声明的 `1e-3` operational tolerance 下观测报告
-恢复为 `P6_3mc`；严格 probe 只作为诊断，不单独构成 operational mismatch。
+residual，不替换 raw 张量。默认相对 Frobenius symmetry gate 同样为 `1e-3`，可通过
+研究脚本的 `--symmetry-relative-tolerance` 显式调整并随 summary 保存；该 gate 是
+响应 residual 判据，不会改变空间群识别的 `symprec=1e-3`。
 
 ### 5.2 relaxed-ion 的声学规范审计
 
@@ -205,8 +203,8 @@ residual，不替换 raw 张量。默认相对 Frobenius gate 为 `1e-5`，可�
 `raw_quantity_unchanged=true`。该选项不会覆盖 raw Lambda，也不把审计结果写成稳定
 材料常数；只有在质量定义、内部坐标规范和对称性 comparison 均明确后，才可将某种
 规范用于 relaxed-ion `Z*Lambda` 或弹性内部修正。当前 AlN/ZnO 的等权平移仅约
-`1e-10 Å`，不能解释其较大的对称性 residual；主要问题仍是参考结构的实际对称性
-低于准备阶段理想空间群。
+`1e-10 Å`，不能解释其较大的响应 residual；这些 residual 必须在统一 `1e-3`
+symprec 下继续独立审计。
 
 ## 6. 低维和分子处理
 
@@ -222,9 +220,10 @@ residual，不替换 raw 张量。默认相对 Frobenius gate 为 `1e-5`，可�
 ## 7. 伪代码
 
 ```text
-analyze(structure, dimensionality, boundary, symprec_grid):
-    candidates = identify_symmetry_datasets(structure, symprec_grid)
-    dataset = choose_stable_dataset(candidates) or untrusted
+analyze(structure, dimensionality, boundary):
+    dataset = identify_symmetry_dataset(structure, symprec=1e-3)
+    if dataset is None:
+        return symmetry_untrusted
     ops = validate_operations(dataset, species, magnetic_state, boundary)
     if untrusted or invalid(ops):
         return all_atom_plan(status="symmetry_untrusted")
@@ -253,12 +252,12 @@ reconstruct(observations, report):
 
 | 失败 | 不允许的行为 | 最小恢复动作 |
 |---|---|---|
-| `spglib=None/None dataset` | 假设高对称或静默丢 stage | all-atom 计划，或调整 `symprec` 后重新审计 |
+| `spglib=None/None dataset` | 假设高对称或静默丢 stage | all-atom 计划，或检查结构后以固定 `symprec=1e-3` 重试 |
 | 原子映射非双射/跨元素 | 合并不等价原子 | 检查排序、分数坐标和元素标签 |
 | 周期/开放方向被旋转混合 | 当作 3D bulk 处理 | 降低操作集合或使用兼容边界 |
 | `rank < allowed_rank` | 用零填充缺列 | 生成诊断建议的最少新增 ± stages |
 | residual 超阈值 | 只输出对称化张量 | 保留 raw，检查 SCF、branch、step 和坐标 |
-| 微小破缺导致 dataset 跳变 | 强制升高空间群 | 使用实际低对称或用户确认 idealization |
+| `symprec` 不是 `1e-3` | 让不同阶段使用不同等价类 | 拒绝输入并用固定 `symprec=1e-3` 重新生成 manifest |
 
 ## 9. 五类以上测试方案
 

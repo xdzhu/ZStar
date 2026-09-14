@@ -11,8 +11,9 @@ Before a case is called a research result, verify:
 - `ResponseDocument.schema` is `zstar-v2-response` and its version is supported;
 - dimensionality and `periodic_axes` agree at both document and quantity level;
 - the reference structure is insulating for Berry polarization;
-- the space-group dataset is stable over stated tolerances, with species-
-  preserving atom maps and a right-handed Cartesian basis;
+- the space-group dataset uses the single v2 physical tolerance `symprec=1e-3`,
+  with species-preserving atom maps and a right-handed Cartesian basis; a
+  different physical symmetry threshold is an input error, not a second result;
 - every perturbation has a serialized actual strain/displacement and a paired
   sign where a central difference is claimed;
 - each geometry has exactly one PYATB run containing the three lattice-direction

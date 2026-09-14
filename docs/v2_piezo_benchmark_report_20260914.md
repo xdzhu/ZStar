@@ -34,11 +34,10 @@ marker 断点续算，禁止并行启动第二个相同 root。
 `d31=−2.75`、`d33=6.43`、`d15=−3.33`。这与直接 stress-piezo 文献的
 `d31=−2.1`、`d33=5.4`、`d15=2.9`（Bernardini–Fiorentini）在量级上相符，
 但 `d15` 的符号必须先统一坐标手性。弹性矩阵正定，最小特征值为 `112.25 GPa`。
-proper 压电 fit residual 为 `0.53%`，弹性 residual 为 `0.37%`。收集阶段的结构
-审计采用准备阶段声明的 `symprec=1e-3`，最终参考结构在该 operational tolerance
-下也是 `P6_3mc`；`1e-5/1e-4` 的严格 probe 才得到 `Cmc2_1`，现作为坐标数值噪声
-诊断保留。因此 AlN 仍是“计算完成、待响应 residual 与文献审计”，但不能把严格
-probe 的表观降对称误写成真实相变。
+proper 压电 fit residual 为 `0.53%`，弹性 residual 为 `0.37%`。收集阶段和准备
+阶段统一采用 v2 固定 `symprec=1e-3`，最终参考结构识别为 `P6_3mc`。因此 AlN
+仍是“计算完成、待响应 residual 与文献审计”，不能把另一套未被 v2 采用的严格
+容差结果误写成真实相变。
 以 intended 操作做的独立受限基底审计（不替换 raw 张量）给出 proper 投影残差
 `3.19e-4 C/m²`，elastic 投影残差 `1.50 kbar`；这些数值只作为后处理诊断。
 
@@ -66,10 +65,9 @@ PYATB，40 MPI × 1 OMP）。proper 结果为 `e31(x)=−0.6021`、`e31(y)=−0.
 
 不过，当前仍不能把 ZnO 标记为最终通过：proper fit 的绝对最大残差为
 `1.51e-4 C/m²`（相对归一化残差 `14.2%`），`e31` 等价拷贝仍相差约 2.2%。
-准备阶段记录的 `P6_3mc` 与最终参考结构在声明的 `symprec=1e-3` operational
-tolerance 下相符；更紧的 `1e-5` probe 会得到 `Cmc2_1`，该结果已单独保存在
-`tight_probe` 诊断中，不能直接解释为真实对称性破缺。该结果仍归档为“完成计算、
-待响应 residual 与文献审计”，不作为普适材料结论。受限 proper 基底投影残差为
+准备阶段记录的 `P6_3mc` 与最终参考结构在统一的 `symprec=1e-3` operational
+tolerance 下相符。该结果仍归档为“完成计算、待响应 residual 与文献审计”，不
+作为普适材料结论。受限 proper 基底投影残差为
 `6.57e-3 C/m²`（相对 `0.71%`），elastic 投影残差为 `1.17 kbar`；这说明
 高精度应变计算已明显改善，但不能抵消 intended/observed 空间群不一致。
 

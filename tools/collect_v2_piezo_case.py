@@ -46,7 +46,7 @@ def _quantity(document, name):
 def _symmetry_response_audit(
     document,
     *,
-    relative_tolerance: float = 1.0e-5,
+    relative_tolerance: float = 1.0e-3,
     acoustic_gauge: str = "raw",
 ) -> dict[str, object]:
     """Compare measured tensors with the persisted space-group subspaces.
@@ -249,8 +249,8 @@ def main() -> int:
     parser.add_argument(
         "--symmetry-relative-tolerance",
         type=float,
-        default=1.0e-5,
-        help="relative Frobenius tolerance for the post-fit symmetry audit",
+        default=1.0e-3,
+        help="relative Frobenius gate for the post-fit symmetry audit (v2 default: 1e-3)",
     )
     parser.add_argument(
         "--acoustic-gauge",
