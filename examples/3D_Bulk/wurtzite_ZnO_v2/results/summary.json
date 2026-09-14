@@ -6,25 +6,26 @@
   "functional": "pbesol",
   "space_group": "P6_3mc",
   "intended_preparation_space_group": "P6_3mc",
-  "observed_reference_space_group": "Cmc2_1",
+  "observed_reference_space_group": "P6_3mc",
   "symmetry_audit": {
     "intended_space_group": "P6_3mc",
-    "observed_reference_space_group": "Cmc2_1",
-    "same_space_group": false,
+    "observed_reference_space_group": "P6_3mc",
+    "same_space_group": true,
     "representation_source": "intended_preparation",
-    "status": "requires_audit"
+    "status": "consistent"
   },
   "symmetry_response_audit": {
-    "status": "conditional_intended_symmetry",
+    "status": "available",
     "space_group": "P6_3mc",
     "operation_count": 12,
     "relative_tolerance": 1e-05,
+    "acoustic_gauge": "raw",
     "comparison": {
       "intended_space_group": "P6_3mc",
-      "observed_reference_space_group": "Cmc2_1",
-      "same_space_group": false,
+      "observed_reference_space_group": "P6_3mc",
+      "same_space_group": true,
       "representation_source": "intended_preparation",
-      "status": "requires_audit"
+      "status": "consistent"
     },
     "quantities": {
       "piezoelectric_proper": {
@@ -48,8 +49,8 @@
       "strain_force_coupling": {
         "allowed_rank": 6,
         "projection_residual_max": 8.062099264793355,
-        "projection_residual_rms": 3.072566711848875,
-        "projection_residual_relative": 0.7208755040441842,
+        "projection_residual_rms": 3.0725667118488746,
+        "projection_residual_relative": 0.7208755040441843,
         "forbidden_component_max": 8.062099264793355,
         "intertwining_residual": 0.03647127728095999,
         "status": "allowed_subspace_violation"
@@ -58,7 +59,7 @@
         "allowed_rank": 6,
         "projection_residual_max": 0.6753854902713046,
         "projection_residual_rms": 0.20584587936013202,
-        "projection_residual_relative": 0.684608986559606,
+        "projection_residual_relative": 0.6846089865596059,
         "forbidden_component_max": 0.6753854902713046,
         "intertwining_residual": 0.13276648113287354,
         "status": "allowed_subspace_violation"

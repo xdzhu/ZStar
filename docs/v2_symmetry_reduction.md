@@ -168,7 +168,8 @@ J_hat = argmin_J || W^(1/2) (X J - Y) ||_2
 
 `symmetry.json` 现在持久化每个被接受操作的 fractional rotation、fractional
 translation、Cartesian rotation 和 species-preserving atom permutation，而不只
-保存国际符号与操作数。响应收集时对序列化 reference `STRU` 重新扫描
+保存国际符号与操作数。响应收集时对序列化 reference `STRU` 以准备阶段声明的
+`symprec` 重新扫描；若准备 manifest 没有有效容差，才回退到
 `symprec=(1e-5,1e-4,1e-3)`，并在同一 calculator-neutral 文档中分别写入：
 
 * `symmetry` 顶层：准备阶段用于生成表示和扰动计划的 **intended_preparation**；
@@ -177,14 +178,17 @@ translation、Cartesian rotation 和 species-preserving atom permutation，而�
   `requires_audit` 状态；
 * `metadata.symmetry_audit` 与结果 summary 中的对应摘要。
 
-因此，微小弛豫破缺不会被静默投影回理想空间群。只有 comparison 为
+因此，准备容差内的坐标舍入不会被过严的二次 probe 误报成降对称，但真正超出准备
+容差的破缺仍会被报告。观测报告的 diagnostics 另外保留 `tight_probe`（默认网格的
+最紧结果）及其 candidate signatures，供数值噪声审计。只有 comparison 为
 `consistent`，且张量 residual/rank 及边界条件均通过，才可以把理想操作用于稳定
 结论；否则必须保留 raw 结果并进入 symmetry audit。`tools/collect_v2_piezo_case.py`
 的 `symmetry_response_audit` 对已拟合的 proper piezo、elastic、Gamma 和
 internal-strain 矩阵做独立的受限基底投影；它只写入 projection/intertwining
 residual，不替换 raw 张量。默认相对 Frobenius gate 为 `1e-5`，可通过研究脚本的
-`--symmetry-relative-tolerance` 显式调整并随 summary 保存。当前 AlN/ZnO 的实际归档正是
-这种 `P6_3mc`（准备）/`Cmc2_1`（紧容差 reference）分离案例。
+`--symmetry-relative-tolerance` 显式调整并随 summary 保存。当前 AlN/ZnO 的严格
+`1e-5` probe 仍显示 `Cmc2_1`，但在声明的 `1e-3` operational tolerance 下观测报告
+恢复为 `P6_3mc`；严格 probe 只作为诊断，不单独构成 operational mismatch。
 
 ### 5.2 relaxed-ion 的声学规范审计
 

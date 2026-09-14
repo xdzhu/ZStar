@@ -43,6 +43,12 @@ def _augment_reference_symmetry(
 
     data = dict(preparation_symmetry)
     intended = dict(preparation_symmetry)
+    preparation_tolerance = 0.0
+    if preparation_symmetry:
+        try:
+            preparation_tolerance = float(preparation_symmetry.get("symprec", 0.0) or 0.0)
+        except (TypeError, ValueError):
+            preparation_tolerance = 0.0
     try:
         reference_spec = StructureSpec(
             lattice=np.asarray(reference_structure.cell, dtype=float),
@@ -50,8 +56,40 @@ def _augment_reference_symmetry(
             symbols=tuple(str(symbol) for symbol in reference_structure.symbols),
             dimensionality=dimensions,
         )
-        observed = analyze_space_group(reference_spec)
+        # The observed-reference report must use the same declared tolerance
+        # as preparation when one is available.  Otherwise numerical coordinate
+        # noise can turn an intended P6_3mc structure into a false Cmc2_1
+        # mismatch merely because the audit picked a tighter default probe.
+        observed_grid = (
+            (preparation_tolerance,)
+            if preparation_tolerance > 0.0
+            else (1.0e-5, 1.0e-4, 1.0e-3)
+        )
+        observed = analyze_space_group(reference_spec, symprec_grid=observed_grid)
         observed_data: dict[str, Any] = space_group_report_to_dict(observed)
+        if preparation_tolerance > 0.0:
+            # Preserve the conservative tight-probe result as evidence, but do
+            # not use it as the operational comparison or response basis.
+            try:
+                tight = analyze_space_group(
+                    reference_spec,
+                    symprec_grid=(1.0e-5, 1.0e-4, 1.0e-3),
+                )
+                observed_data.setdefault("diagnostics", {})["tight_probe"] = {
+                    "symprec_grid": [1.0e-5, 1.0e-4, 1.0e-3],
+                    "space_group": tight.space_group,
+                    "symprec": float(tight.symprec),
+                    "operation_count": tight.operation_count,
+                    "status": tight.status,
+                    "candidate_signatures": list(
+                        tight.diagnostics.get("candidate_signatures", ())
+                    ),
+                }
+            except Exception as exc:  # pragma: no cover - defensive audit path
+                observed_data.setdefault("diagnostics", {})["tight_probe_error"] = str(exc)
+        observed_data.setdefault("diagnostics", {})["operational_symprec_source"] = (
+            "preparation_symprec" if preparation_tolerance > 0.0 else "default_grid"
+        )
     except Exception as exc:  # pragma: no cover - defensive provenance path
         observed_data = {
             "status": "analysis_failed",
@@ -71,7 +109,6 @@ def _augment_reference_symmetry(
     # malformed legacy manifest cannot erase valid observed evidence.
     if reference_spec is not None and preparation_symmetry and not preparation_symmetry.get("operations"):
         try:
-            preparation_tolerance = float(preparation_symmetry.get("symprec", 0.0) or 0.0)
             if preparation_tolerance > 0.0:
                 intended_report = analyze_space_group(
                     reference_spec,

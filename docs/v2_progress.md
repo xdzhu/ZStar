@@ -287,6 +287,14 @@
     下一步仍先解决 relaxed reference 的 symmetry/声学规范与文献映射，再决定是否
     需要新的计算；不在未通过算法 gate 前扩展 CLI 或批量提交任务。
 
+57. 复核发现 AlN/ZnO 的 `P6_3mc`/`Cmc2_1` 差异主要来自观测审计误用过严的
+    `symprec=1e-5`：AlN 在 `3e-4`、ZnO 在 `1e-3` 已恢复 `P6_3mc`。修正 collector
+    使 `reference_observed` 默认采用准备阶段声明的 operational `symprec`，并把
+    `1e-5/1e-4/1e-3` 的 tight probe 保存到 diagnostics，不再把数值坐标噪声单独
+    判为 operational mismatch。新增回归测试确认该行为；AlN/ZnO 结果归档和案例
+    provenance 已同步更新。响应矩阵自身的 rank/residual 仍需独立通过，不能因
+    容差修正而自动升级为稳定材料常数。
+
 53. 完整 collector 回读成功：输入哈希、`STRU_INITIAL` 分数坐标、实际 cell 应变、
     force/stress/energy、内部位移和 13 次 PYATB 均通过。`P4mm` 允许子空间秩为
     3（压电）和 6（major-symmetric 弹性）；直接 relaxed-ion improper `e` 最大

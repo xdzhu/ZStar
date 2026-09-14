@@ -1,6 +1,6 @@
 {
   "schema": "zstar-v2-case-provenance",
-  "status": "completed_research_gate_pending_symmetry_and_literature_audit",
+  "status": "completed_research_gate_pending_literature_audit",
   "case": "wurtzite_ZnO_v2",
   "backend": "ABACUS+PYATB",
   "scheduler": "235 direct inside allocated PBS node",
@@ -11,10 +11,10 @@
   "functional": "PBEsol",
   "ecutwfc_Ry": 100,
   "kmesh": "8x8x6",
-  "scf_thr": 1e-8,
-  "strain_amplitude": 1e-3,
-  "reference_force_thr_eV_per_angstrom": 1e-3,
-  "strain_force_thr_eV_per_angstrom": 1e-4,
+  "scf_thr": 1e-08,
+  "strain_amplitude": 0.001,
+  "reference_force_thr_eV_per_angstrom": 0.001,
+  "strain_force_thr_eV_per_angstrom": 0.0001,
   "reference_force_max_eV_per_angstrom": 0.0007643296615836913,
   "geometry_count": 13,
   "pyatb_runs": 13,
@@ -25,11 +25,26 @@
   "polarization_route": "one PYATB run per geometry, three directions",
   "symmetry_note": "The preparation symmetry record is P6_3mc at symprec=1e-3; the relaxed reference shows tiny symmetry breaking at tighter tolerances and therefore remains conditional until the symmetry audit is resolved.",
   "symmetry_response_audit": {
-    "status": "conditional_intended_symmetry",
-    "relative_tolerance": 1e-5,
+    "status": "available",
+    "relative_tolerance": 1e-05,
+    "quantity_status": {
+      "piezoelectric_proper": "allowed_subspace_violation",
+      "elastic": "allowed_subspace_violation",
+      "strain_force_coupling": "allowed_subspace_violation",
+      "internal_strain": "allowed_subspace_violation"
+    },
     "proper_projection_residual_relative": 0.0070884923420083965,
     "elastic_projection_residual_relative": 0.0006668622036345665
   },
   "results": "results/summary.json",
-  "response_document": "results/response_document.json"
+  "response_document": "results/response_document.json",
+  "symmetry_audit": {
+    "intended_preparation_space_group": "P6_3mc",
+    "observed_reference_space_group": "P6_3mc",
+    "operational_symprec": 0.001,
+    "status": "consistent",
+    "tight_probe_space_group": "Cmc2_1",
+    "tight_probe_symprec": 1e-05,
+    "note": "The observed reference is compared at the declared preparation symprec; the tighter 1e-5 probe is retained as a numerical-noise diagnostic only."
+  }
 }

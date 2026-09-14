@@ -89,7 +89,9 @@
         }
       ],
       "boundary_compatible_operations": 12,
-      "rejected_operation_reasons": []
+      "rejected_operation_reasons": [],
+      "operation_orthogonalization_max_error": 0.00027869847482123183,
+      "operation_orthogonalization_applied": true
     },
     "operations": [
       {
@@ -1257,9 +1259,9 @@
     },
     "reference_observed": {
       "status": "stable",
-      "symprec": 1e-05,
-      "space_group": "Cmc2_1",
-      "hall_number": 176,
+      "symprec": 0.001,
+      "space_group": "P6_3mc",
+      "hall_number": 480,
       "equivalent_atoms": [
         0,
         0,
@@ -1270,7 +1272,7 @@
         0,
         2
       ],
-      "operation_count": 4,
+      "operation_count": 12,
       "operations": [
         {
           "rotation_fractional": [
@@ -1322,6 +1324,100 @@
         {
           "rotation_fractional": [
             [
+              1,
+              -1,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666666667,
+            0.3333656300999999,
+            0.5000000000000001
+          ],
+          "rotation_cartesian": [
+            [
+              0.4999999902908965,
+              -0.8660254093899926,
+              0.0
+            ],
+            [
+              0.8660254093899925,
+              0.4999999902908962,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              1,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.9999677032999998,
+            3.229679999994239e-05,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              -0.4999999902908962,
+              -0.8660254093899923,
+              0.0
+            ],
+            [
+              0.8660254093899921,
+              -0.49999999029089626,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
               -1,
               0,
               0
@@ -1338,8 +1434,8 @@
             ]
           ],
           "translation_fractional": [
-            0.6666666666000001,
-            0.33333333320000025,
+            0.6666020732,
+            0.33333333340000004,
             0.5000000000000001
           ],
           "rotation_cartesian": [
@@ -1374,7 +1470,54 @@
               0
             ],
             [
+              -1,
               0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.9999354065000001,
+            0.9999677033000001,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              -0.4999999902908965,
+              0.8660254093899926,
+              0.0
+            ],
+            [
+              -0.8660254093899925,
+              -0.4999999902908962,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              -1,
               1,
               0
             ],
@@ -1385,19 +1528,113 @@
             ]
           ],
           "translation_fractional": [
+            0.6666343699,
+            0.3333010366000001,
+            0.5000000000000001
+          ],
+          "rotation_cartesian": [
+            [
+              0.4999999902908962,
+              0.8660254093899923,
+              0.0
+            ],
+            [
+              -0.8660254093899921,
+              0.49999999029089626,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666343699,
+            0.3333656300999999,
+            0.5000000000000001
+          ],
+          "rotation_cartesian": [
+            [
+              -0.4999999902755101,
+              0.8660254093988753,
+              0.0
+            ],
+            [
+              0.8660254093988753,
+              0.4999999902755101,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              1,
+              -1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
             0.0,
-            0.0,
+            3.229679999994239e-05,
             0.0
           ],
           "rotation_cartesian": [
             [
-              -1.0,
-              1.7763290838246348e-11,
+              0.4999999903062824,
+              0.8660254093811094,
               0.0
             ],
             [
-              1.7763290838246348e-11,
-              1.0,
+              0.8660254093811095,
+              -0.4999999903062822,
               0.0
             ],
             [
@@ -1432,8 +1669,8 @@
             ]
           ],
           "translation_fractional": [
-            0.6666666666000001,
-            0.33333333320000025,
+            0.6666666667,
+            0.33333333340000004,
             0.5000000000000001
           ],
           "rotation_cartesian": [
@@ -1459,23 +1696,152 @@
             3,
             2
           ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              0,
+              -1,
+              0
+            ],
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.9999677032999998,
+            0.9999677033000001,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              0.4999999902755101,
+              -0.8660254093988753,
+              0.0
+            ],
+            [
+              -0.8660254093988753,
+              -0.4999999902755101,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              -1,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.6666020732,
+            0.3333010366000001,
+            0.5000000000000001
+          ],
+          "rotation_cartesian": [
+            [
+              -0.4999999903062824,
+              -0.8660254093811094,
+              0.0
+            ],
+            [
+              -0.8660254093811095,
+              0.4999999903062822,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        {
+          "rotation_fractional": [
+            [
+              -1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ],
+          "translation_fractional": [
+            0.9999354065000001,
+            0.0,
+            0.0
+          ],
+          "rotation_cartesian": [
+            [
+              -1.0,
+              1.7763290838246348e-11,
+              0.0
+            ],
+            [
+              1.7763290838246348e-11,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              1.0
+            ]
+          ],
+          "permutation": [
+            0,
+            1,
+            2,
+            3
+          ]
         }
       ],
       "diagnostics": {
-        "candidate_count": 3,
+        "candidate_count": 1,
         "candidate_signatures": [
-          {
-            "symprec": 1e-05,
-            "space_group": "Cmc2_1",
-            "hall_number": 176,
-            "operation_count": 4
-          },
-          {
-            "symprec": 0.0001,
-            "space_group": "Cmc2_1",
-            "hall_number": 176,
-            "operation_count": 4
-          },
           {
             "symprec": 0.001,
             "space_group": "P6_3mc",
@@ -1483,18 +1849,50 @@
             "operation_count": 12
           }
         ],
-        "boundary_compatible_operations": 4,
+        "boundary_compatible_operations": 12,
         "rejected_operation_reasons": [],
-        "operation_orthogonalization_max_error": 2.512108681582573e-11,
-        "operation_orthogonalization_applied": true
+        "operation_orthogonalization_max_error": 0.00027869847482123183,
+        "operation_orthogonalization_applied": true,
+        "tight_probe": {
+          "symprec_grid": [
+            1e-05,
+            0.0001,
+            0.001
+          ],
+          "space_group": "Cmc2_1",
+          "symprec": 1e-05,
+          "operation_count": 4,
+          "status": "stable",
+          "candidate_signatures": [
+            {
+              "symprec": 1e-05,
+              "space_group": "Cmc2_1",
+              "hall_number": 176,
+              "operation_count": 4
+            },
+            {
+              "symprec": 0.0001,
+              "space_group": "Cmc2_1",
+              "hall_number": 176,
+              "operation_count": 4
+            },
+            {
+              "symprec": 0.001,
+              "space_group": "P6_3mc",
+              "hall_number": 480,
+              "operation_count": 12
+            }
+          ]
+        },
+        "operational_symprec_source": "preparation_symprec"
       }
     },
     "comparison": {
       "intended_space_group": "P6_3mc",
-      "observed_reference_space_group": "Cmc2_1",
-      "same_space_group": false,
+      "observed_reference_space_group": "P6_3mc",
+      "same_space_group": true,
       "representation_source": "intended_preparation",
-      "status": "requires_audit"
+      "status": "consistent"
     }
   },
   "functional": "pbesol",
@@ -5071,16 +5469,17 @@
       "stress_sign": "compression-positive"
     },
     "symmetry_response_audit": {
-      "status": "conditional_intended_symmetry",
+      "status": "available",
       "space_group": "P6_3mc",
       "operation_count": 12,
       "relative_tolerance": 1e-05,
+      "acoustic_gauge": "raw",
       "comparison": {
         "intended_space_group": "P6_3mc",
-        "observed_reference_space_group": "Cmc2_1",
-        "same_space_group": false,
+        "observed_reference_space_group": "P6_3mc",
+        "same_space_group": true,
         "representation_source": "intended_preparation",
-        "status": "requires_audit"
+        "status": "consistent"
       },
       "quantities": {
         "piezoelectric_proper": {
@@ -5104,8 +5503,8 @@
         "strain_force_coupling": {
           "allowed_rank": 6,
           "projection_residual_max": 8.062099264793355,
-          "projection_residual_rms": 3.072566711848875,
-          "projection_residual_relative": 0.7208755040441842,
+          "projection_residual_rms": 3.0725667118488746,
+          "projection_residual_relative": 0.7208755040441843,
           "forbidden_component_max": 8.062099264793355,
           "intertwining_residual": 0.03647127728095999,
           "status": "allowed_subspace_violation"
@@ -5114,7 +5513,7 @@
           "allowed_rank": 6,
           "projection_residual_max": 0.6753854902713046,
           "projection_residual_rms": 0.20584587936013202,
-          "projection_residual_relative": 0.684608986559606,
+          "projection_residual_relative": 0.6846089865596059,
           "forbidden_component_max": 0.6753854902713046,
           "intertwining_residual": 0.13276648113287354,
           "status": "allowed_subspace_violation"
@@ -5156,16 +5555,17 @@
       "internal_strain"
     ],
     "symmetry_response_audit": {
-      "status": "conditional_intended_symmetry",
+      "status": "available",
       "space_group": "P6_3mc",
       "operation_count": 12,
       "relative_tolerance": 1e-05,
+      "acoustic_gauge": "raw",
       "comparison": {
         "intended_space_group": "P6_3mc",
-        "observed_reference_space_group": "Cmc2_1",
-        "same_space_group": false,
+        "observed_reference_space_group": "P6_3mc",
+        "same_space_group": true,
         "representation_source": "intended_preparation",
-        "status": "requires_audit"
+        "status": "consistent"
       },
       "quantities": {
         "piezoelectric_proper": {
@@ -5189,8 +5589,8 @@
         "strain_force_coupling": {
           "allowed_rank": 6,
           "projection_residual_max": 8.062099264793355,
-          "projection_residual_rms": 3.072566711848875,
-          "projection_residual_relative": 0.7208755040441842,
+          "projection_residual_rms": 3.0725667118488746,
+          "projection_residual_relative": 0.7208755040441843,
           "forbidden_component_max": 8.062099264793355,
           "intertwining_residual": 0.03647127728095999,
           "status": "allowed_subspace_violation"
@@ -5199,7 +5599,7 @@
           "allowed_rank": 6,
           "projection_residual_max": 0.6753854902713046,
           "projection_residual_rms": 0.20584587936013202,
-          "projection_residual_relative": 0.684608986559606,
+          "projection_residual_relative": 0.6846089865596059,
           "forbidden_component_max": 0.6753854902713046,
           "intertwining_residual": 0.13276648113287354,
           "status": "allowed_subspace_violation"

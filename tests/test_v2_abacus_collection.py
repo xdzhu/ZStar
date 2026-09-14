@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import shutil
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -16,6 +17,8 @@ from zstar.v2 import (
 )
 from zstar.v2.ensemble import ResponseEnsemble
 from zstar.shared_response import read_structure, write_structure
+from zstar.v2.abacus import _augment_reference_symmetry
+from zstar.dimensions import DimensionSpec
 
 
 # Use the tracked v2 fixture.  The historical cubic phonon input is generated
@@ -533,6 +536,29 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
         document.quantity("polarization_cartesian").values,
         [[0.0, 0.0, 0.0], [0.1, 0.2, 0.3], [0.1, 0.2, 0.3]],
     )
+
+
+def test_observed_symmetry_uses_preparation_tolerance_and_keeps_tight_probe():
+    data = json.loads(
+        Path("examples/3D_Bulk/wurtzite_AlN_v2/results/response_document.json")
+        .read_text(encoding="utf-8")
+    )
+    structure = data["structure"]
+    reference = SimpleNamespace(
+        cell=np.asarray(structure["lattice_angstrom"], dtype=float),
+        scaled_positions=np.asarray(structure["fractional_positions"], dtype=float),
+        symbols=tuple(structure["symbols"]),
+    )
+    preparation = dict(data["symmetry"])
+    # The tracked reference has ~1e-4 fractional-coordinate round-off.  The
+    # declared 1e-3 preparation tolerance recovers the intended P6_3mc group,
+    # while the old tight probe remains visible as a diagnostic only.
+    result = _augment_reference_symmetry(preparation, reference, DimensionSpec(3))
+    assert result["reference_observed"]["space_group"] == "P6_3mc"
+    assert result["reference_observed"]["symprec"] == pytest.approx(1.0e-3)
+    tight = result["reference_observed"]["diagnostics"]["tight_probe"]
+    assert tight["space_group"] == "Cmc2_1"
+    assert result["comparison"]["status"] == "consistent"
 
 
 def test_collect_pyatb_strain_response_uses_each_stage_lattice_basis(tmp_path):

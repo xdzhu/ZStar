@@ -6,25 +6,26 @@
   "functional": "pbesol",
   "space_group": "P6_3mc",
   "intended_preparation_space_group": "P6_3mc",
-  "observed_reference_space_group": "Cmc2_1",
+  "observed_reference_space_group": "P6_3mc",
   "symmetry_audit": {
     "intended_space_group": "P6_3mc",
-    "observed_reference_space_group": "Cmc2_1",
-    "same_space_group": false,
+    "observed_reference_space_group": "P6_3mc",
+    "same_space_group": true,
     "representation_source": "intended_preparation",
-    "status": "requires_audit"
+    "status": "consistent"
   },
   "symmetry_response_audit": {
-    "status": "conditional_intended_symmetry",
+    "status": "available",
     "space_group": "P6_3mc",
     "operation_count": 12,
     "relative_tolerance": 1e-05,
+    "acoustic_gauge": "raw",
     "comparison": {
       "intended_space_group": "P6_3mc",
-      "observed_reference_space_group": "Cmc2_1",
-      "same_space_group": false,
+      "observed_reference_space_group": "P6_3mc",
+      "same_space_group": true,
       "representation_source": "intended_preparation",
-      "status": "requires_audit"
+      "status": "consistent"
     },
     "quantities": {
       "piezoelectric_proper": {
@@ -40,7 +41,7 @@
         "allowed_rank": 5,
         "projection_residual_max": 1.5009123999780059,
         "projection_residual_rms": 0.29782579557561034,
-        "projection_residual_relative": 0.00023509142108504041,
+        "projection_residual_relative": 0.0002350914210850404,
         "forbidden_component_max": 1.5009123999780059,
         "intertwining_residual": 3.436677778030885,
         "status": "allowed_subspace_violation"

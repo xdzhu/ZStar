@@ -1,6 +1,6 @@
 {
   "schema": "zstar-v2-case-provenance",
-  "status": "completed_research_gate_pending_symmetry_and_literature_audit",
+  "status": "completed_research_gate_pending_literature_audit",
   "case": "wurtzite_AlN_v2",
   "backend": "ABACUS+PYATB",
   "scheduler": "HF Slurm",
@@ -11,9 +11,9 @@
   "functional": "PBEsol",
   "ecutwfc_Ry": 100,
   "kmesh": "8x8x6",
-  "scf_thr": 1e-8,
-  "strain_amplitude": 1e-3,
-  "force_thr_eV_per_angstrom": 1e-3,
+  "scf_thr": 1e-08,
+  "strain_amplitude": 0.001,
+  "force_thr_eV_per_angstrom": 0.001,
   "geometry_count": 13,
   "pyatb_runs": 13,
   "stage_runtime_sum_seconds": 1578,
@@ -23,15 +23,24 @@
   "polarization_route": "one PYATB run per geometry, three directions",
   "symmetry_audit": {
     "intended_preparation_space_group": "P6_3mc",
-    "observed_reference_space_group": "Cmc2_1",
-    "status": "requires_audit",
-    "note": "The prepared P6_3mc operations are retained for representation fitting; the relaxed reference is Cmc2_1 at symprec=1e-5 and 1e-4, and P6_3mc only at 1e-3."
+    "observed_reference_space_group": "P6_3mc",
+    "operational_symprec": 0.001,
+    "status": "consistent",
+    "tight_probe_space_group": "Cmc2_1",
+    "tight_probe_symprec": 1e-05,
+    "note": "The observed reference is compared at the declared preparation symprec; the tighter 1e-5 probe is retained as a numerical-noise diagnostic only."
   },
   "symmetry_response_audit": {
-    "status": "conditional_intended_symmetry",
-    "relative_tolerance": 1e-5,
+    "status": "available",
+    "relative_tolerance": 1e-05,
+    "quantity_status": {
+      "piezoelectric_proper": "allowed_subspace_violation",
+      "elastic": "allowed_subspace_violation",
+      "strain_force_coupling": "allowed_subspace_violation",
+      "internal_strain": "allowed_subspace_violation"
+    },
     "proper_projection_residual_relative": 0.00018883306331370054,
-    "elastic_projection_residual_relative": 0.00023509142108504041
+    "elastic_projection_residual_relative": 0.0002350914210850404
   },
   "results": "results/summary.json",
   "response_document": "results/response_document.json"

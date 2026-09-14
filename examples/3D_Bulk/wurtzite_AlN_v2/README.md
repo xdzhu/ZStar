@@ -19,6 +19,8 @@ OMP); it does not submit PBS jobs.  The driver is resumable through its stage
 markers, so do not start a second copy for the same case root.
 
 The preparation record uses ideal `P6_3mc` operations.  The collected reference
-structure must still pass the persisted tolerance audit: in the current run it
-is `Cmc2_1` at `symprec=1e-5` and `1e-4`, so the result remains research-only
-until that small relaxation-induced symmetry break is resolved.
+is audited at the declared preparation tolerance `symprec=1e-3`, where it is
+also `P6_3mc`.  A tighter `1e-5` probe reports `Cmc2_1` and is retained only as
+a numerical-coordinate-noise diagnostic; it is not used to change the
+operational response representation.  The result remains research-only until
+the response residual and literature gates are passed.
