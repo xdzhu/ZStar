@@ -99,3 +99,10 @@ are not an improvement over the 5,000-generation timing candidate (force MAE
 the G1 checkpoint to 300k is not satisfied. The 100k model and both NAC
 overlays are retained as an audit result; they are not presented as a
 production-quality force field.
+
+The independent G2 run reached an interim 50k checkpoint while continuing
+towards 500k. Its held-out errors were 0.01864 eV/atom (energy), 0.27303 eV/A
+(force), and 0.05606 e (BEC). BEC improved relative to the G1 100k result, but
+the force error is still well above the ~0.10 eV/A target and the value is not
+yet a final-model assessment. The checkpoint is recorded under
+`official_bto_hq_500k_g2_checkpoint50k/`; the G2 process remains active.
