@@ -1,0 +1,19 @@
+{
+  "status": "running",
+  "host": "G1",
+  "gpu_indices": [0, 1, 2, 3],
+  "gpu_model": "NVIDIA A30",
+  "gpu_memory_mib": 24576,
+  "generations": 100000,
+  "batch": 167,
+  "start_time_approx": "2026-09-14T13:48:00+08:00",
+  "pid": 1287591,
+  "binary": "/home/zhuxd/gpumd-qnep-v5.7/GPUMD-5.7/src/nep",
+  "cuda_visible_devices": "0,1,2,3",
+  "train_frames": 167,
+  "test_frames": 167,
+  "train_sha256": "ac4750bc1fad8382104fe08c77a3905d67c5068c67ef8a59a20161620f0f60fe",
+  "test_sha256": "ac4750bc1fad8382104fe08c77a3905d67c5068c67ef8a59a20161620f0f60fe",
+  "raw_labels_modified": false,
+  "notes": "Intentional full-fit diagnostic: validation equals training data, so reported metrics are in-sample only and are not generalization estimates."
+}
