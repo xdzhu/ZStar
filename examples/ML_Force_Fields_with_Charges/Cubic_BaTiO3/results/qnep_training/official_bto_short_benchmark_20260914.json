@@ -1,0 +1,40 @@
+{
+  "schema": "zstar-qnep-training-timing-benchmark",
+  "date": "2026-09-14",
+  "gpumd_version": "5.7",
+  "dataset": "dft_only_cubic_corrected_becpair_20260914/split",
+  "training_generations": 5000,
+  "configuration": {
+    "cutoff_angstrom": [6, 4],
+    "n_max": [8, 6],
+    "basis_size": [8, 6],
+    "l_max": [4, 0],
+    "neuron": 40,
+    "lambda_e": 1.0,
+    "lambda_f": 1.0,
+    "lambda_v": 0.1,
+    "lambda_q": 0.1,
+    "lambda_z": 0.1,
+    "batch": 134,
+    "population": 50,
+    "charge_mode": 1
+  },
+  "runs": [
+    {
+      "visible_gpus": "0",
+      "gpu_model": "NVIDIA A30",
+      "elapsed_seconds": 526.397527,
+      "test_force_mae_eV_per_A": 0.2577714955279533,
+      "test_bec_mae_e": 0.08690391216156865
+    },
+    {
+      "visible_gpus": "0,1,2,3",
+      "gpu_model": "4x NVIDIA A30",
+      "elapsed_seconds": 164.365774,
+      "test_force_mae_eV_per_A": 0.25398058074586466,
+      "test_bec_mae_e": 0.08126570879895426
+    }
+  ],
+  "speedup_four_vs_one": 3.202513,
+  "purpose": "cost estimate before any 100k--500k run; not a production accuracy claim"
+}
