@@ -100,6 +100,12 @@ the G1 checkpoint to 300k is not satisfied. The 100k model and both NAC
 overlays are retained as an audit result; they are not presented as a
 production-quality force field.
 
+The G2 run subsequently crossed 100k. Its independent 100k checkpoint gives
+0.01627 eV/atom energy MAE, 0.28881 eV/A force MAE, and 0.10216 e BEC MAE on
+the same held-out split. This does not materially improve the G1 100k result;
+the checkpoint is therefore retained for convergence tracking only, while the
+explicitly requested G2 run continues to 500k.
+
 The independent G2 run reached an interim 50k checkpoint while continuing
 towards 500k. Its held-out errors were 0.01864 eV/atom (energy), 0.27303 eV/A
 (force), and 0.05606 e (BEC). BEC improved relative to the G1 100k result, but
