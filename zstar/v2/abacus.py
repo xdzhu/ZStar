@@ -52,13 +52,25 @@ def _augment_reference_symmetry(
         )
         observed = analyze_space_group(reference_spec)
         observed_data: dict[str, Any] = space_group_report_to_dict(observed)
-
-        # Older preparation manifests recorded the symbol and operation count
-        # but not the operations themselves.  Recover the intended operation
-        # set from the same reference at the serialized preparation tolerance
-        # when it is unambiguous; this upgrades provenance without changing
-        # the response representation or hiding a tight-tolerance mismatch.
-        if preparation_symmetry and not preparation_symmetry.get("operations"):
+    except Exception as exc:  # pragma: no cover - defensive provenance path
+        observed_data = {
+            "status": "analysis_failed",
+            "space_group": None,
+            "symprec": None,
+            "operation_count": 0,
+            "diagnostics": {
+                "reason": str(exc),
+                "type": type(exc).__name__,
+            },
+        }
+        reference_spec = None
+    # Older preparation manifests recorded the symbol and operation count but
+    # not the operations themselves.  Recover the intended operation set from
+    # the same reference at the serialized preparation tolerance when it is
+    # unambiguous.  Keep recovery errors separate from the observed audit so a
+    # malformed legacy manifest cannot erase valid observed evidence.
+    if reference_spec is not None and preparation_symmetry and not preparation_symmetry.get("operations"):
+        try:
             preparation_tolerance = float(preparation_symmetry.get("symprec", 0.0) or 0.0)
             if preparation_tolerance > 0.0:
                 intended_report = analyze_space_group(
@@ -74,17 +86,19 @@ def _augment_reference_symmetry(
                     intended_serialized = space_group_report_to_dict(intended_report)
                     intended = {**intended, **intended_serialized}
                     data = {**data, "operations": intended_serialized["operations"]}
-    except Exception as exc:  # pragma: no cover - defensive provenance path
-        observed_data = {
-            "status": "analysis_failed",
-            "space_group": None,
-            "symprec": None,
-            "operation_count": 0,
-            "diagnostics": {
-                "reason": str(exc),
-                "type": type(exc).__name__,
-            },
-        }
+                else:
+                    intended.setdefault("diagnostics", {})
+                    intended["diagnostics"] = {
+                        **dict(intended.get("diagnostics", {})),
+                        "operation_recovery": "ambiguous_preparation_report",
+                    }
+        except Exception as exc:  # pragma: no cover - defensive provenance path
+            intended["diagnostics"] = {
+                **dict(intended.get("diagnostics", {})),
+                "operation_recovery": "failed",
+                "operation_recovery_error": str(exc),
+                "operation_recovery_error_type": type(exc).__name__,
+            }
     if preparation_symmetry:
         data["intended_preparation"] = intended
     data["reference_observed"] = observed_data
