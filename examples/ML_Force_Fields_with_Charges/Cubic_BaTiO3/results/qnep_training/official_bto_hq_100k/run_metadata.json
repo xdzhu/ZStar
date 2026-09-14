@@ -1,0 +1,17 @@
+{
+  "status": "completed",
+  "host": "G1",
+  "gpu_indices": [0, 1, 2, 3],
+  "gpu_model": "NVIDIA A30",
+  "gpu_memory_mib": 24576,
+  "generations": 100000,
+  "batch": 134,
+  "start_time": "2026-09-14T09:37:00+08:00",
+  "end_time": "2026-09-14T10:31:00+08:00",
+  "wall_time_minutes_approx": 54,
+  "binary": "/home/zhuxd/gpumd-qnep-v5.7/GPUMD-5.7/src/nep",
+  "cuda_visible_devices": "0,1,2,3",
+  "data_split": "134 train / 33 test",
+  "raw_labels_modified": false,
+  "notes": "Official qNEP BTO-style configuration; checkpoint audit only."
+}
