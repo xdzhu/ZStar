@@ -1,0 +1,17 @@
+# Keep first-principles raw outputs, qNEP models, logs, and transient datasets
+# in external storage.  The tracked snapshot is deliberately small.
+*
+!.gitignore
+!Cubic_BaTiO3/
+!Cubic_BaTiO3/README.md
+!Cubic_BaTiO3/data_schema.md
+!Cubic_BaTiO3/provenance.md
+!Cubic_BaTiO3/run/
+!Cubic_BaTiO3/run/run.sh
+!Cubic_BaTiO3/run/manifest.example.yaml
+!Cubic_BaTiO3/run/input/
+!Cubic_BaTiO3/run/input/qnep_100k_template.in
+!Cubic_BaTiO3/results/
+!Cubic_BaTiO3/results/README.md
+!Cubic_BaTiO3/results/compatibility_snapshot/
+!Cubic_BaTiO3/results/compatibility_snapshot/**

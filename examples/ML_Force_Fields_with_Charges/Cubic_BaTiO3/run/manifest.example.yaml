@@ -1,0 +1,17 @@
+schema_version: 1
+material: BaTiO3
+phase_label: cubic
+functional: PBEsol
+kspacing_per_angstrom: 0.1
+bec:
+  units: e
+  coordinate_convention: zstar
+  sparse_parent_suffix: 0.no-move
+selection:
+  seed: 20260915
+  strata: [temperature, phase_label, geometry]
+external_software:
+  abacus: required_for_dft_and_bec
+  pyatb: required_for_bec
+  gpumd_qnep: optional_for_model_training
+  phonopy: optional_for_phonons
