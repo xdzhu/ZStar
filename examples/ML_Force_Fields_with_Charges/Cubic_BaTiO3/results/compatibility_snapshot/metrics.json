@@ -1,0 +1,73 @@
+{
+  "schema": "zstar-qnep-compatibility-snapshot-v1",
+  "status": "shelved_model_development",
+  "decision": "retain the data interface; do not use qNEP output as CPC phonon or finite-temperature evidence",
+  "evaluation": {
+    "name": "full cubic BaTiO3 in-sample fit",
+    "frames": 167,
+    "warning": "The fixed cubic test file was also included in every training set. These are fitting errors, not leakage-safe generalization errors."
+  },
+  "raw_dft_coverage": {
+    "labels": "ABACUS/PBEsol; one declared pseudopotential/orbital/basis family; kspacing=0.1 A^-1",
+    "frames": 612,
+    "parent_structures": 65,
+    "bec_parent_frames": 65,
+    "phase_counts": {
+      "cubic": 121,
+      "tetragonal": 229,
+      "orthorhombic": 154,
+      "rhombohedral": 108
+    },
+    "public_qnep_energy_force_labels_mixed": false
+  },
+  "models": [
+    {
+      "name": "cubic-only",
+      "training_frames": 167,
+      "bec_frames": 21,
+      "generations": 100000,
+      "energy_mae_eV_per_atom": 0.0267784431,
+      "force_mae_eV_per_angstrom": 0.2106216746,
+      "bec_mae_e": 0.0319181703,
+      "formal_candidate": true
+    },
+    {
+      "name": "C+T",
+      "training_frames": 396,
+      "bec_frames": 40,
+      "generations": 100000,
+      "energy_mae_eV_per_atom": 0.0271976048,
+      "force_mae_eV_per_angstrom": 0.2168402251,
+      "bec_mae_e": 0.0259814297,
+      "formal_candidate": false,
+      "warning": "MPI concurrent tail-write artifact in raw *_test.out; metrics use the validated complete prefix and are diagnostic only."
+    },
+    {
+      "name": "C+O+R",
+      "training_frames": 429,
+      "bec_frames": 47,
+      "generations": 100000,
+      "energy_mae_eV_per_atom": 0.0274371,
+      "force_mae_eV_per_angstrom": 0.214536,
+      "bec_mae_e": 0.0285724,
+      "formal_candidate": true
+    },
+    {
+      "name": "C+balanced-all",
+      "training_frames": 491,
+      "bec_frames": 45,
+      "generations": 100000,
+      "energy_mae_eV_per_atom": 0.0278563,
+      "force_mae_eV_per_angstrom": 0.219903,
+      "bec_mae_e": 0.028727,
+      "formal_candidate": true
+    }
+  ],
+  "resource_record": {
+    "hardware": "NVIDIA A30",
+    "C+T": "G1, 4 GPUs, completed 2026-09-15",
+    "C+O+R": "G2, 4 GPUs, completed 2026-09-15",
+    "C+balanced-all": "G2, 2 GPUs, completed 2026-09-15"
+  },
+  "next_step_if_resumed": "Revisit cubic-only model capacity, force weighting, data diversity, and a leakage-safe split before any phonon/NAC calculation."
+}

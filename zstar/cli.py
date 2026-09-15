@@ -683,6 +683,34 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     qnep_source.add_argument('--map', dest='bec_map', help='CSV with frame,bec columns.')
     parser_qnep_augment.add_argument('--frame', type=int, default=0)
     parser_qnep_augment.add_argument('--audit-output', default=None)
+    parser_qnep_export = qnep_actions.add_parser(
+        'export', help='Export a ZStar charge-aware JSONL dataset to qNEP extxyz.'
+    )
+    parser_qnep_export.add_argument('--input', required=True, help='Charge-aware JSONL input.')
+    parser_qnep_export.add_argument('--output', default='train_qnep.xyz')
+    parser_qnep_export.add_argument(
+        '--annotations', default=None,
+        help='Optional JSONL with sparse BEC and phase annotations keyed by parent frame_id.',
+    )
+    parser_qnep_export.add_argument('--parent-separator', default='::')
+    parser_qnep_export.add_argument('--neutral-suffix', default='0.no-move')
+    parser_qnep_export.add_argument('--audit-output', default=None)
+    parser_qnep_compose = qnep_actions.add_parser(
+        'compose', help='Append reproducibly selected phase-labelled qNEP frames to a base dataset.'
+    )
+    parser_qnep_compose.add_argument('--base', required=True, help='Fixed benchmark/training extxyz.')
+    parser_qnep_compose.add_argument('--addition', required=True, help='Phase-labelled extxyz candidates.')
+    parser_qnep_compose.add_argument('--output', default='train_qnep_composed.xyz')
+    parser_qnep_compose.add_argument('--phases', nargs='+', required=True)
+    parser_qnep_compose.add_argument('--max-per-phase', type=int, default=None)
+    parser_qnep_compose.add_argument('--seed', type=int, default=0)
+    parser_qnep_compose.add_argument('--audit-output', default=None)
+    parser_qnep_score = qnep_actions.add_parser(
+        'score', help='Calculate E/F/BEC parity metrics from qNEP test outputs.'
+    )
+    parser_qnep_score.add_argument('--test', required=True, help='The qNEP test.xyz used for prediction.')
+    parser_qnep_score.add_argument('--directory', required=True, help='Directory containing *_test.out files.')
+    parser_qnep_score.add_argument('--output', default=None, help='Metrics JSON path (default: DIRECTORY/metrics.json).')
     parser_qnep_check = qnep_actions.add_parser(
         'check', help='Validate qNEP extxyz structure and BEC columns.'
     )
@@ -1793,6 +1821,9 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         from .qnep_dataset import (
             augment_qnep_dataset,
             check_qnep_dataset,
+            compose_qnep_dataset,
+            export_qnep_jsonl_dataset,
+            score_qnep_predictions,
             write_qnep_input,
         )
 
@@ -1808,6 +1839,46 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             print(
                 f"Validated {summary['frames']} frames; "
                 f"BEC labels added to {summary['labeled_frames']}."
+            )
+            print(f"[OUT] {summary['output']}")
+            print(f"[OUT] {summary['audit_output']}")
+        elif args.qnep_action == 'score':
+            summary = score_qnep_predictions(args.test, args.directory, output=args.output)
+            print(
+                f"qNEP parity: E MAE={summary['energy']['mae']:.6g} eV/atom; "
+                f"F MAE={summary['force']['mae']:.6g} eV/A; "
+                f"BEC MAE={summary['bec'].get('mae', float('nan')):.6g} e"
+            )
+            print(f"[OUT] {summary['output']}")
+        elif args.qnep_action == 'compose':
+            summary = compose_qnep_dataset(
+                args.base,
+                args.addition,
+                args.output,
+                phases=args.phases,
+                max_per_phase=args.max_per_phase,
+                seed=args.seed,
+                audit_output=args.audit_output,
+            )
+            print(
+                f"Composed {summary['frames']} frames; "
+                f"BEC labels={summary['labeled_frames']}; "
+                f"selected={summary['selected_counts']}."
+            )
+            print(f"[OUT] {summary['output']}")
+            print(f"[OUT] {summary['audit_output']}")
+        elif args.qnep_action == 'export':
+            summary = export_qnep_jsonl_dataset(
+                args.input,
+                args.output,
+                annotations_jsonl=args.annotations,
+                parent_separator=args.parent_separator,
+                neutral_suffix=args.neutral_suffix,
+                audit_output=args.audit_output,
+            )
+            print(
+                f"Exported {summary['frames']} frames; "
+                f"BEC labels retained for {summary['labeled_frames']}."
             )
             print(f"[OUT] {summary['output']}")
             print(f"[OUT] {summary['audit_output']}")

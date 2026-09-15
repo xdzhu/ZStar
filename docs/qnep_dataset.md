@@ -52,6 +52,55 @@ available floating-point precision. These are storage guarantees, not claims
 of physical accuracy; convergence with respect to SCF thresholds, displacement
 size, basis, and sampling remains mandatory.
 
+## Exporting a sparse-BEC SCF campaign
+
+Each SCF calculation generated for a finite-difference BEC workflow has a
+real energy and force label.  It can therefore remain in a force-field dataset
+even though only the neutral, undisplaced parent configuration has a BEC.
+ZStar exports this pattern without inventing zero BEC matrices:
+
+```bash
+zstar qnep export \
+  --input bec_force_only_raw.jsonl \
+  --annotations all_bec_annotated.jsonl \
+  --output multiphase_pbesol_raw.xyz
+```
+
+`--annotations` is keyed by the parent `frame_id`.  ZStar inherits the parent
+phase label for its displaced SCF children and attaches the BEC only to a
+child named `PARENT::0.no-move`.  It position-matches atoms under periodic
+boundary conditions before reordering the tensor, so a different ABACUS and
+extxyz atom order cannot silently corrupt an oxygen-site BEC label.  The audit
+records the explicit labeled/unlabeled counts and leaves energy and force
+values unchanged.
+
+For a controlled multiphase diagnostic, retain a fixed cubic benchmark and
+append only selected phase-labelled frames:
+
+```bash
+zstar qnep compose \
+  --base cubic_full.xyz \
+  --addition multiphase_pbesol_raw.xyz \
+  --phases tetragonal orthorhombic rhombohedral \
+  --max-per-phase 108 --seed 20260915 \
+  --output cubic_plus_balanced_phases.xyz
+```
+
+The selection is deterministic, de-duplicates `frame_id`, preserves every
+selected extxyz record byte-for-byte, and writes an audit.  If `cubic_full.xyz`
+is used both in training and as a test file, its resulting errors are
+**in-sample cubic fitting errors**, not a leakage-safe generalization metric.
+
+After GPUMD finishes, score the generated `energy_test.out`, `force_test.out`,
+and `bec_test.out` files with the exact BEC mask from the test set:
+
+```bash
+zstar qnep score --test cubic_full.xyz --directory qnep_run
+```
+
+The BEC MAE/RMSE excludes qNEP's zero placeholders for unlabelled atoms; only
+the frames whose extxyz schema explicitly contains `bec:R:9` contribute.
+
 ## Tensor convention and scientific limits
 
 GPUMD stores the nine `bec:R:9` components in row-major order with electric
@@ -66,6 +115,12 @@ dataset when BEC supervision is enabled. The official documentation therefore
 warns that BEC training usually applies to one material in one phase. Do not mix
 chemistries, phases, inconsistent DFT settings, atom orders, polarization
 branches, or incompatible dielectric screening in one BEC-supervised model.
+
+Accordingly, a multi-phase BaTiO3 run is a compatibility and coverage
+diagnostic, not a replacement for a phase-specific production qNEP model.  Its
+energy, force, and BEC labels must come from declared calculations (for
+example, one PBEsol pseudopotential/orbital/basis family); public reference
+labels calculated with a different functional must not be silently mixed in.
 
 All qNEP structures are treated as periodic in all directions. Molecular and 2D
 data therefore require a deliberate periodic-cell and cutoff strategy.
