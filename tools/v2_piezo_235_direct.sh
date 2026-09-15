@@ -17,19 +17,63 @@ ADAPTER="${ZSTAR_PYATB_ADAPTER:-$ROOT/pyatb_precision.py}"
 export OMP_NUM_THREADS="$OMP" MKL_NUM_THREADS="$OMP" OPENBLAS_NUM_THREADS="$OMP"
 export I_MPI_FABRICS="${I_MPI_FABRICS:-shm}"
 
+input_value() {
+    local input="$1" key="$2"
+    awk -v wanted="$key" '
+        /^[[:space:]]*($|#)/ { next }
+        $1 == wanted { value=$2 }
+        END { if (value != "") print value }
+    ' "$input"
+}
+
+validate_relax_protocol() {
+    local input="$1" force_thr scf_thr relax_nmax
+    force_thr=$(input_value "$input" force_thr_ev)
+    scf_thr=$(input_value "$input" scf_thr)
+    relax_nmax=$(input_value "$input" relax_nmax)
+    test -n "$relax_nmax" && awk -v n="$relax_nmax" 'BEGIN { exit !(n >= 1 && n == int(n)) }' || {
+        echo "invalid or missing relax_nmax in $input" >&2
+        return 1
+    }
+    if test -n "$force_thr" && awk -v f="$force_thr" 'BEGIN { exit !(f <= 1e-6) }'; then
+        test -n "$scf_thr" && awk -v s="$scf_thr" 'BEGIN { exit !(s <= 1e-10) }' || {
+            echo "force_thr_ev <= 1e-6 requires scf_thr <= 1e-10 in $input" >&2
+            return 1
+        }
+    fi
+}
+
 for d in "$ROOT"/reference "$ROOT"/strain-*; do
     test -d "$d" || continue
     stage=$(basename "$d")
     compat=""
+    test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
+    calculation=$(input_value "$d/INPUT" calculation)
+    calculation=${calculation:-scf}
+    case "$calculation" in
+        relax|cell-relax) validate_relax_protocol "$d/INPUT" || exit 3 ;;
+    esac
     if test ! -f "$d/.abacus_done_${NP}"; then
-        test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
         start=$(date +%s)
         (cd "$d" && "$MPI" -np "$NP" "$ABACUS" > "abacus_${NP}mpi.log" 2>&1)
         rc=$?; end=$(date +%s)
         printf '{"stage":"%s","node":"%s","mpi":%s,"omp":%s,"returncode":%s,"elapsed_seconds":%s}\n' \
             "$stage" "$(hostname)" "$NP" "$OMP" "$rc" "$((end-start))" > "$d/runtime_abacus_${NP}mpi.json"
         test "$rc" -eq 0 || { echo "ABACUS failed: $stage" >&2; exit "$rc"; }
-        grep -qiE 'charge density convergence is achieved|relaxation is converged|calculation *finished' "$d"/OUT.*/running_*.log 2>/dev/null || { echo "no convergence marker: $stage" >&2; exit 4; }
+        case "$calculation" in
+            relax|cell-relax)
+                grep -qi 'relaxation is converged' "$d"/OUT.*/running_relax.log 2>/dev/null || {
+                    echo "ionic relaxation did not converge: $stage" >&2
+                    exit 4
+                }
+                ;;
+            *)
+                grep -qiE 'charge density convergence is achieved|calculation *finished' "$d"/OUT.*/running_*.log 2>/dev/null || {
+                    echo "electronic calculation did not converge: $stage" >&2
+                    exit 4
+                }
+                ;;
+        esac
         touch "$d/.abacus_done_${NP}"
     else
         echo "SKIP ABACUS $stage"
