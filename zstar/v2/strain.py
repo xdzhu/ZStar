@@ -387,6 +387,8 @@ def prepare_abacus_strain_ensemble(
             "preparation": "abacus",
             "symprec": float(symprec),
             "abacus_symmetry_prec": float(symprec),
+            "abacus_reference_symmetry": 1,
+            "abacus_perturbation_symmetry": 0,
             "ion_relaxation": relaxation,
             "force_thr_ev": threshold,
             **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
@@ -411,6 +413,7 @@ def prepare_abacus_strain_ensemble(
     if (reference_dir / input_name).is_file():
         _set_input_parameter(reference_dir / input_name, "cal_force", "1")
         _set_input_parameter(reference_dir / input_name, "cal_stress", "1")
+        _set_input_parameter(reference_dir / input_name, "symmetry", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
         if scf_threshold is not None:
             _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
@@ -438,6 +441,10 @@ def prepare_abacus_strain_ensemble(
         if (stage_dir / input_name).is_file():
             _set_input_parameter(stage_dir / input_name, "cal_force", "1")
             _set_input_parameter(stage_dir / input_name, "cal_stress", "1")
+            # A perturbation with amplitude comparable to symmetry_prec must
+            # not be projected away by the calculator's internal symmetry.
+            # ZStar handles response reconstruction from the unmodified data.
+            _set_input_parameter(stage_dir / input_name, "symmetry", "0")
             _set_input_parameter(stage_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
             if scf_threshold is not None:
                 _set_input_parameter(stage_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")

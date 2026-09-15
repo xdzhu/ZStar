@@ -17,6 +17,14 @@ from zstar.v2 import (
 )
 
 
+def _input_parameters(path: Path) -> dict[str, str]:
+    return {
+        fields[0]: fields[1]
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if len(fields := line.split("#", 1)[0].split()) >= 2
+    }
+
+
 def test_apply_strain_preserves_fractional_sites_and_recovers_actual_vector():
     structure = StructureSpec(
         lattice=np.diag([4.0, 5.0, 6.0]),
@@ -54,6 +62,11 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     assert "cal_stress          1" in input_text
     assert "symmetry_prec       0.001" in input_text
     assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
+    assert ensemble.metadata["abacus_reference_symmetry"] == 1
+    assert ensemble.metadata["abacus_perturbation_symmetry"] == 0
+    assert _input_parameters(tmp_path / "strain" / "reference" / "INPUT")["symmetry"] == "1"
+    for stage in ensemble.stages:
+        assert _input_parameters(tmp_path / "strain" / stage.stage_id / "INPUT")["symmetry"] == "0"
     assert (tmp_path / "strain" / "ensemble.json").is_file()
     assert (tmp_path / "strain" / "symmetry.json").is_file()
     assert all((tmp_path / "strain" / stage.stage_id / "STRU").is_file() for stage in ensemble.stages)
@@ -371,6 +384,12 @@ def test_abacus_collection_rejects_generated_ensemble_without_backend_symmetry_p
     from zstar.v2 import collect_abacus_strain_response
 
     with pytest.raises(ValueError, match="abacus_symmetry_prec=1e-3"):
+        collect_abacus_strain_response(root)
+
+    wrong_mode_metadata = dict(ensemble.metadata)
+    wrong_mode_metadata["abacus_perturbation_symmetry"] = 1
+    replace(ensemble, metadata=wrong_mode_metadata).write(root / "ensemble.json")
+    with pytest.raises(ValueError, match="perturbations must declare symmetry=0"):
         collect_abacus_strain_response(root)
 
 

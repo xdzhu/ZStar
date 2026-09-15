@@ -27,12 +27,27 @@ input_value() {
 }
 
 validate_symmetry_protocol() {
-    local input="$1" symmetry_prec
+    local input="$1" stage="$2" symmetry_prec symmetry
     symmetry_prec=$(input_value "$input" symmetry_prec)
     test -n "$symmetry_prec" && awk -v s="$symmetry_prec" 'BEGIN { exit !(s == 1e-3) }' || {
         echo "v2 requires symmetry_prec=1e-3 in $input" >&2
         return 1
     }
+    symmetry=$(input_value "$input" symmetry)
+    case "$stage" in
+        reference)
+            test "$symmetry" = 1 || {
+                echo "v2 reference requires symmetry=1 in $input" >&2
+                return 1
+            }
+            ;;
+        strain-*)
+            test "$symmetry" = 0 || {
+                echo "v2 perturbation requires symmetry=0 in $input" >&2
+                return 1
+            }
+            ;;
+    esac
 }
 
 validate_relax_protocol() {
@@ -73,7 +88,7 @@ for d in "${stage_paths[@]}"; do
     stage=$(basename "$d")
     compat=""
     test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
-    validate_symmetry_protocol "$d/INPUT" || exit 3
+    validate_symmetry_protocol "$d/INPUT" "$stage" || exit 3
     calculation=$(input_value "$d/INPUT" calculation)
     calculation=${calculation:-scf}
     case "$calculation" in

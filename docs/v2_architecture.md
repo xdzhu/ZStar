@@ -142,6 +142,8 @@ relaxed-ion ABACUS 输入由准备层统一写入 `relax_nmax=100`。当目标
 同一准备层还对 reference 和每个 perturbation stage 显式写入
 `symmetry_prec=1e-3`；ensemble metadata、collector 和直接运行器均复核该值，防止
 ZStar 的 `symprec=1e-3` 与 ABACUS 默认容差分裂成两套对称性定义。
+reference 显式使用 `symmetry=1`，所有有限扰动 stage 显式使用 `symmetry=0`；后者
+避免计算器在 `1e-3` 容差下把同为 `1e-3` 量级的扰动误认为未破缺对称性。
 
 `prepare_abacus_strain_ensemble` now hashes each serialized stage input (INPUT,
 STRU/KPT and copied UPF/ORB assets) and stores a separate reference-input hash.

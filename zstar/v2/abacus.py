@@ -433,6 +433,13 @@ def collect_abacus_strain_response(
                 "v2 requires ABACUS symmetry_prec=1e-3; "
                 f"ensemble metadata declares {backend_symprec:g}"
             )
+        if ensemble.metadata.get("abacus_reference_symmetry") != 1:
+            raise ValueError("v2 ABACUS reference must declare symmetry=1")
+        if ensemble.metadata.get("abacus_perturbation_symmetry") != 0:
+            raise ValueError(
+                "v2 ABACUS perturbations must declare symmetry=0 so finite perturbations "
+                "are not projected away"
+            )
     reference = base / "reference"
     _verify_input_hash(
         reference,
@@ -493,7 +500,7 @@ def collect_abacus_strain_response(
         stage_vectors.append(np.asarray(stage.actual_vector, dtype=float))
         stage_names.append(stage.stage_id)
     if require_abacus_symmetry_prec:
-        for record in records:
+        for record_index, record in enumerate(records):
             raw_backend_symprec = record["input_parameters"].get("symmetry_prec")
             try:
                 backend_symprec = float(raw_backend_symprec)
@@ -506,6 +513,14 @@ def collect_abacus_strain_response(
                 raise ValueError(
                     "v2 requires ABACUS symmetry_prec=1e-3; "
                     f"stage {record['stage']!r} has {backend_symprec:g}"
+                )
+            expected_symmetry = "1" if record_index == 0 else "0"
+            actual_symmetry = record["input_parameters"].get("symmetry")
+            if actual_symmetry != expected_symmetry:
+                role = "reference" if record_index == 0 else "perturbation"
+                raise ValueError(
+                    f"v2 ABACUS {role} stage {record['stage']!r} requires "
+                    f"symmetry={expected_symmetry}; got {actual_symmetry!r}"
                 )
     dimensions = DimensionSpec(ensemble.dimensionality, ensemble.periodic_axes)
     ion_relaxation = str(ensemble.metadata.get("ion_relaxation", "clamped-ion")).strip().lower()
@@ -806,6 +821,7 @@ def collect_abacus_strain_response(
                 "configured_force_thr_ev": record["input_parameters"].get("force_thr_ev"),
                 "configured_relax_nmax": record["input_parameters"].get("relax_nmax"),
                 "configured_symmetry_prec": record["input_parameters"].get("symmetry_prec"),
+                "configured_symmetry": record["input_parameters"].get("symmetry"),
             }
             for name, record in zip(stage_names, records)
         ],

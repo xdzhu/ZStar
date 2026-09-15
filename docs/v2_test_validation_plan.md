@@ -47,6 +47,8 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 * `force_thr_ev<=1e-6 eV/Å` 时自动采用 `scf_thr=1e-10`，显式更松设置必须失败；
 * reference 和全部应变阶段必须实际序列化 `symmetry_prec=1e-3`；缺失或其他值在
   运行/收集前失败；
+* reference 必须为 `symmetry=1`，有限扰动 stage 必须为 `symmetry=0`，并用故意
+  同量级的应变验证后端不会把扰动投影掉；
 * backend command 不可用、非零退出、重启后不得重复已完成 stage。
 
 每个失败测试都要断言“原因 + 最小解决动作 + 保留日志/状态路径”。
