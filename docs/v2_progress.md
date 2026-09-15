@@ -884,3 +884,27 @@ v2 的 ABACUS strain preparation 现将 `relax_nmax=100` 作为 relaxed-ion 默�
 更松的电子阈值会在准备阶段失败。collector 同时回读并记录各 stage 实际序列化的
 `scf_thr`、`force_thr_ev` 和 `relax_nmax`，因此运行 provenance 不再依赖名义参数。
 这项协议只影响后续新建/重建的 v2 输入；已有计算仍保留其真实历史设置。
+
+## 2026-09-15 ZnO 严格协议重算：接受 direct piezo/elastic 结果
+
+ZnO 的 reference 使用 `symmetry=1`，12 个真实有限应变 stage 使用
+`symmetry=0`，但两类输入均显式写入 `symmetry_prec=1e-3`。这是必要的
+backend 规则：固定 `symprec=1e-3` 识别 reference 的 `P6_3mc`，而不得让
+ABACUS 将幅度同为 `1e-3` 的应变结构重新投影成未应变 reference。完整的
+13 几何 / 13 次 PYATB 三方向极化 ensemble 在 cu17、cu24、cu25、cu26 上以
+40 MPI × 1 OMP 完成；strained stage 均达到 `force_thr=1e-6 eV/Å`，使用
+`scf_thr=1e-10` 与 `relax_nmax=100`。ABACUS 与 PYATB wall-time 分别为
+`12459 s` 与 `163 s`，合计 `140.24 core-hours`。
+
+在 `P6_3mc` 允许子空间中，proper direct-response 为
+`e31=e32=-0.615041 C/m²`、`e33=1.267452 C/m²`、
+`e15=e24=-0.477138 C/m²`；由正定 `C^E` 得
+`d31=-5.96 pm/V`、`d33=12.46 pm/V`、`d15=-11.97 pm/V`，最小弹性特征值
+为 `39.84 GPa`。未投影 raw tensor 的最大 forbidden 分量为
+`0.00401 C/m²`（相对 `0.407%`）；它不改变任一独立 6mm 分量，故不应把
+空间群识别阈值 `symprec=1e-3` 误当作这类数值 finite-difference residual 的
+一刀切拒绝门。弹性 residual 为 `0.0525%`。internal-strain 的 raw symmetry
+诊断为 `1.50%`，将作为 BEC--Lambda 重建模块的独立误差条目保留，而非否定已由
+直接 Berry-phase polarization--strain 得到的 `e` 或由 `e(C^E)^{-1}` 得到的 `d`。
+本批 strict-protocol result 取代此前 backend 对 strained cells 仍开启 symmetry
+的无效试算；后者仅保留为协议失败证据，不进入材料结果。
