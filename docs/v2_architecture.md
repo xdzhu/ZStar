@@ -139,6 +139,9 @@ relaxed-ion ABACUS 输入由准备层统一写入 `relax_nmax=100`。当目标
 `force_thr_ev<=1e-6 eV/Å` 时，准备层同时要求 `scf_thr<=1e-10`：未给出时自动使用
 `1e-10`，显式更松的组合直接拒绝。collector 从实际序列化的每个 `INPUT` 回读并保存
 `scf_thr`、`force_thr_ev` 和 `relax_nmax`，不以命令行名义值覆盖运行 provenance。
+同一准备层还对 reference 和每个 perturbation stage 显式写入
+`symmetry_prec=1e-3`；ensemble metadata、collector 和直接运行器均复核该值，防止
+ZStar 的 `symprec=1e-3` 与 ABACUS 默认容差分裂成两套对称性定义。
 
 `prepare_abacus_strain_ensemble` now hashes each serialized stage input (INPUT,
 STRU/KPT and copied UPF/ORB assets) and stores a separate reference-input hash.

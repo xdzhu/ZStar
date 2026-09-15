@@ -26,6 +26,15 @@ input_value() {
     ' "$input"
 }
 
+validate_symmetry_protocol() {
+    local input="$1" symmetry_prec
+    symmetry_prec=$(input_value "$input" symmetry_prec)
+    test -n "$symmetry_prec" && awk -v s="$symmetry_prec" 'BEGIN { exit !(s == 1e-3) }' || {
+        echo "v2 requires symmetry_prec=1e-3 in $input" >&2
+        return 1
+    }
+}
+
 validate_relax_protocol() {
     local input="$1" force_thr scf_thr relax_nmax
     force_thr=$(input_value "$input" force_thr_ev)
@@ -43,11 +52,28 @@ validate_relax_protocol() {
     fi
 }
 
-for d in "$ROOT"/reference "$ROOT"/strain-*; do
+stage_paths=()
+if test -n "${ZSTAR_STAGE_IDS:-}"; then
+    read -r -a requested_stages <<< "${ZSTAR_STAGE_IDS//,/ }"
+    for stage in "${requested_stages[@]}"; do
+        case "$stage" in
+            reference|strain-*) stage_paths+=("$ROOT/$stage") ;;
+            *) echo "invalid stage id in ZSTAR_STAGE_IDS: $stage" >&2; exit 2 ;;
+        esac
+    done
+else
+    shopt -s nullglob
+    stage_paths=("$ROOT"/reference "$ROOT"/strain-*)
+    shopt -u nullglob
+fi
+test "${#stage_paths[@]}" -gt 0 || { echo "no stages selected under $ROOT" >&2; exit 2; }
+
+for d in "${stage_paths[@]}"; do
     test -d "$d" || continue
     stage=$(basename "$d")
     compat=""
     test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
+    validate_symmetry_protocol "$d/INPUT" || exit 3
     calculation=$(input_value "$d/INPUT" calculation)
     calculation=${calculation:-scf}
     case "$calculation" in

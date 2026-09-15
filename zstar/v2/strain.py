@@ -386,6 +386,7 @@ def prepare_abacus_strain_ensemble(
         metadata={
             "preparation": "abacus",
             "symprec": float(symprec),
+            "abacus_symmetry_prec": float(symprec),
             "ion_relaxation": relaxation,
             "force_thr_ev": threshold,
             **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
@@ -410,6 +411,7 @@ def prepare_abacus_strain_ensemble(
     if (reference_dir / input_name).is_file():
         _set_input_parameter(reference_dir / input_name, "cal_force", "1")
         _set_input_parameter(reference_dir / input_name, "cal_stress", "1")
+        _set_input_parameter(reference_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
         if scf_threshold is not None:
             _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
     prepared = prepare_stru_assets(
@@ -436,6 +438,7 @@ def prepare_abacus_strain_ensemble(
         if (stage_dir / input_name).is_file():
             _set_input_parameter(stage_dir / input_name, "cal_force", "1")
             _set_input_parameter(stage_dir / input_name, "cal_stress", "1")
+            _set_input_parameter(stage_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
             if scf_threshold is not None:
                 _set_input_parameter(stage_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
             if relaxation == "relaxed-ion":

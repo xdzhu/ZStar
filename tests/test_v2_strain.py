@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 import shutil
 
@@ -51,6 +52,8 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     input_text = (tmp_path / "strain" / "reference" / "INPUT").read_text()
     assert "cal_force           1" in input_text
     assert "cal_stress          1" in input_text
+    assert "symmetry_prec       0.001" in input_text
+    assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
     assert (tmp_path / "strain" / "ensemble.json").is_file()
     assert (tmp_path / "strain" / "symmetry.json").is_file()
     assert all((tmp_path / "strain" / stage.stage_id / "STRU").is_file() for stage in ensemble.stages)
@@ -266,6 +269,7 @@ def test_abacus_strain_preparation_can_pin_scf_threshold_for_ionic_audit(tmp_pat
     for stage_id in ("reference", "strain-001-", "strain-001+"):
         input_text = (tmp_path / "tight-scf" / stage_id / "INPUT").read_text()
         assert "scf_thr             1e-10" in input_text
+        assert "symmetry_prec       0.001" in input_text
 
 
 def test_abacus_strain_preparation_tight_force_auto_tightens_scf_and_uses_100_steps(tmp_path):
@@ -282,6 +286,7 @@ def test_abacus_strain_preparation_tight_force_auto_tightens_scf_and_uses_100_st
     ensemble = result["ensemble"]
     assert ensemble.metadata["scf_thr"] == 1.0e-10
     assert ensemble.metadata["relax_nmax"] == 100
+    assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
     assert "scf_thr             1e-10" in (
         tmp_path / "tight-force-policy" / "reference" / "INPUT"
     ).read_text()
@@ -346,6 +351,27 @@ def test_abacus_strain_preparation_rejects_nonstandard_symprec(tmp_path):
             strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
             symprec=1.0e-4,
         )
+
+
+def test_abacus_collection_rejects_generated_ensemble_without_backend_symmetry_prec(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    root = tmp_path / "missing-backend-symprec"
+    result = prepare_abacus_strain_ensemble(
+        root,
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+    )
+    ensemble = result["ensemble"]
+    metadata = dict(ensemble.metadata)
+    metadata.pop("abacus_symmetry_prec")
+    replace(ensemble, metadata=metadata).write(root / "ensemble.json")
+
+    from zstar.v2 import collect_abacus_strain_response
+
+    with pytest.raises(ValueError, match="abacus_symmetry_prec=1e-3"):
+        collect_abacus_strain_response(root)
 
 
 def test_abacus_strain_preparation_rejects_unknown_ion_relaxation(tmp_path):

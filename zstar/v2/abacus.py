@@ -419,6 +419,20 @@ def collect_abacus_strain_response(
                 "v2 requires symprec=1e-3 in ensemble metadata; "
                 f"got {declared_symprec:g}"
             )
+    require_abacus_symmetry_prec = ensemble.metadata.get("preparation") == "abacus"
+    if require_abacus_symmetry_prec:
+        backend_symprec = ensemble.metadata.get("abacus_symmetry_prec")
+        try:
+            backend_symprec = float(backend_symprec)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                "v2 ABACUS ensemble metadata must declare abacus_symmetry_prec=1e-3"
+            ) from exc
+        if backend_symprec != V2_SYMPREC:
+            raise ValueError(
+                "v2 requires ABACUS symmetry_prec=1e-3; "
+                f"ensemble metadata declares {backend_symprec:g}"
+            )
     reference = base / "reference"
     _verify_input_hash(
         reference,
@@ -478,6 +492,21 @@ def collect_abacus_strain_response(
             )
         stage_vectors.append(np.asarray(stage.actual_vector, dtype=float))
         stage_names.append(stage.stage_id)
+    if require_abacus_symmetry_prec:
+        for record in records:
+            raw_backend_symprec = record["input_parameters"].get("symmetry_prec")
+            try:
+                backend_symprec = float(raw_backend_symprec)
+            except (TypeError, ValueError) as exc:
+                raise ValueError(
+                    "v2 ABACUS stage must serialize symmetry_prec=1e-3; "
+                    f"stage {record['stage']!r} has {raw_backend_symprec!r}"
+                ) from exc
+            if backend_symprec != V2_SYMPREC:
+                raise ValueError(
+                    "v2 requires ABACUS symmetry_prec=1e-3; "
+                    f"stage {record['stage']!r} has {backend_symprec:g}"
+                )
     dimensions = DimensionSpec(ensemble.dimensionality, ensemble.periodic_axes)
     ion_relaxation = str(ensemble.metadata.get("ion_relaxation", "clamped-ion")).strip().lower()
     if ion_relaxation not in {"clamped-ion", "relaxed-ion"}:
@@ -752,6 +781,7 @@ def collect_abacus_strain_response(
         records, "relax_nmax", skip_reference=True
     )
     serialized_scf_thresholds = _unique_finite_input_values(records, "scf_thr")
+    serialized_symmetry_precs = _unique_finite_input_values(records, "symmetry_prec")
     provenance = {
         "reference_hash": ensemble.reference_hash,
         "stage_names": stage_names,
@@ -775,6 +805,7 @@ def collect_abacus_strain_response(
                 "configured_scf_thr": record["input_parameters"].get("scf_thr"),
                 "configured_force_thr_ev": record["input_parameters"].get("force_thr_ev"),
                 "configured_relax_nmax": record["input_parameters"].get("relax_nmax"),
+                "configured_symmetry_prec": record["input_parameters"].get("symmetry_prec"),
             }
             for name, record in zip(stage_names, records)
         ],
@@ -816,6 +847,11 @@ def collect_abacus_strain_response(
                 if strain_relax_nmax_values
                 else {}
             ),
+            **(
+                {"serialized_symmetry_prec_values": serialized_symmetry_precs}
+                if serialized_symmetry_precs
+                else {}
+            ),
         },
         restart_state={"ensemble": str(base / "ensemble.json")},
         metadata={
@@ -830,6 +866,7 @@ def collect_abacus_strain_response(
             "strain_force_thr_ev_values": strain_force_thresholds,
             "strain_relax_nmax_values": strain_relax_nmax_values,
             "serialized_scf_thr_values": serialized_scf_thresholds,
+            "serialized_symmetry_prec_values": serialized_symmetry_precs,
             "internal_displacement_collected": internal_displacements is not None,
             "symmetry_audit": dict(symmetry_data.get("comparison", {})),
         },
