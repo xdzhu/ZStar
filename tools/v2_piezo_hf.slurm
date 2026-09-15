@@ -15,6 +15,56 @@ ADAPTER="${ZSTAR_PYATB_ADAPTER:-$ROOT/pyatb_precision.py}"
 
 export OMP_NUM_THREADS="$OMP" MKL_NUM_THREADS="$OMP" OPENBLAS_NUM_THREADS="$OMP"
 
+input_value() {
+    local input="$1" key="$2"
+    awk -v wanted="$key" '
+        /^[[:space:]]*($|#)/ { next }
+        $1 == wanted { value=$2 }
+        END { if (value != "") print value }
+    ' "$input"
+}
+
+require_leq() {
+    local input="$1" key="$2" limit="$3"
+    local value
+    value=$(input_value "$input" "$key")
+    awk -v x="$value" -v limit="$limit" 'BEGIN { exit !(x > 0 && x <= limit) }' || {
+        echo "v2 HF runner requires $key<=$limit in $input" >&2
+        return 1
+    }
+}
+
+validate_stage_input() {
+    local input="$1" stage="$2" calculation symmetry
+    symmetry=$(input_value "$input" symmetry)
+    awk -v x="$(input_value "$input" symmetry_prec)" 'BEGIN { exit !(x == 1e-3) }' || {
+        echo "v2 HF runner requires symmetry_prec=1e-3 in $input" >&2; return 1;
+    }
+    calculation=$(input_value "$input" calculation)
+    calculation=${calculation:-scf}
+    case "$stage" in
+        reference)
+            test "$symmetry" = "1" || { echo "v2 reference requires symmetry=1" >&2; return 1; }
+            test "$calculation" = "scf" || { echo "v2 response reference requires calculation=scf" >&2; return 1; }
+            require_leq "$input" scf_thr 1e-10 || return 1
+            ;;
+        strain-*)
+            test "$symmetry" = "0" || { echo "v2 perturbations require symmetry=0" >&2; return 1; }
+            case "$calculation" in
+                scf) require_leq "$input" scf_thr 1e-10 || return 1 ;;
+                relax)
+                    require_leq "$input" force_thr_ev 1e-6 || return 1
+                    require_leq "$input" scf_thr 1e-10 || return 1
+                    awk -v x="$(input_value "$input" relax_nmax)" 'BEGIN { exit !(x >= 100 && x == int(x)) }' || {
+                        echo "v2 relaxed perturbations require integer relax_nmax>=100" >&2; return 1;
+                    }
+                    ;;
+                *) echo "unsupported v2 response calculation=$calculation in $input" >&2; return 1 ;;
+            esac
+            ;;
+    esac
+}
+
 run_abacus() {
     local d="$1"; local stage="$2"; local start end rc
     # The environment scripts use module purge, so source it before every
@@ -53,18 +103,22 @@ for d in "$ROOT"/reference "$ROOT"/strain-*; do
     test -d "$d" || continue
     stage=$(basename "$d")
     compat=""
+    test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
+    validate_stage_input "$d/INPUT" "$stage" || exit 2
+    calculation=$(input_value "$d/INPUT" calculation)
+    calculation=${calculation:-scf}
     if test ! -f "$d/.abacus_done_${NP}"; then
-        test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
         echo "START ABACUS $stage node=$(hostname) mpi=$NP omp=$OMP"
         run_abacus "$d" "$stage" || { echo "ABACUS failed: $stage" >&2; exit 3; }
-        if ! grep -qiE 'charge density convergence is achieved|relaxation is converged|calculation *finished' "$d"/OUT.*/running_*.log 2>/dev/null; then
-            echo "ABACUS has no convergence marker: $stage" >&2; exit 4
-        fi
+        case "$calculation" in
+            relax) grep -qi 'relaxation is converged' "$d"/OUT.*/running_relax.log 2>/dev/null || { echo "ionic relaxation did not converge: $stage" >&2; exit 4; } ;;
+            scf) grep -qiE 'charge density convergence is achieved|calculation *finished' "$d"/OUT.*/running_scf.log 2>/dev/null || { echo "electronic calculation did not converge: $stage" >&2; exit 4; } ;;
+        esac
         touch "$d/.abacus_done_${NP}"
     else
         echo "SKIP ABACUS $stage"
     fi
-    if test "$stage" != reference; then
+    if test "$stage" != reference && test "$calculation" = relax; then
         out=$(find "$d" -maxdepth 2 -type f -name STRU_ION_D -print -quit)
         test -n "$out" || { echo "relaxed structure missing for $stage" >&2; exit 5; }
         test -f "$d/STRU_INITIAL" || cp "$d/STRU" "$d/STRU_INITIAL"

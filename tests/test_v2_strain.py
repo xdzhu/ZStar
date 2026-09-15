@@ -12,6 +12,7 @@ from zstar.v2 import (
     actual_strain,
     apply_strain,
     prepare_abacus_berry_stages,
+    prepare_abacus_reference_relaxation,
     prepare_abacus_strain_ensemble,
     periodic_strain_indices,
 )
@@ -23,6 +24,41 @@ def _input_parameters(path: Path) -> dict[str, str]:
         for line in path.read_text(encoding="utf-8").splitlines()
         if len(fields := line.split("#", 1)[0].split()) >= 2
     }
+
+
+def test_reference_relaxation_preparation_enforces_high_precision_geometry_gate(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_reference_relaxation(
+        tmp_path / "reference-relax",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+    )
+    values = _input_parameters(Path(result["input"]))
+    assert values["calculation"] == "cell-relax"
+    assert values["cal_force"] == values["cal_stress"] == "1"
+    assert values["symmetry"] == "1"
+    assert float(values["symmetry_prec"]) == pytest.approx(1.0e-3)
+    assert float(values["force_thr_ev"]) == pytest.approx(1.0e-4)
+    assert float(values["stress_thr"]) == pytest.approx(0.1)
+    assert float(values["scf_thr"]) == pytest.approx(1.0e-10)
+    assert values["relax_nmax"] == "100"
+
+
+@pytest.mark.parametrize(
+    ("keyword", "value", "message"),
+    (("force_thr_ev", 1.0e-3, "force_thr_ev<=1e-4"), ("stress_thr_kbar", 0.2, "stress_thr_kbar<=0.1"), ("scf_thr", 1.0e-8, "scf_thr<=1e-10")),
+)
+def test_reference_relaxation_preparation_rejects_looser_protocol(tmp_path, keyword, value, message):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    with pytest.raises(ValueError, match=message):
+        prepare_abacus_reference_relaxation(
+            tmp_path / f"reference-relax-{keyword}",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            **{keyword: value},
+        )
 
 
 def test_apply_strain_preserves_fractional_sites_and_recovers_actual_vector():

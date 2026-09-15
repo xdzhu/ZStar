@@ -31,7 +31,12 @@ def main() -> int:
         default=V2_SYMPREC,
         help="fixed v2 symmetry tolerance (must be 1e-3 Angstrom)",
     )
-    parser.add_argument("--force-thr-ev", type=float, default=1.0e-3)
+    parser.add_argument(
+        "--force-thr-ev",
+        type=float,
+        default=1.0e-6,
+        help="strict relaxed-ion response target; values above 1e-6 are refused",
+    )
     parser.add_argument(
         "--scf-thr",
         type=float,
@@ -45,6 +50,8 @@ def main() -> int:
         raise SystemExit(
             f"v2 requires --symprec {V2_SYMPREC:g}; refusing {args.symprec:g}"
         )
+    if args.ion_relaxation == "relaxed-ion" and args.force_thr_ev > 1.0e-6:
+        raise SystemExit("v2 relaxed-ion response requires --force-thr-ev <= 1e-6")
     source = args.source.resolve()
     output = args.output.resolve()
     if output.exists() and any(output.iterdir()):

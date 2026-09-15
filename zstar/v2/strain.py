@@ -25,6 +25,9 @@ from .structure import (
 
 
 V2_DEFAULT_RELAX_NMAX = 100
+V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
+V2_REFERENCE_STRESS_THRESHOLD_KBAR = 1.0e-1
+V2_REFERENCE_SCF_THRESHOLD = 1.0e-10
 V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-6
 V2_TIGHT_FORCE_SCF_THRESHOLD = 1.0e-10
 
@@ -127,6 +130,108 @@ def _read_input_parameter(path: Path, key: str) -> str | None:
         if len(fields) >= 2 and fields[0].lower() == key.lower():
             return fields[1]
     return None
+
+
+def prepare_abacus_reference_relaxation(
+    root: str | Path,
+    *,
+    structure: str | Path = "STRU",
+    input_template: str | Path | None = None,
+    kpt_template: str | Path | None = None,
+    pp_dir: str | Path | None = None,
+    orb_dir: str | Path | None = None,
+    symprec: float = V2_SYMPREC,
+    force_thr_ev: float = V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM,
+    stress_thr_kbar: float = V2_REFERENCE_STRESS_THRESHOLD_KBAR,
+    scf_thr: float = V2_REFERENCE_SCF_THRESHOLD,
+    relax_nmax: int = V2_DEFAULT_RELAX_NMAX,
+) -> dict:
+    """Prepare the mandatory high-precision bulk reference ``cell-relax`` stage.
+
+    A relaxed-ion electromechanical ensemble differentiates about this geometry,
+    so accepting a loose pre-relaxed structure silently contaminates every
+    strain derivative. The v2 research protocol therefore permits only equal
+    or tighter settings than ``1e-4 eV/angstrom`` ionic force, ``0.1 kbar``
+    stress, ``1e-10`` SCF threshold, and 100 ionic iterations. This function
+    writes only a self-contained ABACUS input folder; it never runs a solver.
+    The converged ``STRU_ION_D`` must be promoted explicitly as the source of a
+    subsequent response ensemble.
+    """
+
+    from ..shared_response import read_structure, write_structure
+    from ..abacus_assets import prepare_stru_assets
+
+    output = Path(root).resolve()
+    source = Path(structure).expanduser().resolve()
+    if not source.is_file():
+        raise FileNotFoundError(f"ABACUS STRU does not exist: {source}")
+    if output.exists() and any(output.iterdir()):
+        raise FileExistsError(f"reference relaxation output is not empty: {output}")
+    if not np.isfinite(float(symprec)) or float(symprec) != V2_SYMPREC:
+        raise ValueError("v2 requires symprec=1e-3 for all space-group and atom-mapping operations")
+    force = float(force_thr_ev)
+    stress = float(stress_thr_kbar)
+    electronic = float(scf_thr)
+    if not np.isfinite(force) or force <= 0.0 or force > V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM:
+        raise ValueError("v2 reference relaxation requires force_thr_ev<=1e-4")
+    if not np.isfinite(stress) or stress <= 0.0 or stress > V2_REFERENCE_STRESS_THRESHOLD_KBAR:
+        raise ValueError("v2 reference relaxation requires stress_thr_kbar<=0.1")
+    if not np.isfinite(electronic) or electronic <= 0.0 or electronic > V2_REFERENCE_SCF_THRESHOLD:
+        raise ValueError("v2 reference relaxation requires scf_thr<=1e-10")
+    if isinstance(relax_nmax, (bool, np.bool_)) or int(relax_nmax) != relax_nmax or int(relax_nmax) < V2_DEFAULT_RELAX_NMAX:
+        raise ValueError("v2 reference relaxation requires integer relax_nmax>=100")
+
+    input_source = Path(input_template).expanduser().resolve() if input_template else next(
+        (candidate for candidate in (source.parent / "INPUT", source.parent / "INPUT-scf") if candidate.is_file()),
+        None,
+    )
+    kpt_source = Path(kpt_template).expanduser().resolve() if kpt_template else source.parent / "KPT"
+    if input_source is None or not input_source.is_file():
+        raise FileNotFoundError("reference relaxation requires an ABACUS INPUT template")
+    if not kpt_source.is_file():
+        raise FileNotFoundError("reference relaxation requires an ABACUS KPT template")
+
+    output.mkdir(parents=True, exist_ok=True)
+    atoms = read_structure(source)
+    write_structure(source, output / "STRU", atoms)
+    shutil.copy2(input_source, output / "INPUT")
+    shutil.copy2(kpt_source, output / "KPT")
+    for key, value in (
+        ("calculation", "cell-relax"),
+        ("cal_force", "1"),
+        ("cal_stress", "1"),
+        ("symmetry", "1"),
+        ("symmetry_prec", f"{float(symprec):.16g}"),
+        ("force_thr_ev", f"{force:.16g}"),
+        ("stress_thr", f"{stress:.16g}"),
+        ("scf_thr", f"{electronic:.16g}"),
+        ("relax_nmax", str(int(relax_nmax))),
+    ):
+        _set_input_parameter(output / "INPUT", key, value)
+    prepared = prepare_stru_assets(
+        output / "STRU", pp_dir=pp_dir, orb_dir=orb_dir, output_dir=output / ".zstar-assets"
+    )
+    if prepared.changed:
+        shutil.copy2(prepared.path, output / "STRU")
+    for asset in prepared.assets:
+        shutil.copy2(asset, output / asset.name)
+    manifest = {
+        "schema": "zstar-v2-reference-relaxation",
+        "schema_version": "0.1",
+        "status": "inputs_prepared_not_executed",
+        "source_structure_sha256": _sha256(source),
+        "convergence": {
+            "calculation": "cell-relax",
+            "force_thr_ev": force,
+            "stress_thr_kbar": stress,
+            "scf_thr": electronic,
+            "relax_nmax": int(relax_nmax),
+            "symprec": float(symprec),
+        },
+        "promotion_requirement": "Run on HF, verify ionic and cell convergence, then promote OUT.<suffix>/STRU_ION_D explicitly.",
+    }
+    (output / "reference_relaxation.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return {"root": str(output), "input": str(output / "INPUT"), "manifest": str(output / "reference_relaxation.json")}
 
 
 def prepare_abacus_berry_stages(
@@ -233,7 +338,7 @@ def prepare_abacus_strain_ensemble(
     amplitude: float = 1.0e-3,
     symprec: float = 1.0e-3,
     ion_relaxation: str = "clamped-ion",
-    force_thr_ev: float = 1.0e-3,
+    force_thr_ev: float = V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM,
     scf_thr: float | None = None,
     relax_nmax: int = V2_DEFAULT_RELAX_NMAX,
     symmetry_reduce: bool = False,
