@@ -11,10 +11,11 @@ that single PYATB run emits the three Cartesian polarization components.
 
 Reference settings: PBEsol, Dojo-NC-FR 8-au LCAO orbitals, 100 Ry, `8x8x6`
  k-mesh, `scf_thr=1e-8`, engineering-Voigt strain amplitude `1e-3`.  The
-reference and strained-ion inputs record `force_thr=1e-3 eV/Å`; several strained
-runs converged below `1e-4 eV/Å` as an observed residual, but that is not the
-configured threshold.  The current response audit still retains an internal-strain
-residual and is therefore research-only.
+reference input retains its separate `force_thr=1e-3 eV/Å` equilibrium gate;
+the twelve strained-ion inputs in the completed audit use `force_thr=1e-5 eV/Å`.
+The response still has an internal-strain symmetry residual and large raw
+finite-difference residual, so it remains research-only.  PYATB uses the Zn/O
+Dojo valence setting `20 6`; one run returns all three Cartesian polarizations.
 
 Scheduler notes: on HF submit `tools/v2_piezo_hf.slurm` with Slurm (32 MPI
 tasks, one OpenMP thread per task, no node exclusivity).  On 235 run

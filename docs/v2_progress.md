@@ -850,3 +850,28 @@ internal-strain 仍均为 `consistent`；AlN/ZnO 的 internal-strain 仍分别�
 资源复核未启动新大任务：235 的 cu17 空闲，cu24/cu25/cu26 仍有既有 40 核作业；
 HF 当前有其他用户的 Slurm 作业。下一步先定位 AlN/ZnO relaxed-ion 内部响应残差，
 明确是否需要以更严格离子收敛重算，再做文献/独立后端核验。
+
+## 2026-09-14 AlN/ZnO internal-strain 收敛审计
+
+AlN 的 12 个 `±1e-3` strained stage 已在 HF Slurm job `27682276`（node268，
+32 MPI × 1 OMP，非独占）用 `scf_thr=1e-8`、`force_thr_ev=1e-5 eV/Angstrom`
+完成重算；每个 geometry 仍只运行一次 PYATB 并读取三个极化方向。所有 strained
+stage 最终最大力小于 `9.276e-6 eV/Angstrom`。重建后 internal-strain 的
+`P6_3mc` symmetry-projection relative residual 从 `3.19e-2` 降到 `4.15e-4`，
+证明此前主要受离子收敛误差污染，而不是需要改动 `symprec=1e-3` 或重新发明
+对称算法。proper/elastic/Gamma/internal-strain 四类 projection 均已通过；但 raw
+internal-displacement fit residual 为 `2.59e-2`，仍需应变幅度/正负点反对称性
+审计，未升级为最终材料常数。本次新增计算约 `26.90 core-hours`。
+
+ZnO 的同阈值审计使用 235 上由用户 PBS 占位保留的 cu17、cu24、cu25、cu26；占位
+作业不应被当作资源冲突。每个节点启动前检查实际 ABACUS 进程和 load，并且同一时刻
+只允许一个 `40 MPI × 1 OMP` stage。13 个 stage 和 13 次三方向 PYATB 已完整闭环。
+一次临时调用误将 Zn/O `valence_e` 写为 `12 6`；该批 PYATB 输出已隔离且没有参与
+收集，保留的 ABACUS 输出不受影响，随后以正确的 Dojo `20 6` 只重跑 PYATB。
+在 `force_thr_ev=1e-5` 下，proper/elastic/Gamma 的 projection residual 分别为
+`5.781e-4`、`2.414e-4`、`5.820e-4`，均通过 `1e-3`；但 internal-strain 为
+`1.188e-2`、proper raw fit 为 `1.465e-1`、internal raw fit 为 `1.153e-1`，
+因而 ZnO 仍为 conditional，不能进入文献 benchmark 或稳定 CLI。为排查最大 `yz`
+shear 违例而尝试的 `1e-6` 正负对中，负点收敛、正点两次 50 ionic steps 均未收敛；
+其输出已归档并排除，收集器恢复使用完整一致的 `1e-5` 数据。详见
+`docs/v2_internal_strain_convergence_audit_20260914.md`。

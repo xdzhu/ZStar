@@ -314,6 +314,10 @@ def main() -> int:
         "branch_shift_max": int(fitted.metadata.get("branch_shift_max", 0)),
         "branch_residual_max_C_per_m2": float(fitted.metadata.get("branch_residual_max", 0.0)),
         "reference_force_max_eV_per_angstrom": fitted.metadata.get("reference_force_max_eV_per_angstrom"),
+        # Keep the reference-equilibrium gate distinct from the thresholds
+        # actually serialized in strained-stage calculator inputs.  A v2
+        # convergence audit may intentionally tighten only the latter.
+        "convergence": dict(fitted.convergence),
     }
     if raw is not None:
         summary["piezoelectric_raw_C_per_m2"] = np.asarray(raw.values).tolist()

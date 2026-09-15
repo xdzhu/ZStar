@@ -295,6 +295,33 @@ def _input_parameters(path: Path) -> dict[str, str]:
     return parameters
 
 
+def _unique_finite_input_values(
+    records: list[dict[str, Any]], key: str, *, skip_reference: bool = False
+) -> list[float]:
+    """Return sorted calculator settings actually serialized in stage INPUT files."""
+
+    values: set[float] = set()
+    selected = records[1:] if skip_reference else records
+    for record in selected:
+        raw = record["input_parameters"].get(key)
+        if raw is None:
+            continue
+        try:
+            value = float(raw)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"ABACUS INPUT parameter {key} must be numeric in stage "
+                f"{record['stage']!r}; got {raw!r}"
+            ) from exc
+        if not np.isfinite(value):
+            raise ValueError(
+                f"ABACUS INPUT parameter {key} must be finite in stage "
+                f"{record['stage']!r}; got {raw!r}"
+            )
+        values.add(value)
+    return sorted(values)
+
+
 def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dict[str, Any]:
     """Parse one completed ABACUS stage without applying a stress-sign convention."""
 
@@ -718,6 +745,10 @@ def collect_abacus_strain_response(
     # of the serialized reference structure, while using the same fixed v2
     # tolerance so atom equivalence classes cannot drift between stages.
     symmetry_data = _augment_reference_symmetry(symmetry_data, reference_structure, dimensions)
+    strain_force_thresholds = _unique_finite_input_values(
+        records, "force_thr_ev", skip_reference=True
+    )
+    serialized_scf_thresholds = _unique_finite_input_values(records, "scf_thr")
     provenance = {
         "reference_hash": ensemble.reference_hash,
         "stage_names": stage_names,
@@ -738,6 +769,8 @@ def collect_abacus_strain_response(
                 "stress_max_abs_kbar": record["stress_max_abs_kbar"],
                 "energy": record["energy"],
                 "timing": record["timing"],
+                "configured_scf_thr": record["input_parameters"].get("scf_thr"),
+                "configured_force_thr_ev": record["input_parameters"].get("force_thr_ev"),
             }
             for name, record in zip(stage_names, records)
         ],
@@ -764,6 +797,16 @@ def collect_abacus_strain_response(
                 )
                 else {}
             ),
+            **(
+                {"strain_force_thr_ev_values": strain_force_thresholds}
+                if strain_force_thresholds
+                else {}
+            ),
+            **(
+                {"serialized_scf_thr_values": serialized_scf_thresholds}
+                if serialized_scf_thresholds
+                else {}
+            ),
         },
         restart_state={"ensemble": str(base / "ensemble.json")},
         metadata={
@@ -775,6 +818,8 @@ def collect_abacus_strain_response(
             "energy_collected": all(value is not None for value in energies),
             "ion_relaxation": ion_relaxation,
             "reference_force_max_eV_per_angstrom": reference_force_max,
+            "strain_force_thr_ev_values": strain_force_thresholds,
+            "serialized_scf_thr_values": serialized_scf_thresholds,
             "internal_displacement_collected": internal_displacements is not None,
             "symmetry_audit": dict(symmetry_data.get("comparison", {})),
         },
