@@ -39,6 +39,15 @@ C44=91.84, C66=110.12`。由 proper `e` 和该 `C` 得
 
 ## 3. 文献对照
 
+> **本节的 2026-09-13 原始结论已被 PBEsol 优先文献审计取代。** 本 case 使用
+> PBEsol，因此 Bernardini--Fiorentini--Vanderbilt 的 LDA 数值仅为三级补充，不能
+> 用来判定通过。Hoang *et al.*（JAP 113, 014309, DOI
+> `10.1063/1.4773333`）给出的 PBEsol bulk proper 值为
+> `e31=-0.520`、`e33=0.904`、`e15=-0.373 C/m²`。相对本 case 的
+> `-0.372/0.660/-0.254 C/m²`，绝对值分别低 `28.5%/26.9%/31.8%`；故 GaN
+> 的当前状态是**算法闭环完成、PBEsol 定量材料验收不通过**。最新总表见
+> `docs/v2_material_literature_comparison_20260916.md`。
+
 Bernardini、Fiorentini 和 Vanderbilt 的原始 Berry-phase 工作给出 GaN
 `e31=-0.49`、`e33=0.73 C/m²`，并区分 clamped-ion 与 internal-strain
 贡献（[PRB 56 R10024, DOI:10.1103/PhysRevB.56.R10024](https://doi.org/10.1103/PhysRevB.56.R10024)）。
