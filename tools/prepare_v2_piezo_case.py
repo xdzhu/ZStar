@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare a full 3-D central finite-strain ensemble for a v2 case.
+"""Developer-only preparation of a full 3-D central finite-strain ensemble.
 
 This helper only serializes inputs and provenance.  It never launches ABACUS
 or PYATB; the remote drivers are separate, scheduler-specific scripts.
@@ -24,7 +24,12 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--pseudopotential-dir", type=Path, required=True)
     parser.add_argument("--orbital-dir", type=Path, required=True)
-    parser.add_argument("--amplitude", type=float, default=5.0e-3)
+    parser.add_argument(
+        "--amplitude",
+        type=float,
+        default=5.0e-3,
+        help="production is fixed at 0.005; verification accepts only the internal audit values",
+    )
     parser.add_argument("--profile", choices=("production", "verification"), default="production")
     parser.add_argument(
         "--symprec",
@@ -50,6 +55,12 @@ def main() -> int:
     if args.symprec != V2_SYMPREC:
         raise SystemExit(
             f"v2 requires --symprec {V2_SYMPREC:g}; refusing {args.symprec:g}"
+        )
+    if args.profile == "production" and args.amplitude != 5.0e-3:
+        raise SystemExit("production profile has fixed engineering strain amplitude 0.005")
+    if args.profile == "verification" and args.amplitude not in {2.5e-3, 5.0e-3, 1.0e-2}:
+        raise SystemExit(
+            "verification amplitude is developer-only and must be one of 0.0025, 0.005, or 0.01"
         )
     source = args.source.resolve()
     output = args.output.resolve()
