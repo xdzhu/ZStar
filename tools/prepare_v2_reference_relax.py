@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare the mandatory high-precision reference cell relaxation for v2."""
+"""Prepare a production or verification reference cell relaxation for v2."""
 
 from __future__ import annotations
 
@@ -19,9 +19,10 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--pseudopotential-dir", type=Path, required=True)
     parser.add_argument("--orbital-dir", type=Path, required=True)
-    parser.add_argument("--force-thr-ev", type=float, default=1.0e-4)
-    parser.add_argument("--stress-thr-kbar", type=float, default=0.1)
-    parser.add_argument("--scf-thr", type=float, default=1.0e-10)
+    parser.add_argument("--profile", choices=("production", "verification"), default="production")
+    parser.add_argument("--force-thr-ev", type=float, default=None)
+    parser.add_argument("--stress-thr-kbar", type=float, default=None)
+    parser.add_argument("--scf-thr", type=float, default=None)
     parser.add_argument("--relax-nmax", type=int, default=100)
     args = parser.parse_args()
     result = prepare_abacus_reference_relaxation(
@@ -31,6 +32,7 @@ def main() -> int:
         kpt_template=args.source / "KPT",
         pp_dir=args.pseudopotential_dir,
         orb_dir=args.orbital_dir,
+        profile=args.profile,
         symprec=V2_SYMPREC,
         force_thr_ev=args.force_thr_ev,
         stress_thr_kbar=args.stress_thr_kbar,

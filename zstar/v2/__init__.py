@@ -82,6 +82,7 @@ from .normalization import NormalizedPolarization, normalize_polarization
 from .strain import (
     actual_strain,
     apply_strain,
+    convergence_profile,
     prepare_abacus_berry_stages,
     prepare_abacus_reference_relaxation,
     prepare_abacus_strain_ensemble,
@@ -171,6 +172,7 @@ __all__ = [
     "derive_relaxed_piezoelectric_response",
     "derive_relaxed_elastic_response",
     "convert_values",
+    "convergence_profile",
     "parse_vasp_outcar_observations",
     "fit_linear_response",
     "fit_elastic_response",

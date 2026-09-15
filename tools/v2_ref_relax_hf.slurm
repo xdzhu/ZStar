@@ -4,7 +4,20 @@ set -u -o pipefail
 ROOT="${1:?usage: $0 REFERENCE_ROOT}"
 NP="${ZSTAR_MPI_RANKS:-32}"
 OMP="${ZSTAR_OMP_THREADS:-1}"
+PROFILE="${ZSTAR_V2_CONVERGENCE_PROFILE:-production}"
 ENV_SCRIPT="${ZSTAR_ABACUS_ENV:-/public/home/iai806/apprepo/abacus/v3.10.0LTS-intelmpi2025/scripts/env.sh}"
+
+case "$PROFILE" in
+    production) MAX_FORCE=1e-3; MAX_STRESS=0.5; MAX_SCF=1e-8 ;;
+    verification) MAX_FORCE=1e-4; MAX_STRESS=0.1; MAX_SCF=1e-10 ;;
+    *) echo "unknown ZSTAR_V2_CONVERGENCE_PROFILE=$PROFILE (production|verification)" >&2; exit 2 ;;
+esac
+PROFILE_MARKER="$ROOT/convergence_profile.txt"
+test -f "$PROFILE_MARKER" || { echo "missing v2 convergence_profile.txt in $ROOT" >&2; exit 2; }
+EXPECTED_PROFILE=$(tr -d '[:space:]' < "$PROFILE_MARKER")
+test "$EXPECTED_PROFILE" = "$PROFILE" || {
+    echo "input profile $EXPECTED_PROFILE does not match ZSTAR_V2_CONVERGENCE_PROFILE=$PROFILE" >&2; exit 2;
+}
 
 input_value() {
     local input="$1" key="$2"
@@ -26,14 +39,14 @@ test "$(input_value "$INPUT" symmetry)" = "1" || {
 awk -v x="$(input_value "$INPUT" symmetry_prec)" 'BEGIN { exit !(x == 1e-3) }' || {
     echo "v2 reference requires symmetry_prec=1e-3" >&2; exit 2;
 }
-awk -v x="$(input_value "$INPUT" force_thr_ev)" 'BEGIN { exit !(x > 0 && x <= 1e-4) }' || {
-    echo "v2 reference requires force_thr_ev<=1e-4" >&2; exit 2;
+awk -v x="$(input_value "$INPUT" force_thr_ev)" -v limit="$MAX_FORCE" 'BEGIN { exit !(x > 0 && x <= limit) }' || {
+    echo "v2 $PROFILE reference requires force_thr_ev<=$MAX_FORCE" >&2; exit 2;
 }
-awk -v x="$(input_value "$INPUT" stress_thr)" 'BEGIN { exit !(x > 0 && x <= 0.1) }' || {
-    echo "v2 reference requires stress_thr<=0.1 kbar" >&2; exit 2;
+awk -v x="$(input_value "$INPUT" stress_thr)" -v limit="$MAX_STRESS" 'BEGIN { exit !(x > 0 && x <= limit) }' || {
+    echo "v2 $PROFILE reference requires stress_thr<=$MAX_STRESS kbar" >&2; exit 2;
 }
-awk -v x="$(input_value "$INPUT" scf_thr)" 'BEGIN { exit !(x > 0 && x <= 1e-10) }' || {
-    echo "v2 reference requires scf_thr<=1e-10" >&2; exit 2;
+awk -v x="$(input_value "$INPUT" scf_thr)" -v limit="$MAX_SCF" 'BEGIN { exit !(x > 0 && x <= limit) }' || {
+    echo "v2 $PROFILE reference requires scf_thr<=$MAX_SCF" >&2; exit 2;
 }
 awk -v x="$(input_value "$INPUT" relax_nmax)" 'BEGIN { exit !(x >= 100 && x == int(x)) }' || {
     echo "v2 reference requires integer relax_nmax>=100" >&2; exit 2;
@@ -57,4 +70,4 @@ test -f OUT.*/STRU_ION_D || {
     echo "reference relaxation did not emit STRU_ION_D" >&2
     exit 3
 }
-echo "REFERENCE_RELAX_COMPLETE node=$(hostname) mpi=$NP omp=$OMP"
+echo "REFERENCE_RELAX_COMPLETE profile=$PROFILE node=$(hostname) mpi=$NP omp=$OMP"

@@ -9,11 +9,24 @@ shift
 VALENCE="${*:?usage: $0 CASE_ROOT VALENCE_LIST}"
 NP="${ZSTAR_MPI_RANKS:-32}"
 OMP="${ZSTAR_OMP_THREADS:-1}"
+PROFILE="${ZSTAR_V2_CONVERGENCE_PROFILE:-production}"
 ABACUS_ENV="${ZSTAR_ABACUS_ENV:-/public/home/iai806/apprepo/abacus/v3.10.0LTS-intelmpi2025/scripts/env.sh}"
 PYATB_ENV="${ZSTAR_PYATB_ENV:-/public/home/iai806/apprepo/pyatb/v1.1.2-mpi4py/scripts/env.sh}"
 ADAPTER="${ZSTAR_PYATB_ADAPTER:-$ROOT/pyatb_precision.py}"
 
 export OMP_NUM_THREADS="$OMP" MKL_NUM_THREADS="$OMP" OPENBLAS_NUM_THREADS="$OMP"
+
+case "$PROFILE" in
+    production) MAX_SCF=1e-8; MAX_RELAX_FORCE=1e-4 ;;
+    verification) MAX_SCF=1e-10; MAX_RELAX_FORCE=1e-6 ;;
+    *) echo "unknown ZSTAR_V2_CONVERGENCE_PROFILE=$PROFILE (production|verification)" >&2; exit 2 ;;
+esac
+PROFILE_MARKER="$ROOT/convergence_profile.txt"
+test -f "$PROFILE_MARKER" || { echo "missing v2 convergence_profile.txt in $ROOT" >&2; exit 2; }
+EXPECTED_PROFILE=$(tr -d '[:space:]' < "$PROFILE_MARKER")
+test "$EXPECTED_PROFILE" = "$PROFILE" || {
+    echo "input profile $EXPECTED_PROFILE does not match ZSTAR_V2_CONVERGENCE_PROFILE=$PROFILE" >&2; exit 2;
+}
 
 input_value() {
     local input="$1" key="$2"
@@ -46,15 +59,15 @@ validate_stage_input() {
         reference)
             test "$symmetry" = "1" || { echo "v2 reference requires symmetry=1" >&2; return 1; }
             test "$calculation" = "scf" || { echo "v2 response reference requires calculation=scf" >&2; return 1; }
-            require_leq "$input" scf_thr 1e-10 || return 1
+            require_leq "$input" scf_thr "$MAX_SCF" || return 1
             ;;
         strain-*)
             test "$symmetry" = "0" || { echo "v2 perturbations require symmetry=0" >&2; return 1; }
             case "$calculation" in
-                scf) require_leq "$input" scf_thr 1e-10 || return 1 ;;
+                scf) require_leq "$input" scf_thr "$MAX_SCF" || return 1 ;;
                 relax)
-                    require_leq "$input" force_thr_ev 1e-6 || return 1
-                    require_leq "$input" scf_thr 1e-10 || return 1
+                    require_leq "$input" force_thr_ev "$MAX_RELAX_FORCE" || return 1
+                    require_leq "$input" scf_thr "$MAX_SCF" || return 1
                     awk -v x="$(input_value "$input" relax_nmax)" 'BEGIN { exit !(x >= 100 && x == int(x)) }' || {
                         echo "v2 relaxed perturbations require integer relax_nmax>=100" >&2; return 1;
                     }
@@ -145,4 +158,4 @@ for d in "$ROOT"/reference "$ROOT"/strain-*; do
     touch "$d/.pyatb_done_${NP}"
     echo "DONE $stage"
 done
-echo "V2_PIEZO_CASE_COMPLETE root=$ROOT node=$(hostname) mpi=$NP omp=$OMP"
+echo "V2_PIEZO_CASE_COMPLETE root=$ROOT profile=$PROFILE node=$(hostname) mpi=$NP omp=$OMP"

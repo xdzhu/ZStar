@@ -25,11 +25,50 @@ from .structure import (
 
 
 V2_DEFAULT_RELAX_NMAX = 100
-V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
-V2_REFERENCE_STRESS_THRESHOLD_KBAR = 1.0e-1
-V2_REFERENCE_SCF_THRESHOLD = 1.0e-10
-V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-6
-V2_TIGHT_FORCE_SCF_THRESHOLD = 1.0e-10
+# ``production`` is the normal cost/accuracy operating point.  ``verification``
+# is deliberately more expensive and is used to audit a production result, not
+# to make every screening calculation slow.
+V2_PRODUCTION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-3
+V2_PRODUCTION_REFERENCE_STRESS_THRESHOLD_KBAR = 5.0e-1
+V2_PRODUCTION_SCF_THRESHOLD = 1.0e-8
+V2_PRODUCTION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
+V2_VERIFICATION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
+V2_VERIFICATION_REFERENCE_STRESS_THRESHOLD_KBAR = 1.0e-1
+V2_VERIFICATION_SCF_THRESHOLD = 1.0e-10
+V2_VERIFICATION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-6
+
+# Backward-compatible names: these refer to the verification tier only.  New
+# callers must select an explicit profile or accept the production default.
+V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = V2_VERIFICATION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM
+V2_REFERENCE_STRESS_THRESHOLD_KBAR = V2_VERIFICATION_REFERENCE_STRESS_THRESHOLD_KBAR
+V2_REFERENCE_SCF_THRESHOLD = V2_VERIFICATION_SCF_THRESHOLD
+V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM = V2_VERIFICATION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM
+V2_TIGHT_FORCE_SCF_THRESHOLD = V2_VERIFICATION_SCF_THRESHOLD
+
+V2_CONVERGENCE_PROFILES = {
+    "production": {
+        "reference_force_thr_ev": V2_PRODUCTION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM,
+        "reference_stress_thr_kbar": V2_PRODUCTION_REFERENCE_STRESS_THRESHOLD_KBAR,
+        "scf_thr": V2_PRODUCTION_SCF_THRESHOLD,
+        "relaxed_strain_force_thr_ev": V2_PRODUCTION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM,
+    },
+    "verification": {
+        "reference_force_thr_ev": V2_VERIFICATION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM,
+        "reference_stress_thr_kbar": V2_VERIFICATION_REFERENCE_STRESS_THRESHOLD_KBAR,
+        "scf_thr": V2_VERIFICATION_SCF_THRESHOLD,
+        "relaxed_strain_force_thr_ev": V2_VERIFICATION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM,
+    },
+}
+
+
+def convergence_profile(name: str = "production") -> tuple[str, dict[str, float]]:
+    """Return a named v2 numerical profile or fail before inputs are written."""
+
+    normalized = str(name).strip().lower().replace("_", "-")
+    if normalized not in V2_CONVERGENCE_PROFILES:
+        allowed = ", ".join(sorted(V2_CONVERGENCE_PROFILES))
+        raise ValueError(f"unknown v2 convergence profile {name!r}; choose one of: {allowed}")
+    return normalized, dict(V2_CONVERGENCE_PROFILES[normalized])
 
 
 def apply_strain(structure: StructureSpec, strain_voigt: Iterable[float]) -> StructureSpec:
@@ -140,20 +179,21 @@ def prepare_abacus_reference_relaxation(
     kpt_template: str | Path | None = None,
     pp_dir: str | Path | None = None,
     orb_dir: str | Path | None = None,
+    profile: str = "production",
     symprec: float = V2_SYMPREC,
-    force_thr_ev: float = V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM,
-    stress_thr_kbar: float = V2_REFERENCE_STRESS_THRESHOLD_KBAR,
-    scf_thr: float = V2_REFERENCE_SCF_THRESHOLD,
+    force_thr_ev: float | None = None,
+    stress_thr_kbar: float | None = None,
+    scf_thr: float | None = None,
     relax_nmax: int = V2_DEFAULT_RELAX_NMAX,
 ) -> dict:
-    """Prepare the mandatory high-precision bulk reference ``cell-relax`` stage.
+    """Prepare a profile-controlled bulk reference ``cell-relax`` stage.
 
     A relaxed-ion electromechanical ensemble differentiates about this geometry,
-    so accepting a loose pre-relaxed structure silently contaminates every
-    strain derivative. The v2 research protocol therefore permits only equal
-    or tighter settings than ``1e-4 eV/angstrom`` ionic force, ``0.1 kbar``
-    stress, ``1e-10`` SCF threshold, and 100 ionic iterations. This function
-    writes only a self-contained ABACUS input folder; it never runs a solver.
+    so accepting a loose pre-relaxed structure silently contaminates every strain
+    derivative. ``production`` therefore requires at least ``1e-3 eV/angstrom``,
+    ``0.5 kbar``, and ``1e-8``; ``verification`` tightens these to ``1e-4``,
+    ``0.1 kbar``, and ``1e-10``. This function writes only a self-contained
+    ABACUS input folder; it never runs a solver.
     The converged ``STRU_ION_D`` must be promoted explicitly as the source of a
     subsequent response ensemble.
     """
@@ -167,17 +207,18 @@ def prepare_abacus_reference_relaxation(
         raise FileNotFoundError(f"ABACUS STRU does not exist: {source}")
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"reference relaxation output is not empty: {output}")
+    profile_name, settings = convergence_profile(profile)
     if not np.isfinite(float(symprec)) or float(symprec) != V2_SYMPREC:
         raise ValueError("v2 requires symprec=1e-3 for all space-group and atom-mapping operations")
-    force = float(force_thr_ev)
-    stress = float(stress_thr_kbar)
-    electronic = float(scf_thr)
-    if not np.isfinite(force) or force <= 0.0 or force > V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM:
-        raise ValueError("v2 reference relaxation requires force_thr_ev<=1e-4")
-    if not np.isfinite(stress) or stress <= 0.0 or stress > V2_REFERENCE_STRESS_THRESHOLD_KBAR:
-        raise ValueError("v2 reference relaxation requires stress_thr_kbar<=0.1")
-    if not np.isfinite(electronic) or electronic <= 0.0 or electronic > V2_REFERENCE_SCF_THRESHOLD:
-        raise ValueError("v2 reference relaxation requires scf_thr<=1e-10")
+    force = settings["reference_force_thr_ev"] if force_thr_ev is None else float(force_thr_ev)
+    stress = settings["reference_stress_thr_kbar"] if stress_thr_kbar is None else float(stress_thr_kbar)
+    electronic = settings["scf_thr"] if scf_thr is None else float(scf_thr)
+    if not np.isfinite(force) or force <= 0.0 or force > settings["reference_force_thr_ev"]:
+        raise ValueError(f"v2 {profile_name} reference relaxation requires force_thr_ev<={settings['reference_force_thr_ev']:g}")
+    if not np.isfinite(stress) or stress <= 0.0 or stress > settings["reference_stress_thr_kbar"]:
+        raise ValueError(f"v2 {profile_name} reference relaxation requires stress_thr_kbar<={settings['reference_stress_thr_kbar']:g}")
+    if not np.isfinite(electronic) or electronic <= 0.0 or electronic > settings["scf_thr"]:
+        raise ValueError(f"v2 {profile_name} reference relaxation requires scf_thr<={settings['scf_thr']:g}")
     if isinstance(relax_nmax, (bool, np.bool_)) or int(relax_nmax) != relax_nmax or int(relax_nmax) < V2_DEFAULT_RELAX_NMAX:
         raise ValueError("v2 reference relaxation requires integer relax_nmax>=100")
 
@@ -220,6 +261,7 @@ def prepare_abacus_reference_relaxation(
         "schema_version": "0.1",
         "status": "inputs_prepared_not_executed",
         "source_structure_sha256": _sha256(source),
+        "convergence_profile": profile_name,
         "convergence": {
             "calculation": "cell-relax",
             "force_thr_ev": force,
@@ -231,6 +273,7 @@ def prepare_abacus_reference_relaxation(
         "promotion_requirement": "Run on HF, verify ionic and cell convergence, then promote OUT.<suffix>/STRU_ION_D explicitly.",
     }
     (output / "reference_relaxation.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    (output / "convergence_profile.txt").write_text(profile_name + "\n", encoding="utf-8")
     return {"root": str(output), "input": str(output / "INPUT"), "manifest": str(output / "reference_relaxation.json")}
 
 
@@ -335,10 +378,11 @@ def prepare_abacus_strain_ensemble(
     dimensionality: int = 3,
     periodic_axes: Iterable[str] | str | None = None,
     strain_vectors: Iterable[Iterable[float]] | None = None,
-    amplitude: float = 1.0e-3,
+    amplitude: float = 5.0e-3,
     symprec: float = 1.0e-3,
     ion_relaxation: str = "clamped-ion",
-    force_thr_ev: float = V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM,
+    profile: str = "production",
+    force_thr_ev: float | None = None,
     scf_thr: float | None = None,
     relax_nmax: int = V2_DEFAULT_RELAX_NMAX,
     symmetry_reduce: bool = False,
@@ -350,13 +394,11 @@ def prepare_abacus_strain_ensemble(
     cannot accidentally use the nominal requested amplitude.  ``clamped-ion``
     keeps the source SCF calculation unchanged; ``relaxed-ion`` switches only
     the ± strain stages to ``calculation relax`` and records the requested
-    force threshold and writes ``relax_nmax=100`` by default.  If ``scf_thr``
-    is provided, it is written to every
-    copied INPUT (including the reference) so SCF force noise and ionic
-    convergence can be audited as one reproducible ensemble.  For a relaxed-ion
-    force target at or below ``1e-6 eV/angstrom``, the electronic threshold is
-    automatically set to ``1e-10`` when omitted; an explicitly looser value is
-    rejected.  The reference
+    force threshold and writes ``relax_nmax=100`` by default.  The production
+    profile uses ``1e-4 eV/angstrom`` and ``scf_thr=1e-8``; verification uses
+    ``1e-6 eV/angstrom`` and ``scf_thr=1e-10``.  A profile is serialized into
+    the ensemble so a production result cannot be labelled as verification.
+    The reference
     is always a single-point SCF on the
     supplied reference structure, which must already be the intended relaxed
     geometry when relaxed-ion response is requested.  With ``symmetry_reduce``
@@ -391,9 +433,15 @@ def prepare_abacus_strain_ensemble(
     relaxation = str(ion_relaxation).strip().lower()
     if relaxation not in {"clamped-ion", "relaxed-ion"}:
         raise ValueError("ion_relaxation must be 'clamped-ion' or 'relaxed-ion'")
-    threshold = float(force_thr_ev)
+    profile_name, settings = convergence_profile(profile)
+    threshold = settings["relaxed_strain_force_thr_ev"] if force_thr_ev is None else float(force_thr_ev)
     if not np.isfinite(threshold) or threshold <= 0.0:
         raise ValueError("force_thr_ev must be finite and positive")
+    if relaxation == "relaxed-ion" and threshold > settings["relaxed_strain_force_thr_ev"]:
+        raise ValueError(
+            f"v2 {profile_name} relaxed-ion response requires "
+            f"force_thr_ev<={settings['relaxed_strain_force_thr_ev']:g}"
+        )
     if isinstance(relax_nmax, (bool, np.bool_)):
         raise ValueError("relax_nmax must be a positive integer")
     try:
@@ -402,21 +450,18 @@ def prepare_abacus_strain_ensemble(
         raise ValueError("relax_nmax must be a positive integer") from exc
     if relax_steps <= 0 or float(relax_nmax) != float(relax_steps):
         raise ValueError("relax_nmax must be a positive integer")
+    if relaxation == "relaxed-ion" and relax_steps < V2_DEFAULT_RELAX_NMAX:
+        raise ValueError("v2 relaxed-ion response requires relax_nmax>=100")
     if not isinstance(symmetry_reduce, (bool, np.bool_)):
         raise TypeError("symmetry_reduce must be a bool")
-    scf_threshold: float | None = None
-    if scf_thr is not None:
-        scf_threshold = float(scf_thr)
-        if not np.isfinite(scf_threshold) or scf_threshold <= 0.0:
-            raise ValueError("scf_thr must be finite and positive when provided")
-    if relaxation == "relaxed-ion" and threshold <= V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM:
-        if scf_threshold is None:
-            scf_threshold = V2_TIGHT_FORCE_SCF_THRESHOLD
-        elif scf_threshold > V2_TIGHT_FORCE_SCF_THRESHOLD:
-            raise ValueError(
-                "relaxed-ion force_thr_ev<=1e-6 requires scf_thr<=1e-10; "
-                f"got force_thr_ev={threshold:g}, scf_thr={scf_threshold:g}"
-            )
+    scf_threshold = settings["scf_thr"] if scf_thr is None else float(scf_thr)
+    if not np.isfinite(scf_threshold) or scf_threshold <= 0.0:
+        raise ValueError("scf_thr must be finite and positive when provided")
+    if scf_threshold > settings["scf_thr"]:
+        raise ValueError(
+            f"v2 {profile_name} response requires scf_thr<={settings['scf_thr']:g}; "
+            f"got {scf_threshold:g}"
+        )
     atoms = read_structure(source)
     spec = StructureSpec(
         lattice=np.asarray(atoms.cell, dtype=float),
@@ -495,6 +540,7 @@ def prepare_abacus_strain_ensemble(
             "abacus_reference_symmetry": 1,
             "abacus_perturbation_symmetry": 0,
             "ion_relaxation": relaxation,
+            "convergence_profile": profile_name,
             "force_thr_ev": threshold,
             **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
             "symmetry_reduce": bool(symmetry_reduce),
@@ -520,8 +566,7 @@ def prepare_abacus_strain_ensemble(
         _set_input_parameter(reference_dir / input_name, "cal_stress", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
-        if scf_threshold is not None:
-            _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
+        _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
     prepared = prepare_stru_assets(
         reference_dir / "STRU",
         pp_dir=pp_dir,
@@ -551,8 +596,7 @@ def prepare_abacus_strain_ensemble(
             # ZStar handles response reconstruction from the unmodified data.
             _set_input_parameter(stage_dir / input_name, "symmetry", "0")
             _set_input_parameter(stage_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
-            if scf_threshold is not None:
-                _set_input_parameter(stage_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
+            _set_input_parameter(stage_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
             if relaxation == "relaxed-ion":
                 _set_input_parameter(stage_dir / input_name, "calculation", "relax")
                 _set_input_parameter(stage_dir / input_name, "force_thr_ev", f"{threshold:.16g}")
@@ -579,6 +623,7 @@ def prepare_abacus_strain_ensemble(
                 metadata={
                     "directory": stage.stage_id,
                     "ion_relaxation": relaxation,
+                    "convergence_profile": profile_name,
                     "force_thr_ev": threshold,
                     **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
                 },
@@ -590,14 +635,11 @@ def prepare_abacus_strain_ensemble(
         metadata={
             **ensemble.metadata,
             "reference_input_hash": _input_hash(reference_dir),
-            "scf_thr": (
-                scf_threshold
-                if scf_threshold is not None
-                else _read_input_parameter(reference_dir / input_name, "scf_thr")
-            ),
+            "scf_thr": scf_threshold,
         },
     )
     final_ensemble.write(output / "ensemble.json")
+    (output / "convergence_profile.txt").write_text(profile_name + "\n", encoding="utf-8")
     (output / "symmetry.json").write_text(json.dumps(_report_dict(report), indent=2) + "\n", encoding="utf-8")
     return {
         "ensemble": final_ensemble,

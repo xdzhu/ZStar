@@ -26,7 +26,7 @@ def _input_parameters(path: Path) -> dict[str, str]:
     }
 
 
-def test_reference_relaxation_preparation_enforces_high_precision_geometry_gate(tmp_path):
+def test_reference_relaxation_preparation_defaults_to_cost_balanced_production_gate(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     result = prepare_abacus_reference_relaxation(
         tmp_path / "reference-relax",
@@ -39,17 +39,18 @@ def test_reference_relaxation_preparation_enforces_high_precision_geometry_gate(
     assert values["cal_force"] == values["cal_stress"] == "1"
     assert values["symmetry"] == "1"
     assert float(values["symmetry_prec"]) == pytest.approx(1.0e-3)
-    assert float(values["force_thr_ev"]) == pytest.approx(1.0e-4)
-    assert float(values["stress_thr"]) == pytest.approx(0.1)
-    assert float(values["scf_thr"]) == pytest.approx(1.0e-10)
+    assert float(values["force_thr_ev"]) == pytest.approx(1.0e-3)
+    assert float(values["stress_thr"]) == pytest.approx(0.5)
+    assert float(values["scf_thr"]) == pytest.approx(1.0e-8)
     assert values["relax_nmax"] == "100"
+    assert (tmp_path / "reference-relax" / "convergence_profile.txt").read_text().strip() == "production"
 
 
 @pytest.mark.parametrize(
     ("keyword", "value", "message"),
-    (("force_thr_ev", 1.0e-3, "force_thr_ev<=1e-4"), ("stress_thr_kbar", 0.2, "stress_thr_kbar<=0.1"), ("scf_thr", 1.0e-8, "scf_thr<=1e-10")),
+    (("force_thr_ev", 1.0e-3, "force_thr_ev<=0.0001"), ("stress_thr_kbar", 0.2, "stress_thr_kbar<=0.1"), ("scf_thr", 1.0e-8, "scf_thr<=1e-10")),
 )
-def test_reference_relaxation_preparation_rejects_looser_protocol(tmp_path, keyword, value, message):
+def test_reference_relaxation_verification_profile_rejects_looser_protocol(tmp_path, keyword, value, message):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     with pytest.raises(ValueError, match=message):
         prepare_abacus_reference_relaxation(
@@ -57,6 +58,7 @@ def test_reference_relaxation_preparation_rejects_looser_protocol(tmp_path, keyw
             structure=case / "STRU",
             input_template=case / "INPUT",
             kpt_template=case / "KPT",
+            profile="verification",
             **{keyword: value},
         )
 
@@ -235,7 +237,7 @@ def test_abacus_strain_preparation_can_use_symmetry_rank_plan(tmp_path):
     ]
     np.testing.assert_allclose(
         [ensemble.stage(f"strain-{index:03d}+").requested_vector for index in range(1, 5)],
-        np.eye(6)[[0, 2, 3, 5]] * 1.0e-3,
+        np.eye(6)[[0, 2, 3, 5]] * 5.0e-3,
     )
 
 
@@ -286,16 +288,16 @@ def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input
         kpt_template=case / "KPT",
         strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
         ion_relaxation="relaxed-ion",
-        force_thr_ev=2.5e-4,
+        force_thr_ev=1.0e-4,
         symprec=1.0e-3,
     )
     ensemble = result["ensemble"]
     assert ensemble.metadata["ion_relaxation"] == "relaxed-ion"
-    assert ensemble.metadata["force_thr_ev"] == 2.5e-4
+    assert ensemble.metadata["force_thr_ev"] == 1.0e-4
     assert all("relaxed_structure" in stage.expected_outputs for stage in ensemble.stages)
     stage_input = (tmp_path / "relaxed-strain" / "strain-001+" / "INPUT").read_text()
     assert "calculation         relax" in stage_input
-    assert "force_thr_ev        0.00025" in stage_input
+    assert "force_thr_ev        0.0001" in stage_input
     assert "relax_nmax          100" in stage_input
     assert ensemble.metadata["relax_nmax"] == 100
     assert (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text().find("calculation         scf") >= 0
@@ -321,7 +323,28 @@ def test_abacus_strain_preparation_can_pin_scf_threshold_for_ionic_audit(tmp_pat
         assert "symmetry_prec       0.001" in input_text
 
 
-def test_abacus_strain_preparation_tight_force_auto_tightens_scf_and_uses_100_steps(tmp_path):
+def test_abacus_strain_production_profile_is_explicit_and_cost_balanced(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "production-profile",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        strain_vectors=([5.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+        ion_relaxation="relaxed-ion",
+    )
+    ensemble = result["ensemble"]
+    assert ensemble.metadata["convergence_profile"] == "production"
+    assert ensemble.metadata["force_thr_ev"] == 1.0e-4
+    assert ensemble.metadata["scf_thr"] == 1.0e-8
+    assert (tmp_path / "production-profile" / "convergence_profile.txt").read_text().strip() == "production"
+    for stage_id in ("reference", "strain-001-", "strain-001+"):
+        assert "scf_thr             1e-08" in (
+            tmp_path / "production-profile" / stage_id / "INPUT"
+        ).read_text()
+
+
+def test_abacus_strain_verification_profile_uses_tight_scf_and_100_steps(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     result = prepare_abacus_strain_ensemble(
         tmp_path / "tight-force-policy",
@@ -331,6 +354,7 @@ def test_abacus_strain_preparation_tight_force_auto_tightens_scf_and_uses_100_st
         strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
         ion_relaxation="relaxed-ion",
         force_thr_ev=1.0e-6,
+        profile="verification",
     )
     ensemble = result["ensemble"]
     assert ensemble.metadata["scf_thr"] == 1.0e-10
@@ -346,9 +370,9 @@ def test_abacus_strain_preparation_tight_force_auto_tightens_scf_and_uses_100_st
         assert "relax_nmax          100" in input_text
 
 
-def test_abacus_strain_preparation_rejects_loose_scf_for_tight_force(tmp_path):
+def test_abacus_strain_preparation_rejects_loose_scf_for_verification(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
-    with pytest.raises(ValueError, match="force_thr_ev<=1e-6 requires scf_thr<=1e-10"):
+    with pytest.raises(ValueError, match="verification response requires scf_thr<=1e-10"):
         prepare_abacus_strain_ensemble(
             tmp_path / "inconsistent-tight-force-policy",
             structure=case / "STRU",
@@ -358,6 +382,7 @@ def test_abacus_strain_preparation_rejects_loose_scf_for_tight_force(tmp_path):
             ion_relaxation="relaxed-ion",
             force_thr_ev=1.0e-6,
             scf_thr=1.0e-8,
+            profile="verification",
         )
 
 
