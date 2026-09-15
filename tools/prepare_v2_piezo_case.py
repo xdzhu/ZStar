@@ -28,7 +28,7 @@ def main() -> int:
         "--amplitude",
         type=float,
         default=5.0e-3,
-        help="production is fixed at 0.005; verification accepts only the internal audit values",
+        help="production is fixed at 0.005; verification accepts the two internal audit values",
     )
     parser.add_argument("--profile", choices=("production", "verification"), default="production")
     parser.add_argument(
@@ -58,9 +58,9 @@ def main() -> int:
         )
     if args.profile == "production" and args.amplitude != 5.0e-3:
         raise SystemExit("production profile has fixed engineering strain amplitude 0.005")
-    if args.profile == "verification" and args.amplitude not in {2.5e-3, 5.0e-3, 1.0e-2}:
+    if args.profile == "verification" and args.amplitude not in {5.0e-3, 1.0e-2}:
         raise SystemExit(
-            "verification amplitude is developer-only and must be one of 0.0025, 0.005, or 0.01"
+            "verification amplitude is developer-only and must be either 0.005 or 0.01"
         )
     source = args.source.resolve()
     output = args.output.resolve()
