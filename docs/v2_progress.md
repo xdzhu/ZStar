@@ -875,3 +875,12 @@ ZnO 的同阈值审计使用 235 上由用户 PBS 占位保留的 cu17、cu24、
 shear 违例而尝试的 `1e-6` 正负对中，负点收敛、正点两次 50 ionic steps 均未收敛；
 其输出已归档并排除，收集器恢复使用完整一致的 `1e-5` 数据。详见
 `docs/v2_internal_strain_convergence_audit_20260914.md`。
+
+## 2026-09-15 relaxed-ion 数值协议加固
+
+v2 的 ABACUS strain preparation 现将 `relax_nmax=100` 作为 relaxed-ion 默认值，
+并写入每个应变 stage 的真实 `INPUT` 与 ensemble metadata。当
+`force_thr_ev<=1e-6 eV/Angstrom` 时，省略 `scf_thr` 会自动采用 `1e-10`；显式给出
+更松的电子阈值会在准备阶段失败。collector 同时回读并记录各 stage 实际序列化的
+`scf_thr`、`force_thr_ev` 和 `relax_nmax`，因此运行 provenance 不再依赖名义参数。
+这项协议只影响后续新建/重建的 v2 输入；已有计算仍保留其真实历史设置。

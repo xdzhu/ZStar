@@ -24,6 +24,11 @@ from .structure import (
 )
 
 
+V2_DEFAULT_RELAX_NMAX = 100
+V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-6
+V2_TIGHT_FORCE_SCF_THRESHOLD = 1.0e-10
+
+
 def apply_strain(structure: StructureSpec, strain_voigt: Iterable[float]) -> StructureSpec:
     """Apply engineering strain to a structure while keeping fractional sites fixed."""
 
@@ -230,6 +235,7 @@ def prepare_abacus_strain_ensemble(
     ion_relaxation: str = "clamped-ion",
     force_thr_ev: float = 1.0e-3,
     scf_thr: float | None = None,
+    relax_nmax: int = V2_DEFAULT_RELAX_NMAX,
     symmetry_reduce: bool = False,
 ) -> dict:
     """Prepare a reference plus ± homogeneous-strain ABACUS folders.
@@ -239,9 +245,13 @@ def prepare_abacus_strain_ensemble(
     cannot accidentally use the nominal requested amplitude.  ``clamped-ion``
     keeps the source SCF calculation unchanged; ``relaxed-ion`` switches only
     the ± strain stages to ``calculation relax`` and records the requested
-    force threshold.  If ``scf_thr`` is provided, it is written to every
+    force threshold and writes ``relax_nmax=100`` by default.  If ``scf_thr``
+    is provided, it is written to every
     copied INPUT (including the reference) so SCF force noise and ionic
-    convergence can be audited as one reproducible ensemble.  The reference
+    convergence can be audited as one reproducible ensemble.  For a relaxed-ion
+    force target at or below ``1e-6 eV/angstrom``, the electronic threshold is
+    automatically set to ``1e-10`` when omitted; an explicitly looser value is
+    rejected.  The reference
     is always a single-point SCF on the
     supplied reference structure, which must already be the intended relaxed
     geometry when relaxed-ion response is requested.  With ``symmetry_reduce``
@@ -279,6 +289,14 @@ def prepare_abacus_strain_ensemble(
     threshold = float(force_thr_ev)
     if not np.isfinite(threshold) or threshold <= 0.0:
         raise ValueError("force_thr_ev must be finite and positive")
+    if isinstance(relax_nmax, (bool, np.bool_)):
+        raise ValueError("relax_nmax must be a positive integer")
+    try:
+        relax_steps = int(relax_nmax)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("relax_nmax must be a positive integer") from exc
+    if relax_steps <= 0 or float(relax_nmax) != float(relax_steps):
+        raise ValueError("relax_nmax must be a positive integer")
     if not isinstance(symmetry_reduce, (bool, np.bool_)):
         raise TypeError("symmetry_reduce must be a bool")
     scf_threshold: float | None = None
@@ -286,6 +304,14 @@ def prepare_abacus_strain_ensemble(
         scf_threshold = float(scf_thr)
         if not np.isfinite(scf_threshold) or scf_threshold <= 0.0:
             raise ValueError("scf_thr must be finite and positive when provided")
+    if relaxation == "relaxed-ion" and threshold <= V2_TIGHT_FORCE_THRESHOLD_EV_PER_ANGSTROM:
+        if scf_threshold is None:
+            scf_threshold = V2_TIGHT_FORCE_SCF_THRESHOLD
+        elif scf_threshold > V2_TIGHT_FORCE_SCF_THRESHOLD:
+            raise ValueError(
+                "relaxed-ion force_thr_ev<=1e-6 requires scf_thr<=1e-10; "
+                f"got force_thr_ev={threshold:g}, scf_thr={scf_threshold:g}"
+            )
     atoms = read_structure(source)
     spec = StructureSpec(
         lattice=np.asarray(atoms.cell, dtype=float),
@@ -362,6 +388,7 @@ def prepare_abacus_strain_ensemble(
             "symprec": float(symprec),
             "ion_relaxation": relaxation,
             "force_thr_ev": threshold,
+            **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
             "symmetry_reduce": bool(symmetry_reduce),
             "periodic_strain_indices": list(active_strain_indices),
             "symmetry_input_plan": None if symmetry_plan is None else symmetry_plan.to_dict(),
@@ -414,6 +441,7 @@ def prepare_abacus_strain_ensemble(
             if relaxation == "relaxed-ion":
                 _set_input_parameter(stage_dir / input_name, "calculation", "relax")
                 _set_input_parameter(stage_dir / input_name, "force_thr_ev", f"{threshold:.16g}")
+                _set_input_parameter(stage_dir / input_name, "relax_nmax", str(relax_steps))
         if kpt_source.is_file():
             shutil.copy2(kpt_source, stage_dir / "KPT")
         prepared = prepare_stru_assets(
@@ -437,6 +465,7 @@ def prepare_abacus_strain_ensemble(
                     "directory": stage.stage_id,
                     "ion_relaxation": relaxation,
                     "force_thr_ev": threshold,
+                    **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
                 },
             )
         )

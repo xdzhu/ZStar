@@ -748,6 +748,9 @@ def collect_abacus_strain_response(
     strain_force_thresholds = _unique_finite_input_values(
         records, "force_thr_ev", skip_reference=True
     )
+    strain_relax_nmax_values = _unique_finite_input_values(
+        records, "relax_nmax", skip_reference=True
+    )
     serialized_scf_thresholds = _unique_finite_input_values(records, "scf_thr")
     provenance = {
         "reference_hash": ensemble.reference_hash,
@@ -771,6 +774,7 @@ def collect_abacus_strain_response(
                 "timing": record["timing"],
                 "configured_scf_thr": record["input_parameters"].get("scf_thr"),
                 "configured_force_thr_ev": record["input_parameters"].get("force_thr_ev"),
+                "configured_relax_nmax": record["input_parameters"].get("relax_nmax"),
             }
             for name, record in zip(stage_names, records)
         ],
@@ -807,6 +811,11 @@ def collect_abacus_strain_response(
                 if serialized_scf_thresholds
                 else {}
             ),
+            **(
+                {"strain_relax_nmax_values": strain_relax_nmax_values}
+                if strain_relax_nmax_values
+                else {}
+            ),
         },
         restart_state={"ensemble": str(base / "ensemble.json")},
         metadata={
@@ -819,6 +828,7 @@ def collect_abacus_strain_response(
             "ion_relaxation": ion_relaxation,
             "reference_force_max_eV_per_angstrom": reference_force_max,
             "strain_force_thr_ev_values": strain_force_thresholds,
+            "strain_relax_nmax_values": strain_relax_nmax_values,
             "serialized_scf_thr_values": serialized_scf_thresholds,
             "internal_displacement_collected": internal_displacements is not None,
             "symmetry_audit": dict(symmetry_data.get("comparison", {})),

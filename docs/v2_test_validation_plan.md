@@ -43,6 +43,8 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 * 非唯一赝势/轨道、输入 hash 改变、原子排序改变；
 * spglib dataset 为 `None`、对称操作混合周期/开放方向、磁性或带电胞；
 * stress 缺失、± stage 不成对、rank 不足、residual 超阈值、机械不稳定；
+* relaxed-ion 输入默认写入 `relax_nmax=100`；非正整数必须失败；
+* `force_thr_ev<=1e-6 eV/Å` 时自动采用 `scf_thr=1e-10`，显式更松设置必须失败；
 * backend command 不可用、非零退出、重启后不得重复已完成 stage。
 
 每个失败测试都要断言“原因 + 最小解决动作 + 保留日志/状态路径”。

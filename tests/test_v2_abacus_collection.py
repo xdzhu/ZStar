@@ -189,7 +189,7 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     for stage in stages:
         _stage(root / stage.stage_id, relaxed=True, strain_vector=stage.requested_vector)
         (root / stage.stage_id / "INPUT").write_text(
-            "scf_thr 1e-8\nforce_thr_ev 1e-5\n", encoding="utf-8"
+            "scf_thr 1e-8\nforce_thr_ev 1e-5\nrelax_nmax 100\n", encoding="utf-8"
         )
     ResponseEnsemble(
         reference_hash="synthetic",
@@ -224,7 +224,9 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     assert document.convergence["strain_force_thr_ev_values"] == [1.0e-5]
     assert document.convergence["serialized_scf_thr_values"] == [1.0e-8]
     assert document.metadata["strain_force_thr_ev_values"] == [1.0e-5]
+    assert document.metadata["strain_relax_nmax_values"] == [100.0]
     assert document.provenance["stages"][1]["configured_force_thr_ev"] == "1e-5"
+    assert document.provenance["stages"][1]["configured_relax_nmax"] == "100"
 
 
 def test_collect_abacus_strain_response_rejects_unrelaxed_reference(tmp_path):

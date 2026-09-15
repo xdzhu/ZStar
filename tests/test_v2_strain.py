@@ -244,6 +244,8 @@ def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input
     stage_input = (tmp_path / "relaxed-strain" / "strain-001+" / "INPUT").read_text()
     assert "calculation         relax" in stage_input
     assert "force_thr_ev        0.00025" in stage_input
+    assert "relax_nmax          100" in stage_input
+    assert ensemble.metadata["relax_nmax"] == 100
     assert (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text().find("calculation         scf") >= 0
 
 
@@ -264,6 +266,60 @@ def test_abacus_strain_preparation_can_pin_scf_threshold_for_ionic_audit(tmp_pat
     for stage_id in ("reference", "strain-001-", "strain-001+"):
         input_text = (tmp_path / "tight-scf" / stage_id / "INPUT").read_text()
         assert "scf_thr             1e-10" in input_text
+
+
+def test_abacus_strain_preparation_tight_force_auto_tightens_scf_and_uses_100_steps(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_strain_ensemble(
+        tmp_path / "tight-force-policy",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+        strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+        ion_relaxation="relaxed-ion",
+        force_thr_ev=1.0e-6,
+    )
+    ensemble = result["ensemble"]
+    assert ensemble.metadata["scf_thr"] == 1.0e-10
+    assert ensemble.metadata["relax_nmax"] == 100
+    assert "scf_thr             1e-10" in (
+        tmp_path / "tight-force-policy" / "reference" / "INPUT"
+    ).read_text()
+    for stage_id in ("strain-001-", "strain-001+"):
+        input_text = (tmp_path / "tight-force-policy" / stage_id / "INPUT").read_text()
+        assert "force_thr_ev        1e-06" in input_text
+        assert "scf_thr             1e-10" in input_text
+        assert "relax_nmax          100" in input_text
+
+
+def test_abacus_strain_preparation_rejects_loose_scf_for_tight_force(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    with pytest.raises(ValueError, match="force_thr_ev<=1e-6 requires scf_thr<=1e-10"):
+        prepare_abacus_strain_ensemble(
+            tmp_path / "inconsistent-tight-force-policy",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+            ion_relaxation="relaxed-ion",
+            force_thr_ev=1.0e-6,
+            scf_thr=1.0e-8,
+        )
+
+
+@pytest.mark.parametrize("relax_nmax", [0, -1, 2.5, True])
+def test_abacus_strain_preparation_rejects_invalid_relax_nmax(tmp_path, relax_nmax):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    with pytest.raises(ValueError, match="relax_nmax"):
+        prepare_abacus_strain_ensemble(
+            tmp_path / f"bad-relax-nmax-{relax_nmax}",
+            structure=case / "STRU",
+            input_template=case / "INPUT",
+            kpt_template=case / "KPT",
+            strain_vectors=([1.0e-3, 0.0, 0.0, 0.0, 0.0, 0.0],),
+            ion_relaxation="relaxed-ion",
+            relax_nmax=relax_nmax,
+        )
 
 
 def test_abacus_strain_preparation_rejects_invalid_scf_threshold(tmp_path):

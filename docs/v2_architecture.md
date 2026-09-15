@@ -135,6 +135,11 @@ reference gate
 fit 状态和错误。可复用 v1 的 `WorkflowStateStore` 设计和原子替换写入，但不得让 v2
 状态覆盖 `.zstar/stages` 或改变 v1 `workflow.jsonl` 的语义。
 
+relaxed-ion ABACUS 输入由准备层统一写入 `relax_nmax=100`。当目标
+`force_thr_ev<=1e-6 eV/Å` 时，准备层同时要求 `scf_thr<=1e-10`：未给出时自动使用
+`1e-10`，显式更松的组合直接拒绝。collector 从实际序列化的每个 `INPUT` 回读并保存
+`scf_thr`、`force_thr_ev` 和 `relax_nmax`，不以命令行名义值覆盖运行 provenance。
+
 `prepare_abacus_strain_ensemble` now hashes each serialized stage input (INPUT,
 STRU/KPT and copied UPF/ORB assets) and stores a separate reference-input hash.
 The collector verifies these hashes before parsing outputs.  Relaxed-ion
