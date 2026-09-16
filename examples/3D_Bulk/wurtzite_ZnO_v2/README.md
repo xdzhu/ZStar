@@ -1,5 +1,11 @@
 # Wurtzite ZnO — ZStar v2 piezoelectric gate
 
+> **Archived conditional result, not a production template.** The calculation
+> below truthfully records an early `0.1%`, `1e-6/1e-10` development run. New
+> v2 inputs must use the fixed `±0.5%`, `force_thr_ev=1e-4 eV/Angstrom`,
+> `scf_thr=1e-8`, `relax_nmax=100` protocol. ZnO remains unqualified because
+> `e15/C44/internal-strain` and raw-residual gaps are unresolved.
+
 This is a 3D bulk validation case for the v2 homogeneous-strain response
 ensemble.  The input uses the crystallographic hexagonal cell (4 atoms,
 equivalent to the 2-atom primitive wurtzite basis) with `z || [0001]`.
@@ -28,11 +34,10 @@ reported rather than silently discarded, but it is not used to reject the
 direct polarization--strain result or the derived `d=e(C^E)^{-1}` result.
 It remains a separate validation target for the BEC--Lambda reconstruction.
 
-Scheduler notes: on HF submit `tools/v2_piezo_hf.slurm` with Slurm (32 MPI
-tasks, one OpenMP thread per task, no node exclusivity).  On 235 run
-`tools/v2_piezo_235_direct.sh` inside the allocated compute node (40 MPI × 1
-OMP); it does not submit PBS jobs.  The driver is resumable through its stage
-markers, so do not start a second copy for the same case root.
+Historical scheduler records name the 235 nodes on which this audit ran. All
+future v2 calculations use HF Slurm with 32 MPI tasks, one OpenMP thread per task and no
+node exclusivity. The driver is resumable through its stage markers, so do not
+start a second copy for the same case root.
 
 The large `run/` and `results/` trees are generated outside the repository
 scratch area.  Pseudopotentials and orbitals are copied into private run

@@ -1,54 +1,91 @@
 {
   "schema": "zstar-v2-case-provenance",
-  "status": "completed_research_gate_pending_literature_audit",
+  "status": "qualified_research_benchmark",
   "case": "wurtzite_AlN_v2",
   "backend": "ABACUS+PYATB",
   "scheduler": "HF Slurm",
-  "job_id": "27678427 (reference); 27682276 (strain-force convergence audit)",
-  "node": "node148 (reference); node268 (12 strained stages)",
-  "mpi_ranks": 32,
-  "omp_threads": 1,
   "functional": "PBEsol",
-  "ecutwfc_Ry": 100,
-  "kmesh": "8x8x6",
-  "scf_thr": 1e-08,
-  "strain_amplitude": 0.001,
-  "reference_force_gate_eV_per_angstrom": 0.001,
-  "strain_force_thr_eV_per_angstrom": 0.00001,
-  "strain_final_force_max_eV_per_angstrom": 0.000009276,
-  "reference_force_max_eV_per_angstrom": 0.0001386824856671166,
-  "geometry_count": 13,
-  "pyatb_runs": 13,
-  "stage_runtime_sum_seconds": 3075,
-  "mpi_core_hours_runtime_sum": 27.33,
-  "restartable": true,
-  "restart_count": 0,
-  "reference_reused_from_job": "27678427",
-  "polarization_route": "one PYATB run per geometry, three directions",
-  "symmetry_audit": {
-    "intended_preparation_space_group": "P6_3mc",
-    "observed_reference_space_group": "P6_3mc",
-    "symprec": 0.001,
-    "status": "consistent",
-    "note": "All v2 symmetry identification, atom mapping and response-basis stages use the fixed symprec=1e-3 policy."
+  "basis": {
+    "pseudopotential_family": "Dojo-NC-FR",
+    "orbital_family": "8-au LCAO",
+    "ecutwfc_Ry": 100,
+    "kmesh": [8, 8, 6]
   },
-  "symmetry_response_audit": {
-    "status": "available",
-    "relative_tolerance": 0.001,
-    "quantity_status": {
-      "piezoelectric_proper": "consistent",
-      "elastic": "consistent",
-      "strain_force_coupling": "consistent",
-      "internal_strain": "consistent"
+  "fixed_production_protocol": {
+    "engineering_strain_amplitude": 0.005,
+    "force_thr_eV_per_angstrom": 0.0001,
+    "scf_thr": 1e-08,
+    "relax_nmax": 100,
+    "stress_thr_kbar": 0.1,
+    "symmetry_prec_angstrom": 0.001,
+    "geometry_count": 13,
+    "polarization_route": "one PYATB run per geometry, three Cartesian components"
+  },
+  "archived_calculation_inputs": {
+    "note": "Historical development outputs used unnecessarily tight response-stage solver settings. These fields report what was actually serialized; they do not redefine the fixed production protocol.",
+    "reference_cell_relax_force_thr_eV_per_angstrom": 0.0001,
+    "reference_cell_relax_scf_thr": 1e-10,
+    "response_force_thr_eV_per_angstrom": 1e-06,
+    "response_scf_thr": 1e-10,
+    "response_relax_nmax": 100,
+    "collector_force_acceptance_eV_per_angstrom": 0.0001
+  },
+  "jobs": [
+    {
+      "purpose": "R1 reference cell relaxation",
+      "job_id": "27697265",
+      "node": "node14",
+      "mpi_ranks": 32,
+      "omp_threads": 1,
+      "elapsed_seconds": 813,
+      "state": "COMPLETED"
     },
-    "proper_projection_residual_relative": 0.00034961015973142723,
-    "elastic_projection_residual_relative": 0.00009303973837067793,
-    "strain_force_projection_residual_relative": 0.00014407346376261952,
-    "internal_strain_projection_residual_relative": 0.0004152824335268485,
-    "proper_fit_residual_relative": 0.004970022861135041,
-    "internal_strain_fit_residual_relative": 0.025922828070354436,
-    "note": "The 1e-5 eV/angstrom strained-stage audit restores the internal-strain tensor to the P6_3mc allowed subspace. The 2.59% raw displacement-fit residual remains an amplitude/linearity audit item and is not erased by symmetry projection."
+    {
+      "purpose": "final 0.5 percent response ensemble",
+      "job_id": "27705472",
+      "node": "node124",
+      "mpi_ranks": 32,
+      "omp_threads": 1,
+      "elapsed_seconds": 6437,
+      "state": "COMPLETED"
+    },
+    {
+      "purpose": "final 1 percent amplitude audit",
+      "job_id": "27705473",
+      "node": "node343",
+      "mpi_ranks": 32,
+      "omp_threads": 1,
+      "elapsed_seconds": 6284,
+      "state": "COMPLETED"
+    }
+  ],
+  "final_jobs_allocated_core_hours": 120.30222222222223,
+  "restartable": true,
+  "restart_count_final_jobs": 0,
+  "qualification": {
+    "space_group": "P6_3mc",
+    "symmetry_prec_angstrom": 0.001,
+    "minimum_band_gap_eV_0p5pct": 4.10917265066749,
+    "reference_force_max_eV_per_angstrom": 9.77241e-05,
+    "proper_piezo_projection_residual_relative": 0.00014732084759820226,
+    "elastic_projection_residual_relative": 0.00011154205400928694,
+    "mechanically_stable": true,
+    "minimum_elastic_eigenvalue_GPa": 111.52532010671369,
+    "literature_tier": "matched PBEsol for e and C; secondary GGA for d",
+    "decision": "qualified for the current 3D hexagonal research benchmark; broader v2 capability gates remain open"
   },
-  "results": "results/summary.json",
-  "response_document": "results/response_document.json"
+  "artifacts": {
+    "production_summary": "results/summary.json",
+    "production_response_document": "results/response_document.json",
+    "amplitude_1pct_summary": "results/amplitude_1pct/summary.json",
+    "amplitude_1pct_response_document": "results/amplitude_1pct/response_document.json",
+    "amplitude_audit": "results/amplitude_audit.json",
+    "literature_qualification": "results/qualification.json",
+    "production_summary_sha256": "8AC8BC12D7D962404040584A546C3E4E50B684D10481180A033097DE004C4580",
+    "production_response_document_sha256": "B6D23D2669EE0A1F5CB130935CC97FA785A0E3BD3097AC93B1B5492B16ACD4ED",
+    "amplitude_1pct_summary_sha256": "D707AEAD879F63D265A9177AA1E58E0E232A91716D41BDDF640524341DB44D35",
+    "amplitude_1pct_response_document_sha256": "E770A680F3387593720FC4AEFAC2337E60EECBD9D5A1553BD67F90D46E5573AF"
+  },
+  "remote_source": "/public/home/iai806/abacus/agent-runs/20260916-v2-aln-strain-qualification",
+  "resource_audit": "The wider development campaign consumed 240.702 core-hours; 114.498 core-hours were identified as avoidable duplicate or incorrect-zero-point submissions. See docs/v2_task_list.md."
 }

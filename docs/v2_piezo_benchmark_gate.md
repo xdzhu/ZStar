@@ -55,8 +55,9 @@ Bernardini 和 Fiorentini 的直接应力响应研究给出 GaN 的 stress-piezo
      计算 proper 修正和内部应变贡献。
 5. 电子结构：必须逐 stage 记录 band-gap/绝缘性；任何金属化 stage 不能进入
    Berry 极化拟合。
-6. 收敛：正式首轮使用 `scf_thr=1e-8`；只有当极化差或应力残差接近验收阈值时，
-   才增加 `1e-10` 精度审计，不以更小阈值代替定义核查。
+6. 收敛：production/verification 均固定使用 `scf_thr=1e-8`、
+   `force_thr_ev=1e-4 eV/Å`、`relax_nmax=100`；精度资格通过幅度、基组/k 点与响应量
+   稳定性审计完成，不再临时把 `1e-10` 变成新默认值。
 7. 完备性：`6mm` 允许空间的 rank、拟合 residual、奇异值和被禁止分量均需保存；
    禁止分量必须区分“群论严格为零”和“数值接近零”。
 
@@ -69,8 +70,8 @@ Bernardini 和 Fiorentini 的直接应力响应研究给出 GaN 的 stress-piezo
 * clamped-ion、relaxed-ion、proper/improper 均带单位、Voigt、轴向和边界标签；
 * `e -> d` 与直接 stress/strain 定义的回算在数值误差内一致；
 * 至少与一组原始理论锚点和一组实验/数据库条目逐分量比较，并解释差异来源；
-* 至少一个扰动幅度和一次 `scf_thr` 精度审计通过；当前已完成 `±0.0005/±0.001/±0.002`
-  与 clamped-ion `±0.001`，并完成 `scf_thr=1e-10` 的 xz 剪切审计；
+* 固定生产 `±0.005` 与开发者 `±0.01` 幅度审计通过；五级外推只作维护者检查，
+  不暴露为用户侧点数或幅度扫描；
 * provenance 记录节点、40 MPI × 1 OpenMP、SCF 次数、core-hours、wall time、
   失败/重启次数和输出哈希；
 * 结果仍需经过 v1 回归测试，不能修改 v1 接口或正式论文。

@@ -135,10 +135,12 @@ reference gate
 fit 状态和错误。可复用 v1 的 `WorkflowStateStore` 设计和原子替换写入，但不得让 v2
 状态覆盖 `.zstar/stages` 或改变 v1 `workflow.jsonl` 的语义。
 
-relaxed-ion ABACUS 输入由准备层统一写入 `relax_nmax=100`。当目标
-`force_thr_ev<=1e-6 eV/Å` 时，准备层同时要求 `scf_thr<=1e-10`：未给出时自动使用
-`1e-10`，显式更松的组合直接拒绝。collector 从实际序列化的每个 `INPUT` 回读并保存
-`scf_thr`、`force_thr_ev` 和 `relax_nmax`，不以命令行名义值覆盖运行 provenance。
+relaxed-ion ABACUS 输入由准备层统一写入固定的 `relax_nmax=100`、
+`force_thr_ev=1e-4 eV/Å` 和 `scf_thr=1e-8`；production 与 verification 使用同一
+求解器精度，verification 只增加开发者幅度/诊断。生成器和 runner 拒绝偏离固定
+profile 的值。collector 仍从实际序列化的每个 `INPUT` 回读并保存 `scf_thr`、
+`force_thr_ev` 和 `relax_nmax`，使旧的 `1e-6/1e-10` 开发输出可真实追溯，但历史
+设置不能反向改变当前默认值。
 同一准备层还对 reference 和每个 perturbation stage 显式写入
 `symmetry_prec=1e-3`；ensemble metadata、collector 和直接运行器均复核该值，防止
 ZStar 的 `symprec=1e-3` 与 ABACUS 默认容差分裂成两套对称性定义。

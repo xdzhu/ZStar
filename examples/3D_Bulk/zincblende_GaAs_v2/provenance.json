@@ -1,6 +1,6 @@
 {
   "schema": "zstar-v2-case-provenance",
-  "status": "research_gate_pending_literature_audit",
+  "status": "archived_method_audit_legacy_amplitude_pending_matched_literature",
   "case": "zincblende_GaAs_v2",
   "backend": "ABACUS+PYATB",
   "scheduler": "HF Slurm",

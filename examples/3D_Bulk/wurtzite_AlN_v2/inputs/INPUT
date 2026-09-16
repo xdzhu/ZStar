@@ -1,4 +1,5 @@
 INPUT_PARAMETERS
+symmetry_prec       0.001
 cal_force           1
 cal_stress          1
 symmetry            1

@@ -1,0 +1,28 @@
+{
+  "schema": "zstar-v2-amplitude-audit",
+  "status": "passed",
+  "production_amplitude": 0.005,
+  "developer_audit_amplitude": 0.01,
+  "stencil": {
+    "production": "shared zero plus central +/-h",
+    "production_unique_geometries_full_6d": 13,
+    "combined_audit_levels": [-0.01, -0.005, 0.0, 0.005, 0.01],
+    "combined_audit_unique_geometries_full_6d": 25,
+    "fourth_order_derivative": "D5 = (4*D_h - D_2h)/3",
+    "policy": "five-level derivative is a developer qualification audit, not a user-selectable production scan"
+  },
+  "components": {
+    "e31_C_per_m2": {"h": -0.6385059909872465, "2h": -0.6381986476387568, "cross_amplitude_percent": 0.04813476346783971, "D5": -0.6386084387700763, "D5_shift_from_h_percent": 0.016044921155940774},
+    "e33_C_per_m2": {"h": 1.5464278784499408, "2h": 1.5473134558947894, "cross_amplitude_percent": 0.05726600361966351, "D5": 1.5461326859683246, "D5_shift_from_h_percent": 0.01908866787321638},
+    "e15_C_per_m2": {"h": -0.33510716959937675, "2h": -0.3351542594821722, "cross_amplitude_percent": 0.014052186007164317, "D5": -0.33509147297177827, "D5_shift_from_h_percent": 0.0046840620023881055},
+    "d31_pm_per_V": {"h": -2.3975076408363782, "2h": -2.3999611709652465, "cross_amplitude_percent": 0.10233669695469566, "D5": -2.396689797460089, "D5_shift_from_h_percent": 0.034112232318225716},
+    "d33_pm_per_V": {"h": 5.735004610670712, "2h": 5.752260557427083, "cross_amplitude_percent": 0.30088810607516775, "D5": 5.729252628418589, "D5_shift_from_h_percent": 0.1002960353583841},
+    "d15_pm_per_V": {"h": -3.0040673703654486, "2h": -3.0046789583016364, "cross_amplitude_percent": 0.020358662466130828, "D5": -3.003863507720053, "D5_shift_from_h_percent": 0.006786220822028827},
+    "C11_GPa": {"h": 379.82069965000596, "2h": 379.8906256044982, "cross_amplitude_percent": 0.0184102537214752, "D5": 379.79739099850855, "D5_shift_from_h_percent": 0.0061367512404917335},
+    "C12_GPa": {"h": 132.7101614769984, "2h": 132.7487736720001, "cross_amplitude_percent": 0.02909513075109231, "D5": 132.69729074533117, "D5_shift_from_h_percent": 0.009698376917016492},
+    "C13_GPa": {"h": 102.92625550700009, "2h": 102.97024880849972, "cross_amplitude_percent": 0.042742545410712665, "D5": 102.91159107316689, "D5_shift_from_h_percent": 0.01424751513689962},
+    "C33_GPa": {"h": 355.69504547299954, "2h": 354.93399059250123, "cross_amplitude_percent": 0.21396274426208664, "D5": 355.9487304331656, "D5_shift_from_h_percent": 0.07132091475402356},
+    "C44_GPa": {"h": 111.52532663799953, "2h": 111.51931421150024, "cross_amplitude_percent": 0.005391086204838475, "D5": 111.52733078016597, "D5_shift_from_h_percent": 0.0017970287349589008}
+  },
+  "decision": "all independent e, C and d components satisfy the fixed protocol stability targets; retain h=0.005 for production"
+}

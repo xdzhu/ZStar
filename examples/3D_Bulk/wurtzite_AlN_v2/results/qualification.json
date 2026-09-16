@@ -1,0 +1,33 @@
+{
+  "schema": "zstar-v2-material-qualification",
+  "status": "qualified_research_benchmark",
+  "calculation_summary_status_note": "summary.json was generated before the literature gate and therefore retains completed_research_gate_pending_literature_audit; this file records the subsequent gate decision without rewriting generated numerical output",
+  "functional_priority": ["PBEsol", "PBE", "other GGA", "LDA"],
+  "primary_reference": {
+    "functional": "PBEsol",
+    "source": "Hoang et al. (2013); full metadata in docs/v2_literature_sources.bib",
+    "piezoelectric_C_per_m2": {"e31": -0.618, "e33": 1.647, "e15": -0.374},
+    "elastic_GPa": {"C11": 397.0, "C12": 145.6, "C13": 114.2, "C33": 376.9, "C44": 114.4}
+  },
+  "zstar_0p5pct": {
+    "piezoelectric_C_per_m2": {"e31": -0.6385059909872465, "e33": 1.5464278784499408, "e15": -0.33510716959937675},
+    "elastic_GPa": {"C11": 379.82069965000596, "C12": 132.7101614769984, "C13": 102.92625550700009, "C33": 355.69504547299954, "C44": 111.52532663799953},
+    "piezoelectric_d_pm_per_V": {"d31": -2.3975076408363782, "d33": 5.735004610670712, "d15": -3.0040673703654486}
+  },
+  "absolute_magnitude_difference_percent": {
+    "e31": 3.318121518971923,
+    "e33": -6.106382607775303,
+    "e15": -10.399152513535627,
+    "C11": -4.327279685137038,
+    "C12": -8.85291107349011,
+    "C13": -9.871930379159291,
+    "C33": -5.626148720350342,
+    "C44": -2.512826365385034
+  },
+  "secondary_d_reference": {
+    "functional": "GGA",
+    "values_pm_per_V": {"d31": -2.1, "d33": 5.4, "absolute_d15": 2.9},
+    "difference_percent": {"d31": 14.167030516018006, "d33": 6.203789086494663, "absolute_d15": 3.5885300126016784}
+  },
+  "decision": "qualified for the current 3D hexagonal research API and result chain; not sufficient for arbitrary-space-group or stable-CLI claims"
+}

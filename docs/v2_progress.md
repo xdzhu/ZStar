@@ -908,3 +908,37 @@ ABACUS 将幅度同为 `1e-3` 的应变结构重新投影成未应变 reference�
 直接 Berry-phase polarization--strain 得到的 `e` 或由 `e(C^E)^{-1}` 得到的 `d`。
 本批 strict-protocol result 取代此前 backend 对 strained cells 仍开启 symmetry
 的无效试算；后者仅保留为协议失败证据，不进入材料结果。
+
+## 2026-09-16 固定生产协议、AlN 幅度资格和案例冻结
+
+1. **已完成内容：**统一 v2 3D bulk 输入为 `force_thr_ev=1e-4 eV/Å`、
+   `scf_thr=1e-8`、`stress_thr=0.1 kbar`、`relax_nmax=100`、
+   `symmetry_prec=1e-3`；生产应变固定 `±0.5%`。更新 AlN 案例的输入、README、
+   结果、幅度审计、资源 provenance、PP/ORB hash 清单和 HF Slurm 复现入口。
+2. **关键理论结论：**标准生产导数使用共享零点和每方向 `±h` 中心差分，完整六方向
+   为 13 几何；`±h,±2h` 的五级组合只用于开发期截断误差审计。`e`、`d` 和器件
+   耦合系数不是同一物理量，本阶段只冻结 `e`、`C^E` 和 `d=e(C^E)^-1`。
+3. **文献和软件依据：**AlN 的 `e/C` 采用同泛函 PBEsol 一级理论对照，`d` 仅以
+   GGA 作二级对照；VASP 的 `NFREE=2/4` 和 ABINIT 弹性教程支持中心差分与多点审计
+   的分工，ElasTool 只作为通用应变/rank 设计参考。
+4. **当前代码状态：**生成器和 HF runner 已固定相同求解器阈值；collector 区分
+   实际历史输入与固定科学验收门。v1 Unified 路径和正式论文未改，CLI 仍未公开。
+5. **已完成测试：**AlN `±0.5%/±1%` 均为 13 个 ABACUS stage 加每几何一次
+   PYATB 三分量极化；rank、对称投影、branch、绝缘性和机械稳定性均通过；代码
+   全量回归为 `569 passed, 1153 warnings`。
+6. **已完成计算：**生产候选 `±0.5%` 得
+   `e31/e33/e15=-0.63851/1.54643/-0.33511 C/m²`，
+   `d31/d33/d15=-2.3975/5.7350/-3.0041 pm/V`。与 `±1%` 相比，三个 `e`
+   的变化均小于 0.058%，关键 `C` 最大变化 0.214%，`d33` 变化 0.301%。
+7. **计算资源：**最终 R1、0.5% 和 1% jobs 为 `27697265/27705472/27705473`，
+   分别在 node14/node124/node343 使用 32 MPI × 1 OMP，共 120.302 allocated
+   core-hours。整个开发批次共 240.702 core-hours，其中已确认的错误零点/重复提交
+   浪费 114.498 core-hours；不通过重算来估算超严阈值的其余额外成本。
+8. **发现的问题：**历史 response stages 实际使用了不必要的 `1e-6/1e-10`；旧测试
+   计划、材料报告和示例仍把它写成推荐值。现已保留真实 provenance 并从所有现行
+   生成约束和结论中删除该推荐，未伪造历史。
+9. **尚未解决：**ZnO 的 `e15/C44/internal-strain`、GaN 的定量偏差、GaAs 的
+   PBEsol/PBE `e14` 锚点、中心对称 SiC 零压电 control，以及 tetragonal 与低对称
+   真实案例仍未闭合；不能据单个 AlN 宣称任意空间群稳定功能已完成。
+10. **下一阶段条件：**AlN Gate A0.5 已满足，可进入 P1 机电核心算法闭合；稳定
+    CLI、集群任务分发优化和更高阶功能继续受 P1--P3 前置门约束。

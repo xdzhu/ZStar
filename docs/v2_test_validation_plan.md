@@ -26,10 +26,13 @@
 
 ### 1.3 数值差分
 
-对每个 synthetic model 和至少一个小型真实输出做 `0.5h/h/2h` 步长扫描；比较
-forward 与 central 收敛阶，使用 actual serialized vector 作分母；记录 SCF 噪声、
-Berry branch jump、condition number 和 residual。故意删除一个 stage，验证错误信息
-给出最少新增 ± 扰动。
+用户生产路径固定为共享零点加 `±0.005` 中心差分；六个完整 Voigt 方向共 13 个唯一
+几何，不把零点误算成每个方向各一个任务。研发资格验证只在代表体系增加 `±0.01`，
+由五级 `{-0.01,-0.005,0,+0.005,+0.01}` 构造
+`D5=(4*D_0.005-D_0.01)/3`，检查中心差分截断误差，但不把 5 点或幅度扫描暴露给
+普通用户。所有导数使用 actual serialized vector 作分母，并记录 SCF 噪声、Berry
+branch jump、condition number 和 residual。故意删除一个 stage，验证错误信息给出
+最少新增 ± 扰动。
 
 ### 1.4 单位和边界
 
@@ -44,7 +47,9 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 * spglib dataset 为 `None`、对称操作混合周期/开放方向、磁性或带电胞；
 * stress 缺失、± stage 不成对、rank 不足、residual 超阈值、机械不稳定；
 * relaxed-ion 输入默认写入 `relax_nmax=100`；非正整数必须失败；
-* `force_thr_ev<=1e-6 eV/Å` 时自动采用 `scf_thr=1e-10`，显式更松设置必须失败；
+* production/verification 均固定 `force_thr_ev=1e-4 eV/Å`、`scf_thr=1e-8` 和
+  `relax_nmax=100`；生成器与 runner 必须拒绝任何偏离固定 profile 的值，历史输出中
+  的 `1e-6/1e-10` 只作为 provenance 回读测试，不得反向改变默认值；
 * reference 和全部应变阶段必须实际序列化 `symmetry_prec=1e-3`；缺失或其他值在
   运行/收集前失败；
 * reference 必须为 `symmetry=1`，有限扰动 stage 必须为 `symmetry=0`，并用故意
@@ -55,11 +60,10 @@ Berry branch jump、condition number 和 residual。故意删除一个 stage，�
 
 ### 1.6 v1 回归
 
-每次 v2 提交运行当前完整 suite。独立 worktree 当前实测为 `517 passed, 1158 warnings`，
-加入首/末力块解析、Gamma 力拟合 API、force/stress 对称表示、Cartesian rotation 审计、
-ResponseDocument 结果封装、v1→v2 显式适配器和文件级迁移 API 后，v2 专项测试收集为 120 项。用户的其它工作树可能包含尚未合入
-v2 的额外测试或
-生成式案例，不能把那些数量直接当作本分支证据。测试
+每次 v2 提交运行当前完整 suite。统一协议与 AlN 案例冻结后，本分支实测为
+`569 passed, 1153 warnings`；warnings 来自现有 spglib/phonopy 等上游弃用提示，不是
+测试失败。用户的其它工作树可能包含尚未合入 v2 的额外测试或生成式案例，不能把
+那些数量直接当作本分支证据。测试
 必须验证 v1 canonical CLI、`response.json` 1.0、Unified
 `shared_response.json`、旧案例和旧命令 alias 没有行为变化；v2 新 schema 不能让 v1
 reader 接触到未知字段后崩溃。
@@ -100,10 +104,11 @@ separate_control_cost, v2_cost, efficiency_ratio
 
 ## 4. 计算资源和提交门
 
-小规模验证阶段已按用户授权通过 235 的跳板直接使用 cu24–cu26；没有修改或抢占
-用户的 PBS 占位作业。后续任务仍必须：
+早期小规模验证曾按用户授权通过 235 的跳板直接使用计算节点；该历史仅保留在
+provenance 中。从统一协议生效后，补算只在 HF Slurm 提交，235 不再用于 v2。后续任务
+必须：
 
-1. 先查询这些节点的当前队列和负载，只选明确可用且不抢占他人任务的节点；
+1. 先查询 HF 队列与配额，采用非独占 `32 MPI × 1 OMP`；
 2. 单 stage smoke test 通过后再扩展 ± strain/relaxation；
 3. 每个任务记录节点、核数、MPI/OpenMP、开始/结束时间和日志；
 4. 使用 `.zstar/v2/` 状态断点续算，失败保留输入/日志，不盲目重复提交；

@@ -1,6 +1,6 @@
 {
   "schema": "zstar-v2-case-provenance",
-  "status": "accepted_direct_response_pending_literature_mapping",
+  "status": "archived_conditional_legacy_protocol_not_for_reproduction",
   "case": "wurtzite_ZnO_v2",
   "backend": "ABACUS+PYATB",
   "scheduler": "235 direct inside user-reserved PBS nodes",
