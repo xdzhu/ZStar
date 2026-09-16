@@ -322,6 +322,69 @@ def _unique_finite_input_values(
     return sorted(values)
 
 
+def _parse_istate_gap(
+    path: Path,
+    *,
+    occupation_tolerance: float = 1.0e-10,
+    insulating_threshold_eV: float = 1.0e-2,
+) -> dict[str, Any] | None:
+    """Extract an occupation-manifold gap from ABACUS ``istate.info``.
+
+    LCAO ``istate.info`` records occupations already weighted by k-point
+    weights, so an occupied insulating band need not have occupation one.  A
+    state is occupied when its printed occupation is positive above a small
+    absolute tolerance, and empty when it is zero within that tolerance.
+    Taking the maximum occupied and minimum empty eigenvalue over all printed
+    k points detects a band crossing as a non-positive gap.
+
+    ``None`` means the solver did not emit a parseable eigenvalue table.  The
+    generic stage collector keeps that fact explicit for backwards-compatible
+    force/stress use; the v2 piezo post-processor treats it as a hard gate.
+    """
+
+    if not np.isfinite(occupation_tolerance) or occupation_tolerance < 0.0:
+        raise ValueError("occupation_tolerance must be finite and non-negative")
+    if not np.isfinite(insulating_threshold_eV) or insulating_threshold_eV < 0.0:
+        raise ValueError("insulating_threshold_eV must be finite and non-negative")
+    if not path.is_file():
+        return None
+    occupied: list[float] = []
+    empty: list[float] = []
+    row = re.compile(
+        r"^\s*\d+\s+"
+        r"([-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?)\s+"
+        r"([-+]?\d*\.?\d+(?:[Ee][-+]?\d+)?)\s*$"
+    )
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        match = row.match(line)
+        if match is None:
+            continue
+        energy = float(match.group(1))
+        occupation = float(match.group(2))
+        if not np.isfinite(energy) or not np.isfinite(occupation):
+            raise ValueError(f"ABACUS istate.info has non-finite values: {path}")
+        if occupation > occupation_tolerance:
+            occupied.append(energy)
+        elif abs(occupation) <= occupation_tolerance:
+            empty.append(energy)
+    if not occupied or not empty:
+        return None
+    vbm = float(max(occupied))
+    cbm = float(min(empty))
+    raw_gap = cbm - vbm
+    gap = max(raw_gap, 0.0)
+    return {
+        "gap_eV": gap,
+        "vbm_eV": vbm,
+        "cbm_eV": cbm,
+        "raw_gap_eV": raw_gap,
+        "insulating": bool(gap >= insulating_threshold_eV),
+        "threshold_eV": float(insulating_threshold_eV),
+        "occupation_tolerance": float(occupation_tolerance),
+        "source": str(path.resolve()),
+    }
+
+
 def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dict[str, Any]:
     """Parse one completed ABACUS stage without applying a stress-sign convention."""
 
@@ -358,6 +421,7 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     forces = force_blocks[-1]
     stress = _parse_stress(text)
     energy = _parse_energy(text)
+    gap = _parse_istate_gap(log.parent / "istate.info")
     force_max = float(np.max(np.linalg.norm(forces, axis=1)))
     stress_max_abs = float(np.max(np.abs(stress)))
     timing: dict[str, Any] = {}
@@ -380,6 +444,7 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         "force_unit": "eV/angstrom",
         "energy": energy,
         "energy_unit": "eV",
+        "band_gap": gap,
         "scf_converged": charge_converged,
         "ionic_relaxation_converged": ionic_converged,
         "log_kind": log.name,
@@ -816,6 +881,7 @@ def collect_abacus_strain_response(
                 "force_blocks_count": record["force_blocks_count"],
                 "stress_max_abs_kbar": record["stress_max_abs_kbar"],
                 "energy": record["energy"],
+                "band_gap": record["band_gap"],
                 "timing": record["timing"],
                 "configured_scf_thr": record["input_parameters"].get("scf_thr"),
                 "configured_force_thr_ev": record["input_parameters"].get("force_thr_ev"),

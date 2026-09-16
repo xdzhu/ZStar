@@ -264,6 +264,23 @@ def main() -> int:
     output.mkdir(parents=True, exist_ok=True)
 
     collected = collect_pyatb_strain_response(root, require_precision=True)
+    gap_records = list(collected.provenance.get("stages", ()))
+    missing_gap = [str(record.get("name", "unknown")) for record in gap_records if not record.get("band_gap")]
+    metallic = [
+        str(record.get("name", "unknown"))
+        for record in gap_records
+        if record.get("band_gap") and not bool(record["band_gap"].get("insulating"))
+    ]
+    if missing_gap or metallic:
+        details = []
+        if missing_gap:
+            details.append("missing parseable istate.info gap: " + ", ".join(missing_gap))
+        if metallic:
+            details.append("non-insulating stage: " + ", ".join(metallic))
+        raise ValueError(
+            "v2 piezoelectric collection requires every reference/strain stage to be insulating; "
+            + "; ".join(details)
+        )
     fitted = fit_response_document(
         collected,
         stress_sign="compression-positive",
@@ -313,6 +330,10 @@ def main() -> int:
         "pyatb_run_count": int(fitted.metadata.get("pyatb_run_count", 0)),
         "branch_shift_max": int(fitted.metadata.get("branch_shift_max", 0)),
         "branch_residual_max_C_per_m2": float(fitted.metadata.get("branch_residual_max", 0.0)),
+        "stage_band_gaps_eV": {
+            str(record["name"]): dict(record["band_gap"])
+            for record in gap_records
+        },
         "reference_force_max_eV_per_angstrom": fitted.metadata.get("reference_force_max_eV_per_angstrom"),
         # Keep the reference-equilibrium gate distinct from the thresholds
         # actually serialized in strained-stage calculator inputs.  A v2

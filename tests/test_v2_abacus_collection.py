@@ -113,6 +113,27 @@ def test_collect_abacus_stage_parses_force_stress_and_iterations(tmp_path):
     assert np.isclose(record["energy"], -274.1)
     assert record["force_blocks_count"] == 1
     np.testing.assert_allclose(record["initial_forces"], record["forces"])
+    assert record["band_gap"] is None
+
+
+def test_collect_abacus_stage_extracts_occupation_manifold_gap(tmp_path):
+    stage = tmp_path / "reference"
+    _stage(stage)
+    (stage / "OUT.POLAR" / "istate.info").write_text(
+        "BAND Energy(ev) Occupation Kpoint = 1\n"
+        "     1       -3.0     0.03125\n"
+        "     2        1.5     0.03125\n"
+        "     3        4.0     0\n"
+        "     4        6.0     0\n",
+        encoding="utf-8",
+    )
+    record = collect_abacus_stage(stage)
+    gap = record["band_gap"]
+    assert gap is not None
+    assert gap["insulating"] is True
+    assert gap["gap_eV"] == pytest.approx(2.5)
+    assert gap["vbm_eV"] == pytest.approx(1.5)
+    assert gap["cbm_eV"] == pytest.approx(4.0)
 
 
 def test_collect_abacus_stage_keeps_initial_and_final_force_blocks(tmp_path):
