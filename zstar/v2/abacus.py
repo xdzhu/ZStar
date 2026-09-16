@@ -600,13 +600,14 @@ def collect_abacus_strain_response(
         # A relaxed-ion derivative is defined around an internally equilibrated
         # zero-strain state.  Do not let a single-point, high-force reference
         # masquerade as that state and contaminate every ±strain difference.
-        # A response ensemble can use a tighter force target for strained
-        # relaxations than for the independently prepared zero-strain
-        # cell-relaxed reference.  Validate each against its own serialized
-        # contract.  A pre-schema manifest with a named v2 profile derives
-        # the same reference criterion from that profile; only truly legacy
-        # manifests fall back to force_thr_ev.
-        threshold_value = ensemble.metadata.get("reference_force_thr_ev")
+        # The response reference and all strained stages must use the same
+        # fixed-cell ion-relaxation target.  A pre-schema manifest may record
+        # only the older cell-relax reference criterion; retain that fallback
+        # solely so historical data remain auditable rather than silently
+        # recategorizing it as a strict response-reference calculation.
+        threshold_value = ensemble.metadata.get("response_reference_force_thr_ev")
+        if threshold_value is None:
+            threshold_value = ensemble.metadata.get("reference_force_thr_ev")
         if threshold_value is None:
             legacy_profile = ensemble.metadata.get("convergence_profile")
             if legacy_profile is not None:
@@ -619,19 +620,19 @@ def collect_abacus_strain_response(
         except (TypeError, ValueError) as exc:
             raise ValueError(
                 "relaxed-ion ensemble metadata must provide a finite positive "
-                "reference_force_thr_ev (or legacy force_thr_ev) for "
+                "response_reference_force_thr_ev (or legacy reference force threshold) for "
                 "reference-equilibrium validation"
             ) from exc
         if not np.isfinite(force_threshold) or force_threshold <= 0.0:
             raise ValueError(
-                "relaxed-ion ensemble metadata reference_force_thr_ev must be finite and positive"
+                "relaxed-ion ensemble metadata response_reference_force_thr_ev must be finite and positive"
             )
         reference_force_threshold = force_threshold
         reference_force_max = float(np.max(np.linalg.norm(records[0]["forces"], axis=1)))
         if reference_force_max > force_threshold:
             raise ValueError(
                 "relaxed-ion reference is not internally equilibrated: maximum force "
-                f"{reference_force_max:.6g} eV/angstrom exceeds reference_force_thr_ev "
+                f"{reference_force_max:.6g} eV/angstrom exceeds response_reference_force_thr_ev "
                 f"{force_threshold:.6g}; relax the reference structure before fitting"
             )
     stress_boundary = BoundaryConditions(electric="E", mechanical="strain", stress_sign="backend-raw")

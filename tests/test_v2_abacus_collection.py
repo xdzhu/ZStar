@@ -225,7 +225,7 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
         reference_hash="synthetic",
         metadata={
             "ion_relaxation": "relaxed-ion",
-            "reference_force_thr_ev": 1.0e-3,
+            "response_reference_force_thr_ev": 1.0e-3,
             "force_thr_ev": 1.0e-5,
         },
         stages=tuple(

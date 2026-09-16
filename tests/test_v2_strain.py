@@ -300,7 +300,10 @@ def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input
     assert "force_thr_ev        0.0001" in stage_input
     assert "relax_nmax          100" in stage_input
     assert ensemble.metadata["relax_nmax"] == 100
-    assert (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text().find("calculation         scf") >= 0
+    reference_input = (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text()
+    assert "calculation         relax" in reference_input
+    assert "force_thr_ev        0.0001" in reference_input
+    assert "relax_nmax          100" in reference_input
 
 
 def test_abacus_strain_preparation_can_pin_scf_threshold_for_ionic_audit(tmp_path):
@@ -359,7 +362,8 @@ def test_abacus_strain_verification_profile_uses_tight_scf_and_100_steps(tmp_pat
     ensemble = result["ensemble"]
     assert ensemble.metadata["scf_thr"] == 1.0e-10
     assert ensemble.metadata["relax_nmax"] == 100
-    assert ensemble.metadata["reference_force_thr_ev"] == 1.0e-4
+    assert ensemble.metadata["initial_cell_relax_force_thr_ev"] == 1.0e-4
+    assert ensemble.metadata["response_reference_force_thr_ev"] == 1.0e-6
     assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
     assert "scf_thr             1e-10" in (
         tmp_path / "tight-force-policy" / "reference" / "INPUT"

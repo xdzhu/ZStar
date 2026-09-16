@@ -541,11 +541,11 @@ def prepare_abacus_strain_ensemble(
             "abacus_perturbation_symmetry": 0,
             "ion_relaxation": relaxation,
             "convergence_profile": profile_name,
-            # The zero-strain reference is prepared in a separate cell-relax
-            # stage.  Its convergence criterion is intentionally distinct
-            # from the tighter ion-relaxation criterion used for every
-            # strained response stage in verification calculations.
-            "reference_force_thr_ev": settings["reference_force_thr_ev"],
+            # Retain the preceding cell-relax criterion for provenance, while
+            # making the response reference use the same fixed-cell ionic
+            # threshold as the ±strain stages below.
+            "initial_cell_relax_force_thr_ev": settings["reference_force_thr_ev"],
+            "response_reference_force_thr_ev": threshold,
             "force_thr_ev": threshold,
             **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
             "symmetry_reduce": bool(symmetry_reduce),
@@ -572,6 +572,10 @@ def prepare_abacus_strain_ensemble(
         _set_input_parameter(reference_dir / input_name, "symmetry", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
         _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
+        if relaxation == "relaxed-ion":
+            _set_input_parameter(reference_dir / input_name, "calculation", "relax")
+            _set_input_parameter(reference_dir / input_name, "force_thr_ev", f"{threshold:.16g}")
+            _set_input_parameter(reference_dir / input_name, "relax_nmax", str(relax_steps))
     prepared = prepare_stru_assets(
         reference_dir / "STRU",
         pp_dir=pp_dir,
