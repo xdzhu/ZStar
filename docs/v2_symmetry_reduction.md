@@ -188,9 +188,12 @@ translation、Cartesian rotation 和 species-preserving atom permutation，而�
 结论；否则必须保留 raw 结果并进入 symmetry audit。`tools/collect_v2_piezo_case.py`
 的 `symmetry_response_audit` 对已拟合的 proper piezo、elastic、Gamma 和
 internal-strain 矩阵做独立的受限基底投影；它只写入 projection/intertwining
-residual，不替换 raw 张量。默认相对 Frobenius symmetry gate 同样为 `1e-3`，可通过
-研究脚本的 `--symmetry-relative-tolerance` 显式调整并随 summary 保存；该 gate 是
-响应 residual 判据，不会改变空间群识别的 `symprec=1e-3`。
+residual，不替换 raw 张量。对 allowed rank 非零的张量，默认相对 Frobenius
+symmetry gate 为 `1e-3`，可通过研究脚本的 `--symmetry-relative-tolerance` 显式
+调整并随 summary 保存。对反演对称严格禁止、allowed rank 为零的 proper piezo，
+相对残差没有定义（任意非零数除以其自身都会得到 1）；因此改用固定、带单位的
+`max|e| <= 1e-3 C/m^2` 数值噪声门，并同时保留相对量作为诊断。该响应门不会改变
+空间群识别的 `symprec=1e-3`。
 
 ### 5.2 relaxed-ion 的声学规范审计
 
