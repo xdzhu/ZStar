@@ -22,7 +22,7 @@ from .polarization import (
     match_polarization_branch,
     pyatb_directional_to_cartesian,
 )
-from .strain import actual_strain
+from .strain import actual_strain, convergence_profile
 from .structure import V2_SYMPREC, StructureSpec, analyze_space_group, space_group_report_to_dict
 
 
@@ -595,6 +595,7 @@ def collect_abacus_strain_response(
             f"got {ion_relaxation!r}"
         )
     reference_force_max: float | None = None
+    reference_force_threshold: float | None = None
     if ion_relaxation == "relaxed-ion":
         # A relaxed-ion derivative is defined around an internally equilibrated
         # zero-strain state.  Do not let a single-point, high-force reference
@@ -602,10 +603,17 @@ def collect_abacus_strain_response(
         # A response ensemble can use a tighter force target for strained
         # relaxations than for the independently prepared zero-strain
         # cell-relaxed reference.  Validate each against its own serialized
-        # contract; old manifests retain the historical force_thr_ev fallback.
-        threshold_value = ensemble.metadata.get(
-            "reference_force_thr_ev", ensemble.metadata.get("force_thr_ev")
-        )
+        # contract.  A pre-schema manifest with a named v2 profile derives
+        # the same reference criterion from that profile; only truly legacy
+        # manifests fall back to force_thr_ev.
+        threshold_value = ensemble.metadata.get("reference_force_thr_ev")
+        if threshold_value is None:
+            legacy_profile = ensemble.metadata.get("convergence_profile")
+            if legacy_profile is not None:
+                _, profile_settings = convergence_profile(str(legacy_profile))
+                threshold_value = profile_settings["reference_force_thr_ev"]
+            else:
+                threshold_value = ensemble.metadata.get("force_thr_ev")
         try:
             force_threshold = float(threshold_value)
         except (TypeError, ValueError) as exc:
@@ -618,6 +626,7 @@ def collect_abacus_strain_response(
             raise ValueError(
                 "relaxed-ion ensemble metadata reference_force_thr_ev must be finite and positive"
             )
+        reference_force_threshold = force_threshold
         reference_force_max = float(np.max(np.linalg.norm(records[0]["forces"], axis=1)))
         if reference_force_max > force_threshold:
             raise ValueError(
@@ -873,13 +882,7 @@ def collect_abacus_strain_response(
         "reference_hash": ensemble.reference_hash,
         "stage_names": stage_names,
         "reference_force_max_eV_per_angstrom": reference_force_max,
-        "reference_force_thr_eV_per_angstrom": (
-            float(ensemble.metadata["reference_force_thr_ev"])
-            if "reference_force_thr_ev" in ensemble.metadata
-            else float(ensemble.metadata["force_thr_ev"])
-            if "force_thr_ev" in ensemble.metadata and ion_relaxation == "relaxed-ion"
-            else None
-        ),
+        "reference_force_thr_eV_per_angstrom": reference_force_threshold,
         "stages": [
             {
                 "name": name,
