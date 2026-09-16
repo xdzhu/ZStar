@@ -359,6 +359,7 @@ def test_abacus_strain_verification_profile_uses_tight_scf_and_100_steps(tmp_pat
     ensemble = result["ensemble"]
     assert ensemble.metadata["scf_thr"] == 1.0e-10
     assert ensemble.metadata["relax_nmax"] == 100
+    assert ensemble.metadata["reference_force_thr_ev"] == 1.0e-4
     assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
     assert "scf_thr             1e-10" in (
         tmp_path / "tight-force-policy" / "reference" / "INPUT"

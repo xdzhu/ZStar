@@ -541,6 +541,11 @@ def prepare_abacus_strain_ensemble(
             "abacus_perturbation_symmetry": 0,
             "ion_relaxation": relaxation,
             "convergence_profile": profile_name,
+            # The zero-strain reference is prepared in a separate cell-relax
+            # stage.  Its convergence criterion is intentionally distinct
+            # from the tighter ion-relaxation criterion used for every
+            # strained response stage in verification calculations.
+            "reference_force_thr_ev": settings["reference_force_thr_ev"],
             "force_thr_ev": threshold,
             **({"relax_nmax": relax_steps} if relaxation == "relaxed-ion" else {}),
             "symmetry_reduce": bool(symmetry_reduce),
