@@ -19,26 +19,26 @@ slab、wire 或分子：低维体系须先确定真空、面内/轴向归一化�
 
 ## 两级输入矩阵：生产与验证
 
-超高精度不是生产默认值。**对未来用户，production 参数是固定的，不执行每材料的
-自适应扫描。** verification 只供 ZStar 开发者做首个 benchmark、异常分量、
-cutoff/k-point/幅度审计和论文冻结前复核；其证据用于决定是否整体修订下一版固定
-production profile，而不是为某个用户 case 动态挑选参数。
+**对未来用户，计算精度参数固定，不执行每材料的自适应扫描。** verification 只供
+ZStar 开发者做幅度、异常分量、cutoff/k-point 和论文冻结前复核；它与 production
+使用相同的计算器阈值，只增加对比和诊断，不再使用 `1e-6 eV/Å` 或 `scf_thr=1e-10`
+一类超高精度输入。
 
 | 阶段 | ABACUS 类型与目的 | 生产档 | 验证档 | 其他强制项 |
 |---|---|---|---|---|
-| R0：绝缘与基组预检 | SCF；检查绝缘性、赝势/轨道唯一匹配、cutoff 与 k 网格 | `scf_thr<=1e-8` | `scf_thr<=1e-10` | `cal_force=1`、`cal_stress=1`；检查 band gap 非零、无异常占据 |
-| R1：参考平衡结构 | `cell-relax`；同时弛豫晶胞和离子 | `force_thr_ev<=1e-3 eV/Å`；`stress_thr<=0.5 kbar`；`scf_thr<=1e-8`；`relax_nmax>=100` | `1e-4 eV/Å`；`0.1 kbar`；`1e-10`；`>=100` | `symmetry=1`，`symmetry_prec=0.001`，`cal_force=1`，`cal_stress=1` |
-| R2c：clamped-ion 零点 | 在 R1 的已验证 `STRU_ION_D` 上 SCF，供应 clamped-ion 力、应力和 PYATB | `scf_thr<=1e-8` | `<=1e-10` | `cal_force=1`、`cal_stress=1`、`symmetry=1`、`symmetry_prec=0.001` |
-| R2r：relaxed-ion 零点 | R1 固定晶胞下仅弛豫内部离子，并在最终几何做 PYATB | `force_thr_ev<=1e-4 eV/Å`；`scf_thr<=1e-8`；`relax_nmax>=100` | `1e-6 eV/Å`；`1e-10`；`>=100` | 与 R3r 使用**同一**力与电子收敛档；`symmetry=1`、`symmetry_prec=0.001` |
-| R3c：clamped-ion 应变 | 固定原子分数坐标的 ± 应变 SCF | `scf_thr<=1e-8` | `<=1e-10` | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
-| R3r：relaxed-ion 应变 | 固定已应变晶胞、仅弛豫内部离子的 ± 应变 `relax` | `force_thr_ev<=1e-4 eV/Å`；`scf_thr<=1e-8`；`relax_nmax>=100` | `1e-6 eV/Å`；`1e-10`；`>=100` | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
+| R0：绝缘与基组预检 | SCF；检查绝缘性、赝势/轨道唯一匹配、cutoff 与 k 网格 | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`；检查 band gap 非零、无异常占据 |
+| R1：参考平衡结构 | `cell-relax`；同时弛豫晶胞和离子 | `force_thr_ev=1e-4 eV/Å`；`stress_thr=0.1 kbar`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `symmetry=1`，`symmetry_prec=0.001`，`cal_force=1`，`cal_stress=1` |
+| R2c：clamped-ion 零点 | 在 R1 的已验证 `STRU_ION_D` 上 SCF，供应 clamped-ion 力、应力和 PYATB | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=1`、`symmetry_prec=0.001` |
+| R2r：relaxed-ion 零点 | R1 固定晶胞下仅弛豫内部离子，并在最终几何做 PYATB | `force_thr_ev=1e-4 eV/Å`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | 与 R3r 使用**同一**力与电子收敛档；`symmetry=1`、`symmetry_prec=0.001` |
+| R3c：clamped-ion 应变 | 固定原子分数坐标的 ± 应变 SCF | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
+| R3r：relaxed-ion 应变 | 固定已应变晶胞、仅弛豫内部离子的 ± 应变 `relax` | `force_thr_ev=1e-4 eV/Å`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
 | R4：Berry 极化 | 每个已完成几何一次 PYATB polar | 继承 R2/R3 Hamiltonian 和 profile | 同左 | 一次 PYATB 输出同时读取三个 Cartesian 极化方向；禁止为三个方向重复三次 ABACUS NSCF |
-| R5：BEC/Γ 声子（v1 基线） | 继续使用 v1 Unified 路径，不重新发明算法 | `scf_thr<=1e-8`；中心 ± 位移 | `<=1e-10`；中心 ± 位移 | BEC/IFC 位移默认 `0.01 Å`，以实际序列化位移取差分；不以极小位移放大 SCF 噪声 |
+| R5：BEC/Γ 声子（v1 基线） | 继续使用 v1 Unified 路径，不重新发明算法 | `scf_thr=1e-8`；中心 ± 位移 | 同生产档 | BEC/IFC 位移默认 `0.01 Å`，以实际序列化位移取差分；不以极小位移放大 SCF 噪声 |
 
 `stress_thr` 的单位为 kbar。它是优化停止门，不是泛函绝对应力误差。ABACUS 对 LCAO
-优化的公开建议是 `0.04 eV/Å`；生产档的 `1e-3 eV/Å` 已比此严格约 40 倍，而验证档
-再加严 10 倍。JARVIS 的高通量 DFPT 压电/介电数据集采用全弛豫最大残余力
-`0.001 eV/Å`，是生产档的直接方法学锚点。
+优化的公开建议是 `0.04 eV/Å`；固定的 `1e-4 eV/Å` 已比此严格约 400 倍。
+JARVIS 的高通量 DFPT 压电/介电数据集采用全弛豫最大残余力 `0.001 eV/Å`；ZStar
+当前统一值比该方法学锚点再严格一个数量级，但不继续追求 `1e-6 eV/Å`。
 
 ## 生成器约束与参考结构传递
 
@@ -52,8 +52,8 @@ hash、最终离子力、最终应力、节点、MPI/OMP 与 runtime。
 
 `prepare_abacus_strain_ensemble` 的 relaxed-ion 输入必须是已提升的 R2r 结构；其
 reference 仅在该结构上执行 SCF/PYATB，而每一个 R3r `±` 应变点为
-`force_thr_ev=1e-4`、`scf_thr=1e-8`、`relax_nmax=100`；`verification` 才是
-`1e-6/1e-10/100`。profile 进入 manifest、ensemble 和任务 provenance；不允许把
+`force_thr_ev=1e-4`、`scf_thr=1e-8`、`relax_nmax=100`；`verification` 使用相同
+阈值，只增加结果审计。profile 进入 manifest、ensemble 和任务 provenance；不允许把
 生产输入标记成验证计算。生成目录中的 `convergence_profile.txt` 是 HF driver 的硬门：
 `ZSTAR_V2_CONVERGENCE_PROFILE` 必须与它一致。
 clamped-ion 的 reference 为 R2c 单点；relaxed-ion 的 reference 必须为与 R3r 相同
@@ -68,7 +68,7 @@ cutoff 和 k 网格阶梯，最终设置必须同时使下列已报告量相对�
 | 量 | 推荐稳定性目标 |
 |---|---|
 | 总能量 | `<=1 meV/atom` |
-| 参考力 | 满足所选 R1 profile；验证样本同时达到 `<=1e-4 eV/Å` |
+| 参考力 | 固定使用并验收 `force_thr_ev=1e-4 eV/Å` |
 | 应力 | 满足所选 R1 profile；另报告相邻基组阶梯的 stress 差 |
 | proper `e` | 每个允许独立分量变化 `<=max(0.02 C/m², 2%)` |
 | `C` | 每个独立分量变化 `<=max(2 GPa, 2%)` |
@@ -126,8 +126,7 @@ required**，而不是悄悄缩小应变并继续给出貌似精确的张量。�
 
 - [ABACUS 输入文档](https://abacus.deepmodeling.com/en/v3.8.0/advanced/input_files/input-main.html)
   给出 LCAO `force_thr_ev=0.04 eV/Å` 的建议、`stress_thr` 的 kbar 单位和默认
-  `0.5 kbar`；我们的 production 门比 force 建议更严格，但不无依据地把每一任务推到
-  verification 级。
+  `0.5 kbar`；ZStar 固定使用 `1e-4 eV/Å`、`0.1 kbar`，不再区分更严格的求解器档。
 - [JARVIS 高通量 DFPT 研究](https://doi.org/10.1038/s41524-020-0337-2) 对压电、BEC、
   介电和声子数据采用 `0.001 eV/Å` 的全结构弛豫并对 cutoff/k 网格作材料级收敛，支持
   production R1 的取值和“响应量而非只看能量”的收敛策略。

@@ -209,7 +209,7 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     reference_log = root / "reference" / "OUT.POLAR" / "running_scf.log"
     reference_log.write_text(
         "\n".join(
-            line.replace("0.0000000000", "0.0005000000", 1) if "Ba1" in line else line
+            line.replace("0.0000000000", "0.0000500000", 1) if "Ba1" in line else line
             for line in reference_log.read_text(encoding="utf-8").splitlines()
         )
         + "\n",
@@ -252,10 +252,12 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     # structure moves atom 1 by 0.01 in fractional z.
     np.testing.assert_allclose(quantity.values[1:, 1, 2], 0.01 * 4.1, atol=1.0e-12)
     assert document.metadata["internal_displacement_collected"] is True
-    assert document.metadata["reference_force_max_eV_per_angstrom"] == pytest.approx(5.0e-4)
-    assert document.metadata["reference_force_thr_eV_per_angstrom"] == 1.0e-3
-    assert document.provenance["reference_force_max_eV_per_angstrom"] == pytest.approx(5.0e-4)
-    assert document.provenance["reference_force_thr_eV_per_angstrom"] == 1.0e-3
+    assert document.metadata["reference_force_max_eV_per_angstrom"] == pytest.approx(5.0e-5)
+    assert document.metadata["reference_force_thr_eV_per_angstrom"] == 1.0e-4
+    assert document.metadata["reference_force_configured_thr_eV_per_angstrom"] == 1.0e-3
+    assert document.provenance["reference_force_max_eV_per_angstrom"] == pytest.approx(5.0e-5)
+    assert document.provenance["reference_force_thr_eV_per_angstrom"] == 1.0e-4
+    assert document.provenance["reference_force_configured_thr_eV_per_angstrom"] == 1.0e-3
     assert document.convergence["force_thr_ev"] == 1.0e-5
     assert document.convergence["strain_force_thr_ev_values"] == [1.0e-5]
     assert document.convergence["serialized_scf_thr_values"] == [1.0e-8]

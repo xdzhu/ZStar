@@ -25,20 +25,20 @@ from .structure import (
 
 
 V2_DEFAULT_RELAX_NMAX = 100
-# ``production`` is the normal cost/accuracy operating point.  ``verification``
-# is deliberately more expensive and is used to audit a production result, not
-# to make every screening calculation slow.
-V2_PRODUCTION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-3
-V2_PRODUCTION_REFERENCE_STRESS_THRESHOLD_KBAR = 5.0e-1
+# The calculator precision is fixed across production and developer amplitude
+# audits.  ``verification`` changes what is compared, not the solver threshold.
+# This prevents research-only hyperconvergence from leaking into user runs.
+V2_PRODUCTION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
+V2_PRODUCTION_REFERENCE_STRESS_THRESHOLD_KBAR = 1.0e-1
 V2_PRODUCTION_SCF_THRESHOLD = 1.0e-8
 V2_PRODUCTION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
 V2_VERIFICATION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
 V2_VERIFICATION_REFERENCE_STRESS_THRESHOLD_KBAR = 1.0e-1
-V2_VERIFICATION_SCF_THRESHOLD = 1.0e-10
-V2_VERIFICATION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-6
+V2_VERIFICATION_SCF_THRESHOLD = 1.0e-8
+V2_VERIFICATION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
 
-# Backward-compatible names: these refer to the verification tier only.  New
-# callers must select an explicit profile or accept the production default.
+# Backward-compatible names retained for callers written before the profile
+# split.  Both profiles now resolve to the same fixed calculator precision.
 V2_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = V2_VERIFICATION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM
 V2_REFERENCE_STRESS_THRESHOLD_KBAR = V2_VERIFICATION_REFERENCE_STRESS_THRESHOLD_KBAR
 V2_REFERENCE_SCF_THRESHOLD = V2_VERIFICATION_SCF_THRESHOLD
@@ -190,9 +190,10 @@ def prepare_abacus_reference_relaxation(
 
     A relaxed-ion electromechanical ensemble differentiates about this geometry,
     so accepting a loose pre-relaxed structure silently contaminates every strain
-    derivative. ``production`` therefore requires at least ``1e-3 eV/angstrom``,
-    ``0.5 kbar``, and ``1e-8``; ``verification`` tightens these to ``1e-4``,
-    ``0.1 kbar``, and ``1e-10``. This function writes only a self-contained
+    derivative. Both ``production`` and ``verification`` therefore use the
+    same fixed ``1e-4 eV/angstrom``, ``0.1 kbar``, and ``1e-8`` settings;
+    verification adds comparisons rather than tighter solver thresholds. This
+    function writes only a self-contained
     ABACUS input folder; it never runs a solver.
     The converged ``STRU_ION_D`` must be promoted explicitly as the source of a
     subsequent response ensemble.
@@ -213,12 +214,12 @@ def prepare_abacus_reference_relaxation(
     force = settings["reference_force_thr_ev"] if force_thr_ev is None else float(force_thr_ev)
     stress = settings["reference_stress_thr_kbar"] if stress_thr_kbar is None else float(stress_thr_kbar)
     electronic = settings["scf_thr"] if scf_thr is None else float(scf_thr)
-    if not np.isfinite(force) or force <= 0.0 or force > settings["reference_force_thr_ev"]:
-        raise ValueError(f"v2 {profile_name} reference relaxation requires force_thr_ev<={settings['reference_force_thr_ev']:g}")
-    if not np.isfinite(stress) or stress <= 0.0 or stress > settings["reference_stress_thr_kbar"]:
-        raise ValueError(f"v2 {profile_name} reference relaxation requires stress_thr_kbar<={settings['reference_stress_thr_kbar']:g}")
-    if not np.isfinite(electronic) or electronic <= 0.0 or electronic > settings["scf_thr"]:
-        raise ValueError(f"v2 {profile_name} reference relaxation requires scf_thr<={settings['scf_thr']:g}")
+    if not np.isfinite(force) or force != settings["reference_force_thr_ev"]:
+        raise ValueError(f"v2 {profile_name} reference relaxation requires force_thr_ev={settings['reference_force_thr_ev']:g}")
+    if not np.isfinite(stress) or stress != settings["reference_stress_thr_kbar"]:
+        raise ValueError(f"v2 {profile_name} reference relaxation requires stress_thr_kbar={settings['reference_stress_thr_kbar']:g}")
+    if not np.isfinite(electronic) or electronic != settings["scf_thr"]:
+        raise ValueError(f"v2 {profile_name} reference relaxation requires scf_thr={settings['scf_thr']:g}")
     if isinstance(relax_nmax, (bool, np.bool_)) or int(relax_nmax) != relax_nmax or int(relax_nmax) < V2_DEFAULT_RELAX_NMAX:
         raise ValueError("v2 reference relaxation requires integer relax_nmax>=100")
 
@@ -397,8 +398,9 @@ def prepare_abacus_strain_ensemble(
     ``calculation relax`` for every ± strain stage with ``relax_nmax=100`` by
     default.  The reference in this ensemble is then an SCF/PYATB observation
     on that already equilibrated R2r geometry.  The production
-    profile uses ``1e-4 eV/angstrom`` and ``scf_thr=1e-8``; verification uses
-    ``1e-6 eV/angstrom`` and ``scf_thr=1e-10``.  A profile is serialized into
+    and verification profiles both use ``1e-4 eV/angstrom`` and
+    ``scf_thr=1e-8``. Verification changes the comparisons, not calculator
+    precision. A profile is serialized into
     the ensemble so a production result cannot be labelled as verification.
     A clamped-ion ensemble consumes the converged R1 cell-relaxed geometry;
     a relaxed-ion ensemble consumes the explicitly promoted R2r geometry.
@@ -440,10 +442,10 @@ def prepare_abacus_strain_ensemble(
     threshold = settings["relaxed_strain_force_thr_ev"] if force_thr_ev is None else float(force_thr_ev)
     if not np.isfinite(threshold) or threshold <= 0.0:
         raise ValueError("force_thr_ev must be finite and positive")
-    if relaxation == "relaxed-ion" and threshold > settings["relaxed_strain_force_thr_ev"]:
+    if relaxation == "relaxed-ion" and threshold != settings["relaxed_strain_force_thr_ev"]:
         raise ValueError(
             f"v2 {profile_name} relaxed-ion response requires "
-            f"force_thr_ev<={settings['relaxed_strain_force_thr_ev']:g}"
+            f"force_thr_ev={settings['relaxed_strain_force_thr_ev']:g}"
         )
     if isinstance(relax_nmax, (bool, np.bool_)):
         raise ValueError("relax_nmax must be a positive integer")
@@ -460,9 +462,9 @@ def prepare_abacus_strain_ensemble(
     scf_threshold = settings["scf_thr"] if scf_thr is None else float(scf_thr)
     if not np.isfinite(scf_threshold) or scf_threshold <= 0.0:
         raise ValueError("scf_thr must be finite and positive when provided")
-    if scf_threshold > settings["scf_thr"]:
+    if scf_threshold != settings["scf_thr"]:
         raise ValueError(
-            f"v2 {profile_name} response requires scf_thr<={settings['scf_thr']:g}; "
+            f"v2 {profile_name} response requires scf_thr={settings['scf_thr']:g}; "
             f"got {scf_threshold:g}"
         )
     atoms = read_structure(source)

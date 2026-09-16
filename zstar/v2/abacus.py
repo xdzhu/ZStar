@@ -22,7 +22,11 @@ from .polarization import (
     match_polarization_branch,
     pyatb_directional_to_cartesian,
 )
-from .strain import actual_strain, convergence_profile
+from .strain import (
+    V2_PRODUCTION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM,
+    actual_strain,
+    convergence_profile,
+)
 from .structure import V2_SYMPREC, StructureSpec, analyze_space_group, space_group_report_to_dict
 
 
@@ -596,6 +600,7 @@ def collect_abacus_strain_response(
         )
     reference_force_max: float | None = None
     reference_force_threshold: float | None = None
+    reference_force_configured_threshold: float | None = None
     if ion_relaxation == "relaxed-ion":
         # A relaxed-ion derivative is defined around an internally equilibrated
         # zero-strain state.  Do not let a single-point, high-force reference
@@ -627,13 +632,21 @@ def collect_abacus_strain_response(
             raise ValueError(
                 "relaxed-ion ensemble metadata response_reference_force_thr_ev must be finite and positive"
             )
-        reference_force_threshold = force_threshold
+        reference_force_configured_threshold = force_threshold
+        # The serialized input value is provenance: older development runs may
+        # have been needlessly tighter than the now-fixed v2 protocol.  Judge
+        # physical usability against the fixed acceptance criterion without
+        # rewriting or disguising the calculation that was actually run.
+        reference_force_threshold = (
+            V2_PRODUCTION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM
+        )
         reference_force_max = float(np.max(np.linalg.norm(records[0]["forces"], axis=1)))
-        if reference_force_max > force_threshold:
+        if reference_force_max > reference_force_threshold:
             raise ValueError(
                 "relaxed-ion reference is not internally equilibrated: maximum force "
-                f"{reference_force_max:.6g} eV/angstrom exceeds response_reference_force_thr_ev "
-                f"{force_threshold:.6g}; relax the reference structure before fitting"
+                f"{reference_force_max:.6g} eV/angstrom exceeds the fixed v2 acceptance "
+                f"threshold {reference_force_threshold:.6g}; relax the reference structure "
+                "before fitting"
             )
     stress_boundary = BoundaryConditions(electric="E", mechanical="strain", stress_sign="backend-raw")
     quantities = [
@@ -884,6 +897,7 @@ def collect_abacus_strain_response(
         "stage_names": stage_names,
         "reference_force_max_eV_per_angstrom": reference_force_max,
         "reference_force_thr_eV_per_angstrom": reference_force_threshold,
+        "reference_force_configured_thr_eV_per_angstrom": reference_force_configured_threshold,
         "stages": [
             {
                 "name": name,
@@ -965,6 +979,9 @@ def collect_abacus_strain_response(
             "reference_force_max_eV_per_angstrom": reference_force_max,
             "reference_force_thr_eV_per_angstrom": provenance[
                 "reference_force_thr_eV_per_angstrom"
+            ],
+            "reference_force_configured_thr_eV_per_angstrom": provenance[
+                "reference_force_configured_thr_eV_per_angstrom"
             ],
             "strain_force_thr_ev_values": strain_force_thresholds,
             "strain_relax_nmax_values": strain_relax_nmax_values,

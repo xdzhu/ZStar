@@ -335,9 +335,15 @@ def main() -> int:
             for record in gap_records
         },
         "reference_force_max_eV_per_angstrom": fitted.metadata.get("reference_force_max_eV_per_angstrom"),
-        # Keep the reference-equilibrium gate distinct from the thresholds
-        # actually serialized in strained-stage calculator inputs.  A v2
-        # convergence audit may intentionally tighten only the latter.
+        # Keep the fixed scientific acceptance gate distinct from the input
+        # actually serialized.  Historical development runs can be tighter,
+        # but that provenance must not silently redefine the v2 protocol.
+        "reference_force_acceptance_thr_eV_per_angstrom": fitted.metadata.get(
+            "reference_force_thr_eV_per_angstrom"
+        ),
+        "reference_force_configured_thr_eV_per_angstrom": fitted.metadata.get(
+            "reference_force_configured_thr_eV_per_angstrom"
+        ),
         "convergence": dict(fitted.convergence),
     }
     if raw is not None:

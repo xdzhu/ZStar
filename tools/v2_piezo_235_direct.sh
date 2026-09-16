@@ -55,16 +55,18 @@ validate_relax_protocol() {
     force_thr=$(input_value "$input" force_thr_ev)
     scf_thr=$(input_value "$input" scf_thr)
     relax_nmax=$(input_value "$input" relax_nmax)
-    test -n "$relax_nmax" && awk -v n="$relax_nmax" 'BEGIN { exit !(n >= 1 && n == int(n)) }' || {
+    test -n "$relax_nmax" && awk -v n="$relax_nmax" 'BEGIN { exit !(n >= 100 && n == int(n)) }' || {
         echo "invalid or missing relax_nmax in $input" >&2
         return 1
     }
-    if test -n "$force_thr" && awk -v f="$force_thr" 'BEGIN { exit !(f <= 1e-6) }'; then
-        test -n "$scf_thr" && awk -v s="$scf_thr" 'BEGIN { exit !(s <= 1e-10) }' || {
-            echo "force_thr_ev <= 1e-6 requires scf_thr <= 1e-10 in $input" >&2
-            return 1
-        }
-    fi
+    test -n "$force_thr" && awk -v f="$force_thr" 'BEGIN { exit !(f == 1e-4) }' || {
+        echo "v2 fixed protocol requires force_thr_ev=1e-4 in $input" >&2
+        return 1
+    }
+    test -n "$scf_thr" && awk -v s="$scf_thr" 'BEGIN { exit !(s == 1e-8) }' || {
+        echo "v2 fixed protocol requires scf_thr=1e-8 in $input" >&2
+        return 1
+    }
 }
 
 stage_paths=()

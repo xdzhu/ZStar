@@ -16,22 +16,28 @@ symmetry-adapted finite-displacement framework 为基础，不修改 `main`、v1
 
 `symprec=1e-3 Å` 只用于结构空间群与原子映射；它不是张量 residual 的放行阈值。
 
-## P0 — 正在执行：AlN 严格幅度/精度资格验证
+## P0 — 正在执行：AlN 固定精度与幅度资格验证
 
 目标：判定目前的 wurtzite AlN PBEsol/Dojo/100 Ry/8×8×6 研究闭环能否冻结为第一个
 v2 机电验证案例，并同时审计固定生产应变 `±0.5%` 的适用性。
 
 | 子任务 | 状态 | 进入条件 | 交付物/退出条件 |
 |---|---|---|---|
-| A0.1 R1 参考平衡结构 | **完成**；HF job `27697265`，node14，32 MPI × 1 OMP，812 s | verification profile | `cell-relax` 报告收敛并产生 `STRU_ION_D`；`force_thr=1e-4 eV/Å`、`stress_thr=0.1 kbar`、`scf_thr=1e-10`、`relax_nmax=100` |
-| A0.2 `±0.5%` relaxed-ion ensemble | **已提交**；HF job `27698437` | A0.1 | 13 个几何均完成 ABACUS + 每几何一次 PYATB 三分量极化；无金属化/branch 缺失/离子未收敛 |
-| A0.3 `±1%` relaxed-ion ensemble | **已提交**；HF job `27698438` | A0.1 | 同 A0.2；只供研发资格审计，不成为用户可选参数 |
-| A0.4 独立收集与幅度判定 | 等待 A0.2/A0.3 | 两组输出完整 | 从**实际**应变向量重建 `e`、`C`、`Lambda`、internal contribution、`d=e(C^E)^{-1}`；检查 G0--G3、branch 连续性、机械稳定性及 `±0.5/±1%` 稳定性 |
+| A0.1 R1 参考平衡结构 | **完成**；HF job `27697265`，node14，32 MPI × 1 OMP，813 s | 固定输入协议 | `cell-relax` 已收敛并产生 `STRU_ION_D`；今后固定 `force_thr=1e-4 eV/Å`、`stress_thr=0.1 kbar`、`scf_thr=1e-8`、`relax_nmax=100` |
+| A0.2 `±0.5%` relaxed-ion ensemble | **完成**；最终 HF job `27705472`，32 MPI × 1 OMP，6437 s | A0.1 | 13 个几何均完成 ABACUS + 每几何一次 PYATB 三分量极化；最小带隙 4.109 eV；机械稳定 |
+| A0.3 `±1%` relaxed-ion ensemble | **完成**；最终 HF job `27705473`，32 MPI × 1 OMP，6284 s | A0.1 | 同 A0.2；最小带隙 4.049 eV；只供研发幅度审计，不成为用户可选参数 |
+| A0.4 独立收集与幅度判定 | **完成** | 两组输出完整 | 0.5%/1% 的 `e31/e33/e15` 相差 0.048%/0.057%/0.014%，`d33` 相差 0.301%，关键 `C` 分量相差不超过 0.214%；固定生产幅度保留 `±0.5%` |
 | A0.5 文献冻结判定 | 等待 A0.4 | 数值门通过 | 按分量更新 PBEsol 理论对照、记录偏差和定义；输出 `qualified` 或 `research_review_required`，不自动选择 1% 结果 |
 
-两组作业当前处于 Slurm 调度等待；不得用 235 或降低为少于 32 MPI 来绕过排队。若
-`±0.5%` 与 `±1%` 不满足协议中 `e/C/d` 稳定性目标，生产 profile 不合格，先诊断
-数值噪声、Berry branch、k/cutoff 与离子弛豫，而不是把 1% 静默设为默认。
+两组已经通过固定 `1e-4 eV/Å` 的物理验收门；现有输出实际曾以错误的开发输入
+`force_thr=1e-6 eV/Å`、`scf_thr=1e-10` 运行，该事实保留在 provenance 中，但不再
+作为 ZStar v2 的输入或验收标准。结果收集没有重新运行 ABACUS/PYATB。
+
+本轮 HF 共使用 240.702 core-hours。其中 233.476 core-hours 来自不应采用的
+`1e-6/1e-10` 输入；这不等于全部科学结果无效。能够明确归因于错误零点流程并重复
+提交的 jobs `27705207/27705472/27705473` 合计 **114.498 core-hours**，属于可避免
+消耗。剩余“超高精度相对 `1e-4/1e-8` 多花了多少”没有同体系固定精度计时对照，
+不得编造数值。后续不为估算这个差额而重算。
 
 ## P1 — 机电核心的算法闭合
 
