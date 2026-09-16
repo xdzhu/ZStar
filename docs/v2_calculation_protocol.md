@@ -87,6 +87,10 @@ required**，而不是悄悄缩小应变并继续给出貌似精确的张量。�
 
 - 每个 R2/R3 stage 必须保存 INPUT、KPT、STRU（以及 R3 的 `STRU_INITIAL` 与
   `STRU_ION_D`）、ABACUS/PYATB 日志、输入 hash 和运行统计。
+- 对 3D ABACUS LCAO stage，collector 必须逐个解析
+  `OUT.<suffix>/istate.info` 的占据/空态流形并保存 VBM、CBM 与 gap；任一文件缺失、
+  不可解析或 gap 小于 `0.01 eV` 都阻止 Berry 极化/压电结果进入收集。该检查复用已
+  完成 SCF 的本征值表，不增加为三个极化方向重复的 NSCF 计算。
 - 收集时将 ABACUS compression-positive 应力转换为 v2 的 tension-positive
   约定；输出保留原始符号的 provenance。
 - `e` 必须标记 proper/improper、clamped/relaxed、单位与工程 Voigt 约定；`d`
