@@ -15,6 +15,7 @@ from zstar.v2 import (
     space_group_report_to_dict,
     space_group_report_from_dict,
     rotate_elastic_tensor,
+    rotate_piezoelectric_tensor,
     strain_representation,
     stress_representation,
     stress_tensor_to_voigt,
@@ -267,6 +268,30 @@ def test_rotate_elastic_tensor_rejects_non_rotation_and_nonengineering_voigt():
         rotate_elastic_tensor(np.eye(6), improper)
     with pytest.raises(ValueError, match="engineering Voigt"):
         rotate_elastic_tensor(np.eye(6), np.eye(3), voigt_convention=("xx",) * 6)
+
+
+def test_rotate_piezoelectric_tensor_round_trips_engineering_voigt_matrix():
+    rotation = np.array(
+        [
+            [0.7071067811865476, -0.4082482904638631, 0.5773502691896258],
+            [0.0, 0.8164965809277261, 0.5773502691896258],
+            [-0.7071067811865476, -0.4082482904638631, 0.5773502691896258],
+        ]
+    )
+    cubic = np.zeros((3, 6))
+    cubic[0, 3] = cubic[1, 4] = cubic[2, 5] = 0.94
+    primitive = rotate_piezoelectric_tensor(cubic, rotation.T)
+    recovered = rotate_piezoelectric_tensor(primitive, rotation)
+    np.testing.assert_allclose(recovered, cubic, atol=1.0e-12)
+
+
+def test_rotate_piezoelectric_tensor_rejects_wrong_shape_and_convention():
+    with pytest.raises(ValueError, match="shape"):
+        rotate_piezoelectric_tensor(np.eye(3), np.eye(3))
+    with pytest.raises(ValueError, match="engineering Voigt"):
+        rotate_piezoelectric_tensor(
+            np.zeros((3, 6)), np.eye(3), voigt_convention=("xx",) * 6
+        )
 
 
 def test_symmetry_adapted_strain_plan_keeps_all_components_for_p1():

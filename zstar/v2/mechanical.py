@@ -230,6 +230,41 @@ def rotate_elastic_tensor(
     return _elastic_tensor_to_voigt(transformed)
 
 
+def rotate_piezoelectric_tensor(
+    piezoelectric: np.ndarray | Iterable[Iterable[float]],
+    rotation: np.ndarray | Iterable[Iterable[float]],
+    *,
+    voigt_convention: Iterable[str] = ENGINEERING_VOIGT,
+) -> np.ndarray:
+    """Rotate ``e = dP/deta`` between right-handed Cartesian frames.
+
+    ``rotation`` maps old Cartesian vector components to new components.
+    Polarization therefore transforms with ``rotation`` while engineering
+    strain transforms with its six-dimensional representation.  The returned
+    ``(3, 6)`` tensor retains ``(xx, yy, zz, 2yz, 2xz, 2xy)`` columns.  This is
+    a coordinate transformation only; it does not project the tensor onto a
+    crystal-class subspace.
+    """
+
+    values = np.asarray(piezoelectric, dtype=float)
+    if values.shape != (3, 6):
+        raise ValueError(f"piezoelectric must have shape (3, 6); got {values.shape}")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("piezoelectric contains non-finite values")
+    convention = tuple(str(item) for item in voigt_convention)
+    if convention != ENGINEERING_VOIGT:
+        raise ValueError(
+            "piezoelectric rotation currently requires engineering Voigt convention "
+            f"{ENGINEERING_VOIGT}; got {convention}"
+        )
+    matrix = _rotation3(rotation)
+    strain_rotation = np.zeros((6, 6), dtype=float)
+    for column in range(6):
+        transformed = matrix @ voigt_to_strain_tensor(np.eye(6)[column]) @ matrix.T
+        strain_rotation[:, column] = strain_tensor_to_voigt(transformed)
+    return matrix @ values @ np.linalg.inv(strain_rotation)
+
+
 def mechanical_stability(
     elastic: np.ndarray,
     *,

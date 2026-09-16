@@ -44,6 +44,33 @@ DEFAULT_ZERO_ABSOLUTE_TOLERANCES = {
     "piezoelectric_proper": 1.0e-3,  # C/m^2
 }
 
+DEFAULT_NONZERO_ABSOLUTE_TOLERANCES = {
+    # Frozen production tensor-stability target from v2_calculation_protocol.
+    # The unprojected residual remains serialized for audit.
+    "piezoelectric_proper": 2.0e-2,  # C/m^2
+    # Internal-strain derivatives carry Angstrom per unit strain.  A forbidden
+    # displacement below the fixed structure symprec is not a physical
+    # symmetry breaking.
+    "internal_strain": 1.0e-3,  # Angstrom
+}
+
+DEFAULT_NONZERO_RELATIVE_TOLERANCES = {
+    # Use the same relative scale as the frozen proper-e stability target,
+    # while retaining a unit-bearing floor for small responses.
+    "piezoelectric_proper": 2.0e-2,
+    "internal_strain": 1.0e-3,
+}
+
+
+def _mixed_acceptance(
+    forbidden_max: float,
+    response_scale: float,
+    absolute_tolerance: float,
+    relative_tolerance: float,
+) -> tuple[bool, float]:
+    limit = max(float(absolute_tolerance), float(relative_tolerance) * float(response_scale))
+    return float(forbidden_max) <= limit, limit
+
 
 def _quantity(document, name):
     try:
@@ -58,6 +85,8 @@ def _symmetry_response_audit(
     relative_tolerance: float = 1.0e-3,
     acoustic_gauge: str = "raw",
     zero_absolute_tolerances: Mapping[str, float] | None = None,
+    nonzero_absolute_tolerances: Mapping[str, float] | None = None,
+    nonzero_relative_tolerances: Mapping[str, float] | None = None,
 ) -> dict[str, object]:
     """Compare measured tensors with the persisted space-group subspaces.
 
@@ -80,6 +109,20 @@ def _symmetry_response_audit(
         )
     if any(not np.isfinite(value) or value <= 0.0 for value in zero_tolerances.values()):
         raise ValueError("zero-response absolute tolerances must be finite and positive")
+    nonzero_tolerances = dict(DEFAULT_NONZERO_ABSOLUTE_TOLERANCES)
+    if nonzero_absolute_tolerances is not None:
+        nonzero_tolerances.update(
+            {str(name): float(value) for name, value in nonzero_absolute_tolerances.items()}
+        )
+    if any(not np.isfinite(value) or value <= 0.0 for value in nonzero_tolerances.values()):
+        raise ValueError("nonzero-response absolute tolerances must be finite and positive")
+    nonzero_relative = dict(DEFAULT_NONZERO_RELATIVE_TOLERANCES)
+    if nonzero_relative_tolerances is not None:
+        nonzero_relative.update(
+            {str(name): float(value) for name, value in nonzero_relative_tolerances.items()}
+        )
+    if any(not np.isfinite(value) or value <= 0.0 for value in nonzero_relative.values()):
+        raise ValueError("nonzero-response relative tolerances must be finite and positive")
     try:
         report = space_group_report_from_dict(dict(document.symmetry))
     except (TypeError, ValueError) as exc:
@@ -100,6 +143,8 @@ def _symmetry_response_audit(
         "operation_count": report.operation_count,
         "relative_tolerance": float(relative_tolerance),
         "zero_absolute_tolerances": zero_tolerances,
+        "nonzero_absolute_tolerances": nonzero_tolerances,
+        "nonzero_relative_tolerances": nonzero_relative,
         "acoustic_gauge": acoustic_gauge,
         "comparison": dict(document.symmetry.get("comparison", {})),
         "quantities": {},
@@ -151,6 +196,12 @@ def _symmetry_response_audit(
         zero_absolute_tolerance = (
             zero_tolerances.get(quantity_name) if basis.allowed_rank == 0 else None
         )
+        nonzero_absolute_tolerance = (
+            nonzero_tolerances.get(quantity_name) if basis.allowed_rank > 0 else None
+        )
+        nonzero_relative_tolerance = (
+            nonzero_relative.get(quantity_name) if basis.allowed_rank > 0 else None
+        )
         if zero_absolute_tolerance is not None:
             response_consistent = forbidden_max <= zero_absolute_tolerance
             response_status = (
@@ -159,10 +210,26 @@ def _symmetry_response_audit(
                 else "forbidden_response_detected"
             )
             acceptance_metric = "absolute_max"
+            acceptance_limit = zero_absolute_tolerance
+        elif nonzero_absolute_tolerance is not None:
+            response_scale = float(np.max(np.abs(projected)))
+            response_consistent, acceptance_limit = _mixed_acceptance(
+                forbidden_max,
+                response_scale,
+                nonzero_absolute_tolerance,
+                float(nonzero_relative_tolerance or relative_tolerance),
+            )
+            response_status = (
+                "consistent_mixed_tolerance"
+                if response_consistent
+                else "allowed_subspace_violation"
+            )
+            acceptance_metric = "max_absolute_relative"
         else:
             response_consistent = matrix_norm == 0.0 or residual_relative <= float(relative_tolerance)
             response_status = "consistent" if response_consistent else "allowed_subspace_violation"
             acceptance_metric = "relative_frobenius"
+            acceptance_limit = float(relative_tolerance)
         output = {
             "allowed_rank": int(basis.allowed_rank),
             "projection_residual_max": float(np.max(np.abs(difference))),
@@ -170,7 +237,10 @@ def _symmetry_response_audit(
             "projection_residual_relative": residual_relative,
             "forbidden_component_max": forbidden_max,
             "acceptance_metric": acceptance_metric,
+            "acceptance_limit": acceptance_limit,
             "zero_absolute_tolerance": zero_absolute_tolerance,
+            "nonzero_absolute_tolerance": nonzero_absolute_tolerance,
+            "nonzero_relative_tolerance": nonzero_relative_tolerance,
             "intertwining_residual": float(
                 intertwining_residual(
                     matrix,
@@ -239,10 +309,17 @@ def _symmetry_response_audit(
                 if matrix_norm > 0.0
                 else float(np.linalg.norm(difference))
             )
+            internal_forbidden_max = float(np.max(np.abs(difference)))
+            internal_consistent, internal_acceptance_limit = _mixed_acceptance(
+                internal_forbidden_max,
+                float(np.max(np.abs(projected))),
+                nonzero_tolerances["internal_strain"],
+                nonzero_relative["internal_strain"],
+            )
             audit["internal_strain_acoustic_gauge"] = {
                 "status": (
-                    "consistent"
-                    if projection_relative <= float(relative_tolerance)
+                    "consistent_mixed_tolerance"
+                    if internal_consistent
                     else "allowed_subspace_violation"
                 ),
                 "gauge": "equal-weight-mean-translation-removal",
@@ -258,6 +335,11 @@ def _symmetry_response_audit(
                 "projection_residual_max": float(np.max(np.abs(difference))),
                 "projection_residual_rms": float(np.sqrt(np.mean(difference**2))),
                 "projection_residual_relative": projection_relative,
+                "forbidden_component_max": internal_forbidden_max,
+                "acceptance_metric": "max_absolute_relative",
+                "acceptance_limit": internal_acceptance_limit,
+                "nonzero_absolute_tolerance": nonzero_tolerances["internal_strain"],
+                "nonzero_relative_tolerance": nonzero_relative["internal_strain"],
                 "raw_quantity_unchanged": True,
             }
         else:
@@ -293,6 +375,18 @@ def main() -> int:
         type=float,
         default=DEFAULT_ZERO_ABSOLUTE_TOLERANCES["piezoelectric_proper"],
         help="absolute C/m^2 gate when symmetry strictly forbids the proper piezoelectric tensor",
+    )
+    parser.add_argument(
+        "--piezo-absolute-tolerance",
+        type=float,
+        default=DEFAULT_NONZERO_ABSOLUTE_TOLERANCES["piezoelectric_proper"],
+        help="absolute C/m^2 floor in the mixed gate for a nonzero proper piezoelectric tensor",
+    )
+    parser.add_argument(
+        "--piezo-relative-tolerance",
+        type=float,
+        default=DEFAULT_NONZERO_RELATIVE_TOLERANCES["piezoelectric_proper"],
+        help="relative part of the mixed gate for a nonzero proper piezoelectric tensor",
     )
     args = parser.parse_args()
     root = args.root.resolve()
@@ -333,6 +427,12 @@ def main() -> int:
         acoustic_gauge=args.acoustic_gauge,
         zero_absolute_tolerances={
             "piezoelectric_proper": args.piezo_zero_absolute_tolerance,
+        },
+        nonzero_absolute_tolerances={
+            "piezoelectric_proper": args.piezo_absolute_tolerance,
+        },
+        nonzero_relative_tolerances={
+            "piezoelectric_proper": args.piezo_relative_tolerance,
         },
     )
     fitted = replace(

@@ -118,7 +118,12 @@ required**，而不是悄悄缩小应变并继续给出貌似精确的张量。�
   fit residual 是独立诊断，必须报告而不机械套用 `1e-3` 作为拒绝线。
 - 若反演对称使 proper piezo 的 allowed rank 严格为零，不对近零张量使用相对残差
   作接受判据；采用固定的 `max|e| <= 1e-3 C/m^2` 绝对数值噪声门，并同时报告 raw
-  tensor、forbidden component 和相对诊断。非零允许子空间仍使用相对投影 residual。
+  tensor、forbidden component 和相对诊断。非零 proper-piezo 允许子空间采用
+  `max(0.02 C/m^2, 2% * max|e_projected|)` 混合门，并继续报告未投影张量及相对
+  residual；该门是验收诊断，不把投影张量冒充原始计算结果。
+- relaxed-ion `internal_strain` 在去除等权整体平移后，采用
+  `max(1e-3 Angstrom, 1e-3 * max|Lambda_projected|)` 混合门；绝对下限与固定
+  `symprec=1e-3 Angstrom` 一致，同时保留 raw Lambda 和相对投影 residual。
 - 只有 rank 完整、力/电子/离子收敛、机械稳定、跨幅度稳定、极化 branch 连续，且与
   `PBEsol → PBE → other-GGA → LDA` 分层理论文献比较完成后，才能标为材料验证结果。
 

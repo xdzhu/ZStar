@@ -188,12 +188,20 @@ translation、Cartesian rotation 和 species-preserving atom permutation，而�
 结论；否则必须保留 raw 结果并进入 symmetry audit。`tools/collect_v2_piezo_case.py`
 的 `symmetry_response_audit` 对已拟合的 proper piezo、elastic、Gamma 和
 internal-strain 矩阵做独立的受限基底投影；它只写入 projection/intertwining
-residual，不替换 raw 张量。对 allowed rank 非零的张量，默认相对 Frobenius
-symmetry gate 为 `1e-3`，可通过研究脚本的 `--symmetry-relative-tolerance` 显式
-调整并随 summary 保存。对反演对称严格禁止、allowed rank 为零的 proper piezo，
+residual，不替换 raw 张量。对 allowed rank 非零的 proper piezo，采用
+`max(0.02 C/m^2, 2% * max|e_projected|)` 的带单位混合门；原始相对 Frobenius
+residual 仍随 summary 保存，不用投影值替换 raw tensor。其他响应默认相对
+Frobenius symmetry gate 为 `1e-3`，可通过研究脚本的
+`--symmetry-relative-tolerance` 显式调整并随 summary 保存。对反演对称严格禁止、
+allowed rank 为零的 proper piezo，
 相对残差没有定义（任意非零数除以其自身都会得到 1）；因此改用固定、带单位的
 `max|e| <= 1e-3 C/m^2` 数值噪声门，并同时保留相对量作为诊断。该响应门不会改变
 空间群识别的 `symprec=1e-3`。
+
+`internal_strain` 的输出单位为 Angstrom/单位应变；其非零允许子空间采用
+`max(1e-3 Angstrom, 1e-3 * max|Lambda_projected|)`。这个绝对下限与固定的结构
+`symprec=1e-3 Angstrom` 同量纲，避免把小于结构识别分辨率的禁戒位移误判成物理
+破缺；raw Lambda、相对 residual 和 acoustic-gauge 诊断仍全部保存。
 
 ### 5.2 relaxed-ion 的声学规范审计
 
