@@ -392,16 +392,17 @@ def prepare_abacus_strain_ensemble(
     This is a dry-run/preparation API: it never executes ABACUS.  Each stage
     records the strain recovered from the serialized cell so later fitting
     cannot accidentally use the nominal requested amplitude.  ``clamped-ion``
-    keeps the source SCF calculation unchanged; ``relaxed-ion`` switches only
-    the ± strain stages to ``calculation relax`` and records the requested
-    force threshold and writes ``relax_nmax=100`` by default.  The production
+    keeps the source SCF calculation unchanged; ``relaxed-ion`` performs a
+    fixed-cell ``calculation relax`` for both the zero-strain response
+    reference and every ± strain stage, with the same force threshold and
+    ``relax_nmax=100`` by default.  The production
     profile uses ``1e-4 eV/angstrom`` and ``scf_thr=1e-8``; verification uses
     ``1e-6 eV/angstrom`` and ``scf_thr=1e-10``.  A profile is serialized into
     the ensemble so a production result cannot be labelled as verification.
-    The reference
-    is always a single-point SCF on the
-    supplied reference structure, which must already be the intended relaxed
-    geometry when relaxed-ion response is requested.  With ``symmetry_reduce``
+    The supplied structure must be the converged R1 cell-relaxed geometry.
+    A clamped-ion ensemble uses a single-point reference; a relaxed-ion
+    ensemble first tightly relaxes ions at that fixed zero-strain cell.  With
+    ``symmetry_reduce``
     enabled and no explicit ``strain_vectors``, a representation-rank plan
     selects the smallest canonical strain set that identifies polarization and
     stress responses (and internal displacement for relaxed-ion stages).

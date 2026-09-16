@@ -28,7 +28,8 @@ production profile，而不是为某个用户 case 动态挑选参数。
 |---|---|---|---|---|
 | R0：绝缘与基组预检 | SCF；检查绝缘性、赝势/轨道唯一匹配、cutoff 与 k 网格 | `scf_thr<=1e-8` | `scf_thr<=1e-10` | `cal_force=1`、`cal_stress=1`；检查 band gap 非零、无异常占据 |
 | R1：参考平衡结构 | `cell-relax`；同时弛豫晶胞和离子 | `force_thr_ev<=1e-3 eV/Å`；`stress_thr<=0.5 kbar`；`scf_thr<=1e-8`；`relax_nmax>=100` | `1e-4 eV/Å`；`0.1 kbar`；`1e-10`；`>=100` | `symmetry=1`，`symmetry_prec=0.001`，`cal_force=1`，`cal_stress=1` |
-| R2：参考响应单点 | 在 R1 的已验证 `STRU_ION_D` 上 SCF，供应力、力和 PYATB | `scf_thr<=1e-8` | `<=1e-10` | `cal_force=1`、`cal_stress=1`、`symmetry=1`、`symmetry_prec=0.001` |
+| R2c：clamped-ion 零点 | 在 R1 的已验证 `STRU_ION_D` 上 SCF，供应 clamped-ion 力、应力和 PYATB | `scf_thr<=1e-8` | `<=1e-10` | `cal_force=1`、`cal_stress=1`、`symmetry=1`、`symmetry_prec=0.001` |
+| R2r：relaxed-ion 零点 | R1 固定晶胞下仅弛豫内部离子，并在最终几何做 PYATB | `force_thr_ev<=1e-4 eV/Å`；`scf_thr<=1e-8`；`relax_nmax>=100` | `1e-6 eV/Å`；`1e-10`；`>=100` | 与 R3r 使用**同一**力与电子收敛档；`symmetry=1`、`symmetry_prec=0.001` |
 | R3c：clamped-ion 应变 | 固定原子分数坐标的 ± 应变 SCF | `scf_thr<=1e-8` | `<=1e-10` | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
 | R3r：relaxed-ion 应变 | 固定已应变晶胞、仅弛豫内部离子的 ± 应变 `relax` | `force_thr_ev<=1e-4 eV/Å`；`scf_thr<=1e-8`；`relax_nmax>=100` | `1e-6 eV/Å`；`1e-10`；`>=100` | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
 | R4：Berry 极化 | 每个已完成几何一次 PYATB polar | 继承 R2/R3 Hamiltonian 和 profile | 同左 | 一次 PYATB 输出同时读取三个 Cartesian 极化方向；禁止为三个方向重复三次 ABACUS NSCF |
@@ -48,13 +49,15 @@ Python API `prepare_abacus_reference_relaxation` 和私有工具
 其 `OUT.<suffix>/STRU_ION_D` 为 R2/R3 的 `STRU`；该提升必须记录原始路径、输入
 hash、最终离子力、最终应力、节点、MPI/OMP 与 runtime。
 
-`prepare_abacus_strain_ensemble` 默认采用 `production`：relaxed-ion 为
+`prepare_abacus_strain_ensemble` 默认采用 `production`：relaxed-ion 的 R2r
+**以及每一个** R3r `±` 应变点均为
 `force_thr_ev=1e-4`、`scf_thr=1e-8`、`relax_nmax=100`；`verification` 才是
 `1e-6/1e-10/100`。profile 进入 manifest、ensemble 和任务 provenance；不允许把
 生产输入标记成验证计算。生成目录中的 `convergence_profile.txt` 是 HF driver 的硬门：
 `ZSTAR_V2_CONVERGENCE_PROFILE` 必须与它一致。
-R3 的 reference 为 R2 单点，不能把 R1 的 cell-relax 输出直接与应变 `relax` 的
-polarization 混合使用。
+clamped-ion 的 reference 为 R2c 单点；relaxed-ion 的 reference 必须为与 R3r 相同
+阈值的 R2r fixed-cell ion relaxation。不得把 R1 cell-relax 输出或 R2c 单点与 R3r
+的 polarization 混合使用。
 
 ## cutoff、k 网格与应变幅度收敛
 
