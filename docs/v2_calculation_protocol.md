@@ -46,11 +46,12 @@ Python API `prepare_abacus_reference_relaxation` 和私有工具
 `tools/prepare_v2_reference_relax.py` 默认生成 `production` R1；传入
 `profile="verification"` 才生成高精度审计。生成器拒绝比所选 profile 更松的
 `force_thr_ev`、`stress_thr`、`scf_thr` 或 `relax_nmax`。R1 收敛后只能显式提升
-其 `OUT.<suffix>/STRU_ION_D` 为 R2/R3 的 `STRU`；该提升必须记录原始路径、输入
+其 `OUT.<suffix>/STRU_ION_D` 为 R2c 或 R2r 的 `STRU`；R2r 收敛后再将其最终结构
+提升为 R3r 的 `STRU`。每次提升都必须记录原始路径、输入
 hash、最终离子力、最终应力、节点、MPI/OMP 与 runtime。
 
-`prepare_abacus_strain_ensemble` 默认采用 `production`：relaxed-ion 的 R2r
-**以及每一个** R3r `±` 应变点均为
+`prepare_abacus_strain_ensemble` 的 relaxed-ion 输入必须是已提升的 R2r 结构；其
+reference 仅在该结构上执行 SCF/PYATB，而每一个 R3r `±` 应变点为
 `force_thr_ev=1e-4`、`scf_thr=1e-8`、`relax_nmax=100`；`verification` 才是
 `1e-6/1e-10/100`。profile 进入 manifest、ensemble 和任务 provenance；不允许把
 生产输入标记成验证计算。生成目录中的 `convergence_profile.txt` 是 HF driver 的硬门：

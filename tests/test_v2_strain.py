@@ -301,9 +301,7 @@ def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input
     assert "relax_nmax          100" in stage_input
     assert ensemble.metadata["relax_nmax"] == 100
     reference_input = (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text()
-    assert "calculation         relax" in reference_input
-    assert "force_thr_ev        0.0001" in reference_input
-    assert "relax_nmax          100" in reference_input
+    assert "calculation         scf" in reference_input
 
 
 def test_abacus_strain_preparation_can_pin_scf_threshold_for_ionic_audit(tmp_path):

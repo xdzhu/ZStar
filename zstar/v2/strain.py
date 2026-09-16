@@ -392,17 +392,19 @@ def prepare_abacus_strain_ensemble(
     This is a dry-run/preparation API: it never executes ABACUS.  Each stage
     records the strain recovered from the serialized cell so later fitting
     cannot accidentally use the nominal requested amplitude.  ``clamped-ion``
-    keeps the source SCF calculation unchanged; ``relaxed-ion`` performs a
-    fixed-cell ``calculation relax`` for both the zero-strain response
-    reference and every ± strain stage, with the same force threshold and
-    ``relax_nmax=100`` by default.  The production
+    keeps the source SCF calculation unchanged; ``relaxed-ion`` requires a
+    separately converged R2r fixed-cell reference structure and performs
+    ``calculation relax`` for every ± strain stage with ``relax_nmax=100`` by
+    default.  The reference in this ensemble is then an SCF/PYATB observation
+    on that already equilibrated R2r geometry.  The production
     profile uses ``1e-4 eV/angstrom`` and ``scf_thr=1e-8``; verification uses
     ``1e-6 eV/angstrom`` and ``scf_thr=1e-10``.  A profile is serialized into
     the ensemble so a production result cannot be labelled as verification.
-    The supplied structure must be the converged R1 cell-relaxed geometry.
-    A clamped-ion ensemble uses a single-point reference; a relaxed-ion
-    ensemble first tightly relaxes ions at that fixed zero-strain cell.  With
-    ``symmetry_reduce``
+    A clamped-ion ensemble consumes the converged R1 cell-relaxed geometry;
+    a relaxed-ion ensemble consumes the explicitly promoted R2r geometry.
+    This separation is necessary because every R3r structure must be strained
+    from precisely the same zero-strain ionic coordinates used by the response
+    reference.  With ``symmetry_reduce``
     enabled and no explicit ``strain_vectors``, a representation-rank plan
     selects the smallest canonical strain set that identifies polarization and
     stress responses (and internal displacement for relaxed-ion stages).
@@ -542,9 +544,9 @@ def prepare_abacus_strain_ensemble(
             "abacus_perturbation_symmetry": 0,
             "ion_relaxation": relaxation,
             "convergence_profile": profile_name,
-            # Retain the preceding cell-relax criterion for provenance, while
-            # making the response reference use the same fixed-cell ionic
-            # threshold as the ±strain stages below.
+            # The caller supplies either R1 (clamped-ion) or the separately
+            # converged R2r structure (relaxed-ion).  Keep both the preceding
+            # cell-relax and the response-reference contracts explicit.
             "initial_cell_relax_force_thr_ev": settings["reference_force_thr_ev"],
             "response_reference_force_thr_ev": threshold,
             "force_thr_ev": threshold,
@@ -573,10 +575,6 @@ def prepare_abacus_strain_ensemble(
         _set_input_parameter(reference_dir / input_name, "symmetry", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
         _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
-        if relaxation == "relaxed-ion":
-            _set_input_parameter(reference_dir / input_name, "calculation", "relax")
-            _set_input_parameter(reference_dir / input_name, "force_thr_ev", f"{threshold:.16g}")
-            _set_input_parameter(reference_dir / input_name, "relax_nmax", str(relax_steps))
     prepared = prepare_stru_assets(
         reference_dir / "STRU",
         pp_dir=pp_dir,
