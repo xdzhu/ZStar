@@ -22,6 +22,9 @@ ZnO 和 AlN 都是两原子、`P6_3mc`、点群 `6mm`，可以直接复用 GaN �
 | 3 | GaAs zinc-blende | 2 原子；`F-43m` / `\bar{4}3m` | 仅 `e14=e25=e36`；剪切应变、cubic 旋转和符号 | McKitterick 的原始有限波矢第一性原理研究给出介电、有效电荷和压电常数并与实验比较；工程/器件文献采用单晶实验 `e14≈-0.16 C m^-2`；现代 GGA 计算在过大的晶格常数下得到 `e14=-0.342 C m^-2`，作者明确提示该几何导致精度问题 | `e14` 对晶格常数和符号手性敏感；不能把 `e14` 直接等同于六方 `e33`；实验值需要注明温度和取向 |
 | 4 | ZnS（wurtzite 或 zinc-blende） | 2 原子（原胞表示依多型而定） | 与 ZnO 同族但响应较小；检验内部应变-电子项抵消 | Catti–Noel–Dovesi 计算了 ZnO/ZnS 两种多型的完整 proper `e`、`d` 和弹性张量，并显式包含 wurtzite `e15` | wurtzite ZnS 常为亚稳多型；实验单晶锚点少，适合作为第二批而非首批门槛 |
 | 5 | BaTiO3 tetragonal | 5 原子；`P4mm` | 铁电极化、软模、`e/d` 与 phase/switching 的接口 | 现有仓库已有 `P4mm` 算法 fixture；其材料常数强烈依赖相、应变和泛函 | 软模和多相性使结果不适合作为首个跨材料数值门；应在二元半导体闭环后再做 |
+| 6 | 3C-SiC zinc-blende | 2 原子；`F-43m` / `\bar{4}3m` | `e14`、立方剪切、弹性；与 GaAs 比较化学趋势 | 3C-SiC 没有反演中心，群论允许一个独立压电分量；它不是零压电 control | 必须与中心对称 diamond Si 分开，不得从“立方”误推“压电为零” |
+| 7 | diamond Si | 2 原子；`Fd-3m` / `m\bar{3}m` | 中心对称零压电 control、弹性与 forbidden-component 审计 | 反演对称严格禁止线性压电张量 | 数值近零与群论严格禁止必须分别报告 |
+| 8 | PbTiO3 / ordered PZT 50/50 | PT: 5 原子 `P4mm`；PZT: [001] 1:1 B-site ordered 10 原子 `P4mm` | 四方 `e31/e33/e15`、极化软模及构型敏感性 | Sághi-Szabó、Cohen 和 Krakauer以 GGA/Berry phase 比较了 PT 以及 [001]/[111] 有序 PZT50/50 的 proper `e`；[001] 有序增强 `e33` | PZT 不是唯一结构；组分、B 位有序、温度及 `P4mm/Cm/R3m/R3c` 相必须显式标注 |
 
 ## 具体比较协议
 
@@ -37,6 +40,10 @@ ZnO 和 AlN 都是两原子、`P6_3mc`、点群 `6mm`，可以直接复用 GaN �
 4. 低维 hBN、MoS2、In2Se3 暂不进入这一轮：二维“每面积”与真空归一化、开放方向
    电边界尚未达到稳定 benchmark 条件。BeO 可作为低响应/争议性负对照，但不应替代
    ZnO/AlN 的主验证。
+5. PZT 第一轮只计算 `PbZr0.5Ti0.5O3` 的 [001] 1:1 B 位层状有序 `P4mm` 10 原子
+   模型。经典 GGA/Berry-phase 工作使用同类 [001] 与 [111] 显式有序模型；后续
+   `Cm` MPB 结构和六种 2x2x2 B 位构型属于独立的构型/相敏感性研究，不能与首个
+   模型平均成一个所谓“PZT 压电常数”。
 
 ## 文献数值的使用边界
 
@@ -53,4 +60,3 @@ Voigt 约定、proper/improper、clamped/relaxed-ion 和温度。若只找到 `e
   symmetry-adapted ensemble；
 * 只有 rank、residual、张量对称性、机械稳定性和 `e C^{-1}` 互逆均通过，才将结果
   写入案例 `results/` 并用于论文。
-

@@ -5,7 +5,8 @@
 本文件把 v2 的第一个正式压电验证目标限制为一个 3D、绝缘、非中心对称且
 晶体对称性简单但非立方的体系：wurtzite GaN（空间群 `P6_3mc`，点群 `6mm`）。
 这不是要求把仓库中的每个材料都重算一遍，而是为算法建立一个定义可核查的
-最小闭环。SiC 继续作为中心对称弹性控制，不参与压电数值比较；BaTiO3 的
+最小闭环。3C-SiC 实际属于非中心对称 `F-43m`，允许独立 `e14`；中心对称
+零压电控制改为 diamond Si (`Fd-3m`)。BaTiO3 的
 现有 P4mm 目录继续作为内部算法审计 fixture，不升级为正式材料 benchmark。
 
 ## 1. 为什么先选 GaN
@@ -72,7 +73,7 @@ Bernardini 和 Fiorentini 的直接应力响应研究给出 GaN 的 stress-piezo
 * 至少与一组原始理论锚点和一组实验/数据库条目逐分量比较，并解释差异来源；
 * 固定生产 `±0.005` 与开发者 `±0.01` 幅度审计通过；五级外推只作维护者检查，
   不暴露为用户侧点数或幅度扫描；
-* provenance 记录节点、40 MPI × 1 OpenMP、SCF 次数、core-hours、wall time、
+* provenance 记录节点、32 MPI × 1 OpenMP、SCF 次数、core-hours、wall time、
   失败/重启次数和输出哈希；
 * 结果仍需经过 v1 回归测试，不能修改 v1 接口或正式论文。
 

@@ -247,6 +247,27 @@ Fiorentini--Vanderbilt 的 Berry-phase 原始论文给出 wurtzite GaN 的 `e33=
 [`v2_piezo_benchmark_gate.md`](v2_piezo_benchmark_gate.md)。在 GaN 计算完成并通过
 该门之前，BaTiO3 仍只作为 P4mm 算法 fixture，不能写成已验证材料常数。
 
+### 3.5 PZT 的结构和构型边界（2026-09-16）
+
+PZT 不能按一个唯一晶体结构处理。它是 `Pb(Zr1-xTix)O3` 固溶体；靠近 MPB 的
+组分、温度和样品历史会涉及四方、单斜和菱方相。Noheda 等对
+`PbZr0.52Ti0.48O3` 的结构精修给出了四方到单斜相变和 `Cm` 中间相的直接证据
+（Phys. Rev. B 61, 8687, DOI `10.1103/PhysRevB.61.8687`）。因此，实验 MPB 样品
+不能由一个任意有序小胞无条件代表。
+
+第一性原理侧同样需要显式构型。Sághi-Szabó、Cohen 和 Krakauer用 GGA、Berry
+phase 比较了 PbTiO3 及 PZT50/50 的 `[001]`、`[111]` B 位有序模型，并报告
+proper piezoelectric stress tensor；其 `[001]` 有序模型提供本轮首个 PZT 小胞的
+定义匹配锚点（Phys. Rev. B 59, 12771, DOI `10.1103/PhysRevB.59.12771`）。
+Baker 和 Bowler进一步比较 2x2x2 超胞可表示的六种独立 B 位有序，表明软模
+特征依赖具体构型，且 VCA 不能可靠替代局域结构（Phys. Rev. B 100, 224305,
+DOI `10.1103/PhysRevB.100.224305`）。
+
+据此，v2 第一轮只计算 `PbZr0.5Ti0.5O3`、`[001]` 1:1 B 位层状有序、四方
+`P4mm` 10 原子模型，并把构型写入 case id、provenance 和所有张量标签。`Cm`
+MPB 结构、`[111]` 有序和其他 B 位排列分别作为后续构型/相敏感性任务；在完成
+这些比较前，不给出无限定语的“PZT e33/d33”。
+
 ## 4. 调研问题拆分和待核查项
 
 | 问题 | 已知依据 | v2 设计决策 | 进入实现前的证据门 |

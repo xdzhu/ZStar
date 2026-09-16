@@ -938,7 +938,7 @@ ABACUS 将幅度同为 `1e-3` 的应变结构重新投影成未应变 reference�
    计划、材料报告和示例仍把它写成推荐值。现已保留真实 provenance 并从所有现行
    生成约束和结论中删除该推荐，未伪造历史。
 9. **尚未解决：**ZnO 的 `e15/C44/internal-strain`、GaN 的定量偏差、GaAs 的
-   PBEsol/PBE `e14` 锚点、中心对称 SiC 零压电 control，以及 tetragonal 与低对称
+   PBEsol/PBE `e14` 锚点、diamond Si 中心对称零压电 control，以及 tetragonal 与低对称
    真实案例仍未闭合；不能据单个 AlN 宣称任意空间群稳定功能已完成。
 10. **下一阶段条件：**AlN Gate A0.5 已满足，可进入 P1 机电核心算法闭合；稳定
     CLI、集群任务分发优化和更高阶功能继续受 P1--P3 前置门约束。
