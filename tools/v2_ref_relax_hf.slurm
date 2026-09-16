@@ -62,7 +62,12 @@ rc=$?
 end=$(date +%s)
 printf '%s\n' "{\"node\":\"$(hostname)\",\"mpi\":$NP,\"omp\":$OMP,\"returncode\":$rc,\"elapsed_seconds\":$((end-start))}" > "runtime_relax_${NP}mpi.json"
 test "$rc" -eq 0 || exit "$rc"
-grep -qi 'relaxation is converged' OUT.*/running_relax.log || {
+reference_log=$(find OUT.* -maxdepth 1 -type f \( -name 'running_cell-relax.log' -o -name 'running_relax.log' \) -print -quit)
+test -n "$reference_log" || {
+    echo "reference relaxation log is missing (expected running_cell-relax.log)" >&2
+    exit 2
+}
+grep -qi 'relaxation is converged' "$reference_log" || {
     echo "reference relaxation did not reach a convergence marker" >&2
     exit 2
 }

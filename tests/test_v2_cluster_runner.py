@@ -39,6 +39,8 @@ def test_hf_runners_enforce_matching_production_or_verification_profiles():
     assert "scf_thr<=$MAX_SCF" in reference
     assert "relax_nmax>=100" in reference
     assert "relaxation is converged" in reference
+    assert "running_cell-relax.log" in reference
+    assert "running_relax.log" in reference
 
     assert 'NP="${ZSTAR_MPI_RANKS:-32}"' in response
     assert 'PROFILE="${ZSTAR_V2_CONVERGENCE_PROFILE:-production}"' in response
