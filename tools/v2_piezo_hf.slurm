@@ -58,8 +58,17 @@ validate_stage_input() {
     case "$stage" in
         reference)
             test "$symmetry" = "1" || { echo "v2 reference requires symmetry=1" >&2; return 1; }
-            test "$calculation" = "scf" || { echo "v2 response reference requires calculation=scf" >&2; return 1; }
             require_leq "$input" scf_thr "$MAX_SCF" || return 1
+            case "$calculation" in
+                scf) ;;
+                relax)
+                    require_leq "$input" force_thr_ev "$MAX_RELAX_FORCE" || return 1
+                    awk -v x="$(input_value "$input" relax_nmax)" 'BEGIN { exit !(x >= 100 && x == int(x)) }' || {
+                        echo "v2 relaxed response reference requires integer relax_nmax>=100" >&2; return 1;
+                    }
+                    ;;
+                *) echo "unsupported v2 response reference calculation=$calculation in $input" >&2; return 1 ;;
+            esac
             ;;
         strain-*)
             test "$symmetry" = "0" || { echo "v2 perturbations require symmetry=0" >&2; return 1; }
@@ -131,7 +140,7 @@ for d in "$ROOT"/reference "$ROOT"/strain-*; do
     else
         echo "SKIP ABACUS $stage"
     fi
-    if test "$stage" != reference && test "$calculation" = relax; then
+    if test "$calculation" = relax; then
         out=$(find "$d" -maxdepth 2 -type f -name STRU_ION_D -print -quit)
         test -n "$out" || { echo "relaxed structure missing for $stage" >&2; exit 5; }
         test -f "$d/STRU_INITIAL" || cp "$d/STRU" "$d/STRU_INITIAL"
