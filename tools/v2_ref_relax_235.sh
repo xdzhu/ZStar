@@ -9,6 +9,17 @@ MPI="${ZSTAR_MPI_LAUNCHER:-/home/zhuxd/intel/oneapi/mpi/2021.9.0/bin/mpirun}"
 export OMP_NUM_THREADS="$OMP" MKL_NUM_THREADS="$OMP" OPENBLAS_NUM_THREADS="$OMP"
 export I_MPI_FABRICS="${I_MPI_FABRICS:-shm}"
 cd "$ROOT"
+# One stage directory maps to one ABACUS executable.  A second launcher writing
+# to the same OUT.* tree invalidates the calculation, so fail closed instead of
+# letting two 40-rank runs overlap.
+lock_dir=".zstar-relax-${NP}mpi.lock"
+if ! mkdir "$lock_dir" 2>/dev/null; then
+    echo "ERROR: active ZStar relaxation lock: $ROOT/$lock_dir" >&2
+    echo "Resolve the existing run before launching another copy in this directory." >&2
+    exit 10
+fi
+cleanup_lock() { rmdir "$lock_dir" 2>/dev/null || true; }
+trap cleanup_lock EXIT INT TERM
 relax_log=$(find OUT.* -maxdepth 1 -type f \( -name 'running_cell-relax.log' -o -name 'running_relax.log' \) -print -quit 2>/dev/null || true)
 relaxed_stru=$(find OUT.* -maxdepth 1 -type f -name STRU_ION_D -print -quit 2>/dev/null || true)
 if test -n "$relax_log" && test -n "$relaxed_stru" && grep -qiE 'relaxation is converged|calculation *finished' "$relax_log"; then
