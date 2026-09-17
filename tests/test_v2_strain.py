@@ -119,12 +119,19 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     assert "cal_force           1" in input_text
     assert "cal_stress          1" in input_text
     assert "symmetry_prec       0.001" in input_text
+    assert "out_mat_hs2         1" in input_text
+    assert "out_mat_r           1" in input_text
+    assert "out_chg             1" in input_text
     assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
     assert ensemble.metadata["abacus_reference_symmetry"] == 1
     assert ensemble.metadata["abacus_perturbation_symmetry"] == 0
     assert _input_parameters(tmp_path / "strain" / "reference" / "INPUT")["symmetry"] == "1"
     for stage in ensemble.stages:
-        assert _input_parameters(tmp_path / "strain" / stage.stage_id / "INPUT")["symmetry"] == "0"
+        stage_parameters = _input_parameters(tmp_path / "strain" / stage.stage_id / "INPUT")
+        assert stage_parameters["symmetry"] == "0"
+        assert stage_parameters["out_mat_hs2"] == "1"
+        assert stage_parameters["out_mat_r"] == "1"
+        assert stage_parameters["out_chg"] == "1"
     assert (tmp_path / "strain" / "ensemble.json").is_file()
     assert (tmp_path / "strain" / "symmetry.json").is_file()
     assert all((tmp_path / "strain" / stage.stage_id / "STRU").is_file() for stage in ensemble.stages)

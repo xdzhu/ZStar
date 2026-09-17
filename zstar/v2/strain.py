@@ -677,6 +677,12 @@ def prepare_abacus_strain_ensemble(
         _set_input_parameter(reference_dir / input_name, "symmetry", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
         _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
+        # A finite-strain polarization stage is an ABACUS-to-PYATB workflow,
+        # not merely an SCF calculation.  Do not inherit a legacy template
+        # that omits the LCAO matrices or charge restart needed by PYATB.
+        _set_input_parameter(reference_dir / input_name, "out_mat_hs2", "1")
+        _set_input_parameter(reference_dir / input_name, "out_mat_r", "1")
+        _set_input_parameter(reference_dir / input_name, "out_chg", "1")
     prepared = prepare_stru_assets(
         reference_dir / "STRU",
         pp_dir=pp_dir,
@@ -707,6 +713,9 @@ def prepare_abacus_strain_ensemble(
             _set_input_parameter(stage_dir / input_name, "symmetry", "0")
             _set_input_parameter(stage_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
             _set_input_parameter(stage_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
+            _set_input_parameter(stage_dir / input_name, "out_mat_hs2", "1")
+            _set_input_parameter(stage_dir / input_name, "out_mat_r", "1")
+            _set_input_parameter(stage_dir / input_name, "out_chg", "1")
             if relaxation == "relaxed-ion":
                 _set_input_parameter(stage_dir / input_name, "calculation", "relax")
                 _set_input_parameter(stage_dir / input_name, "force_thr_ev", f"{threshold:.16g}")
