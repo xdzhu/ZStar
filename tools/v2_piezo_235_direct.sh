@@ -85,9 +85,28 @@ else
 fi
 test "${#stage_paths[@]}" -gt 0 || { echo "no stages selected under $ROOT" >&2; exit 2; }
 
+# ABACUS and the following PYATB calculation both write within one stage
+# directory.  Treat that directory as an exclusive transaction: concurrent
+# launchers otherwise corrupt OUT.*, restart data, and the polarization record.
+created_locks=()
+cleanup_locks() {
+    local lock
+    for lock in "${created_locks[@]:-}"; do
+        rmdir "$lock" 2>/dev/null || true
+    done
+}
+trap cleanup_locks EXIT INT TERM
+
 for d in "${stage_paths[@]}"; do
     test -d "$d" || continue
     stage=$(basename "$d")
+    lock="$d/.zstar-piezo-${NP}mpi.lock"
+    if ! mkdir "$lock" 2>/dev/null; then
+        echo "ERROR: active ZStar piezo stage lock: $lock" >&2
+        echo "Resolve the existing stage run before launching another copy." >&2
+        exit 10
+    fi
+    created_locks+=("$lock")
     compat=""
     test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
     validate_symmetry_protocol "$d/INPUT" "$stage" || exit 3
