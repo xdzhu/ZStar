@@ -278,6 +278,102 @@ def prepare_abacus_reference_relaxation(
     return {"root": str(output), "input": str(output / "INPUT"), "manifest": str(output / "reference_relaxation.json")}
 
 
+def prepare_abacus_fixed_cell_relaxation(
+    root: str | Path,
+    *,
+    structure: str | Path = "STRU",
+    input_template: str | Path | None = None,
+    kpt_template: str | Path | None = None,
+    pp_dir: str | Path | None = None,
+    orb_dir: str | Path | None = None,
+    profile: str = "production",
+    symprec: float = V2_SYMPREC,
+    force_thr_ev: float | None = None,
+    scf_thr: float | None = None,
+    relax_nmax: int = V2_DEFAULT_RELAX_NMAX,
+) -> dict:
+    """Prepare the R2r fixed-cell internal relaxation after a converged R1.
+
+    This intentionally differs from :func:`prepare_abacus_reference_relaxation`:
+    the R1 lattice is preserved and only fractional ionic coordinates may move.
+    The resulting ``STRU_ION_D`` is the only permitted source for a relaxed-ion
+    strain ensemble.  Keeping this promotion as a named stage prevents a
+    cell-relax input template from silently re-optimizing the response lattice.
+    """
+
+    from ..shared_response import read_structure, write_structure
+    from ..abacus_assets import prepare_stru_assets
+
+    output = Path(root).resolve()
+    source = Path(structure).expanduser().resolve()
+    if not source.is_file():
+        raise FileNotFoundError(f"ABACUS STRU does not exist: {source}")
+    if output.exists() and any(output.iterdir()):
+        raise FileExistsError(f"fixed-cell relaxation output is not empty: {output}")
+    profile_name, settings = convergence_profile(profile)
+    if not np.isfinite(float(symprec)) or float(symprec) != V2_SYMPREC:
+        raise ValueError("v2 requires symprec=1e-3 for all space-group and atom-mapping operations")
+    force = settings["relaxed_strain_force_thr_ev"] if force_thr_ev is None else float(force_thr_ev)
+    electronic = settings["scf_thr"] if scf_thr is None else float(scf_thr)
+    if not np.isfinite(force) or force != settings["relaxed_strain_force_thr_ev"]:
+        raise ValueError(f"v2 {profile_name} fixed-cell relaxation requires force_thr_ev={settings['relaxed_strain_force_thr_ev']:g}")
+    if not np.isfinite(electronic) or electronic != settings["scf_thr"]:
+        raise ValueError(f"v2 {profile_name} fixed-cell relaxation requires scf_thr={settings['scf_thr']:g}")
+    if isinstance(relax_nmax, (bool, np.bool_)) or int(relax_nmax) != relax_nmax or int(relax_nmax) < V2_DEFAULT_RELAX_NMAX:
+        raise ValueError("v2 fixed-cell relaxation requires integer relax_nmax>=100")
+    input_source = Path(input_template).expanduser().resolve() if input_template else next(
+        (candidate for candidate in (source.parent / "INPUT", source.parent / "INPUT-scf") if candidate.is_file()),
+        None,
+    )
+    kpt_source = Path(kpt_template).expanduser().resolve() if kpt_template else source.parent / "KPT"
+    if input_source is None or not input_source.is_file():
+        raise FileNotFoundError("fixed-cell relaxation requires an ABACUS INPUT template")
+    if not kpt_source.is_file():
+        raise FileNotFoundError("fixed-cell relaxation requires an ABACUS KPT template")
+
+    output.mkdir(parents=True, exist_ok=True)
+    atoms = read_structure(source)
+    write_structure(source, output / "STRU", atoms)
+    shutil.copy2(input_source, output / "INPUT")
+    shutil.copy2(kpt_source, output / "KPT")
+    for key, value in (
+        ("calculation", "relax"),
+        ("cal_force", "1"),
+        ("cal_stress", "1"),
+        ("symmetry", "1"),
+        ("symmetry_prec", f"{float(symprec):.16g}"),
+        ("force_thr_ev", f"{force:.16g}"),
+        ("scf_thr", f"{electronic:.16g}"),
+        ("relax_nmax", str(int(relax_nmax))),
+    ):
+        _set_input_parameter(output / "INPUT", key, value)
+    prepared = prepare_stru_assets(
+        output / "STRU", pp_dir=pp_dir, orb_dir=orb_dir, output_dir=output / ".zstar-assets"
+    )
+    if prepared.changed:
+        shutil.copy2(prepared.path, output / "STRU")
+    for asset in prepared.assets:
+        shutil.copy2(asset, output / asset.name)
+    manifest = {
+        "schema": "zstar-v2-fixed-cell-relaxation",
+        "schema_version": "0.1",
+        "status": "inputs_prepared_not_executed",
+        "source_structure_sha256": _sha256(source),
+        "convergence_profile": profile_name,
+        "convergence": {
+            "calculation": "relax",
+            "force_thr_ev": force,
+            "scf_thr": electronic,
+            "relax_nmax": int(relax_nmax),
+            "symprec": float(symprec),
+        },
+        "promotion_requirement": "Run on HF, verify ionic convergence, then promote OUT.<suffix>/STRU_ION_D explicitly to the relaxed-ion ensemble.",
+    }
+    (output / "fixed_cell_relaxation.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    (output / "convergence_profile.txt").write_text(profile_name + "\n", encoding="utf-8")
+    return {"root": str(output), "input": str(output / "INPUT"), "manifest": str(output / "fixed_cell_relaxation.json")}
+
+
 def prepare_abacus_berry_stages(
     source_scf_stage: str | Path,
     output: str | Path,
@@ -572,6 +668,10 @@ def prepare_abacus_strain_ensemble(
         if candidate is not None and candidate.is_file():
             shutil.copy2(candidate, destination)
     if (reference_dir / input_name).is_file():
+        # R2c and the already-relaxed R2r observation are electronic
+        # references.  Never inherit ``relax`` or ``cell-relax`` from a source
+        # template here: such a calculation would change the zero-strain state.
+        _set_input_parameter(reference_dir / input_name, "calculation", "scf")
         _set_input_parameter(reference_dir / input_name, "cal_force", "1")
         _set_input_parameter(reference_dir / input_name, "cal_stress", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry", "1")

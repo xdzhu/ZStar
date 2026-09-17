@@ -46,7 +46,10 @@ Python API `prepare_abacus_reference_relaxation` 和私有工具
 `tools/prepare_v2_reference_relax.py` 默认生成 `production` R1；传入
 `profile="verification"` 才生成高精度审计。生成器拒绝比所选 profile 更松的
 `force_thr_ev`、`stress_thr`、`scf_thr` 或 `relax_nmax`。R1 收敛后只能显式提升
-其 `OUT.<suffix>/STRU_ION_D` 为 R2c 或 R2r 的 `STRU`；R2r 收敛后再将其最终结构
+其 `OUT.<suffix>/STRU_ION_D` 为 R2c 或 R2r 的 `STRU`。R2r 必须通过
+`prepare_abacus_fixed_cell_relaxation` 或
+`tools/prepare_v2_fixed_cell_relax.py` 生成：该阶段强制
+`calculation=relax`，不会继承或重新执行 `cell-relax`。R2r 收敛后再将其最终结构
 提升为 R3r 的 `STRU`。每次提升都必须记录原始路径、输入
 hash、最终离子力、最终应力、节点、MPI/OMP 与 runtime。
 

@@ -64,7 +64,7 @@ coordinate rotation where noted; a symmetry projection is diagnostic only.
 | diamond Si | clamped + relaxed | `max|e|=5.33e-5` | relaxed `C11/C12/C44=174.46/68.05/85.47` | zero-piezo control passes the `1e-3 C/m2` absolute noise gate |
 | 3C-SiC | clamped + relaxed | cubic-axis relaxed `e14/e25/e36=0.14245/0.14209/0.14246` | relaxed `C11/C12/C44=363.46/110.70/231.49` | rank complete; forbidden proper-e maximum `0.00506 C/m2`; internal-strain forbidden displacement `2.69e-4 Angstrom` |
 | GaAs | clamped + relaxed | relaxed `e14/e25/e36=-0.263223/-0.263223/-0.263223` | relaxed `C11/C12/C44=102.79/43.78/52.14` | reproduces the earlier `-0.2627 C/m2` result; tensor symmetry residual `1.70e-5` |
-| ZnO | clamped complete | `e31=+0.3614`, `e33=-0.7398`, `e15=+0.3835` | `C11/C12/C13/C33/C44=277.0/96.2/71.9/288.1/57.5` | clamped branch only; relaxed branch still running |
+| ZnO | clamped + relaxed review | clamped `e31=+0.3614`, `e33=-0.7398`, `e15=+0.3835`; relaxed `e31=-0.6132`, `e33=+1.2218`, `e15=-0.4620` | clamped `C11/C12/C13/C33/C44=277.0/96.2/71.9/288.1/57.5`; relaxed `211.0/123.7/110.5/210.3/40.4` | relaxed raw `d33=11.85 pm/V`, but its internal-strain symmetry gate fails; it is not a qualified material benchmark |
 
 The 3C-SiC primitive-cell output is not cubic-axis-aligned. The reported cubic
 numbers use the tested `rotate_piezoelectric_tensor` and
@@ -74,9 +74,22 @@ direct compliance conversion gives `d14=0.615/0.614/0.615 pm/V` for 3C-SiC and
 `d14=-5.0486 pm/V` for GaAs.
 
 As of this checkpoint, successful or preserved failed jobs have consumed
-`135.3 core-h` (32 allocated CPUs times Slurm elapsed time); active ZnO, PbTiO3
-restart and PZT jobs are excluded. PbTiO3 reached 100 ionic/cell steps without
-meeting the fixed `1e-4 eV/Angstrom` force gate and was restarted from its final
-`STRU_ION_D` with the same production thresholds and `relax_nmax=100`, preserving
-the original failed run. Ordered PZT remains in R1 cell relaxation. Neither
-material has a tensor result at this checkpoint.
+`135.3 core-h` (32 allocated CPUs times Slurm elapsed time); the later ZnO,
+PbTiO3 and PZT work is tracked separately until it passes its gates. ZnO's
+relaxed 13-geometry collection completed.  Its proper-piezo and elastic audits
+pass, but the equal-weight acoustic-gauge internal-strain audit gives a forbidden
+displacement of `4.24e-3 Angstrom`, above the fixed mixed-gate floor of
+`1e-3 Angstrom`; the raw tensor is preserved for diagnosis and is explicitly not
+symmetry-projected into a claimed benchmark.
+
+PbTiO3 R1 restart 2 reached the explicit `Relaxation is converged!` marker at
+`force_thr_ev=1e-4 eV/Angstrom` and `stress_thr=0.1 kbar`. Its final
+`STRU_ION_D` was promoted into a dedicated R2r fixed-cell internal-relaxation
+input, rather than reusing a `cell-relax` template: the generated input enforces
+`calculation=relax`, `symmetry_prec=1e-3`, `scf_thr=1e-8` and
+`relax_nmax=100`. HF job `27712477` is the R2r smoke test; no R3r ensemble will
+be submitted unless it reaches the ionic convergence marker. Ordered PZT R1
+stopped after 100 steps with stress converged but force still above the fixed
+gate. Its original directory and log are retained; a new R1 restart from its
+last `STRU_ION_D`, with unchanged production inputs, is HF job `27712478`.
+Neither PbTiO3 nor PZT has a tensor result at this checkpoint.

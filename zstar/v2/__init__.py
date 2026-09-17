@@ -85,6 +85,7 @@ from .strain import (
     apply_strain,
     convergence_profile,
     prepare_abacus_berry_stages,
+    prepare_abacus_fixed_cell_relaxation,
     prepare_abacus_reference_relaxation,
     prepare_abacus_strain_ensemble,
 )
@@ -205,6 +206,7 @@ __all__ = [
     "polarization_representation",
     "prepare_abacus_strain_ensemble",
     "prepare_abacus_reference_relaxation",
+    "prepare_abacus_fixed_cell_relaxation",
     "prepare_abacus_berry_stages",
     "parse_abacus_berry_polarization",
     "parse_pyatb_polarization",

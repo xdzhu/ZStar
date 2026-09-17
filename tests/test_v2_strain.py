@@ -12,6 +12,7 @@ from zstar.v2 import (
     actual_strain,
     apply_strain,
     prepare_abacus_berry_stages,
+    prepare_abacus_fixed_cell_relaxation,
     prepare_abacus_reference_relaxation,
     prepare_abacus_strain_ensemble,
     periodic_strain_indices,
@@ -44,6 +45,25 @@ def test_reference_relaxation_preparation_defaults_to_cost_balanced_production_g
     assert float(values["scf_thr"]) == pytest.approx(1.0e-8)
     assert values["relax_nmax"] == "100"
     assert (tmp_path / "reference-relax" / "convergence_profile.txt").read_text().strip() == "production"
+
+
+def test_fixed_cell_relaxation_preparation_cannot_inherit_cell_relax(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    result = prepare_abacus_fixed_cell_relaxation(
+        tmp_path / "fixed-cell-relax",
+        structure=case / "STRU",
+        input_template=case / "INPUT",
+        kpt_template=case / "KPT",
+    )
+    values = _input_parameters(Path(result["input"]))
+    assert values["calculation"] == "relax"
+    assert values["cal_force"] == values["cal_stress"] == "1"
+    assert values["symmetry"] == "1"
+    assert float(values["symmetry_prec"]) == pytest.approx(1.0e-3)
+    assert float(values["force_thr_ev"]) == pytest.approx(1.0e-4)
+    assert float(values["scf_thr"]) == pytest.approx(1.0e-8)
+    assert values["relax_nmax"] == "100"
+    assert Path(result["manifest"]).is_file()
 
 
 @pytest.mark.parametrize(
@@ -302,6 +322,23 @@ def test_abacus_strain_preparation_marks_relaxed_ion_stages_and_sets_relax_input
     assert ensemble.metadata["relax_nmax"] == 100
     reference_input = (tmp_path / "relaxed-strain" / "reference" / "INPUT").read_text()
     assert "calculation         scf" in reference_input
+
+
+def test_abacus_strain_reference_forces_scf_even_if_template_is_cell_relax(tmp_path):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    template = tmp_path / "INPUT"
+    template.write_text(
+        (case / "INPUT").read_text(encoding="utf-8").replace("calculation         scf", "calculation         cell-relax"),
+        encoding="utf-8",
+    )
+    prepare_abacus_strain_ensemble(
+        tmp_path / "ensemble",
+        structure=case / "STRU",
+        input_template=template,
+        kpt_template=case / "KPT",
+        ion_relaxation="relaxed-ion",
+    )
+    assert _input_parameters(tmp_path / "ensemble" / "reference" / "INPUT")["calculation"] == "scf"
 
 
 def test_abacus_strain_preparation_rejects_nonstandard_tighter_scf_threshold(tmp_path):
