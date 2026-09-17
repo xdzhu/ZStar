@@ -24,3 +24,7 @@ Historical scheduler records are retained in provenance. Future v2 calculations 
 Slurm with 32 MPI tasks, one OpenMP thread per task and no node exclusivity.
 The driver is resumable through its stage markers, so do not start a second
 copy for the same case root.
+
+GaAs is a cubic shear-piezoelectric audit: `d14`, not `d33`, is its independent
+coefficient. Its fixed-protocol status and literature-comparison limitation are
+tracked in [the v2 piezoelectric case matrix](../../../docs/v2_piezoelectric_case_matrix.md).

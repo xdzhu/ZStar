@@ -12,6 +12,7 @@ an executable `run.sh`. Read its README before starting a calculation.
 | [HfO2](HfO2/) | Tetragonal PBEsol BEC and dielectric results / BEC 与介电结果 |
 | [t_HfO2](t_HfO2/) | Matched Unified/Separate benchmark / 同设置效率对照 |
 | [SiC](SiC/) | 3C-SiC PBE Unified/Separate benchmark / 统一框架对照 |
+| [piezoelectric_v2_benchmarks](piezoelectric_v2_benchmarks/) | v2 piezoelectric result, qualification, and standalone d33 index / 压电结果与 d33 索引 |
 
 Different structures and calculation settings are deliberately kept separate.
 不同晶相或参数的案例不会合并结果。[Efficiency index / 效率索引](../Benchmarks/README.md)。

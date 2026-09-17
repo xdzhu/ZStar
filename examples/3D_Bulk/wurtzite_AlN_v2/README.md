@@ -85,3 +85,6 @@ The source papers and exact comparison hierarchy are recorded in
 This validates the present 3D hexagonal research API and result chain; it does
 not by itself establish arbitrary-space-group, low-dimensional, finite-
 temperature, flexoelectric, switching, or resonant-Raman support.
+
+The campaign-wide qualification state and the standalone `d33` comparison are
+maintained in [the v2 piezoelectric case matrix](../../../docs/v2_piezoelectric_case_matrix.md).

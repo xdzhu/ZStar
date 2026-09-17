@@ -37,3 +37,7 @@ The directory intentionally does not contain pseudopotentials or orbitals.
 On the shared validation nodes use the Dojo Ga/N assets recorded in
 `provenance.json` and copy them into each private run stage. Do not commit
 large calculator outputs to this source directory.
+
+This is a historical `±0.1%` research result, not the frozen production result.
+Its qualification status and separate `d33` comparison are in
+[the v2 piezoelectric case matrix](../../../docs/v2_piezoelectric_case_matrix.md).

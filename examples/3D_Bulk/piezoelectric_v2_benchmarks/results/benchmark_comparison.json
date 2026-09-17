@@ -1,0 +1,16 @@
+{
+  "schema": "zstar-v2-piezoelectric-benchmark-index-v1",
+  "as_of": "2026-09-17",
+  "units": {"e": "C/m^2", "d": "pm/V (= pC/N)", "elastic": "GPa"},
+  "protocol": "13-geometry +/-0.5% engineering-Voigt candidate production protocol unless marked historical",
+  "materials": [
+    {"material": "diamond Si", "status": "fixed_protocol_algorithm_audit_passed", "d33_applicable": false},
+    {"material": "3C-SiC", "status": "fixed_protocol_algorithm_audit_passed_literature_anchor_pending", "e14": 0.14245, "d14": 0.615, "d33_applicable": false},
+    {"material": "zincblende GaAs", "status": "fixed_protocol_algorithm_audit_passed_matched_functional_anchor_pending", "e14": -0.263223, "d14": -5.048584, "d33_applicable": false},
+    {"material": "wurtzite AlN", "status": "qualified_research_evidence_frozen_protocol_rerun_required", "e31": -0.638506, "e33": 1.546428, "e15": -0.335107, "d33": 5.735, "d33_theory": 5.4, "d33_reference_method": "GGA", "d33_percent_difference": 6.2},
+    {"material": "wurtzite ZnO", "status": "direct_ed_obtained_internal_strain_reconstruction_gate_failed", "e31": -0.6132, "e33": 1.221846, "e15": -0.462049, "d33": 11.853851, "d33_theory": 11.4, "d33_reference_method": "LDA/DFPT", "d33_percent_difference": 4.0},
+    {"material": "wurtzite GaN", "status": "historical_small_strain_protocol_rerun_required", "e31": -0.372058, "e33": 0.660407, "e15": -0.254267, "d33": 2.30265, "d33_theory": 2.7, "d33_reference_method": "GGA", "d33_percent_difference": -14.7},
+    {"material": "tetragonal PbTiO3", "status": "calculation_in_progress", "d33_applicable": true},
+    {"material": "ordered 50/50 PZT", "status": "calculation_in_progress", "d33_applicable": true}
+  ]
+}

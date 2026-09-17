@@ -42,3 +42,8 @@ start a second copy for the same case root.
 The large `run/` and `results/` trees are generated outside the repository
 scratch area.  Pseudopotentials and orbitals are copied into private run
 directories and are not committed.
+
+The archived values above are not the current quantitative benchmark record.
+The amended campaign result, its internal-strain reconstruction diagnostic, and
+the standalone `d33` comparison are in
+[the v2 piezoelectric case matrix](../../../docs/v2_piezoelectric_case_matrix.md).
