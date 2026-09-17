@@ -88,14 +88,9 @@ test "${#stage_paths[@]}" -gt 0 || { echo "no stages selected under $ROOT" >&2; 
 # ABACUS and the following PYATB calculation both write within one stage
 # directory.  Treat that directory as an exclusive transaction: concurrent
 # launchers otherwise corrupt OUT.*, restart data, and the polarization record.
-created_locks=()
-cleanup_locks() {
-    local lock
-    for lock in "${created_locks[@]:-}"; do
-        rmdir "$lock" 2>/dev/null || true
-    done
-}
-trap cleanup_locks EXIT INT TERM
+# A completed stage releases its own lock so resumable runs can skip it.  An
+# interrupted active stage deliberately leaves its lock behind and must be
+# audited before it can be retried.
 
 for d in "${stage_paths[@]}"; do
     test -d "$d" || continue
@@ -106,7 +101,6 @@ for d in "${stage_paths[@]}"; do
         echo "Resolve the existing stage run before launching another copy." >&2
         exit 10
     fi
-    created_locks+=("$lock")
     compat=""
     test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
     validate_symmetry_protocol "$d/INPUT" "$stage" || exit 3
@@ -152,7 +146,12 @@ for d in "${stage_paths[@]}"; do
             cp "$(find "$d" -maxdepth 2 -type f -name running_relax.log -print -quit)" "$compat"
         fi
     fi
-    test -f "$d/pyatb/Out/Polarization/zstar_precision.json" && { test -z "$compat" || rm -f "$compat"; echo "SKIP PYATB $stage"; continue; }
+    test -f "$d/pyatb/Out/Polarization/zstar_precision.json" && {
+        test -z "$compat" || rm -f "$compat"
+        echo "SKIP PYATB $stage"
+        rmdir "$lock" || { echo "failed to release completed-stage lock: $lock" >&2; exit 11; }
+        continue
+    }
     test -d "$d/pyatb" && mv "$d/pyatb" "$d/pyatb.aborted" || true
     "$PYATB_INPUT" -i "$d" -o "$d/pyatb" --polar --valence "$VALENCE" > "$d/pyatb_input.log" 2>&1 || { test -z "$compat" || rm -f "$compat"; echo "PYATB input failed: $stage" >&2; exit 6; }
     start=$(date +%s)
@@ -165,5 +164,9 @@ for d in "${stage_paths[@]}"; do
     test -f "$d/pyatb/Out/Polarization/polarization.dat" && test -f "$d/pyatb/Out/Polarization/zstar_precision.json" || { echo "missing polarization output: $stage" >&2; exit 8; }
     touch "$d/.pyatb_done_${NP}"
     echo "DONE $stage"
+    rmdir "$lock" || {
+        echo "failed to release completed-stage lock: $lock" >&2
+        exit 11
+    }
 done
 echo "V2_PIEZO_CASE_COMPLETE root=$ROOT node=$(hostname) mpi=$NP omp=$OMP"
