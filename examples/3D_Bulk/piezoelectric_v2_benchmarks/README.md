@@ -10,8 +10,15 @@ Do not treat this index as a set of downloadable reference tensors. A result ent
 the quantitative benchmark set only after the protocol, rank/residual, symmetry,
 mechanical-stability, and matched-theory comparison gates all pass.
 
-| Family | Current case-level evidence |
+| Case material | Current case-level evidence |
 |---|---|
-| Zero and cubic-shear audit | diamond Si, 3C-SiC, zincblende GaAs |
-| Hexagonal longitudinal response | wurtzite AlN, ZnO, GaN |
-| Ferroelectric targets | tetragonal PbTiO3 and explicitly ordered 50/50 PZT (in progress) |
+| wurtzite AlN | Qualified research evidence; frozen-protocol rerun launched on cu24 |
+| wurtzite GaN | Historical small-strain result is superseded; frozen-protocol R1 launched on cu25 |
+| wurtzite ZnO | Direct result retained as a diagnostic; frozen-protocol R1 launched on cu26 |
+| tetragonal PbTiO3 | Ferroelectric longitudinal-response target; HF calculation pending |
+| explicitly ordered 50/50 PZT | Model-specific ferroelectric target; HF calculation pending |
+
+Diamond Si, 3C-SiC, and zincblende GaAs remain in the internal validation
+record for zero-response, shear-Voigt, and coordinate-transform audits. They
+are deliberately not presented here as representative piezoelectric material
+cases.
