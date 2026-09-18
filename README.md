@@ -5,7 +5,7 @@
 <h1 align="center">ZStar</h1>
 
 <p align="center">
-  An automated toolkit for polarization, Born effective charges, dielectric response, and infrared and Raman spectra calculations.
+  A unified toolkit for polarization, Born effective charges, dielectric and piezoelectric responses, and infrared and Raman spectra
 </p>
 
 <p align="center">
@@ -37,7 +37,7 @@ reproducible cases, clone the repository and install the same source tree:
 
 ```bash
 git clone https://github.com/xdzhu/ZStar.git
-cd zstar
+cd ZStar
 pip install .
 ```
 
@@ -286,7 +286,7 @@ Or install a local checkout:
 
 ```bash
 git clone https://github.com/xdzhu/ZStar.git
-cd zstar
+cd ZStar
 pip install .
 ```
 

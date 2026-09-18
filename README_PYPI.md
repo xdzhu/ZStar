@@ -6,9 +6,9 @@
 [![Python](https://img.shields.io/pypi/pyversions/zstar)](https://pypi.org/project/zstar/)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green)](https://www.gnu.org/licenses/gpl-3.0.html)
 
-ZStar is an automated toolkit for polarization, Born effective charges, dielectric
-response, and infrared and Raman spectra calculations. Its principal workflow
-uses ABACUS, PYATB, and Phonopy.
+ZStar is a unified toolkit for polarization, Born effective charges, dielectric
+and piezoelectric responses, and infrared and Raman spectra. Its principal
+workflow uses ABACUS, PYATB, and Phonopy.
 
 ## Quick Start
 
@@ -30,7 +30,7 @@ The supplied two-atom 3C-SiC case is the shortest complete route to BEC,
 Gamma-point phonons, IR, and Raman results:
 
 ```bash
-cd zstar/examples/3D_Bulk/SiC
+cd ZStar/examples/3D_Bulk/SiC
 cp -r run work
 cd work
 
@@ -78,6 +78,7 @@ each stage and report the BEC table, optical-mode frequencies, and spectrum path
 - Hybrid 1D BECs: transverse charge-density dipoles plus longitudinal Berry polarization.
 - Hybrid 2D BECs: Berry-phase in-plane response plus cube-integrated out-of-plane dipole.
 - IR, Raman, and static/frequency-dependent dielectric response.
+- Native VASP bulk piezoelectric and elastic response collection.
 - A packaged `run-zstar-workflows` agent skill with JSON preflight.
 - Slab electrostatic-potential maps, directional profiles, and local two-sided
   vacuum diagnostics.

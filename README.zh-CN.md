@@ -5,7 +5,7 @@
 <h1 align="center">ZStar</h1>
 
 <p align="center">
-  面向极化、Born 有效电荷、介电响应以及红外与拉曼谱计算的自动化工具包。
+  面向极化、Born 有效电荷、介电与压电响应以及红外与拉曼谱的统一工具包。
 </p>
 
 <p align="center">
@@ -35,7 +35,7 @@ ZStar。如需获取可复现案例，则克隆仓库并安装同一份源码：
 
 ```bash
 git clone https://github.com/xdzhu/ZStar.git
-cd zstar
+cd ZStar
 pip install .
 ```
 
@@ -256,7 +256,7 @@ pip install -U zstar
 
 ```bash
 git clone https://github.com/xdzhu/ZStar.git
-cd zstar
+cd ZStar
 pip install .
 ```
 

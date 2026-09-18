@@ -1,3 +1,18 @@
+## 0.3.4 - 2026-09-19
+
+- Prefer native VASP response solvers for bulk BEC, dielectric response,
+  zone-center phonons, piezoelectricity, and elasticity; retain the documented
+  finite-displacement fallback and Raman dielectric-derivative workflow.
+- Validate the native response route with reproducible 3C-SiC and wurtzite AlN
+  inputs and retained results. Licensed VASP POTCAR files are not redistributed.
+- Reject incomplete native response blocks and allow independently completed
+  local-mode results without requiring the reference cache.
+- Exercise base and optional VASP installations in CI across supported Phonopy
+  APIs, including independently installed wheel acceptance.
+- Synchronize the unified-toolkit description and piezoelectric scope across
+  English and Chinese READMEs, PDF manuals, PyPI metadata, and citation titles;
+  correct the cloned repository directory case in installation instructions.
+
 ## 0.3.3 - 2026-09-09
 
 - Align the packaged agent skill with the public Unified BEC, Gamma-phonon,

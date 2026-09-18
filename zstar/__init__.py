@@ -1,5 +1,6 @@
 """
-ZStar: A code for calculations of Born effective charge and dielectric responses.
+ZStar: A unified toolkit for polarization, Born effective charges, dielectric
+and piezoelectric responses, and infrared and Raman spectra.
 
 ZStar provides a set of tools for computing Born effective charge, polarization
 and phonon-related properties of materials from first-principles calculations. 
@@ -7,8 +8,9 @@ It is designed to simplify and automate data generation, analysis, and post-
 processing for materials scientists and engineers.
 
 Typical capabilities include:
-- Serial and resumable bulk or two-dimensional Born-charge workflows.
+- Serial and resumable bulk, slab, wire, and molecular charge-response workflows.
 - Phonon, infrared, Raman, and harmonic dielectric analysis.
+- Native VASP bulk dielectric, piezoelectric, and elastic response collection.
 - Structure analysis, symmetry reconstruction, and sum-rule checks.
 - Old and new PYATB response-interface compatibility.
 
@@ -30,7 +32,7 @@ See the accompanying LICENSE file for details.
 
 # NOTE:
 # Keep this version in sync with the version declared in pyproject.toml.
-__version__ = "0.3.3"
+__version__ = "0.3.4"
 
 # ---------------------------------------------------------------------------
 # Public API surface
