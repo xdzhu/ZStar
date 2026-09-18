@@ -1,0 +1,38 @@
+{
+  "dimensionality": 3,
+  "response_kind": "total relative dielectric tensor",
+  "response_unit": "1",
+  "response_convention": "relative permittivity",
+  "electronic_response_included": true,
+  "static_response": [
+    [
+      8.22928207785608,
+      -3.0401532262791855e-06,
+      7.070059290031736e-06
+    ],
+    [
+      6.959846773720816e-06,
+      8.229238053653855,
+      7.228140072512563e-05
+    ],
+    [
+      1.0070059290031736e-05,
+      6.928140072512564e-05,
+      9.747894531938378
+    ]
+  ],
+  "modes": 9,
+  "files": {
+    "modes": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/ir_spectrum/ir_modes.csv",
+    "spectrum": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/ir_spectrum/ir_spectrum.dat",
+    "response_real": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/ir_spectrum/ir_response_real.dat",
+    "response_imag": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/ir_spectrum/ir_response_imag.dat",
+    "static_response": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/ir_spectrum/static_response.json",
+    "plot": null,
+    "plot_pdf": null,
+    "plot_svg": null,
+    "response_plot": null,
+    "response_plot_pdf": null,
+    "response_plot_svg": null
+  }
+}

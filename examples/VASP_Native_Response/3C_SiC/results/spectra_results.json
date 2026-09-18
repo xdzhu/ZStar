@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "calculator": "vasp",
+  "dimensionality": 3,
+  "periodic_axes": "xyz",
+  "nac_model": "bulk",
+  "mode_numbers": [
+    6,
+    5,
+    4
+  ],
+  "native_mode_numbers": [
+    1,
+    2,
+    3
+  ],
+  "mode_index_convention": "frequency-ascending",
+  "tensor_kind": "dielectric tensor derivative",
+  "frequencies_cm-1": [
+    775.4521745294766,
+    775.448039308612,
+    775.4471002000378
+  ],
+  "electronic_dielectric": [
+    [
+      7.148589,
+      1e-06,
+      1.3e-05
+    ],
+    [
+      -4e-06,
+      7.148589,
+      2e-05
+    ],
+    [
+      -1.5e-05,
+      -2.1e-05,
+      7.148587
+    ]
+  ],
+  "born_tensors": [
+    [
+      [
+        2.69163,
+        -0.0001,
+        -7e-05
+      ],
+      [
+        -0.0001,
+        2.69164,
+        -6e-05
+      ],
+      [
+        -6e-05,
+        -5e-05,
+        2.6916
+      ]
+    ],
+    [
+      [
+        -2.69163,
+        0.0001,
+        7e-05
+      ],
+      [
+        0.0001,
+        -2.69164,
+        6e-05
+      ],
+      [
+        6e-05,
+        5e-05,
+        -2.6916
+      ]
+    ]
+  ],
+  "raman_tensors": [
+    [
+      [
+        -7.499999998827889e-05,
+        0.3531875,
+        0.250075
+      ],
+      [
+        0.3531875,
+        -0.0001000000000139778,
+        -0.255225
+      ],
+      [
+        0.250075,
+        -0.255225,
+        -9.999999999177334e-05
+      ]
+    ],
+    [
+      [
+        0.0002750000000162345,
+        -0.0027874999999999996,
+        0.3602375
+      ],
+      [
+        -0.0027874999999999996,
+        0.00024999999999053557,
+        0.35014999999999996
+      ],
+      [
+        0.3602375,
+        0.35014999999999996,
+        0.0
+      ]
+    ],
+    [
+      [
+        -9.999999999177334e-05,
+        0.3573125,
+        -0.24515
+      ],
+      [
+        0.3573125,
+        -4.999999998478444e-05,
+        0.2542625
+      ],
+      [
+        -0.24515,
+        0.2542625,
+        -0.0001000000000139778
+      ]
+    ]
+  ],
+  "raman_sources": [
+    {
+      "mode": 6,
+      "native_mode": 1,
+      "plus": "mode-0001/plus",
+      "minus": "mode-0001/minus"
+    },
+    {
+      "mode": 5,
+      "native_mode": 2,
+      "plus": "mode-0002/plus",
+      "minus": "mode-0002/minus"
+    },
+    {
+      "mode": 4,
+      "native_mode": 3,
+      "plus": "mode-0003/plus",
+      "minus": "mode-0003/minus"
+    }
+  ],
+  "ir_summary": {
+    "dimensionality": 3,
+    "response_kind": "total relative dielectric tensor",
+    "response_unit": "1",
+    "response_convention": "relative permittivity",
+    "electronic_response_included": true,
+    "static_response": [
+      [
+        10.506450266527018,
+        -0.000241455650316426,
+        -0.00013345466313098925
+      ],
+      [
+        -0.000246455650316426,
+        10.506475441573166,
+        -0.00013257872964581765
+      ],
+      [
+        -0.00016145466313098925,
+        -0.00017357872964581764,
+        10.506366988821478
+      ]
+    ],
+    "modes": 3,
+    "files": {
+      "modes": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/ir_modes.csv",
+      "spectrum": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/ir_spectrum.dat",
+      "response_real": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/ir_response_real.dat",
+      "response_imag": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/ir_response_imag.dat",
+      "static_response": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/static_response.json",
+      "plot": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/ir_spectrum.png",
+      "plot_pdf": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/ir_spectrum.pdf",
+      "plot_svg": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/ir_spectrum.svg",
+      "response_plot": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/dielectric_response.png",
+      "response_plot_pdf": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/dielectric_response.pdf",
+      "response_plot_svg": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/ir_spectrum/dielectric_response.svg"
+    }
+  },
+  "raman_summary": {
+    "tensor_kind": "dielectric tensor derivative",
+    "modes": 3,
+    "files": {
+      "modes": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_modes.csv",
+      "tensors": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_tensors.npy",
+      "spectrum": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.dat",
+      "plot": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.png",
+      "plot_pdf": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.pdf",
+      "plot_svg": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.svg"
+    }
+  },
+  "qpoints": "qpoints.yaml"
+}

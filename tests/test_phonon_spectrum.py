@@ -17,6 +17,9 @@ from zstar.phonon_spectrum import (
 from zstar.phonon_gen import run_phonopy_and_process_files
 
 
+EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
+
+
 class PhononSpectrumTests(unittest.TestCase):
     def test_auto_supercell_exceeds_threshold_only_on_periodic_axes(self):
         repeats = infer_supercell(
@@ -101,7 +104,7 @@ class PhononSpectrumTests(unittest.TestCase):
                 run_phonon_spectrum(tmp)
 
     def test_spectrum_cli_writes_three_outputs_from_archived_data(self):
-        source = Path("examples/3D_Bulk/cubic_BaTiO3/results/unified")
+        source = EXAMPLES / "3D_Bulk/cubic_BaTiO3/results/unified"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in ("phonopy.yaml", "FORCE_CONSTANTS", "BORN"):
@@ -116,7 +119,7 @@ class PhononSpectrumTests(unittest.TestCase):
             self.assertEqual(saved["frequency_unit"], "THz")
 
     def test_spectrum_loads_force_sets_archive_without_force_constants(self):
-        source = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/results")
+        source = EXAMPLES / "3D_Bulk/cubic_BaTiO3/phonon_spectrum/results"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in ("phonopy.yaml", "FORCE_SETS", "BORN"):
@@ -126,7 +129,7 @@ class PhononSpectrumTests(unittest.TestCase):
             self.assertTrue((root / "phonon_band_dos_nac_comparison.pdf").is_file())
 
     def test_spectrum_can_write_band_only_comparison(self):
-        source = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/results")
+        source = EXAMPLES / "3D_Bulk/cubic_BaTiO3/phonon_spectrum/results"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in ("phonopy.yaml", "FORCE_SETS", "BORN"):
@@ -139,7 +142,7 @@ class PhononSpectrumTests(unittest.TestCase):
             self.assertTrue((root / "phonon_band_nac_comparison.png").is_file())
 
     def test_band_only_requires_born(self):
-        source = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/results")
+        source = EXAMPLES / "3D_Bulk/cubic_BaTiO3/phonon_spectrum/results"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in ("phonopy.yaml", "FORCE_SETS"):
@@ -148,7 +151,7 @@ class PhononSpectrumTests(unittest.TestCase):
                 run_phonon_spectrum(root, band_only=True)
 
     def test_can_omit_disconnected_path_tail(self):
-        source = Path("examples/3D_Bulk/cubic_BaTiO3/phonon_spectrum/results")
+        source = EXAMPLES / "3D_Bulk/cubic_BaTiO3/phonon_spectrum/results"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             for name in ("phonopy.yaml", "FORCE_SETS", "BORN"):

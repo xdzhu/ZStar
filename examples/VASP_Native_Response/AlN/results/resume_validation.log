@@ -1,0 +1,416 @@
+[STAGE] Native dfpt response
+stage      status     gap_eV    error
+---------  ---------  --------  -----
+reference  completed  4.060700       
+response   completed                 
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/dfpt/BEC.raw.dat
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/dfpt/BORN
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/dfpt/vasp_bec.json
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/dfpt/response.json
+Acoustic-sum residual (e):
+ 0.000000e+00  0.000000e+00  0.000000e+00
+ 0.000000e+00  0.000000e+00  0.000000e+00
+ 1.000000e-05 -1.000000e-05 -4.440892e-16
+[WARN] Native internal-strain tensor violates translational force balance; ionic piezoelectric/elastic contributions need convergence checks. Compare with --elastic native strain finite differences before use.
+[STAGE] Native elastic response
+stage      status     gap_eV    error
+---------  ---------  --------  -----
+reference  completed  4.060700       
+response   completed                 
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/BEC.raw.dat
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/BORN
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/vasp_bec.json
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response.json
+Acoustic-sum residual (e):
+ 4.440892e-16  0.000000e+00  0.000000e+00
+ 0.000000e+00  4.440892e-16  0.000000e+00
+ 1.000000e-05  0.000000e+00  0.000000e+00
+{
+  "passed": true,
+  "checks": {
+    "dfpt: insulating electronic state": true,
+    "dfpt: epsilon matches XML": true,
+    "dfpt: BEC matches raw OUTCAR": true,
+    "dfpt: charge sum rule": true,
+    "dfpt: 12 modes, 9 positive optical modes": true,
+    "dfpt: harmonic static closure": true,
+    "dfpt: 6mm piezo tensor": true,
+    "elastic: insulating electronic state": true,
+    "elastic: epsilon matches XML": true,
+    "elastic: BEC matches raw OUTCAR": true,
+    "elastic: charge sum rule": true,
+    "elastic: 12 modes, 9 positive optical modes": true,
+    "elastic: harmonic static closure": true,
+    "elastic: 6mm piezo tensor": true,
+    "elastic: reliable derived d emitted": true,
+    "elastic: e = d C": true,
+    "DFPT/FD optical frequencies agree": true
+  },
+  "results": {
+    "dfpt": {
+      "band_gap_eV": 4.060699999999999,
+      "epsilon_infinity": [
+        [
+          4.474796,
+          -5e-06,
+          -1e-06
+        ],
+        [
+          5e-06,
+          4.474795,
+          1e-06
+        ],
+        [
+          1e-06,
+          -1e-06,
+          4.690378
+        ]
+      ],
+      "epsilon_static": [
+        [
+          8.229916,
+          -1.2e-05,
+          -1.3000000000000001e-05
+        ],
+        [
+          -1.9999999999999995e-06,
+          8.229926,
+          5.9e-05
+        ],
+        [
+          -1.1e-05,
+          5.7e-05,
+          9.749323
+        ]
+      ],
+      "optical_frequencies_cm1": [
+        237.13056442407947,
+        237.13738974883438,
+        536.4311032556066,
+        596.3042213472212,
+        638.6758333397903,
+        638.6832930548252,
+        650.9051935139112,
+        650.9070191386031,
+        707.5658328446592
+      ],
+      "Al_BEC_diagonal_e": [
+        2.51646,
+        2.51642,
+        2.67598
+      ],
+      "e31_e33_e15_C_m2": [
+        -0.5834199999999999,
+        1.46355,
+        -0.30080999999999997
+      ],
+      "piezo_symmetry_max_C_m2": 0.00665,
+      "independent_XML_epsilon_max": 4.6000000000000004e-07,
+      "diagnostics": {
+        "irreps_degeneracy_tolerance_thz": 0.02,
+        "internal_strain_translation_max_eV_per_A": 0.7397400000000012,
+        "internal_strain_translation_relative": 0.06560351616542165,
+        "electromechanical_warning": "Native internal-strain tensor violates translational force balance; ionic piezoelectric/elastic contributions need convergence checks. Compare with --elastic native strain finite differences before use.",
+        "internal_strain_source": "displaced_atoms",
+        "static_dielectric_max_abs": 0.00042321747300988477
+      }
+    },
+    "elastic": {
+      "band_gap_eV": 4.060699999999999,
+      "epsilon_infinity": [
+        [
+          4.474795,
+          -5e-06,
+          -2e-06
+        ],
+        [
+          5e-06,
+          4.474795,
+          1e-06
+        ],
+        [
+          1e-06,
+          -2e-06,
+          4.690378
+        ]
+      ],
+      "epsilon_static": [
+        [
+          8.229399,
+          2.9999999999999992e-06,
+          1.3000000000000001e-05
+        ],
+        [
+          1.3000000000000001e-05,
+          8.229405,
+          6.599999999999999e-05
+        ],
+        [
+          1.6e-05,
+          6.3e-05,
+          9.74757
+        ]
+      ],
+      "optical_frequencies_cm1": [
+        237.10403521682986,
+        237.13000840471292,
+        536.4627469183555,
+        596.4144799085539,
+        638.7085199042511,
+        638.7174521058618,
+        650.9439954834262,
+        650.9478251295016,
+        707.6980067527958
+      ],
+      "Al_BEC_diagonal_e": [
+        2.51646,
+        2.51641,
+        2.67599
+      ],
+      "e31_e33_e15_C_m2": [
+        -0.58162,
+        1.4615,
+        -0.30951999999999996
+      ],
+      "piezo_symmetry_max_C_m2": 5.500000000002725e-05,
+      "independent_XML_epsilon_max": 4.9e-07,
+      "diagnostics": {
+        "irreps_degeneracy_tolerance_thz": 0.02,
+        "internal_strain_translation_max_eV_per_A": 0.004539999999999544,
+        "internal_strain_translation_relative": 0.000403460159642213,
+        "internal_strain_source": "displaced_atoms",
+        "strained_cell_internal_strain_translation_max_eV_per_A": 1.0000000000000026e-05,
+        "internal_strain_reciprocity_max_eV_per_A": 0.03345999999999982,
+        "static_dielectric_max_abs": 0.00032453193837866934
+      },
+      "d31_d33_d15_pm_V": [
+        -2.1901741201151226,
+        5.324396108819313,
+        -2.7681967897631083
+      ],
+      "elastic_GPa": [
+        [
+          374.75235,
+          128.082,
+          97.59535,
+          -0.00019,
+          -0.0012100000000000001,
+          -0.0005
+        ],
+        [
+          128.082,
+          374.71996,
+          97.58877000000001,
+          -0.0028400000000000005,
+          -0.0011400000000000002,
+          -0.0019800000000000004
+        ],
+        [
+          97.59535,
+          97.58877000000001,
+          354.77411000000006,
+          0.00018,
+          -0.0009400000000000001,
+          -9e-05
+        ],
+        [
+          -0.00019,
+          -0.0028400000000000005,
+          0.00018,
+          111.81928,
+          0.00033,
+          -0.00111
+        ],
+        [
+          -0.0012100000000000001,
+          -0.0011400000000000002,
+          -0.0009400000000000001,
+          0.00033,
+          111.81286,
+          -0.0018200000000000002
+        ],
+        [
+          -0.0005,
+          -0.0019800000000000004,
+          -9e-05,
+          -0.00111,
+          -0.0018200000000000002,
+          123.26974000000001
+        ]
+      ]
+    },
+    "optical_frequency_route_max_cm1": 0.13217390813656493
+  },
+  "literature": {
+    "doi": "10.1038/sdata.2015.53",
+    "software": "VASP",
+    "XC": "PBE",
+    "potential": "PAW",
+    "e33_C_m2": 1.46,
+    "e31_C_m2": -0.58,
+    "comparison_note": "Check polarity and proper tensor convention before signed comparison; different cutoff/mesh"
+  }
+}
+[STAGE] Mode dielectric derivatives for Raman
+stage            status     gap_eV    error
+---------------  ---------  --------  -----
+reference        completed  4.075400       
+mode-0001/plus   completed                 
+mode-0001/minus  completed                 
+mode-0002/plus   completed                 
+mode-0002/minus  completed                 
+mode-0003/plus   completed                 
+mode-0003/minus  completed                 
+mode-0004/plus   completed                 
+mode-0004/minus  completed                 
+mode-0005/plus   completed                 
+mode-0005/minus  completed                 
+mode-0006/plus   completed                 
+mode-0006/minus  completed                 
+mode-0007/plus   completed                 
+mode-0007/minus  completed                 
+mode-0008/plus   completed                 
+mode-0008/minus  completed                 
+mode-0009/plus   completed                 
+mode-0009/minus  completed                 
+Collected 9 VASP modes.
+[OUT] /public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman
+{
+  "passed": true,
+  "checks": {
+    "equilibrium point group is 6mm": true,
+    "nine optical Raman tensors": true,
+    "finite Raman tensors": true,
+    "JSON IDs match exported mode frequencies": true,
+    "ir: finite nonnegative activities": true,
+    "ir: all optical modes exported": true,
+    "ir: inactive modes below numerical tolerance": true,
+    "raman: finite nonnegative activities": true,
+    "raman: all optical modes exported": true,
+    "raman: inactive modes below numerical tolerance": true
+  },
+  "results": {
+    "ir": {
+      "inactive_activity_max_normalized": 2.797001495111103e-07,
+      "inactive_activity_tolerance": 0.0001,
+      "modes": [
+        {
+          "mode": 12,
+          "irrep": "B1",
+          "frequency_cm-1": 707.6980067527958,
+          "activity_normalized": 5.904825598978971e-08
+        },
+        {
+          "mode": 11,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9478251295016,
+          "activity_normalized": 0.8843094011117189
+        },
+        {
+          "mode": 10,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9439954834262,
+          "activity_normalized": 0.8843094942044337
+        },
+        {
+          "mode": 9,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7174521058618,
+          "activity_normalized": 2.797001495111103e-07
+        },
+        {
+          "mode": 8,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7085199042511,
+          "activity_normalized": 1.9573174508402104e-08
+        },
+        {
+          "mode": 7,
+          "irrep": "A1",
+          "frequency_cm-1": 596.4144799085539,
+          "activity_normalized": 1.0
+        },
+        {
+          "mode": 6,
+          "irrep": "B1",
+          "frequency_cm-1": 536.4627469183555,
+          "activity_normalized": 9.21341447941243e-09
+        },
+        {
+          "mode": 5,
+          "irrep": "E2",
+          "frequency_cm-1": 237.13000840471292,
+          "activity_normalized": 1.7657758310043984e-11
+        },
+        {
+          "mode": 4,
+          "irrep": "E2",
+          "frequency_cm-1": 237.10403521682986,
+          "activity_normalized": 2.319387313030131e-10
+        }
+      ]
+    },
+    "raman": {
+      "inactive_activity_max_normalized": 4.6716133166333646e-08,
+      "inactive_activity_tolerance": 0.01,
+      "modes": [
+        {
+          "mode": 12,
+          "irrep": "B1",
+          "frequency_cm-1": 707.6980067527958,
+          "activity_normalized": 4.6716133166333646e-08
+        },
+        {
+          "mode": 11,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9478251295016,
+          "activity_normalized": 0.20685427589595184
+        },
+        {
+          "mode": 10,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9439954834262,
+          "activity_normalized": 0.20628051717993842
+        },
+        {
+          "mode": 9,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7174521058618,
+          "activity_normalized": 0.4246100519636155
+        },
+        {
+          "mode": 8,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7085199042511,
+          "activity_normalized": 0.4256468666523213
+        },
+        {
+          "mode": 7,
+          "irrep": "A1",
+          "frequency_cm-1": 596.4144799085539,
+          "activity_normalized": 1.0
+        },
+        {
+          "mode": 6,
+          "irrep": "B1",
+          "frequency_cm-1": 536.4627469183555,
+          "activity_normalized": 2.6690380789388595e-08
+        },
+        {
+          "mode": 5,
+          "irrep": "E2",
+          "frequency_cm-1": 237.13000840471292,
+          "activity_normalized": 0.010182275719139194
+        },
+        {
+          "mode": 4,
+          "irrep": "E2",
+          "frequency_cm-1": 237.10403521682986,
+          "activity_normalized": 0.010258874725961122
+        }
+      ]
+    }
+  },
+  "note": "Gamma TO modes without directional NAC; activity checks are not an absolute intensity benchmark."
+}
+[DONE] Native AlN response and mixed-route spectra are in results/

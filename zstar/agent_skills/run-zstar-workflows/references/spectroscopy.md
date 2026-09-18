@@ -51,15 +51,40 @@ is intentional.
 
 ## VASP and CP2K calculators
 
-For VASP, start from an `IBRION=5/6` vibrational `vasprun.xml` and converged
-input directory:
+For VASP, prefer native electric and Gamma-phonon response, then reuse the
+completed response for spectra:
 
 ```bash
-zstar spectra pre --calculator vasp --input-dir vasp_input \
-  --modes-xml phonon/vasprun.xml --root vasp_spectra --dim 3
+zstar bec pre --calculator vasp --input-dir vasp_input --root response --phonons
+zstar bec run --root response --dry-run
+```
+
+After inspecting and running the native response, collect with
+`zstar bec post --root response`. Then:
+
+```bash
+zstar spectra pre --calculator vasp --response response --root vasp_spectra
 zstar spectra job --root vasp_spectra --system shell --dry-run
 zstar spectra stat --root vasp_spectra
 ```
+
+`--kind ir` reuses native modes and BEC without mode-displaced Raman tasks.
+Raman needs additional positive/negative mode dielectric calculations; it is
+not directly supplied by one native DFPT calculation. The default `--method auto`
+uses electric DFPT for LDA/GGA and native finite-field response for
+orbital-dependent functionals. `--phonons` chooses native ionic DFPT where
+available; `--elastic` uses native strain finite differences for bulk elastic
+response. Do not claim that the complete elastic tensor is obtained from DFPT.
+Retain ordinary copies of native outputs, never symlinks. An existing vibrational
+`vasprun.xml` from `IBRION=5/6/7/8` can instead be supplied with `--modes-xml`
+and a matching `--input-dir`.
+
+VASP post-processing exports ascending-frequency Gamma IDs in `qpoints.yaml`
+and `spectra_results.json`; `native_mode_numbers` preserves source XML IDs.
+Reuse the JSON tensor file with its matching qpoints, not a subset `.npy`
+without IDs. Regenerate legacy native JSON with `zstar spectra post` if its
+index convention is missing. Preserve internal-strain warnings; rejected `d`
+must not be recovered by reusing an older response record.
 
 For CP2K molecular native intensities:
 
@@ -70,5 +95,6 @@ zstar spectra job --root cp2k_spectra --system shell --dry-run
 ```
 
 Repeat without `--dry-run` only after inspecting generated inputs. Finish with
-`zstar spectra post --root WORK`. Native VASP/CP2K spectroscopy accepts
-`--dim 0` or `--dim 3`, not `--dim 2`.
+`zstar spectra post --root WORK`. VASP spectroscopy accepts `--dim 0`,
+`--dim 1` (DFPT only), or `--dim 3`; CP2K accepts `--dim 0` or `--dim 3`.
+Neither route currently enables intrinsic slab spectroscopy with `--dim 2`.

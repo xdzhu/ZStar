@@ -1,0 +1,1092 @@
+{
+  "schema": "zstar-response",
+  "schema_version": "1.0",
+  "created_at": "2026-09-18T12:39:15.103640+00:00",
+  "backend": "vasp",
+  "dimensionality": {
+    "value": 3,
+    "label": "bulk",
+    "periodic_axes": [
+      "x",
+      "y",
+      "z"
+    ],
+    "nonperiodic_axes": [],
+    "intrinsic_response_kind": "relative dielectric tensor",
+    "intrinsic_response_unit": "1"
+  },
+  "structure": null,
+  "quantities": [
+    {
+      "name": "born_effective_charge",
+      "values": [
+        [
+          [
+            2.51646,
+            -1e-05,
+            0.0
+          ],
+          [
+            0.0,
+            2.51641,
+            1e-05
+          ],
+          [
+            -0.0,
+            2e-05,
+            2.67599
+          ]
+        ],
+        [
+          [
+            2.51642,
+            1e-05,
+            0.0
+          ],
+          [
+            -0.0,
+            2.51647,
+            1e-05
+          ],
+          [
+            -1e-05,
+            2e-05,
+            2.67599
+          ]
+        ],
+        [
+          [
+            -2.51641,
+            -1e-05,
+            -0.0
+          ],
+          [
+            -0.0,
+            -2.51648,
+            -1e-05
+          ],
+          [
+            1e-05,
+            -2e-05,
+            -2.67599
+          ]
+        ],
+        [
+          [
+            -2.51647,
+            1e-05,
+            0.0
+          ],
+          [
+            0.0,
+            -2.5164,
+            -1e-05
+          ],
+          [
+            1e-05,
+            -2e-05,
+            -2.67599
+          ]
+        ]
+      ],
+      "shape": [
+        4,
+        3,
+        3
+      ],
+      "unit": "e",
+      "normalization": "per_atom",
+      "axes": [
+        "atom",
+        "displacement",
+        "polarization"
+      ],
+      "convention": "rows=atomic displacement/force; columns=polarization/electric field",
+      "source": "vasp",
+      "metadata": {
+        "labels": [
+          "Al",
+          "Al",
+          "N",
+          "N"
+        ]
+      }
+    },
+    {
+      "name": "electronic_dielectric",
+      "values": [
+        [
+          4.474795,
+          -5e-06,
+          -2e-06
+        ],
+        [
+          5e-06,
+          4.474795,
+          1e-06
+        ],
+        [
+          1e-06,
+          -2e-06,
+          4.690378
+        ]
+      ],
+      "shape": [
+        3,
+        3
+      ],
+      "unit": "1",
+      "normalization": "cell_volume",
+      "axes": [
+        "field",
+        "polarization"
+      ],
+      "convention": "",
+      "source": "vasp",
+      "metadata": {
+        "intrinsic_low_dimensional_response_required": false
+      }
+    },
+    {
+      "name": "phonon_dielectric",
+      "values": [
+        [
+          3.754604,
+          8e-06,
+          1.5e-05
+        ],
+        [
+          8e-06,
+          3.75461,
+          6.5e-05
+        ],
+        [
+          1.5e-05,
+          6.5e-05,
+          5.057192
+        ]
+      ],
+      "shape": [
+        3,
+        3
+      ],
+      "unit": "1",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "field"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "fixed strain",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "static_dielectric",
+      "values": [
+        [
+          8.229399,
+          2.9999999999999992e-06,
+          1.3000000000000001e-05
+        ],
+        [
+          1.3000000000000001e-05,
+          8.229405,
+          6.599999999999999e-05
+        ],
+        [
+          1.6e-05,
+          6.3e-05,
+          9.74757
+        ]
+      ],
+      "shape": [
+        3,
+        3
+      ],
+      "unit": "1",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "field"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "fixed strain",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "piezoelectric_clamped",
+      "values": [
+        [
+          -0.0,
+          0.0,
+          1e-05,
+          0.0,
+          0.3402,
+          6e-05
+        ],
+        [
+          -6e-05,
+          0.00011,
+          -7e-05,
+          0.3402,
+          -0.0,
+          -1e-05
+        ],
+        [
+          0.26952,
+          0.26952,
+          -0.42121,
+          3e-05,
+          -1e-05,
+          -0.0
+        ]
+      ],
+      "shape": [
+        3,
+        6
+      ],
+      "unit": "C/m^2",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; ions clamped",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "piezoelectric_internal",
+      "values": [
+        [
+          -4e-05,
+          -3e-05,
+          -2e-05,
+          0.0,
+          -0.64972,
+          -5e-05
+        ],
+        [
+          6e-05,
+          -8e-05,
+          3e-05,
+          -0.6498,
+          -1e-05,
+          1e-05
+        ],
+        [
+          -0.85114,
+          -0.85103,
+          1.88271,
+          -3e-05,
+          -0.0,
+          -1e-05
+        ]
+      ],
+      "shape": [
+        3,
+        6
+      ],
+      "unit": "C/m^2",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; internal ionic contribution",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "piezoelectric_relaxed",
+      "values": [
+        [
+          -4e-05,
+          -3e-05,
+          -1e-05,
+          0.0,
+          -0.30951999999999996,
+          9.999999999999999e-06
+        ],
+        [
+          0.0,
+          2.9999999999999997e-05,
+          -3.9999999999999996e-05,
+          -0.30960000000000004,
+          -1e-05,
+          0.0
+        ],
+        [
+          -0.58162,
+          -0.58151,
+          1.4615,
+          0.0,
+          -1e-05,
+          -1e-05
+        ]
+      ],
+      "shape": [
+        3,
+        6
+      ],
+      "unit": "C/m^2",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; internal ions relaxed",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "elastic",
+      "values": [
+        [
+          438.73807,
+          96.42843,
+          61.80281,
+          -0.00111,
+          -0.00030000000000000003,
+          -0.0001
+        ],
+        [
+          96.42843,
+          438.74891,
+          61.81087,
+          -0.00102,
+          -0.0005600000000000001,
+          -7.000000000000001e-05
+        ],
+        [
+          61.80281,
+          61.81087,
+          433.93534,
+          -0.0009599999999999999,
+          -0.0006100000000000001,
+          -0.00016
+        ],
+        [
+          -0.00111,
+          -0.00102,
+          -0.0009599999999999999,
+          124.52046000000001,
+          0.0004,
+          -0.00115
+        ],
+        [
+          -0.00030000000000000003,
+          -0.0005600000000000001,
+          -0.0006100000000000001,
+          0.0004,
+          124.51107,
+          -4e-05
+        ],
+        [
+          -0.0001,
+          -7.000000000000001e-05,
+          -0.00016,
+          -0.00115,
+          -4e-05,
+          171.09517000000002
+        ]
+      ],
+      "shape": [
+        6,
+        6
+      ],
+      "unit": "GPa",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "stress_voigt",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; ions clamped",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "elastic_internal_contribution",
+      "values": [
+        [
+          -63.98572000000001,
+          31.65356,
+          35.79254,
+          0.00092,
+          -0.0009100000000000001,
+          -0.0004
+        ],
+        [
+          31.65356,
+          -64.02895,
+          35.7779,
+          -0.0018200000000000002,
+          -0.00058,
+          -0.00191
+        ],
+        [
+          35.79254,
+          35.7779,
+          -79.16124,
+          0.0011400000000000002,
+          -0.00033,
+          8e-05
+        ],
+        [
+          0.00092,
+          -0.0018200000000000002,
+          0.0011400000000000002,
+          -12.70118,
+          -7.000000000000001e-05,
+          4e-05
+        ],
+        [
+          -0.0009100000000000001,
+          -0.00058,
+          -0.00033,
+          -7.000000000000001e-05,
+          -12.6982,
+          -0.0017800000000000001
+        ],
+        [
+          -0.0004,
+          -0.00191,
+          8e-05,
+          4e-05,
+          -0.0017800000000000001,
+          -47.825430000000004
+        ]
+      ],
+      "shape": [
+        6,
+        6
+      ],
+      "unit": "GPa",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "stress_voigt",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; internal ionic contribution",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "elastic_relaxed",
+      "values": [
+        [
+          374.75235,
+          128.082,
+          97.59535,
+          -0.00019,
+          -0.0012100000000000001,
+          -0.0005
+        ],
+        [
+          128.082,
+          374.71996,
+          97.58877000000001,
+          -0.0028400000000000005,
+          -0.0011400000000000002,
+          -0.0019800000000000004
+        ],
+        [
+          97.59535,
+          97.58877000000001,
+          354.77411000000006,
+          0.00018,
+          -0.0009400000000000001,
+          -9e-05
+        ],
+        [
+          -0.00019,
+          -0.0028400000000000005,
+          0.00018,
+          111.81928,
+          0.00033,
+          -0.00111
+        ],
+        [
+          -0.0012100000000000001,
+          -0.0011400000000000002,
+          -0.0009400000000000001,
+          0.00033,
+          111.81286,
+          -0.0018200000000000002
+        ],
+        [
+          -0.0005,
+          -0.0019800000000000004,
+          -9e-05,
+          -0.00111,
+          -0.0018200000000000002,
+          123.26974000000001
+        ]
+      ],
+      "shape": [
+        6,
+        6
+      ],
+      "unit": "GPa",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "stress_voigt",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; internal ions relaxed",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
+      }
+    },
+    {
+      "name": "piezoelectric_d",
+      "values": [
+        [
+          -9.811108487072733e-05,
+          -5.679253103707913e-05,
+          7.090134299428647e-06,
+          8.168255162356812e-06,
+          -2.768196789763108,
+          4.0250997874681725e-05
+        ],
+        [
+          2.312158940013521e-06,
+          9.419558247588265e-05,
+          -0.0001378899661919051,
+          -2.768753292885464,
+          -8.1264142822314e-05,
+          -2.4931413034593783e-05
+        ],
+        [
+          -2.190174120115123,
+          -2.1898737023144306,
+          5.324396108819314,
+          -6.791199516703872e-05,
+          -9.070363382880115e-05,
+          -0.00012129563836002736
+        ]
+      ],
+      "shape": [
+        3,
+        6
+      ],
+      "unit": "pm/V",
+      "normalization": "none",
+      "axes": [
+        "polarization",
+        "stress_voigt"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed stress; internal ions relaxed",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        },
+        "derivation": "d = e C^-1 using native relaxed-ion tensors; GPa to Pa conversion"
+      }
+    },
+    {
+      "name": "native_internal_strain",
+      "values": [
+        [
+          [
+            0.0002,
+            0.00018,
+            0.00017,
+            -0.0,
+            -4.9184,
+            -8.23085
+          ],
+          [
+            -8.22906,
+            8.23444,
+            0.00132,
+            -4.91869,
+            -0.0001,
+            -0.0001
+          ],
+          [
+            -5.08474,
+            -5.08532,
+            11.24972,
+            0.0002,
+            0.0,
+            -0.0
+          ]
+        ],
+        [
+          [
+            0.00021,
+            0.00032,
+            -0.00096,
+            3e-05,
+            -4.9178,
+            8.23035
+          ],
+          [
+            8.23101,
+            -8.23518,
+            -0.00063,
+            -4.91975,
+            -0.00015,
+            0.00016
+          ],
+          [
+            -5.08516,
+            -5.08662,
+            11.25155,
+            -0.00049,
+            -0.0,
+            -0.0
+          ]
+        ],
+        [
+          [
+            0.00063,
+            0.00042,
+            -0.00029,
+            -3e-05,
+            4.91806,
+            -9.87318
+          ],
+          [
+            -9.87129,
+            9.87656,
+            0.00126,
+            4.91822,
+            -0.0001,
+            0.00011
+          ],
+          [
+            5.08667,
+            5.08734,
+            -11.25266,
+            0.00012,
+            0.0,
+            -0.0
+          ]
+        ],
+        [
+          [
+            0.00096,
+            0.00096,
+            0.00029,
+            1e-05,
+            4.9184,
+            9.87409
+          ],
+          [
+            9.87203,
+            -9.87614,
+            -0.00075,
+            4.91829,
+            -3e-05,
+            -0.00013
+          ],
+          [
+            5.08777,
+            5.08706,
+            -11.2524,
+            0.00011,
+            -0.0,
+            -0.0
+          ]
+        ]
+      ],
+      "shape": [
+        4,
+        3,
+        6
+      ],
+      "unit": "eV/angstrom",
+      "normalization": "none",
+      "axes": [
+        "atom",
+        "displacement",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "ions clamped; mixed displacement/strain derivative",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        },
+        "derivative_kind": "native force-strain coupling, not relaxed displacement per strain"
+      }
+    },
+    {
+      "name": "native_internal_strain_from_strained_cells",
+      "values": [
+        [
+          [
+            0.0,
+            0.0,
+            0.0,
+            1e-05,
+            -4.92409,
+            -8.23475
+          ],
+          [
+            -8.25327,
+            8.26604,
+            0.0,
+            -4.92189,
+            -0.00019,
+            0.0
+          ],
+          [
+            -5.09972,
+            -5.09743,
+            11.28318,
+            -0.00713,
+            -0.0002,
+            1e-05
+          ]
+        ],
+        [
+          [
+            -0.0,
+            -0.0,
+            -0.0,
+            -1e-05,
+            -4.92409,
+            8.23475
+          ],
+          [
+            8.25327,
+            -8.26604,
+            -0.0,
+            -4.9219,
+            -0.00019,
+            -0.0
+          ],
+          [
+            -5.09972,
+            -5.09743,
+            11.28318,
+            0.00714,
+            0.00013,
+            1e-05
+          ]
+        ],
+        [
+          [
+            1e-05,
+            -0.0,
+            0.0,
+            0.00114,
+            4.9242,
+            -9.87252
+          ],
+          [
+            -9.8824,
+            9.89411,
+            -1e-05,
+            4.92191,
+            0.00022,
+            1e-05
+          ],
+          [
+            5.09972,
+            5.09743,
+            -11.28318,
+            -0.00106,
+            0.00026,
+            -1e-05
+          ]
+        ],
+        [
+          [
+            -1e-05,
+            0.0,
+            0.0,
+            -0.00113,
+            4.92398,
+            9.87252
+          ],
+          [
+            9.8824,
+            -9.89411,
+            1e-05,
+            4.92188,
+            0.00016,
+            -1e-05
+          ],
+          [
+            5.09972,
+            5.09743,
+            -11.28318,
+            0.00106,
+            -0.00019,
+            -1e-05
+          ]
+        ]
+      ],
+      "shape": [
+        4,
+        3,
+        6
+      ],
+      "unit": "eV/angstrom",
+      "normalization": "none",
+      "axes": [
+        "atom",
+        "displacement",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "ions clamped; mixed displacement/strain derivative",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+          "elastic": "VASP native strain finite differences",
+          "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        },
+        "derivative_kind": "native force-strain coupling, not relaxed displacement per strain"
+      }
+    }
+  ],
+  "provenance": {
+    "collector": "zstar.vasp_bec.collect_vasp_bec",
+    "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/response/OUTCAR",
+    "legacy_result": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/elastic/vasp_bec.json",
+    "backend_result_schema_version": 1,
+    "source_backend": "vasp"
+  },
+  "metadata": {
+    "method": "dfpt",
+    "sum_scope": "all_atoms",
+    "acoustic_sum_tensor": [
+      [
+        4.440892098500626e-16,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        4.440892098500626e-16,
+        0.0
+      ],
+      [
+        1e-05,
+        0.0,
+        0.0
+      ]
+    ],
+    "native_response_diagnostics": {
+      "irreps_degeneracy_tolerance_thz": 0.02,
+      "internal_strain_translation_max_eV_per_A": 0.004539999999999544,
+      "internal_strain_translation_relative": 0.000403460159642213,
+      "internal_strain_source": "displaced_atoms",
+      "strained_cell_internal_strain_translation_max_eV_per_A": 1.0000000000000026e-05,
+      "internal_strain_reciprocity_max_eV_per_A": 0.03345999999999982,
+      "elastic_antisymmetry_max_GPa": 0.0,
+      "static_dielectric_max_abs": 0.00032453193837866934
+    }
+  }
+}

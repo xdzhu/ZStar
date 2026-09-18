@@ -1,0 +1,14 @@
+{
+  "id": "vasp_native_aln",
+  "calculator": "VASP",
+  "dim": 3,
+  "material": "wurtzite AlN",
+  "space_group": 186,
+  "point_group": "6mm",
+  "XC": "PBE",
+  "licensed_inputs_required": true,
+  "potential_redistribution": false,
+  "native_routes": ["electric-dfpt", "gamma-dfpt", "strain-finite-difference"],
+  "raman_route": "mode-displaced native dielectric derivatives",
+  "status": "native response and mixed-route spectra accepted; DFPT electromechanical warning retained"
+}

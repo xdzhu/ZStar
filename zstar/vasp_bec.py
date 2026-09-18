@@ -48,18 +48,32 @@ def _incar_keys(text: str) -> set[str]:
     keys: set[str] = set()
     for raw in text.splitlines():
         clean = raw.split("#", 1)[0].split("!", 1)[0]
-        match = _INCAR_KEY.match(clean)
-        if match:
-            keys.add(match.group(1).upper())
+        for entry in clean.split(";"):
+            match = _INCAR_KEY.match(entry)
+            if match:
+                keys.add(match.group(1).upper())
     return keys
 
 
 def _incar_value(text: str, key: str) -> str | None:
     pattern = re.compile(
-        rf"^\s*{re.escape(key)}\s*=\s*([^#!;\s]+)", re.I | re.M
+        rf"(?:^|;)\s*{re.escape(key)}\s*=\s*([^#!;\s]+)", re.I | re.M
     )
-    matches = pattern.findall(text)
+    clean = "\n".join(line.split("#", 1)[0].split("!", 1)[0] for line in text.splitlines())
+    matches = pattern.findall(clean)
     return matches[-1] if matches else None
+
+
+def resolve_vasp_response_method(text: str, method: str = "auto") -> str:
+    """Prefer native DFPT only for density-dependent LDA/GGA functionals."""
+    key = method.lower().replace("_", "-")
+    if key not in {"auto", "dfpt", "finite-field"}:
+        raise ValueError("method must be auto, dfpt, or finite-field")
+    hybrid = (_incar_value(text, "LHFCALC") or "").upper() in {"T", ".TRUE.", "TRUE"}
+    meta = (_incar_value(text, "METAGGA") or "NONE").upper() not in {"NONE", "FALSE", ".FALSE."}
+    if key == "dfpt" and (hybrid or meta):
+        raise ValueError("VASP LEPSILON DFPT requires an LDA/GGA functional; use --method auto or finite-field for orbital-dependent functionals")
+    return ("finite-field" if hybrid or meta else "dfpt") if key == "auto" else key
 
 
 def render_incar(
@@ -76,10 +90,14 @@ def render_incar(
     output: list[str] = []
     for raw in text.splitlines():
         clean = raw.split("#", 1)[0].split("!", 1)[0]
-        match = _INCAR_KEY.match(clean)
-        if match and match.group(1).upper() in remove_keys:
-            continue
-        output.append(raw)
+        entries = clean.split(";")
+        if any((match := _INCAR_KEY.match(entry)) and match.group(1).upper() in remove_keys for entry in entries):
+            for entry in entries:
+                match = _INCAR_KEY.match(entry)
+                if entry.strip() and (match is None or match.group(1).upper() not in remove_keys):
+                    output.append(entry.strip())
+        else:
+            output.append(raw)
     if output and output[-1].strip():
         output.append("")
     output.append("# ZStar VASP Born-charge workflow")
@@ -106,10 +124,13 @@ def prepare_vasp_bec(
     input_dir: str | Path,
     root: str | Path = "vasp_bec",
     *,
-    method: str = "dfpt",
+    method: str = "auto",
     field_strength: float = 0.001,
     dimensionality: int = 3,
     periodic_axes: str | None = None,
+    phonons: bool = False,
+    piezo: bool = False,
+    elastic: bool = False,
     force: bool = False,
 ) -> Path:
     """Prepare a reference-first VASP BEC workflow.
@@ -122,30 +143,34 @@ def prepare_vasp_bec(
 
     dim = dimension_spec(dimensionality, periodic_axes)
     source = Path(input_dir).resolve()
-    method_key = method.lower().replace("_", "-")
-    if method_key not in {"dfpt", "finite-field"}:
-        raise ValueError("method must be dfpt or finite-field")
+    if elastic and dimensionality != 3:
+        raise ValueError("Native bulk elastic response requires --dim 3; vacuum-supercell moduli are not intrinsic low-dimensional elastic tensors")
     if field_strength <= 0:
         raise ValueError("field_strength must be positive")
     required = ("INCAR", "POSCAR", "KPOINTS", "POTCAR")
     missing = [name for name in required if not (source / name).is_file()]
     if missing:
         raise FileNotFoundError(f"Missing VASP input files in {source}: {', '.join(missing)}")
+    original = (source / "INCAR").read_text(encoding="utf-8", errors="ignore")
+    method_key = resolve_vasp_response_method(original, method)
 
     target = Path(root).resolve()
+    if force and (target == source or target in source.parents):
+        raise ValueError("--force cannot replace the VASP input directory or its parent; choose a separate response root")
     if target.exists() and force:
         shutil.rmtree(target)
     if target.exists() and any(target.iterdir()):
         raise FileExistsError(f"Output directory is not empty: {target}")
     target.mkdir(parents=True, exist_ok=True)
 
-    original = (source / "INCAR").read_text(encoding="utf-8", errors="ignore")
-    response_tags = ("LEPSILON", "LCALCEPS", "EFIELD_PEAD", "LOPTICS")
+    response_tags = ("LEPSILON", "LCALCEPS", "EFIELD_PEAD", "LOPTICS", "NPAR")
     reference_updates = {
         "NSW": "0",
         "IBRION": "-1",
         "LCHARG": ".TRUE.",
         "LWAVE": ".TRUE.",
+        "NCORE": "4",
+        "ISYM": "0",
     }
     convergence_override = None
     ediff_value = _incar_value(original, "EDIFF")
@@ -175,6 +200,8 @@ def prepare_vasp_bec(
         "ICHARG": "1",
         "LREAL": ".FALSE.",
         "LRPA": ".FALSE.",
+        "NCORE": "4",
+        "ISYM": "0",
     }
     if convergence_override:
         response_updates["EDIFF"] = "1E-8"
@@ -186,6 +213,16 @@ def prepare_vasp_bec(
         response_updates["LCALCEPS"] = ".TRUE."
         value = f"{field_strength:.10g}"
         response_updates["EFIELD_PEAD"] = f"{value} {value} {value}"
+    ionic_response = phonons or piezo or elastic
+    if ionic_response:
+        response_updates.update({
+            "IBRION": "6" if elastic or method_key == "finite-field" else "8",
+            "NSW": "1",
+            "ISIF": "3" if elastic else "2",
+            "PREC": "Accurate",
+        })
+        if elastic or method_key == "finite-field":
+            response_updates.update({"NFREE": "2", "POTIM": "0.01"})
     response_incar = render_incar(
         original,
         updates=response_updates,
@@ -209,6 +246,14 @@ def prepare_vasp_bec(
         "periodic_axes": list(dim.periodic_axes),
         "source_directory": str(source),
         "method": method_key,
+        "requested_method": method,
+        "phonons": bool(ionic_response),
+        "piezo": bool(piezo),
+        "elastic": bool(elastic),
+        "ionic_response_method": (
+            "native-finite-difference" if elastic or (ionic_response and method_key == "finite-field")
+            else "dfpt" if ionic_response else None
+        ),
         "field_strength_eV_per_angstrom": field_strength if method_key == "finite-field" else None,
         "occupation_override": occupation_override,
         "convergence_override": convergence_override,
@@ -637,6 +682,10 @@ def collect_vasp_bec(
     born_rows = [" ".join(f"{value:.10f}" for value in epsilon.reshape(9))]
     born_rows.extend(" ".join(f"{value:.10f}" for value in tensor.reshape(9)) for tensor in tensors)
     born_path.write_text("\n".join(born_rows) + "\n", encoding="utf-8", newline="\n")
+    if (root_path / "response" / "POSCAR").is_file():
+        from .vasp_response import write_vasp_born_for_phonopy
+
+        write_vasp_born_for_phonopy(root_path / "response" / "POSCAR", epsilon, tensors, born_path)
 
     json_path = Path(json_output)
     if not json_path.is_absolute():
@@ -665,6 +714,12 @@ def collect_vasp_bec(
         json_output=str(json_path),
         response_output=None if response_path is None else str(response_path),
     )
+    if manifest.get("phonons"):
+        from .vasp_response import append_native_quantities, collect_native_response
+
+        result["native_response"] = collect_native_response(root_path, manifest, epsilon, tensors)
+        if response_path is not None:
+            append_native_quantities(response_path, result["native_response"])
     return result
 
 

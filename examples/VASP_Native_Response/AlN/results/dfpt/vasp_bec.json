@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "backend": "vasp",
+  "method": "dfpt",
+  "natoms_total": 4,
+  "sum_scope": "all_atoms",
+  "tensor_convention": "rows=atomic displacement/force; columns=polarization/electric field",
+  "source_tensor_convention": "VASP OUTCAR rows=electric field; columns=force",
+  "source_transform": "transpose_each_tensor",
+  "epsilon_infinity": [
+    [
+      4.474796,
+      -5e-06,
+      -1e-06
+    ],
+    [
+      5e-06,
+      4.474795,
+      1e-06
+    ],
+    [
+      1e-06,
+      -1e-06,
+      4.690378
+    ]
+  ],
+  "atoms": [
+    {
+      "index": 1,
+      "label": "Al",
+      "tensor": [
+        [
+          2.51646,
+          -1e-05,
+          0.0
+        ],
+        [
+          0.0,
+          2.51642,
+          1e-05
+        ],
+        [
+          -1e-05,
+          2e-05,
+          2.67598
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "label": "Al",
+      "tensor": [
+        [
+          2.51643,
+          1e-05,
+          0.0
+        ],
+        [
+          -0.0,
+          2.51647,
+          1e-05
+        ],
+        [
+          -0.0,
+          2e-05,
+          2.67599
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "label": "N",
+      "tensor": [
+        [
+          -2.51642,
+          -1e-05,
+          -0.0
+        ],
+        [
+          -0.0,
+          -2.51649,
+          -1e-05
+        ],
+        [
+          1e-05,
+          -2e-05,
+          -2.67598
+        ]
+      ]
+    },
+    {
+      "index": 4,
+      "label": "N",
+      "tensor": [
+        [
+          -2.51647,
+          1e-05,
+          -0.0
+        ],
+        [
+          0.0,
+          -2.5164,
+          -1e-05
+        ],
+        [
+          1e-05,
+          -3e-05,
+          -2.67599
+        ]
+      ]
+    }
+  ],
+  "acoustic_sum_tensor": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      1e-05,
+      -9.999999999999999e-06,
+      -4.440892098500626e-16
+    ]
+  ]
+}

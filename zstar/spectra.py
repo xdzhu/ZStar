@@ -283,7 +283,7 @@ def read_born_data(
             electronic, _ = read_static_dielectric(dielectric_file)
 
     tensor_source = born_path.resolve()
-    shared_born = 'ZStar shared response: Z[polarization,displacement]' in born_path.read_text(encoding='utf-8', errors='ignore').splitlines()[0]
+    shared_born = 'Z[polarization,displacement]' in born_path.read_text(encoding='utf-8', errors='ignore').splitlines()[0]
     if shared_born:
         # Standard Phonopy BORN is polarization-first; internal ZStar mode
         # contractions retain the legacy displacement-first convention.
@@ -1579,6 +1579,10 @@ def load_raman_tensors(path: str | Path) -> tuple[np.ndarray, Optional[np.ndarra
         return mode_numbers, tensors, "user-supplied Raman tensor"
     data = yaml.safe_load(tensor_path.read_text(encoding="utf-8"))
     if isinstance(data, dict):
+        if (data.get("calculator") == "vasp" and "raman_tensors" in data
+                and data.get("mode_index_convention") != "frequency-ascending"):
+            raise ValueError("Legacy VASP Raman mode IDs do not match ascending qpoints.yaml. "
+                             "Rerun 'zstar spectra post --root <workflow>' to export matched files.")
         raw = data.get("tensors") or data.get("raman_tensors")
         numbers = data.get("mode_numbers")
         kind = str(data.get("tensor_kind", "user-supplied Raman tensor"))

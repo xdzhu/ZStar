@@ -21,6 +21,8 @@ CAPABILITIES = (
     "gamma_modes",
     "ir",
     "raman",
+    "piezoelectric",
+    "elastic",
 )
 
 
@@ -161,7 +163,7 @@ def builtin_registry() -> BackendRegistry:
             BackendSpec(
                 name="vasp",
                 display_name="VASP",
-                description="Native BEC and mode-displaced dielectric responses.",
+                description="Native BEC, dielectric and Gamma phonon response; mode-displaced Raman and bulk electromechanical tensors.",
                 capabilities={
                     "structure": _dims(0, 1, 2, 3),
                     "forces": _dims(0, 1, 2, 3),
@@ -172,6 +174,8 @@ def builtin_registry() -> BackendRegistry:
                     "gamma_modes": _dims(0, 1, 3),
                     "ir": _dims(0, 1, 3),
                     "raman": _dims(0, 1, 3),
+                    "piezoelectric": _dims(3),
+                    "elastic": _dims(3),
                 },
             )
         )
