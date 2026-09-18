@@ -41,7 +41,7 @@ def test_reference_relaxation_preparation_defaults_to_cost_balanced_production_g
     assert values["symmetry"] == "1"
     assert float(values["symmetry_prec"]) == pytest.approx(1.0e-3)
     assert float(values["force_thr_ev"]) == pytest.approx(1.0e-4)
-    assert float(values["stress_thr"]) == pytest.approx(0.1)
+    assert float(values["stress_thr"]) == pytest.approx(0.5)
     assert float(values["scf_thr"]) == pytest.approx(1.0e-8)
     assert values["relax_nmax"] == "100"
     assert (tmp_path / "reference-relax" / "convergence_profile.txt").read_text().strip() == "production"
@@ -68,7 +68,7 @@ def test_fixed_cell_relaxation_preparation_cannot_inherit_cell_relax(tmp_path):
 
 @pytest.mark.parametrize(
     ("keyword", "value", "message"),
-    (("force_thr_ev", 1.0e-3, "force_thr_ev=0.0001"), ("stress_thr_kbar", 0.2, "stress_thr_kbar=0.1"), ("scf_thr", 1.0e-7, "scf_thr=1e-08")),
+    (("force_thr_ev", 1.0e-3, "force_thr_ev=0.0001"), ("stress_thr_kbar", 0.2, "stress_thr_kbar=0.5"), ("scf_thr", 1.0e-7, "scf_thr=1e-08")),
 )
 def test_reference_relaxation_verification_profile_rejects_looser_protocol(tmp_path, keyword, value, message):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()

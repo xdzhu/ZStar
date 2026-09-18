@@ -26,14 +26,15 @@ from .structure import (
 
 V2_DEFAULT_RELAX_NMAX = 100
 # The calculator precision is fixed across production and developer amplitude
-# audits.  ``verification`` changes what is compared, not the solver threshold.
-# This prevents research-only hyperconvergence from leaking into user runs.
+# audits. ``verification`` changes what is compared, not the solver threshold.
+# ABACUS's default 0.5 kbar stress gate is intentionally used for both profiles;
+# a previously completed 0.1 kbar relaxation is stricter and remains valid.
 V2_PRODUCTION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
-V2_PRODUCTION_REFERENCE_STRESS_THRESHOLD_KBAR = 1.0e-1
+V2_PRODUCTION_REFERENCE_STRESS_THRESHOLD_KBAR = 5.0e-1
 V2_PRODUCTION_SCF_THRESHOLD = 1.0e-8
 V2_PRODUCTION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
 V2_VERIFICATION_REFERENCE_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
-V2_VERIFICATION_REFERENCE_STRESS_THRESHOLD_KBAR = 1.0e-1
+V2_VERIFICATION_REFERENCE_STRESS_THRESHOLD_KBAR = 5.0e-1
 V2_VERIFICATION_SCF_THRESHOLD = 1.0e-8
 V2_VERIFICATION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM = 1.0e-4
 
@@ -191,7 +192,7 @@ def prepare_abacus_reference_relaxation(
     A relaxed-ion electromechanical ensemble differentiates about this geometry,
     so accepting a loose pre-relaxed structure silently contaminates every strain
     derivative. Both ``production`` and ``verification`` therefore use the
-    same fixed ``1e-4 eV/angstrom``, ``0.1 kbar``, and ``1e-8`` settings;
+    same fixed ``1e-4 eV/angstrom``, ``0.5 kbar``, and ``1e-8`` settings;
     verification adds comparisons rather than tighter solver thresholds. This
     function writes only a self-contained
     ABACUS input folder; it never runs a solver.

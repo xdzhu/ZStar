@@ -8,7 +8,7 @@ PROFILE="${ZSTAR_V2_CONVERGENCE_PROFILE:-production}"
 ENV_SCRIPT="${ZSTAR_ABACUS_ENV:-/public/home/iai806/apprepo/abacus/v3.10.0LTS-intelmpi2025/scripts/env.sh}"
 
 case "$PROFILE" in
-    production|verification) MAX_FORCE=1e-4; MAX_STRESS=0.1; MAX_SCF=1e-8 ;;
+    production|verification) MAX_FORCE=1e-4; MAX_STRESS=0.5; MAX_SCF=1e-8 ;;
     *) echo "unknown ZSTAR_V2_CONVERGENCE_PROFILE=$PROFILE (production|verification)" >&2; exit 2 ;;
 esac
 PROFILE_MARKER="$ROOT/convergence_profile.txt"

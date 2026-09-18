@@ -27,7 +27,7 @@ ZStar 开发者做幅度、异常分量、cutoff/k-point 和论文冻结前复�
 | 阶段 | ABACUS 类型与目的 | 生产档 | 验证档 | 其他强制项 |
 |---|---|---|---|---|
 | R0：绝缘与基组预检 | SCF；检查绝缘性、赝势/轨道唯一匹配、cutoff 与 k 网格 | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`；检查 band gap 非零、无异常占据 |
-| R1：参考平衡结构 | `cell-relax`；同时弛豫晶胞和离子 | `force_thr_ev=1e-4 eV/Å`；`stress_thr=0.1 kbar`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `symmetry=1`，`symmetry_prec=0.001`，`cal_force=1`，`cal_stress=1` |
+| R1：参考平衡结构 | `cell-relax`；同时弛豫晶胞和离子 | `force_thr_ev=1e-4 eV/Å`；`stress_thr=0.5 kbar`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `symmetry=1`，`symmetry_prec=0.001`，`cal_force=1`，`cal_stress=1` |
 | R2c：clamped-ion 零点 | 在 R1 的已验证 `STRU_ION_D` 上 SCF，供应 clamped-ion 力、应力和 PYATB | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=1`、`symmetry_prec=0.001` |
 | R2r：relaxed-ion 零点 | R1 固定晶胞下仅弛豫内部离子，并在最终几何做 PYATB | `force_thr_ev=1e-4 eV/Å`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | 与 R3r 使用**同一**力与电子收敛档；`symmetry=1`、`symmetry_prec=0.001` |
 | R3c：clamped-ion 应变 | 固定原子分数坐标的 ± 应变 SCF | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
@@ -35,7 +35,9 @@ ZStar 开发者做幅度、异常分量、cutoff/k-point 和论文冻结前复�
 | R4：Berry 极化 | 每个已完成几何一次 PYATB polar | 继承 R2/R3 Hamiltonian 和 profile | 同左 | 一次 PYATB 输出同时读取三个 Cartesian 极化方向；禁止为三个方向重复三次 ABACUS NSCF |
 | R5：BEC/Γ 声子（v1 基线） | 继续使用 v1 Unified 路径，不重新发明算法 | `scf_thr=1e-8`；中心 ± 位移 | 同生产档 | BEC/IFC 位移默认 `0.01 Å`，以实际序列化位移取差分；不以极小位移放大 SCF 噪声 |
 
-`stress_thr` 的单位为 kbar。它是优化停止门，不是泛函绝对应力误差。ABACUS 对 LCAO
+`stress_thr` 的单位为 kbar。它是优化停止门，不是泛函绝对应力误差。生产和验证均采用
+ABACUS 默认的 `0.5 kbar`；此前已经以 `0.1 kbar` 收敛的结果是更严格的子集，不需要
+因为放宽生产门槛而重跑。ABACUS 对 LCAO
 优化的公开建议是 `0.04 eV/Å`；固定的 `1e-4 eV/Å` 已比此严格约 400 倍。
 JARVIS 的高通量 DFPT 压电/介电数据集采用全弛豫最大残余力 `0.001 eV/Å`；ZStar
 当前统一值比该方法学锚点再严格一个数量级，但不继续追求 `1e-6 eV/Å`。

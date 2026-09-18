@@ -32,9 +32,10 @@ must be studied separately.
 
 ## Submitted production R1 gates
 
-All jobs use HF Slurm, one non-exclusive allocation with `32 MPI x 1 OMP` per
-ABACUS calculation. Inputs enforce `symmetry_prec=1e-3`, `force_thr_ev=1e-4
-eV/Å`, `stress_thr=0.1 kbar`, `scf_thr=1e-8`, and `relax_nmax=100`.
+These submitted jobs used the then-current strict `stress_thr=0.1 kbar` gate.
+That gate has since been relaxed to the ABACUS default `stress_thr=0.5 kbar` for
+future production inputs. All 0.1-kbar-converged results remain valid and are
+not to be rerun merely because the acceptance gate was widened.
 
 | system | intended structure | functional | R1 job | partition | status at submission |
 |---|---|---|---:|---|---|

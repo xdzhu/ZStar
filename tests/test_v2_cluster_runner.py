@@ -29,7 +29,7 @@ def test_hf_runners_enforce_matching_production_or_verification_profiles():
 
     assert 'NP="${ZSTAR_MPI_RANKS:-32}"' in reference
     assert 'PROFILE="${ZSTAR_V2_CONVERGENCE_PROFILE:-production}"' in reference
-    assert "production|verification) MAX_FORCE=1e-4; MAX_STRESS=0.1; MAX_SCF=1e-8" in reference
+    assert "production|verification) MAX_FORCE=1e-4; MAX_STRESS=0.5; MAX_SCF=1e-8" in reference
     assert "calculation=cell-relax" in reference
     assert 'PROFILE_MARKER="$ROOT/convergence_profile.txt"' in reference
     assert 'EXPECTED_PROFILE=$(tr -d' in reference

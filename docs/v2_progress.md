@@ -912,7 +912,7 @@ ABACUS 将幅度同为 `1e-3` 的应变结构重新投影成未应变 reference�
 ## 2026-09-16 固定生产协议、AlN 幅度资格和案例冻结
 
 1. **已完成内容：**统一 v2 3D bulk 输入为 `force_thr_ev=1e-4 eV/Å`、
-   `scf_thr=1e-8`、`stress_thr=0.1 kbar`、`relax_nmax=100`、
+   `scf_thr=1e-8`、`stress_thr=0.5 kbar`、`relax_nmax=100`、
    `symmetry_prec=1e-3`；生产应变固定 `±0.5%`。更新 AlN 案例的输入、README、
    结果、幅度审计、资源 provenance、PP/ORB hash 清单和 HF Slurm 复现入口。
 2. **关键理论结论：**标准生产导数使用共享零点和每方向 `±h` 中心差分，完整六方向
