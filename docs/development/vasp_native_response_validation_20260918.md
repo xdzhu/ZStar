@@ -1,5 +1,8 @@
 # Native VASP Response Acceptance
 
+This is the original development record. For the clean main-based PR and its
+current test results, see [issue 2 PR acceptance](vasp_native_issue_2_pr_acceptance_20260918.md).
+
 Baseline: 9e0299a6, frozen with zstar-before-vasp-native-20260918.
 Development: codex/vasp-native-response, separate worktree
 `D:/Work/Code/zstar-vasp-native`. Main and the independent v2 worktree are untouched.
