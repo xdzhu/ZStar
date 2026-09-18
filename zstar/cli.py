@@ -1719,7 +1719,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             if args.calculator == 'vasp':
                 if not args.modes_xml and not args.response:
                     parser_spectra_prepare.error(
-                        '--modes-xml is required for --calculator vasp'
+                        '--response or --modes-xml is required for --calculator vasp'
                     )
                 root = prepare_vasp_spectra(
                     args.input_dir,

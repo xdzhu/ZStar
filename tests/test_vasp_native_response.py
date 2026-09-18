@@ -202,6 +202,14 @@ def test_incomplete_tensor_is_rejected(tmp_path):
         parse_native_tensors(source)
 
 
+def test_incomplete_tensor_cannot_borrow_rows_from_next_block(tmp_path):
+    source = tmp_path / "OUTCAR"
+    source.write_text(table("PIEZOELECTRIC TENSOR (C/m^2)", np.ones((2, 6)))
+                      + table("PIEZOELECTRIC TENSOR IONIC CONTR (C/m^2)", np.ones((3, 6))))
+    with pytest.raises(ValueError, match="Incomplete"):
+        parse_native_tensors(source)
+
+
 def test_native_parser_ignores_intermediate_field_direction_blocks(tmp_path):
     source = tmp_path / "OUTCAR"
     source.write_text(table("PIEZOELECTRIC TENSOR FIELD DIRECTION 1 (C/m^2)", np.eye(3))
@@ -256,6 +264,7 @@ def test_vasp_frequency_unit_conversion_is_version_aware(tmp_path):
 
 
 def test_native_modes_use_equilibrium_not_last_displaced_structure(tmp_path, monkeypatch):
+    pytest.importorskip("pymatgen.io.vasp.outputs")
     from types import SimpleNamespace
     from pymatgen.core import Lattice, Structure
     from pymatgen.io.vasp import outputs
@@ -304,6 +313,26 @@ def test_born_is_phonopy_format_and_zstar_reader_retains_tensor_axes(tmp_path):
     np.testing.assert_allclose(parsed["dielectric"], np.eye(3) * 5.)
     loaded = read_born_data(target, natoms=2)
     np.testing.assert_allclose(loaded.tensors, born)
+
+
+def test_native_born_offdiagonal_components_roundtrip_without_axis_swap(tmp_path):
+    from phonopy.file_IO import parse_BORN
+    from phonopy.structure.atoms import PhonopyAtoms
+    from zstar.structure_io import read_structure
+
+    poscar = tmp_path / "POSCAR"
+    poscar.write_text("SiC\n1.0\n3 0 0\n0.3 4 0\n0.2 0.4 5\nSi C\n1 1\n"
+                      "Direct\n0 0 0\n0.17 0.28 0.36\n")
+    tensor = np.array([[2., .1, .2], [.3, 3., .4], [.5, .6, 4.]])
+    born = np.array([tensor, -tensor])
+    target = tmp_path / "BORN"
+    write_vasp_born_for_phonopy(poscar, np.eye(3) * 5., born, target)
+    structure = read_structure(poscar)
+    cell = PhonopyAtoms(symbols=structure.symbols, cell=structure.lattice_angstrom,
+                        scaled_positions=structure.positions_fractional)
+    parsed = parse_BORN(cell, filename=str(target))
+    np.testing.assert_allclose(parsed["born"], born.transpose(0, 2, 1))
+    np.testing.assert_allclose(read_born_data(target, natoms=2).tensors, born)
 
 
 def native_cache(tmp_path):
@@ -362,6 +391,29 @@ def test_ir_only_cache_needs_no_wavefunctions_and_generates_no_displacements(tmp
     states = run_calculator_spectra(root, command="must-not-run")
     assert [state.status for state in states] == ["completed"]
     assert calls == []
+
+
+def test_cached_ir_collection_is_independent_of_original_workspace(tmp_path, monkeypatch):
+    from zstar.spectroscopy_backends import prepare_vasp_spectra, collect_calculator_spectra
+
+    cache = native_cache(tmp_path)
+    modes = mock_gamma_modes()
+    loaded = []
+
+    def load_modes(path):
+        loaded.append(Path(path))
+        assert Path(path).is_file()
+        return modes
+
+    monkeypatch.setattr("zstar.spectroscopy_backends.load_vasp_gamma_modes", load_modes)
+    root = prepare_vasp_spectra(tmp_path / "unused", None, tmp_path / "ir", kind="ir", native_response_root=cache)
+    cache.rename(tmp_path / "relocated-native")
+    moved = root.rename(tmp_path / "relocated-ir")
+    monkeypatch.setattr("zstar.spectroscopy_backends.parse_vasp_outcar",
+                        lambda _: (np.eye(3) * 5., np.array([np.eye(3), -np.eye(3)])))
+    collect_calculator_spectra(moved, plot=False, points=101)
+    assert loaded[-1] == moved / "reference/vasprun.xml"
+    assert (moved / "qpoints.yaml").is_file()
 
 
 def test_raman_cache_requires_restart_files_before_creating_target(tmp_path, monkeypatch):
@@ -533,6 +585,15 @@ def test_native_cache_rejects_competing_mode_source(tmp_path):
     cache = native_cache(tmp_path)
     with pytest.raises(ValueError, match="same native response"):
         prepare_vasp_spectra(tmp_path / "unused", tmp_path / "different.xml", tmp_path / "ir", native_response_root=cache)
+
+
+def test_vasp_spectra_cli_explains_both_mode_source_options(capsys):
+    from zstar.cli import zstar_cli
+
+    with pytest.raises(SystemExit) as error:
+        zstar_cli(["spectra", "prepare", "--calculator", "vasp"], _canonical=False)
+    assert error.value.code == 2
+    assert "--response or --modes-xml" in capsys.readouterr().err
 
 
 def test_force_cannot_delete_reused_native_cache(tmp_path, monkeypatch):

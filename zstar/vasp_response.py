@@ -96,10 +96,14 @@ def _table(lines: list[str], start: int, rows: int, columns: int) -> np.ndarray:
         if len(fields) == columns + 1 and fields[0].lower() in {"x", "y", "z", *VASP_VOIGT}:
             fields = fields[1:]
         if len(fields) != columns:
+            if values:
+                break
             continue
         try:
             row = [float(x.replace("D", "E").replace("d", "e")) for x in fields]
         except ValueError:
+            if values:
+                break
             continue
         values.append(row)
         if len(values) == rows:

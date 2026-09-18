@@ -41,7 +41,14 @@ from .spectra import (
     write_native_line_spectrum_outputs,
     write_raman_outputs,
 )
-from .vasp_bec import _incar_value, parse_vasp_gap, parse_vasp_outcar, render_incar, resolve_vasp_response_method, vasp_output_complete
+from .vasp_bec import (
+    _incar_value,
+    parse_vasp_gap,
+    parse_vasp_outcar,
+    render_incar,
+    resolve_vasp_response_method,
+    vasp_output_complete,
+)
 
 
 DEBYE_PER_E_ANGSTROM = 4.80320471257
@@ -354,7 +361,7 @@ def prepare_vasp_spectra(
         "reused_native_response": None if cache is None else str(cache.parent),
         "created_at": _utc_now(),
         "source_directory": str(source),
-        "modes_source": str(modes_source),
+        "modes_source": "reference/vasprun.xml" if cache is not None else str(modes_source),
         "mode_geometry": "initial-equilibrium",
         "dimensionality": dimensionality,
         "periodic_axes": "z" if dimensionality == 1 else ("xyz" if dimensionality == 3 else ""),
@@ -717,7 +724,10 @@ def _collect_vasp_spectra(
     imaginary_tolerance_cm1: float,
     allow_imaginary: bool,
 ) -> dict:
-    native_modes = load_vasp_gamma_modes(manifest["modes_source"])
+    modes_source = Path(manifest["modes_source"])
+    if not modes_source.is_absolute():
+        modes_source = root / modes_source
+    native_modes = load_vasp_gamma_modes(modes_source)
     _validate_vasp_mode_geometry(root, native_modes)
     # VASP source IDs stay unchanged; exported IDs match ascending qpoints.yaml.
     order = np.argsort(native_modes.frequencies_thz, kind="stable")
