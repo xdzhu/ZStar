@@ -3,6 +3,14 @@
   "backend": "vasp",
   "electronic_response_method": "dfpt",
   "ionic_response_method": "native-finite-difference",
+  "solver_provenance": {
+    "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+    "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+    "elastic": "VASP native strain finite differences",
+    "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+    "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+    "raman": "not computed here; additional native dielectric derivatives required"
+  },
   "dimensionality": 3,
   "normalization": "bulk",
   "voigt_convention": [
@@ -523,26 +531,26 @@
     "piezoelectric_d_pm_V": [
       [
         -9.811108487072733e-05,
-        -5.6792531037079125e-05,
-        7.0901342994286505e-06,
+        -5.679253103707913e-05,
+        7.090134299428647e-06,
         8.168255162356812e-06,
-        -2.7681967897631083,
+        -2.768196789763108,
         4.0250997874681725e-05
       ],
       [
-        2.3121589400135227e-06,
-        9.419558247588266e-05,
+        2.312158940013521e-06,
+        9.419558247588265e-05,
         -0.0001378899661919051,
-        -2.7687532928854646,
-        -8.126414282231402e-05,
-        -2.4931413034593787e-05
+        -2.768753292885464,
+        -8.1264142822314e-05,
+        -2.4931413034593783e-05
       ],
       [
-        -2.1901741201151226,
-        -2.18987370231443,
-        5.324396108819313,
+        -2.190174120115123,
+        -2.1898737023144306,
+        5.324396108819314,
         -6.791199516703872e-05,
-        -9.070363382880117e-05,
+        -9.070363382880115e-05,
         -0.00012129563836002736
       ]
     ],
@@ -585,6 +593,7 @@
     "internal_strain_source": "displaced_atoms",
     "strained_cell_internal_strain_translation_max_eV_per_A": 1.0000000000000026e-05,
     "internal_strain_reciprocity_max_eV_per_A": 0.03345999999999982,
+    "elastic_antisymmetry_max_GPa": 0.0,
     "static_dielectric_max_abs": 0.00032453193837866934
   },
   "files": {

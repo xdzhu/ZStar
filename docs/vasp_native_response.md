@@ -65,6 +65,45 @@ convention is missing. This only repeats post-processing, not VASP calculations.
 
 ## Solver selection
 
+### Piezoelectric e versus d
+
+For relaxed-ion piezoelectric stress coefficients `e`, request the native ionic
+response, not an external strain/polarization-difference ensemble:
+
+```bash
+zstar bec pre --calculator vasp --input-dir input --root piezo --piezo
+zstar bec run --root piezo
+zstar bec post --root piezo
+```
+
+`--piezo` also computes Gamma force constants, so a separate `--phonons` is
+unnecessary. For LDA/GGA this is the same native `IBRION=8` response used by
+`--phonons`; both routes collect clamped, ionic and total `e`. The internal-strain
+coupling is not itself a piezoelectric tensor: native VASP combines the ionic
+relaxation response with BEC. ZStar reads the native contributions rather than
+reconstructing them from another external displacement ensemble.
+
+| Requested result | Preparation option | Native solver / reuse |
+| --- | --- | --- |
+| BEC and electronic dielectric tensor | no extra option | `LEPSILON` DFPT for LDA/GGA |
+| Relaxed-ion piezoelectric `e` | `--piezo` | electric DFPT plus native Gamma ionic response |
+| Gamma phonons, phonon dielectric and IR | `--phonons` | same native ionic response; IR is post-processing |
+| Complete elastic `C` and derived `d` | `--elastic` | native ionic/strain finite differences; `d = e C^-1` |
+| Raman | subsequent `zstar spectra pre --response ...` | additional mode-displaced native dielectric calculations |
+
+For `d`, use `--elastic` instead of `--piezo`. It includes the required ionic
+response; neither `--piezo` nor `--phonons` alone supplies the complete elastic
+matrix. VASP performs these strain finite differences internally; ZStar does
+not generate a second external strain ensemble. The SiC/AlN examples compare
+both native routes for validation, not because routine `e` calculations require
+both. Raman is not obtained for free from the electric/phonon DFPT run.
+
+The [LEPSILON documentation](https://vasp.at/wiki/LEPSILON) specifies the
+clamped-ion electric response; the [phonon DFPT documentation](https://vasp.at/wiki/Phonons_from_density-functional-perturbation_theory)
+describes internal strain and the missing clamped elastic strain perturbation.
+The [native finite-difference documentation](https://vasp.at/wiki/Phonons_from_finite_differences)
+describes the complete elastic route.
+
 `--method auto` is the default: native electric-field DFPT for LDA/GGA,
 native finite electric fields for hybrid or meta-GGA functionals. An explicit
 incompatible `--method dfpt` fails with guidance rather than silently changing
@@ -79,10 +118,18 @@ from kbar to GPa, and both piezoelectric columns and elastic rows/columns are
 reordered to `(xx, yy, zz, yz, xz, xy)` with engineering shear strains.
 The derived `d` is emitted only for a mechanically stable, sufficiently
 symmetric elastic matrix and a reliable internal-strain translation residual.
+Missing internal-strain data are not treated as a passed check. Electronic and
+ionic piezoelectric contributions must both be present; an explicitly printed
+total must agree with their sum to within 1e-4 C/m2. These are consistency gates,
+not substitutes for cutoff, k-mesh or response convergence tests.
 The collector preserves raw tensors and warns about failed force balance;
 it does not silently project native electromechanical contributions.
 A native piezoelectric tensor is not subjected to
 the geometric correction for an improper finite-polarization derivative.
+`vasp_native_response.json` and the common response record retain solver
+provenance, distinguishing native DFT responses from the algebraic `d`
+conversion and IR post-processing. A failed check keeps the raw native tensors
+and its reason; it does not silently switch solvers or launch another job.
 
 Low-dimensional native dielectric and piezoelectric outputs remain explicitly
 labelled as periodic-supercell responses; they are not intrinsic bulk constants.

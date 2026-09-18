@@ -59,6 +59,12 @@ alone do not describe a resumed calculation.
 
 After relaxation, the main steps can be run individually:
 
+For `e` only, prepare `--root .work/piezo --piezo` instead of the elastic
+root below. This selects native DFPT ionic response without elastic strain
+jobs. The complete `run.sh` compares both routes for validation; routine
+piezoelectric calculations do not require that comparison. For `d`, keep
+`--elastic` to obtain the complete native elastic matrix.
+
 ```bash
 zstar bec pre --calculator vasp --input-dir .work/input --root .work/elastic --elastic
 zstar bec run --root .work/elastic --vasp-command 'mpirun -np 64 vasp_std'

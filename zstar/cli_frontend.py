@@ -165,6 +165,7 @@ def _run_bec(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         if calculator == 'vasp' and (Path(manifest_root) / 'vasp_bec_manifest.json').is_file():
             native_data = json.loads((Path(manifest_root) / 'vasp_bec_manifest.json').read_text())
             shared_options = {'method': native_data['method'], 'gamma_phonons': native_data.get('phonons', False),
+                              'piezo': native_data.get('piezo', False),
                               'elastic': native_data.get('elastic', False)}
         if calculator == 'abacus' and (Path(manifest_root) / MANIFEST).is_file():
             shared_data = load_manifest(manifest_root)

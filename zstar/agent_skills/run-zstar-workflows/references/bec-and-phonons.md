@@ -57,8 +57,16 @@ zstar bec stat --root response
 
 Inspect before running without `--dry-run`; collect with `zstar bec post --root response`.
 `--phonons` adds native Gamma modes and ionic dielectric/piezoelectric terms.
+Use `--piezo` when relaxed-ion piezoelectric `e` is the requested property; it
+includes the same native Gamma response without requesting elastic strain jobs.
 `--elastic` instead adds bulk native ionic/strain finite differences and complete
-elastic output. Native electric DFPT is preferred for LDA/GGA; the automatic
+elastic output for derived `d`. Do not default to an external strain/BEC
+finite-difference ensemble when native VASP supplies the response. The two-route
+AlN/SiC comparison is a validation example, not a routine requirement.
+Missing internal-strain diagnostics or inconsistent piezo contributions block
+derived `d`; retain native tensors and warnings instead of projecting or rerunning
+without authorization. Raman still needs additional dielectric derivatives.
+Native electric DFPT is preferred for LDA/GGA; the automatic
 finite-field choice for orbital-dependent functionals still requires validation
 for the selected system. Inputs use `NCORE=4`, no `NPAR`, and `ISYM=0` to avoid
 VASP 6.3.2 k-point redistribution restrictions. Keep low-dimensional native

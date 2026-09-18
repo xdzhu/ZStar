@@ -45,6 +45,10 @@ bash run.sh
 
 优化完成后可以逐步执行：
 
+若只求压电 e，可将下方准备命令改为 `--root .work/piezo --piezo`，原生 DFPT
+离子响应不增加弹性应变任务。完整 `run.sh` 对比两条原生路线仅用于验证，
+不是日常求 e 的必需步骤。需要 d 时保留 `--elastic`，以获取完整弹性矩阵。
+
 ```bash
 zstar bec pre --calculator vasp --input-dir .work/input --root .work/elastic --elastic
 zstar bec run --root .work/elastic --vasp-command 'mpirun -np 64 vasp_std'

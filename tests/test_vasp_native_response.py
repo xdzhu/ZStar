@@ -91,6 +91,40 @@ def test_native_elastic_uses_strain_finite_differences_with_electric_dfpt(tmp_pa
     assert "NPAR" not in incar
 
 
+@pytest.mark.parametrize("incar,method,ibrion", [("GGA=PS\n", "dfpt", 8), ("LHFCALC=.TRUE.\n", "finite-field", 6)])
+def test_piezo_requests_native_ionic_response_without_elastic_strain_jobs(tmp_path, incar, method, ibrion):
+    root = prepare_vasp_bec(inputs(tmp_path, incar), tmp_path / "piezo", piezo=True)
+    manifest = json.loads((root / "vasp_bec_manifest.json").read_text())
+    response = (root / "response/INCAR").read_text()
+    assert manifest["piezo"] is True
+    assert manifest["phonons"] is True
+    assert manifest["elastic"] is False
+    assert manifest["method"] == method
+    assert f"IBRION = {ibrion}" in response
+    assert "ISIF = 2" in response
+    assert [stage["name"] for stage in manifest["stages"]] == ["reference", "response"]
+
+
+def test_canonical_piezo_cli_prepares_native_workflow(tmp_path):
+    from zstar.cli import zstar_cli
+
+    root = tmp_path / "response"
+    zstar_cli(["bec", "pre", "--calculator", "vasp", "--input-dir", str(inputs(tmp_path)),
+               "--root", str(root), "--piezo"])
+    assert json.loads((root / "vasp_bec_manifest.json").read_text())["piezo"] is True
+    assert "IBRION = 8" in (root / "response/INCAR").read_text()
+
+
+def test_requested_piezo_missing_ionic_block_is_rejected(tmp_path):
+    from zstar.vasp_response import collect_native_response
+
+    (tmp_path / "response").mkdir()
+    (tmp_path / "response/OUTCAR").write_text(
+        table("MACROSCOPIC STATIC DIELECTRIC TENSOR IONIC CONTRIBUTION", np.eye(3)))
+    with pytest.raises(ValueError, match="piezoelectric response is incomplete"):
+        collect_native_response(tmp_path, {"piezo": True}, np.eye(3), np.zeros((2, 3, 3)))
+
+
 def test_native_preparation_removes_user_npar_from_both_stages(tmp_path):
     root = prepare_vasp_bec(inputs(tmp_path, "ENCUT=500; NCORE=1; NPAR=1\n"), tmp_path / "response", phonons=True)
     for stage in ("reference", "response"):
@@ -122,6 +156,8 @@ def test_tensor_reordering_units_and_derived_d(tmp_path):
         + table("PIEZOELECTRIC TENSOR for field in x, y, z (C/m^2)", piezo, ["x", "y", "z"])
         + table("PIEZOELECTRIC TENSOR IONIC CONTR for field in x, y, z (C/m^2)", piezo * 0.1, ["x", "y", "z"])
         + table("TOTAL ELASTIC MODULI (kBar)", stiffness, ["XX", "YY", "ZZ", "XY", "YZ", "ZX"])
+        + table("INTERNAL STRAIN TENSOR FOR ION 1 (eV/Angst)", np.ones((3, 6)), ["x", "y", "z"])
+        + table("INTERNAL STRAIN TENSOR FOR ION 2 (eV/Angst)", -np.ones((3, 6)), ["x", "y", "z"])
     )
     data = parse_native_tensors(source)
     order = [0, 1, 2, 4, 5, 3]
@@ -129,6 +165,24 @@ def test_tensor_reordering_units_and_derived_d(tmp_path):
     np.testing.assert_allclose(data["elastic_relaxed_GPa"], stiffness[np.ix_(order, order)] * 0.1)
     expected = piezo[:, order] * 1.1 @ np.linalg.inv(stiffness[np.ix_(order, order)] * 0.1) * 1000
     np.testing.assert_allclose(data["piezoelectric_d_pm_V"], expected)
+
+
+@pytest.mark.parametrize("problem", ["missing-internal-strain", "inconsistent-total", "missing-ionic"])
+def test_unchecked_or_inconsistent_native_data_do_not_emit_d(tmp_path, problem):
+    source = tmp_path / "OUTCAR"
+    text = table("PIEZOELECTRIC TENSOR (C/m^2)", np.ones((3, 6)))
+    if problem != "missing-ionic":
+        text += table("PIEZOELECTRIC TENSOR IONIC CONTR (C/m^2)", np.zeros((3, 6)))
+    text += table("TOTAL PIEZOELECTRIC TENSOR (C/m^2)", np.ones((3, 6)) * (2 if problem == "inconsistent-total" else 1))
+    text += table("TOTAL ELASTIC MODULI (kBar)", np.eye(6) * 1000)
+    if problem != "missing-internal-strain":
+        for atom, sign in [(1, 1), (2, -1)]:
+            text += table(f"INTERNAL STRAIN TENSOR FOR ION {atom} (eV/Angst)", np.ones((3, 6)) * sign)
+    source.write_text(text)
+    data = parse_native_tensors(source)
+    assert "piezoelectric_d_pm_V" not in data
+    assert "d_rejected_reason" in data
+    assert "piezoelectric_total_C_m2" in data
 
 
 def test_unstable_elastic_d_is_not_emitted(tmp_path):

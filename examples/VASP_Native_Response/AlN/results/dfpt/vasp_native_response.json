@@ -3,6 +3,14 @@
   "backend": "vasp",
   "electronic_response_method": "dfpt",
   "ionic_response_method": "dfpt",
+  "solver_provenance": {
+    "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+    "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+    "elastic": "not requested",
+    "piezoelectric_d": "not emitted",
+    "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+    "raman": "not computed here; additional native dielectric derivatives required"
+  },
   "dimensionality": 3,
   "normalization": "bulk",
   "voigt_convention": [
