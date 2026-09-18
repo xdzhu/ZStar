@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from zstar.v2.abacus import collect_pyatb_strain_response
 from zstar.v2.algebra import remove_acoustic_translation
 from zstar.v2.fit import fit_internal_strain_response
-from zstar.v2.reconstruct import fit_response_document
+from zstar.v2.difference import fit_finite_difference_document
 from zstar.v2.structure import (
     allowed_response_basis,
     space_group_report_from_dict,
@@ -358,6 +358,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
     parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument("--method", choices=("central", "forward"), default="central",
+                        help="central (recommended): O(h^2); forward: O(h) truncation error")
     parser.add_argument(
         "--symmetry-relative-tolerance",
         type=float,
@@ -411,8 +413,9 @@ def main() -> int:
             "v2 piezoelectric collection requires every reference/strain stage to be insulating; "
             + "; ".join(details)
         )
-    fitted = fit_response_document(
+    fitted = fit_finite_difference_document(
         collected,
+        method=args.method,
         stress_sign="compression-positive",
         enforce_major_symmetry=True,
         include_piezoelectric=True,
@@ -459,6 +462,8 @@ def main() -> int:
         "root": str(root),
         "backend": fitted.backend,
         "functional": fitted.functional,
+        "finite_difference": dict(fitted.metadata["finite_difference"]),
+        "fitted_stage_count": fitted.metadata["fitted_stage_count"],
         "space_group": fitted.symmetry.get("space_group"),
         "intended_preparation_space_group": fitted.symmetry.get("space_group"),
         "observed_reference_space_group": fitted.symmetry.get("reference_observed", {}).get("space_group"),

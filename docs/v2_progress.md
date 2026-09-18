@@ -971,3 +971,20 @@ relaxed-ion ensemble；ABACUS + 每几何一次 PYATB 三方向极化正在原�
 [根因报告](v2_gan_zno_relaxation_root_cause_20260918.md) 和
 [单点及 R1 数据](data/v2_gan_zno_relaxation_audit_20260918.json)。此前以
 `stress_thr=0.1` 收敛的其他结果不因放宽门槛重跑。
+
+## 2026-09-18：中心差分默认与显式前向选择
+
+新增 calculator-neutral `fit_finite_difference_document`，复用现有张量拟合、
+proper 校正、应力转换与 rank 检查。默认中心模式检查实际正负向量唯一成对；
+显式前向模式只选零点与规范正向向量，提示 O(h) 截断误差并推荐 O(h²) 的中心。
+ABACUS ensemble 准备 API 和两个现有开发工具支持 `method/--method`；没有新增正式
+CLI、改动 v1 默认值、发布或运行计算。算法与误差阶数写入 manifest、响应文档、
+拟合张量 provenance 和 summary。
+
+已有 GaN 数据回读复现中心 `e31=-0.386014`、`e33=0.665944`、
+`e15=-0.251659 C/m²`、`d33=2.348732 pC/N`；前向对应
+`-0.360618/0.603234/-0.251656 C/m²`、`2.140723 pC/N`，与人工审计一致。
+完整结果见 [GaN 文献与差分对照](v2_gan_pbesol_comparison_20260918.md)。
+新增 12 项测试覆盖默认行为、警告、实际幅度、缺失/不匹配正负点、满秩、序列化、
+前向准备与不等权正负采样拒绝；全套回归 `593 passed`，既有依赖弃用警告保留。
+此次新增第一性原理任务 0，集群 core-hours 0。

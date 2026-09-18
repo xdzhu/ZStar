@@ -496,6 +496,7 @@ def prepare_abacus_strain_ensemble(
     scf_thr: float | None = None,
     relax_nmax: int = V2_DEFAULT_RELAX_NMAX,
     symmetry_reduce: bool = False,
+    method: str = "central",
 ) -> dict:
     """Prepare a reference plus ± homogeneous-strain ABACUS folders.
 
@@ -524,10 +525,16 @@ def prepare_abacus_strain_ensemble(
     strains. Open-direction components are rejected until an explicit boundary
     model is implemented; symmetry-reduced low-dimensional plans are likewise
     kept disabled rather than guessing a bulk response space.
+    ``method='central'`` is the default. Explicit ``method='forward'`` prepares
+    only the canonical positive direction of each vector, warns about O(h)
+    truncation error, and records the central-difference recommendation.
     """
 
     from ..shared_response import read_structure, write_structure
     from ..abacus_assets import prepare_stru_assets
+    from .difference import difference_policy, _positive_direction
+
+    policy = difference_policy(method)
 
     output = Path(root).resolve()
     source = Path(structure).expanduser().resolve()
@@ -632,6 +639,12 @@ def prepare_abacus_strain_ensemble(
                 )
         strain_vectors = explicit_vectors
     expected_outputs = ["polarization", "forces", "stress"]
+    if method == "forward":
+        # Canonical orientation matches the calculator-neutral postprocessor.
+        strain_vectors = tuple(
+            np.asarray(vector) if _positive_direction(vector) else -np.asarray(vector)
+            for vector in strain_vectors
+        )
     if relaxation == "relaxed-ion":
         expected_outputs.append("relaxed_structure")
     stages = plan_central_stages(
@@ -641,6 +654,8 @@ def prepare_abacus_strain_ensemble(
         expected_outputs=tuple(expected_outputs),
         prefix="strain",
     )
+    if method == "forward":
+        stages = tuple(stage for stage in stages if stage.sign == "+")
     reference_hash = _sha256(source)
     ensemble = ResponseEnsemble(
         reference_hash=reference_hash,
@@ -649,6 +664,7 @@ def prepare_abacus_strain_ensemble(
         periodic_axes=spec.dimensionality.periodic_axes,
         metadata={
             "preparation": "abacus",
+            "finite_difference": policy,
             "symprec": float(symprec),
             "abacus_symmetry_tolerance_policy": "calculator-default",
             "abacus_reference_symmetry": 1,

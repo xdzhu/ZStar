@@ -37,6 +37,7 @@ from .fit import (
 )
 from .electromechanical import ElectromechanicalForms, convert_piezoelectric_forms
 from .electromechanical_document import derive_electromechanical_forms
+from .difference import fit_finite_difference_document
 from .mechanical import (
     ENGINEERING_VOIGT,
     convert_stress_sign,
@@ -161,6 +162,7 @@ __all__ = [
     "V2_ENSEMBLE_SCHEMA",
     "V2_ENSEMBLE_SCHEMA_VERSION",
     "central_difference",
+    "fit_finite_difference_document",
     "allowed_response_basis",
     "actual_strain",
     "acoustic_sum_rule_diagnostics",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Developer-only preparation of a full 3-D central finite-strain ensemble.
+"""Developer-only preparation of a 3-D finite-strain ensemble (central default).
 
 This helper only serializes inputs and provenance.  It never launches ABACUS
 or PYATB; the remote drivers are separate, scheduler-specific scripts.
@@ -31,6 +31,8 @@ def main() -> int:
         help="production is fixed at 0.005; verification accepts the two internal audit values",
     )
     parser.add_argument("--profile", choices=("production", "verification"), default="production")
+    parser.add_argument("--method", choices=("central", "forward"), default="central",
+                        help="central (recommended): O(h^2); forward: O(h) truncation error")
     parser.add_argument(
         "--symprec",
         type=float,
@@ -82,6 +84,7 @@ def main() -> int:
         scf_thr=args.scf_thr,
         relax_nmax=args.relax_nmax,
         symmetry_reduce=False,
+        method=args.method,
     )
     metadata = {
         "schema": "zstar-v2-piezo-case-preparation",
@@ -91,6 +94,7 @@ def main() -> int:
         "symmetry": "symmetry.json",
         "amplitude_engineering_strain": args.amplitude,
         "convergence_profile": args.profile,
+        "finite_difference": result["ensemble"].metadata["finite_difference"],
         "scf_thr": result["ensemble"].metadata["scf_thr"],
         "ion_relaxation": args.ion_relaxation,
         "force_thr_ev": result["ensemble"].metadata["force_thr_ev"],
