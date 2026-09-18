@@ -912,7 +912,7 @@ ABACUS 将幅度同为 `1e-3` 的应变结构重新投影成未应变 reference�
 ## 2026-09-16 固定生产协议、AlN 幅度资格和案例冻结
 
 1. **已完成内容：**统一 v2 3D bulk 输入为 `force_thr_ev=1e-4 eV/Å`、
-   `scf_thr=1e-8`、`stress_thr=0.5 kbar`、`relax_nmax=100`、
+   `scf_thr=1e-8`、`stress_thr=0.1 kbar`（当时输入，现行默认已放宽为 `0.5`）、`relax_nmax=100`、
    `symmetry_prec=1e-3`；生产应变固定 `±0.5%`。更新 AlN 案例的输入、README、
    结果、幅度审计、资源 provenance、PP/ORB hash 清单和 HF Slurm 复现入口。
 2. **关键理论结论：**标准生产导数使用共享零点和每方向 `±h` 中心差分，完整六方向
@@ -942,3 +942,32 @@ ABACUS 将幅度同为 `1e-3` 的应变结构重新投影成未应变 reference�
    真实案例仍未闭合；不能据单个 AlN 宣称任意空间群稳定功能已完成。
 10. **下一阶段条件：**AlN Gate A0.5 已满足，可进入 P1 机电核心算法闭合；稳定
     CLI、集群任务分发优化和更高阶功能继续受 P1--P3 前置门约束。
+
+## 2026-09-18 GaN/ZnO 弛豫根因审计和修正重算
+
+错误源是将 Phonopy/spglib 的 `symprec=1e-3 Å` 写入 ABACUS INPUT 为
+`symmetry_prec=0.001`。ABACUS v3.10.0/e84abb4 在 `cell-relax` 中可动态放大内部
+阈值；失败日志实际出现 `0.002`，与力/应力异常及坐标停滞同时发生。此前将原因直接
+归于 CG 步长的说法证据不足，现已更正。冷启动同结构单点没有复现异常大力。
+
+生产 INPUT 不设置 `symmetry_prec` 或 `symmetry_autoclose`；生成器会移除模板中
+继承的这两个字段，collector 不再把计算器内部阈值与结构识别阈值强行等同。
+已完成历史计算保留原始配置作为 provenance。应变 stage 继续 `symmetry=0`。
+
+保留原点、原泛函/PP/ORB/cutoff/kmesh 和 CG 优化器的新 R1 均完成：GaN 8 步、
+37 s，max force `5.9841e-6 eV/Å`、max stress `0.0051875 kbar`；ZnO 17 步、
+114 s，max force `9.2690e-5 eV/Å`、max stress `0.0398755 kbar`。
+全程分别使用 cu24/cu26，40 MPI × 1 OMP，主要 R1 重算合计 `1.678 core-hours`。
+同结构整体平移原点的两个控制计算也已收敛，合计 `1.289 core-hours`。
+两个新结构在 spglib `symprec=1e-3 Å` 下均为 `P6_3mc` (186)。
+
+两者 R2r 固定晶胞离子弛豫也已通过，并已生成各 13 几何的 `±0.5%`
+relaxed-ion ensemble；ABACUS + 每几何一次 PYATB 三方向极化正在原节点串行执行。
+只有完整采集并通过绝缘性、rank/residual、proper-e、C 和 d 的审计后才更新材料表。
+新任务根目录为 `235:/home/zhuxd/abacus/agent-runs/20260918-v2-gan-zno-root-cause`，
+使用独立 runtime，避免修改 cu25 上在运行的旧 campaign。
+
+代码全量回归为 `581 passed`。详细审计见
+[根因报告](v2_gan_zno_relaxation_root_cause_20260918.md) 和
+[单点及 R1 数据](data/v2_gan_zno_relaxation_audit_20260918.json)。此前以
+`stress_thr=0.1` 收敛的其他结果不因放宽门槛重跑。

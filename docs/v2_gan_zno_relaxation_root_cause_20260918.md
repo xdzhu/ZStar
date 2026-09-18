@@ -80,6 +80,9 @@ The final structures identify as `P6_3mc` (No. 186) with spglib at
 `symprec=1e-3 Angstrom`. ABACUS's internal operation count is recorded separately
 and is not required to equal spglib's count.
 
+The measured single-point and reference data are preserved in
+[diagnostic_results.json](data/v2_gan_zno_relaxation_audit_20260918.json).
+
 ## Reproducibility and subsequent response work
 
 Remote audit root:
@@ -100,3 +103,7 @@ benchmark. Reference relaxation convergence alone is not a piezoelectric result.
 
 Previously converged stricter-stress results for other materials are retained;
 this audit does not authorize rerunning them just to widen an acceptance gate.
+
+At the 2026-09-18 handoff, both R2r relaxations have also converged. Both fresh
+13-geometry response ensembles have been generated and launched on their
+respective nodes; their tensors are still pending complete collection and audit.

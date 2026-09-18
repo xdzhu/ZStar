@@ -1,0 +1,711 @@
+[
+  {
+    "material": "gan",
+    "case": "R1-default",
+    "scf_converged": true,
+    "relax_converged": true,
+    "energy_ev": -4713.634199491321,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        -4.0508e-06
+      ],
+      [
+        0.0,
+        0.0,
+        -4.0508e-06
+      ],
+      [
+        0.0,
+        0.0,
+        4.0508e-06
+      ],
+      [
+        0.0,
+        0.0,
+        4.0508e-06
+      ]
+    ],
+    "stress_kbar": [
+      0.0073620066,
+      0.0,
+      0.0,
+      0.0,
+      0.0073620066,
+      0.0,
+      0.0,
+      0.0,
+      0.0085901094
+    ],
+    "space_group_operation_counts": [
+      "12",
+      "12",
+      "12",
+      "12",
+      "12",
+      "12",
+      "12",
+      "12"
+    ],
+    "ionic_step_count": 8,
+    "runtime": {
+      "node": "cu24",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 38
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "gan",
+    "case": "R1-raw-default",
+    "scf_converged": true,
+    "relax_converged": true,
+    "energy_ev": -4713.63421956181,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        -5.9841e-06
+      ],
+      [
+        0.0,
+        0.0,
+        -5.9841e-06
+      ],
+      [
+        0.0,
+        0.0,
+        5.9841e-06
+      ],
+      [
+        0.0,
+        0.0,
+        5.9841e-06
+      ]
+    ],
+    "stress_kbar": [
+      -0.0051874631,
+      -0.0,
+      0.0,
+      -0.0,
+      -0.0051874631,
+      0.0,
+      -0.0,
+      -0.0,
+      0.004977892
+    ],
+    "space_group_operation_counts": [
+      "12",
+      "12",
+      "12",
+      "12",
+      "12",
+      "12",
+      "12",
+      "12"
+    ],
+    "ionic_step_count": 8,
+    "runtime": {
+      "node": "cu24",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 37
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "gan",
+    "case": "R2r",
+    "scf_converged": true,
+    "relax_converged": true,
+    "energy_ev": -4713.634219566255,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        -6.5816e-06
+      ],
+      [
+        0.0,
+        0.0,
+        -6.5816e-06
+      ],
+      [
+        0.0,
+        0.0,
+        6.5816e-06
+      ],
+      [
+        0.0,
+        0.0,
+        6.5816e-06
+      ]
+    ],
+    "stress_kbar": [
+      -0.005194387,
+      -0.0,
+      0.0,
+      -0.0,
+      -0.005194387,
+      0.0,
+      0.0,
+      -0.0,
+      0.0049805097
+    ],
+    "space_group_operation_counts": [
+      "12"
+    ],
+    "ionic_step_count": 1,
+    "runtime": null,
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "gan",
+    "case": "raw-default",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -4713.6333871266,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        0.0690564161
+      ],
+      [
+        0.0,
+        0.0,
+        0.0690564161
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0690564161
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0690564161
+      ]
+    ],
+    "stress_kbar": [
+      -1.5391258211,
+      -0.0,
+      0.0,
+      -0.0,
+      -1.539125821,
+      -0.0,
+      0.0,
+      0.0,
+      3.493914369
+    ],
+    "space_group_operation_counts": [
+      "12"
+    ],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu24",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 8
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "gan",
+    "case": "raw-sym0",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -4713.633386931624,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        0.069092737
+      ],
+      [
+        0.0,
+        0.0,
+        0.069012381
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0690399137
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0690652044
+      ]
+    ],
+    "stress_kbar": [
+      -1.5414094276,
+      -7.34e-08,
+      -0.0,
+      -7.34e-08,
+      -1.5414095734,
+      0.0,
+      -0.0,
+      0.0,
+      3.4925103579
+    ],
+    "space_group_operation_counts": [],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu24",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 19
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "gan",
+    "case": "raw-sym1",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -4713.633386728045,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        0.0690482537
+      ],
+      [
+        0.0,
+        0.0,
+        0.0690482537
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0690482537
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0690482537
+      ]
+    ],
+    "stress_kbar": [
+      -1.5436877595,
+      -0.0,
+      0.0,
+      -0.0,
+      -1.5436877594,
+      0.0,
+      0.0,
+      0.0,
+      3.4911033369
+    ],
+    "space_group_operation_counts": [
+      "12"
+    ],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu24",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 7
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "gan",
+    "case": "shift-sym1",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -4713.633389961675,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        0.0689771504
+      ],
+      [
+        0.0,
+        0.0,
+        0.0689771504
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0689771504
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0689771504
+      ]
+    ],
+    "stress_kbar": [
+      -1.5379510506,
+      -0.0,
+      0.0,
+      -0.0,
+      -1.5379510505,
+      0.0,
+      0.0,
+      0.0,
+      3.4835907093
+    ],
+    "space_group_operation_counts": [
+      "12"
+    ],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu24",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 7
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "zno",
+    "case": "R1-default",
+    "scf_converged": true,
+    "relax_converged": true,
+    "energy_ev": -12260.813759981396,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        -1.52524e-05,
+        9.31856e-05
+      ],
+      [
+        0.0,
+        1.52524e-05,
+        9.31856e-05
+      ],
+      [
+        0.0,
+        1.0847e-05,
+        -9.31856e-05
+      ],
+      [
+        0.0,
+        -1.0847e-05,
+        -9.31856e-05
+      ]
+    ],
+    "stress_kbar": [
+      -0.0641542554,
+      0.0,
+      0.0,
+      0.0,
+      -0.0643572983,
+      0.0,
+      0.0,
+      0.0,
+      -0.0504139417
+    ],
+    "space_group_operation_counts": [
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4"
+    ],
+    "ionic_step_count": 11,
+    "runtime": {
+      "node": "cu26",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 78
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "zno",
+    "case": "R1-raw-default",
+    "scf_converged": true,
+    "relax_converged": true,
+    "energy_ev": -12260.813707181494,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        -3.4655e-06,
+        -9.26898e-05
+      ],
+      [
+        0.0,
+        3.4655e-06,
+        -9.26898e-05
+      ],
+      [
+        0.0,
+        1.36238e-05,
+        9.26898e-05
+      ],
+      [
+        0.0,
+        -1.36238e-05,
+        9.26898e-05
+      ]
+    ],
+    "stress_kbar": [
+      -0.0366648635,
+      0.0,
+      0.0,
+      0.0,
+      -0.0398754772,
+      0.0,
+      0.0,
+      0.0,
+      0.0357944297
+    ],
+    "space_group_operation_counts": [
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4",
+      "4"
+    ],
+    "ionic_step_count": 17,
+    "runtime": {
+      "node": "cu26",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 114
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "zno",
+    "case": "R2r",
+    "scf_converged": false,
+    "relax_converged": false,
+    "energy_ev": null,
+    "forces_ev_angstrom": [],
+    "stress_kbar": [],
+    "space_group_operation_counts": [
+      "4"
+    ],
+    "ionic_step_count": 1,
+    "runtime": null,
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "zno",
+    "case": "raw-default",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -12260.81360549704,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        -0.0015316615,
+        -0.0122920561
+      ],
+      [
+        0.0,
+        0.0015316615,
+        -0.0122920561
+      ],
+      [
+        0.0,
+        -0.0017601393,
+        0.0122920561
+      ],
+      [
+        0.0,
+        0.0017601393,
+        0.0122920561
+      ]
+    ],
+    "stress_kbar": [
+      -2.4719544201,
+      -0.0,
+      0.0,
+      0.0,
+      -2.8776598075,
+      0.0,
+      0.0,
+      -0.0,
+      1.0571741629
+    ],
+    "space_group_operation_counts": [
+      "4"
+    ],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu26",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 11
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "zno",
+    "case": "raw-sym0",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -12260.813605503656,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        -0.0015145252,
+        -0.012258289
+      ],
+      [
+        0.0,
+        0.0015113122,
+        -0.0123225661
+      ],
+      [
+        0.0,
+        -0.0017591567,
+        0.0123063674
+      ],
+      [
+        0.0,
+        0.0017623697,
+        0.0122744877
+      ]
+    ],
+    "stress_kbar": [
+      -2.4700661612,
+      -8.01e-08,
+      1e-10,
+      -8.01e-08,
+      -2.879305952,
+      2.86831e-05,
+      1e-10,
+      2.86831e-05,
+      1.0572707122
+    ],
+    "space_group_operation_counts": [],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu26",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 21
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "zno",
+    "case": "raw-sym1",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -12260.813552143358,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        -0.0123618633
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0124255768
+      ],
+      [
+        0.0,
+        0.0,
+        0.0124116285
+      ],
+      [
+        0.0,
+        0.0,
+        0.0123758116
+      ]
+    ],
+    "stress_kbar": [
+      -2.5987133028,
+      -0.0,
+      -0.0,
+      -0.0,
+      -2.5975351525,
+      0.0,
+      0.0,
+      0.0,
+      1.043842436
+    ],
+    "space_group_operation_counts": [
+      "6"
+    ],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu26",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 10
+    },
+    "adaptive_symmetry_prec": []
+  },
+  {
+    "material": "zno",
+    "case": "shift-sym1",
+    "scf_converged": true,
+    "relax_converged": false,
+    "energy_ev": -12260.813614184044,
+    "forces_ev_angstrom": [
+      [
+        0.0,
+        0.0,
+        -0.0122874863
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0122874863
+      ],
+      [
+        0.0,
+        0.0,
+        0.0122874863
+      ],
+      [
+        0.0,
+        0.0,
+        0.0122874863
+      ]
+    ],
+    "stress_kbar": [
+      -2.592008402,
+      0.0,
+      0.0,
+      0.0,
+      -2.5908332914,
+      0.0,
+      0.0,
+      -0.0,
+      1.044502785
+    ],
+    "space_group_operation_counts": [
+      "12"
+    ],
+    "ionic_step_count": 0,
+    "runtime": {
+      "node": "cu26",
+      "mpi": 40,
+      "omp": 1,
+      "elapsed_seconds": 8
+    },
+    "adaptive_symmetry_prec": []
+  }
+]
