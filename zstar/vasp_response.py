@@ -92,6 +92,8 @@ def write_vasp_born_for_phonopy(poscar: Path, epsilon: np.ndarray, born: np.ndar
 def _table(lines: list[str], start: int, rows: int, columns: int) -> np.ndarray:
     values = []
     for line in lines[start + 1:start + 18]:
+        if any(marker in line.upper() for marker in ("TENSOR", "ELASTIC MODULI", "INTERNAL STRAIN")):
+            break
         fields = line.split()
         if len(fields) == columns + 1 and fields[0].lower() in {"x", "y", "z", *VASP_VOIGT}:
             fields = fields[1:]

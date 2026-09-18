@@ -202,9 +202,10 @@ def test_incomplete_tensor_is_rejected(tmp_path):
         parse_native_tensors(source)
 
 
-def test_incomplete_tensor_cannot_borrow_rows_from_next_block(tmp_path):
+@pytest.mark.parametrize("rows", [0, 1, 2])
+def test_incomplete_tensor_cannot_borrow_rows_from_next_block(tmp_path, rows):
     source = tmp_path / "OUTCAR"
-    source.write_text(table("PIEZOELECTRIC TENSOR (C/m^2)", np.ones((2, 6)))
+    source.write_text(table("PIEZOELECTRIC TENSOR (C/m^2)", np.ones((rows, 6)))
                       + table("PIEZOELECTRIC TENSOR IONIC CONTR (C/m^2)", np.ones((3, 6))))
     with pytest.raises(ValueError, match="Incomplete"):
         parse_native_tensors(source)
