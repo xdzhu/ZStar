@@ -280,6 +280,7 @@ class SpectroscopyBackendTests(unittest.TestCase):
             root.mkdir()
             reference.mkdir()
             displaced.mkdir()
+            (displaced / "INCAR").write_text("ISTART=1\nICHARG=1\n")
             (reference / "OUTCAR").write_text("complete\n")
             (reference / "vasprun.xml").write_text("gap\n")
             (reference / "WAVECAR").write_text("wave\n")
@@ -383,6 +384,8 @@ class SpectroscopyBackendTests(unittest.TestCase):
                         directory = root / relative
                         directory.mkdir(parents=True)
                         (directory / "OUTCAR").write_text(vasp_response(epsilon, 2.0))
+                    from zstar.spectroscopy_backends import _write_vasp_poscar
+                    _write_vasp_poscar(root / "reference/POSCAR", fake_modes())
                     result = collect_calculator_spectra(root, points=101, plot=False)
                     self.assertEqual(result["mode_numbers"], [4])
                     self.assertTrue((root / "ir_spectrum" / "ir_modes.csv").is_file())

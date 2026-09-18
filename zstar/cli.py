@@ -532,8 +532,12 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_vasp_bec_prepare.add_argument('--periodic-axes', default=None,
         help='Physical periodic axes; low-dimensional dielectric output remains a supercell response.')
     parser_vasp_bec_prepare.add_argument(
-        '--method', choices=['dfpt', 'finite-field'], default='dfpt'
+        '--method', choices=['auto', 'dfpt', 'finite-field'], default='auto'
     )
+    parser_vasp_bec_prepare.add_argument('--phonons', action='store_true',
+        help='Also compute native Gamma force constants for dielectric/IR reuse.')
+    parser_vasp_bec_prepare.add_argument('--elastic', action='store_true',
+        help='Also compute native bulk elastic response; uses native finite differences for ionic/strain perturbations.')
     parser_vasp_bec_prepare.add_argument(
         '--field-strength', type=float, default=0.001,
         help='EFIELD_PEAD component in eV/Angstrom for finite-field mode.'
@@ -608,6 +612,9 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_spectra_prepare.add_argument('--dim', type=int, choices=[0, 1, 2, 3], default=3)
     parser_spectra_prepare.add_argument('--input-dir', default='.')
     parser_spectra_prepare.add_argument('--modes-xml', default=None)
+    parser_spectra_prepare.add_argument('--response', default=None,
+        help='Reuse a completed native VASP BEC/phonon response workspace.')
+    parser_spectra_prepare.add_argument('--kind', choices=['ir', 'raman', 'all'], default='all')
     parser_spectra_prepare.add_argument('--input', default=None)
     parser_spectra_prepare.add_argument('--modes', default=None)
     parser_spectra_prepare.add_argument('--acoustic-cutoff', type=float, default=5.0)
@@ -615,7 +622,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_spectra_prepare.add_argument('--allow-imaginary', action='store_true')
     parser_spectra_prepare.add_argument('--amplitude', type=float, default=0.02)
     parser_spectra_prepare.add_argument(
-        '--method', choices=['dfpt', 'finite-field'], default='dfpt'
+        '--method', choices=['auto', 'dfpt', 'finite-field'], default='auto'
     )
     parser_spectra_prepare.add_argument('--field-strength', type=float, default=0.001)
     parser_spectra_prepare.add_argument('--cp2k-dx', type=float, default=0.01)
@@ -1634,6 +1641,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 field_strength=args.field_strength,
                 dimensionality=args.dim,
                 periodic_axes=args.periodic_axes,
+                phonons=args.phonons,
+                elastic=args.elastic,
                 force=args.force,
             )
             print(f"[OUT] {root}")
@@ -1646,6 +1655,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 dry_run=args.dry_run,
             )
             print(format_vasp_status(states))
+            if any(state.status not in {'completed', 'dry-run'} for state in states):
+                raise SystemExit(1)
         elif args.vasp_bec_action == 'status':
             print(format_vasp_status(vasp_bec_status(args.root)))
         elif args.vasp_bec_action == 'collect':
@@ -1667,6 +1678,10 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                     for row in result['acoustic_sum_tensor']
                 )
             )
+            diagnostics = result.get('native_response', {}).get('diagnostics', {})
+            for key in ('electromechanical_warning', 'd_rejected_reason', 'ir_rejected_reason'):
+                if key in diagnostics:
+                    print(f"[WARN] {diagnostics[key]}")
         elif args.vasp_bec_action == 'script':
             output = generate_vasp_backend_script(
                 args.root,
@@ -1713,7 +1728,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
 
         if args.spectra_action == 'prepare':
             if args.calculator == 'vasp':
-                if not args.modes_xml:
+                if not args.modes_xml and not args.response:
                     parser_spectra_prepare.error(
                         '--modes-xml is required for --calculator vasp'
                     )
@@ -1729,6 +1744,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                     method=args.method,
                     field_strength=args.field_strength,
                     dimensionality=args.dim,
+                    kind=args.kind,
+                    native_response_root=args.response,
                     force=args.force,
                 )
             else:
@@ -1762,6 +1779,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 stop_after=args.stop_after,
             )
             print(format_calculator_spectra_status(states))
+            if any(state.status not in {'completed', 'dry-run'} for state in states):
+                raise SystemExit(1)
         elif args.spectra_action == 'status':
             print(
                 format_calculator_spectra_status(

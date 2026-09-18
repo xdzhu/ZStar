@@ -110,6 +110,7 @@ def _write_driver(
     dry_run: bool,
     header_file: str | None = None,
     calculator: str = 'abacus',
+    calculator_command: str | None = None,
 ) -> Path:
     root_path = Path(root).resolve()
     key = normalize_execution_system(system)
@@ -144,8 +145,8 @@ def _write_driver(
         for flag, name in [('--abacus-command', 'abacus'), ('--pyatb-command', 'pyatb')]:
             command_options.extend([flag, launcher_command(name, root=root, system=key, tasks=tasks)])
     elif calculator in ('vasp', 'cp2k'):
-        command = launcher_command(calculator, root=root, system=key, tasks=tasks)
-        if calculator == 'cp2k':
+        command = calculator_command or launcher_command(calculator, root=root, system=key, tasks=tasks)
+        if calculator == 'cp2k' and calculator_command is None:
             command += ' -i input.inp -o output.log'
         command_options = ['--command', command]
     elif calculator == 'qe':
@@ -242,6 +243,8 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         elif calculator in {"vasp", "cp2k"}:
             if not _has(clean, "--root"):
                 clean.extend(["--root", root])
+            if calculator == "vasp":
+                clean.extend(["--kind", kind])
             legacy(["spectra", "prepare", "--calculator", calculator, *clean])
         elif calculator == "qe":
             if not _has(clean, "--root"):
@@ -291,6 +294,7 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             dry_run="--dry-run" in rest,
             header_file=_option(rest, '--header'),
             calculator=calculator,
+            calculator_command=_option(rest, '--command'),
         )
         print(f"[OUT] {target}")
         return

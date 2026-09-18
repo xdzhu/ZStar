@@ -604,11 +604,12 @@ conventions, input restrictions, convergence checks, and direct-node validation.
 
 ## VASP BEC Backend
 
-ZStar can also drive VASP's native BEC implementations. Use `dfpt` for
-`LEPSILON` linear response or `finite-field` for `LCALCEPS`/PEAD:
+ZStar can also drive VASP's native BEC implementations. The default `auto`
+method selects `LEPSILON` DFPT for LDA/GGA and native finite electric fields
+for orbital-dependent functionals; either route can be selected explicitly.
 
 ```bash
-zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec --method dfpt
+zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec --phonons
 zstar bec run --root vasp_bec --vasp-command "mpirun -np 20 vasp_std"
 zstar bec post --root vasp_bec
 ```
@@ -618,6 +619,12 @@ and completed stages are resumable. The collector writes normalized JSON,
 ZStar tensors, and a Phonopy-compatible `BORN` file. The
 [complete VASP guide](docs/vasp_bec.md) documents finite-field safeguards,
 cluster scripts, tensor conventions, and the VASP 6.3.2 SiC validation.
+
+Add `--phonons` to collect native Gamma modes for dielectric/IR reuse, or
+`--elastic` for complete bulk elastic response. The latter uses native strain
+finite differences because VASP does not implement elastic strain DFPT.
+The [native response guide](docs/vasp_native_response.md) explains tensor
+conventions, Raman's mixed route, and the boundaries of low-dimensional support.
 
 ## Phonons and Dielectric Response
 
@@ -790,8 +797,7 @@ quantitative intensity work.
 The calculator-neutral spectroscopy layer also supports VASP and CP2K:
 
 ```bash
-zstar spectra pre --calculator vasp --input-dir vasp_input \
-  --modes-xml phonon/vasprun.xml --root vasp_spectra --dim 3
+zstar spectra pre --calculator vasp --response vasp_bec --root vasp_spectra
 zstar spectra run --root vasp_spectra --command "mpirun -np 20 vasp_std"
 zstar spectra post --root vasp_spectra
 

@@ -1,0 +1,4 @@
+.work/
+POTCAR
+slurm-*.out
+__pycache__/

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "backend": "vasp",
+  "method": "dfpt",
+  "natoms_total": 2,
+  "sum_scope": "all_atoms",
+  "tensor_convention": "rows=atomic displacement/force; columns=polarization/electric field",
+  "source_tensor_convention": "VASP OUTCAR rows=electric field; columns=force",
+  "source_transform": "transpose_each_tensor",
+  "epsilon_infinity": [
+    [
+      7.148589,
+      1e-06,
+      1.3e-05
+    ],
+    [
+      -4e-06,
+      7.148589,
+      2e-05
+    ],
+    [
+      -1.5e-05,
+      -2.1e-05,
+      7.148587
+    ]
+  ],
+  "atoms": [
+    {
+      "index": 1,
+      "label": "Si",
+      "tensor": [
+        [
+          2.69163,
+          -0.0001,
+          -7e-05
+        ],
+        [
+          -0.0001,
+          2.69164,
+          -6e-05
+        ],
+        [
+          -6e-05,
+          -5e-05,
+          2.6916
+        ]
+      ]
+    },
+    {
+      "index": 2,
+      "label": "C",
+      "tensor": [
+        [
+          -2.69163,
+          0.0001,
+          7e-05
+        ],
+        [
+          0.0001,
+          -2.69164,
+          6e-05
+        ],
+        [
+          6e-05,
+          5e-05,
+          -2.6916
+        ]
+      ]
+    }
+  ],
+  "acoustic_sum_tensor": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0
+    ]
+  ]
+}

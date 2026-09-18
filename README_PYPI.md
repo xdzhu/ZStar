@@ -277,6 +277,15 @@ Raman adds dielectric postprocessing of retained matrices, not additional SCFs.
 explicit normal-mode finite differences for comparison. Other calculators
 retain their documented native response workflows.
 
+For VASP, `zstar bec pre --calculator vasp --input-dir input --root response
+--phonons` selects native electric and Gamma-phonon response; `--elastic`
+selects native strain finite differences for bulk elastic and piezoelectric
+quantities. A completed response can be reused by `zstar spectra pre
+--calculator vasp --response response --root spectra`. IR needs no additional
+VASP calculation; Raman still needs mode-displaced dielectric derivatives.
+See the [native response guide](https://github.com/xdzhu/ZStar/blob/main/docs/vasp_native_response.md)
+for units, quality checks and the tested SiC/AlN cases.
+
 ```bash
 zstar spectra pre --calculator abacus --kind raman --root raman \
   --stru STRU --qpoints qpoints.yaml \

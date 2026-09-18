@@ -461,6 +461,20 @@
         "bec",
         "gamma_hessian"
       ]
+    },
+    {
+      "id": "vasp_native_3c_sic",
+      "path": "VASP_Native_Response/3C_SiC",
+      "dim": 3,
+      "calculator": "VASP",
+      "features": ["bec", "gamma_modes", "dielectric", "ir", "raman", "piezoelectric", "elastic"]
+    },
+    {
+      "id": "vasp_native_aln",
+      "path": "VASP_Native_Response/AlN",
+      "dim": 3,
+      "calculator": "VASP",
+      "features": ["bec", "gamma_modes", "dielectric", "ir", "raman", "piezoelectric", "elastic"]
     }
   ]
 }

@@ -1,0 +1,12 @@
+{
+  "tensor_kind": "dielectric tensor derivative",
+  "modes": 3,
+  "files": {
+    "modes": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_modes.csv",
+    "tensors": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_tensors.npy",
+    "spectrum": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.dat",
+    "plot": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.png",
+    "plot_pdf": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.pdf",
+    "plot_svg": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/raman/raman_spectrum/raman_spectrum.svg"
+  }
+}

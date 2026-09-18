@@ -12,6 +12,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import xml.etree.ElementTree as ET
 from typing import Iterable, Sequence
 
 import numpy as np
@@ -40,7 +41,7 @@ from .spectra import (
     write_native_line_spectrum_outputs,
     write_raman_outputs,
 )
-from .vasp_bec import parse_vasp_gap, parse_vasp_outcar, render_incar, vasp_output_complete
+from .vasp_bec import _incar_value, parse_vasp_gap, parse_vasp_outcar, render_incar, resolve_vasp_response_method, vasp_output_complete
 
 
 DEBYE_PER_E_ANGSTROM = 4.80320471257
@@ -93,6 +94,48 @@ def _real_modes(eigenvectors: np.ndarray) -> np.ndarray:
     return output
 
 
+def _vasp_masses(path: Path, masses_per_type: Sequence[float] | None) -> np.ndarray:
+    for _event, element in ET.iterparse(path, events=("end",)):
+        if element.tag != "atominfo":
+            continue
+        types = element.find("array[@name='atomtypes']")
+        atoms = element.find("array[@name='atoms']")
+        if types is None or atoms is None:
+            break
+        fields = [field.text.strip() for field in types.findall("field")]
+        type_rows = [dict(zip(fields, [cell.text.strip() for cell in row.findall("c")])) for row in types.findall("set/rc")]
+        masses = np.asarray(masses_per_type if masses_per_type is not None else [row["mass"] for row in type_rows], dtype=float)
+        atom_fields = [field.text.strip() for field in atoms.findall("field")]
+        atom_rows = [dict(zip(atom_fields, [cell.text.strip() for cell in row.findall("c")])) for row in atoms.findall("set/rc")]
+        indices = np.asarray([int(row["atomtype"]) - 1 for row in atom_rows])
+        if masses.shape != (len(type_rows),) or not np.all(np.isfinite(masses)) or np.any(masses <= 0):
+            raise ValueError("VASP atomic masses must be finite, positive and consistent with atom types")
+        if np.any(indices < 0) or np.any(indices >= len(masses)):
+            raise ValueError("VASP atom-type indices do not match POMASS")
+        return masses[indices]
+    raise ValueError(f"Missing VASP atomic mass/type metadata in {path}")
+
+
+def _vasp_frequency_factor(path: Path) -> float:
+    from phonopy.units import VaspToTHz
+
+    for _event, element in ET.iterparse(path, events=("end",)):
+        if element.tag != "dynmat":
+            continue
+        unit = element.find("i[@name='unit']")
+        if unit is None:
+            # VASP 5 uses mass-scaled eV/Angstrom^2 without a unit tag;
+            # this is the same convention handled by Phonopy's VASP reader.
+            return float(VaspToTHz)
+        text = (unit.text or "").strip().replace(" ", "")
+        if text == "THz^2":
+            return 1.0
+        if text in {"eV/amu/Angstrom^2", "eV/Angstrom^2/amu"}:
+            return float(VaspToTHz)
+        raise ValueError(f"Unsupported VASP dynamical-matrix frequency unit: {text!r}")
+    raise ValueError(f"Missing VASP dynamical matrix in {path}")
+
+
 def load_vasp_gamma_modes(path: str | Path) -> GammaModes:
     """Load Gamma modes from a VASP vibrational ``vasprun.xml``."""
 
@@ -110,15 +153,21 @@ def load_vasp_gamma_modes(path: str | Path) -> GammaModes:
         )
     except Exception as exc:
         raise ValueError(f"Cannot read VASP vibrational data from {source}: {exc}") from exc
-    eigenvalues = np.asarray(run.normalmode_eigenvals, dtype=float)
-    eigenvectors = np.asarray(run.normalmode_eigenvecs, dtype=complex)
-    if eigenvalues.ndim != 1 or eigenvectors.shape[0] != len(eigenvalues):
+    eigenvalues = np.asarray(getattr(run, "normalmode_eigenvals", ()), dtype=float)
+    eigenvectors = np.asarray(getattr(run, "normalmode_eigenvecs", ()), dtype=complex)
+    if eigenvalues.ndim != 1 or not len(eigenvalues) or eigenvectors.ndim != 3 or eigenvectors.shape[0] != len(eigenvalues):
         raise ValueError(f"No complete VASP normal modes found in {source}")
-    # pymatgen stores VASP's stable modes as negative omega^2 in THz^2.
-    frequencies = np.sign(-eigenvalues) * np.sqrt(np.abs(eigenvalues))
-    structure = run.final_structure
+    # Stable modes have negative eigenvalues in VASP's XML convention.
+    frequencies = np.sign(-eigenvalues) * np.sqrt(np.abs(eigenvalues)) * _vasp_frequency_factor(source)
+    # Native finite differences can leave the last displaced ion in finalpos.
+    # The eigensystem belongs to the initial equilibrium geometry.
+    structure = run.initial_structure
     symbols = tuple(str(site.specie.symbol) for site in structure)
-    masses = np.asarray([float(site.specie.atomic_mass) for site in structure])
+    if eigenvectors.shape != (3 * len(symbols), len(symbols), 3):
+        raise ValueError("VASP normal modes must contain the full equilibrium 3N eigensystem")
+    masses = _vasp_masses(source, run.parameters.get("POMASS"))
+    if masses.shape != (len(symbols),):
+        raise ValueError("VASP atomic mass count does not match the normal-mode structure")
     return GammaModes(
         frequencies_thz=frequencies,
         eigenvectors=eigenvectors,
@@ -153,7 +202,7 @@ def _write_vasp_poscar(
 
 def prepare_vasp_spectra(
     input_dir: str | Path,
-    modes_xml: str | Path,
+    modes_xml: str | Path | None,
     root: str | Path = "vasp_spectra",
     *,
     amplitude: float = 0.02,
@@ -161,12 +210,17 @@ def prepare_vasp_spectra(
     acoustic_cutoff_cm1: float = 5.0,
     imaginary_tolerance_cm1: float = 20.0,
     allow_imaginary: bool = False,
-    method: str = "dfpt",
+    method: str = "auto",
     field_strength: float = 0.001,
     dimensionality: int = 3,
+    kind: str = "all",
+    native_response_root: str | Path | None = None,
     force: bool = False,
 ) -> Path:
     """Prepare one reference and +/- VASP dielectric calculations per mode."""
+
+    if kind not in {"ir", "raman", "all"}:
+        raise ValueError("kind must be ir, raman, or all")
 
     if dimensionality == 2:
         raise ValueError(
@@ -177,16 +231,33 @@ def prepare_vasp_spectra(
         raise ValueError("VASP spectroscopy dimensionality must be 0, 1, or 3")
     if amplitude <= 0.0:
         raise ValueError("amplitude must be positive")
-    method_key = method.lower()
-    if method_key not in {"dfpt", "finite-field"}:
-        raise ValueError("method must be dfpt or finite-field")
-    if dimensionality == 1 and method_key != "dfpt":
-        raise ValueError("VASP 1D spectroscopy currently requires method=dfpt")
-    source = Path(input_dir).resolve()
+    cache = None
+    if native_response_root is not None:
+        native_root = Path(native_response_root).resolve()
+        manifest = json.loads((native_root / "vasp_bec_manifest.json").read_text())
+        if int(manifest.get("dimensionality", 3)) != dimensionality:
+            raise ValueError("Native response dimensionality does not match spectroscopy --dim")
+        if not manifest.get("phonons"):
+            raise ValueError("Native response has no Gamma modes; prepare it with zstar bec pre --phonons")
+        cache = native_root / "response"
+        if not vasp_output_complete(cache / "OUTCAR"):
+            raise ValueError("Native VASP response is not complete; run zstar bec run first")
+        if modes_xml is not None and Path(modes_xml).resolve() != cache / "vasprun.xml":
+            raise ValueError("--response and --modes-xml must refer to the same native response")
+        modes_xml = cache / "vasprun.xml"
+    source = cache or Path(input_dir).resolve()
     required = ("INCAR", "POSCAR", "KPOINTS", "POTCAR")
     missing = [name for name in required if not (source / name).is_file()]
     if missing:
         raise FileNotFoundError(f"Missing VASP input files: {', '.join(missing)}")
+    original = (source / "INCAR").read_text(encoding="utf-8", errors="ignore")
+    method_key = resolve_vasp_response_method(original, method)
+    if cache is not None and method_key != manifest["method"]:
+        raise ValueError("Reused native response and Raman must use the same electronic-response method")
+    if dimensionality == 1 and method_key != "dfpt":
+        raise ValueError("VASP 1D spectroscopy currently requires method=dfpt")
+    if modes_xml is None:
+        raise ValueError("VASP spectra requires --response from a completed native workflow or --modes-xml")
     modes_source = Path(modes_xml).resolve()
     modes = load_vasp_gamma_modes(modes_source)
     validate_gamma_stability(
@@ -198,15 +269,23 @@ def prepare_vasp_spectra(
     if not len(indices):
         raise ValueError("No optical modes selected")
 
+    cache_files = ("OUTCAR", "vasprun.xml") if kind == "ir" else ("OUTCAR", "vasprun.xml", "CHGCAR")
+    if cache is not None:
+        for name in cache_files:
+            cached = cache / name
+            if not cached.is_file() or not cached.stat().st_size:
+                raise FileNotFoundError(f"Native response cache missing {cached}; retain CHGCAR for Raman restart")
+
     target = Path(root).resolve()
+    if force and (target == source or target in source.parents or target in modes_source.parents):
+        raise ValueError("--force cannot replace VASP inputs, cached response or mode source; choose a separate spectra root")
     if target.exists() and force:
         shutil.rmtree(target)
     if target.exists() and any(target.iterdir()):
         raise FileExistsError(f"Output directory is not empty: {target}")
     target.mkdir(parents=True, exist_ok=True)
 
-    original = (source / "INCAR").read_text(encoding="utf-8", errors="ignore")
-    remove = ("LEPSILON", "LCALCEPS", "EFIELD_PEAD", "LOPTICS")
+    remove = ("LEPSILON", "LCALCEPS", "EFIELD_PEAD", "LOPTICS", "NPAR")
     common = {
         "NSW": "0",
         "IBRION": "-1",
@@ -214,8 +293,9 @@ def prepare_vasp_spectra(
         "LREAL": ".FALSE.",
         "LCHARG": ".TRUE.",
         "LWAVE": ".TRUE.",
-        "EDIFF": "1E-8",
+        "EDIFF": _incar_value(original, "EDIFF") or "1E-8",
         "LRPA": ".FALSE.",
+        "NCORE": "4",
     }
     if method_key == "dfpt":
         common["LEPSILON"] = ".TRUE."
@@ -232,7 +312,9 @@ def prepare_vasp_spectra(
     reference_incar = render_incar(original, updates=common, remove=remove)
     displaced_incar = render_incar(
         reference_incar,
-        updates={"ISTART": "1", "ICHARG": "1"},
+        # A mode displacement can change the irreducible k-point set.
+        # Reuse charge density, not wavefunctions from an incompatible mesh.
+        updates={"ISTART": "0", "ICHARG": "1"},
     )
 
     def write_stage(relative: Path, incar: str, displacement: np.ndarray | None) -> None:
@@ -244,6 +326,10 @@ def prepare_vasp_spectra(
             shutil.copy2(source / name, directory / name)
 
     write_stage(Path("reference"), reference_incar, None)
+    if cache is not None:
+        for name in cache_files:
+            cached = cache / name
+            shutil.copy2(cached, target / "reference" / name)
     real_vectors = _real_modes(modes.eigenvectors)
     mass_weighted = real_vectors / np.sqrt(modes.masses_amu)[None, :, None]
     entries: list[dict] = []
@@ -254,7 +340,7 @@ def prepare_vasp_spectra(
             "frequency_cm-1": float(modes.frequencies_cm1[index]),
             "amplitude_A_sqrt_amu": float(amplitude),
         }
-        for sign_name, sign in (("plus", 1.0), ("minus", -1.0)):
+        for sign_name, sign in (() if kind == "ir" else (("plus", 1.0), ("minus", -1.0))):
             relative = Path(f"mode-{index + 1:04d}") / sign_name
             displacement = sign * float(amplitude) * mass_weighted[index]
             write_stage(relative, displaced_incar, displacement)
@@ -264,9 +350,12 @@ def prepare_vasp_spectra(
     manifest = {
         "schema_version": 1,
         "calculator": "vasp",
+        "kind": kind,
+        "reused_native_response": None if cache is None else str(cache.parent),
         "created_at": _utc_now(),
         "source_directory": str(source),
         "modes_source": str(modes_source),
+        "mode_geometry": "initial-equilibrium",
         "dimensionality": dimensionality,
         "periodic_axes": "z" if dimensionality == 1 else ("xyz" if dimensionality == 3 else ""),
         "nac_model": "none" if dimensionality == 1 else "bulk",
@@ -319,7 +408,9 @@ def _cp2k_output_complete(path: Path) -> bool:
 
 
 def _copy_vasp_restart(reference: Path, target: Path) -> None:
-    for name in ("WAVECAR", "CHGCAR"):
+    incar = (target / "INCAR").read_text(encoding="utf-8")
+    files = ("CHGCAR",) if _incar_value(incar, "ISTART") == "0" else ("WAVECAR", "CHGCAR")
+    for name in files:
         source = reference / name
         if not source.is_file() or not source.stat().st_size:
             raise FileNotFoundError(f"Required VASP restart file is missing: {source}")
@@ -415,8 +506,6 @@ def run_calculator_spectra(
                 states.append(state)
                 _write_states(root_path, states)
                 break
-            if not dry_run:
-                _copy_vasp_restart(reference_dir, directory)
 
         state.started_at = _utc_now()
         state.error = None
@@ -426,6 +515,8 @@ def run_calculator_spectra(
             state.status = "running"
             _write_states(root_path, [*states, state])
             try:
+                if calculator == "vasp" and name != "reference":
+                    _copy_vasp_restart(reference_dir, directory)
                 log_path = directory / ("vasp.log" if calculator == "vasp" else "driver.log")
                 with log_path.open("w", encoding="utf-8") as log:
                     subprocess.run(
@@ -600,6 +691,20 @@ def generate_calculator_spectra_script(
     return target
 
 
+def _validate_vasp_mode_geometry(root: Path, modes: GammaModes) -> None:
+    from .structure_io import read_structure
+
+    reference = read_structure(root / "reference" / "POSCAR")
+    if reference.symbols != modes.symbols or reference.positions_fractional.shape != modes.positions_fractional.shape:
+        raise ValueError("Spectra reference atom order does not match XML equilibrium modes")
+    delta = reference.positions_fractional - modes.positions_fractional
+    delta -= np.rint(delta)
+    if (not np.allclose(reference.lattice_angstrom, modes.lattice_angstrom, atol=1e-6, rtol=0)
+            or np.max(np.linalg.norm(delta @ modes.lattice_angstrom, axis=1)) > 1e-5):
+        raise ValueError("Spectra reference differs from the XML initial equilibrium structure. "
+                         "Regenerate spectra inputs in a new root; old last-displacement jobs are not reusable.")
+
+
 def _collect_vasp_spectra(
     root: Path,
     manifest: dict,
@@ -612,9 +717,18 @@ def _collect_vasp_spectra(
     imaginary_tolerance_cm1: float,
     allow_imaginary: bool,
 ) -> dict:
-    modes = load_vasp_gamma_modes(manifest["modes_source"])
+    native_modes = load_vasp_gamma_modes(manifest["modes_source"])
+    _validate_vasp_mode_geometry(root, native_modes)
+    # VASP source IDs stay unchanged; exported IDs match ascending qpoints.yaml.
+    order = np.argsort(native_modes.frequencies_thz, kind="stable")
+    canonical_ids = np.empty(len(order), dtype=int)
+    canonical_ids[order] = np.arange(1, len(order) + 1)
+    modes = GammaModes(native_modes.frequencies_thz[order], native_modes.eigenvectors[order],
+                       native_modes.masses_amu, native_modes.lattice_angstrom,
+                       native_modes.symbols, native_modes.positions_fractional)
     epsilon, tensors = parse_vasp_outcar(root / "reference" / "OUTCAR")
-    selected = [int(entry["mode"]) for entry in manifest["modes"]]
+    native_selected = [int(entry["mode"]) for entry in manifest["modes"]]
+    selected = [int(canonical_ids[number - 1]) for number in native_selected]
     dimensionality = int(manifest["dimensionality"])
     born = BornData(tensors=tensors, electronic_dielectric=epsilon, source="VASP OUTCAR")
     if dimensionality in {1, 3}:
@@ -647,7 +761,7 @@ def _collect_vasp_spectra(
     raman_tensors: list[np.ndarray] = []
     sources: list[dict] = []
     amplitude = float(manifest["amplitude_A_sqrt_amu"])
-    for entry in manifest["modes"]:
+    for entry in ([] if manifest.get("kind") == "ir" else manifest["modes"]):
         plus, _plus_bec = parse_vasp_outcar(root / entry["plus"] / "OUTCAR")
         minus, _minus_bec = parse_vasp_outcar(root / entry["minus"] / "OUTCAR")
         derivative = (plus - minus) / (2.0 * amplitude)
@@ -656,13 +770,15 @@ def _collect_vasp_spectra(
         elif dimensionality == 1:
             derivative *= modes.cross_section_angstrom2(2) / (4.0 * math.pi)
         raman_tensors.append(0.5 * (derivative + derivative.T))
-        sources.append({"mode": entry["mode"], "plus": entry["plus"], "minus": entry["minus"]})
+        sources.append({"mode": int(canonical_ids[int(entry["mode"]) - 1]),
+                        "native_mode": int(entry["mode"]),
+                        "plus": entry["plus"], "minus": entry["minus"]})
     tensor_kind = {
         0: "molecular polarizability derivative (Angstrom^3 per Angstrom sqrt(amu))",
         1: "1D line polarizability derivative (Angstrom^2 per Angstrom sqrt(amu))",
         3: "dielectric tensor derivative",
     }[dimensionality]
-    raman = calculate_raman_spectrum(
+    raman = None if manifest.get("kind") == "ir" else calculate_raman_spectrum(
         modes,
         selected,
         np.asarray(raman_tensors),
@@ -674,7 +790,7 @@ def _collect_vasp_spectra(
         imaginary_tolerance_cm1=imaginary_tolerance_cm1,
         allow_imaginary=allow_imaginary,
     )
-    raman_summary = write_raman_outputs(root / "raman_spectrum", raman, plot=plot)
+    raman_summary = None if raman is None else write_raman_outputs(root / "raman_spectrum", raman, plot=plot)
     result = {
         "schema_version": 1,
         "calculator": "vasp",
@@ -682,6 +798,9 @@ def _collect_vasp_spectra(
         "periodic_axes": manifest.get("periodic_axes"),
         "nac_model": manifest.get("nac_model"),
         "mode_numbers": selected,
+        "native_mode_numbers": native_selected,
+        "mode_index_convention": "frequency-ascending",
+        "tensor_kind": tensor_kind,
         "frequencies_cm-1": modes.frequencies_cm1[np.asarray(selected) - 1].tolist(),
         "electronic_dielectric": epsilon.tolist(),
         "born_tensors": tensors.tolist(),
@@ -690,6 +809,9 @@ def _collect_vasp_spectra(
         "ir_summary": ir_summary,
         "raman_summary": raman_summary,
     }
+    from .vasp_response import write_native_qpoints
+    write_native_qpoints(modes, root / "qpoints.yaml")
+    result["qpoints"] = "qpoints.yaml"
     (root / "spectra_results.json").write_text(
         json.dumps(result, indent=2), encoding="utf-8", newline="\n"
     )
