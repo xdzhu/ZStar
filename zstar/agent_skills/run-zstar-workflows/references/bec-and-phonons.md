@@ -45,6 +45,26 @@ zstar bec stat --root cp2k_bec
 zstar bec post --root cp2k_bec
 ```
 
+## VASP native response
+
+For VASP bulk native response, use:
+
+```bash
+zstar bec pre --calculator vasp --input-dir vasp_input --root response --phonons
+zstar bec run --root response --dry-run
+zstar bec stat --root response
+```
+
+Inspect before running without `--dry-run`; collect with `zstar bec post --root response`.
+`--phonons` adds native Gamma modes and ionic dielectric/piezoelectric terms.
+`--elastic` instead adds bulk native ionic/strain finite differences and complete
+elastic output. Native electric DFPT is preferred for LDA/GGA; the automatic
+finite-field choice for orbital-dependent functionals still requires validation
+for the selected system. Inputs use `NCORE=4`, no `NPAR`, and `ISYM=0` to avoid
+VASP 6.3.2 k-point redistribution restrictions. Keep low-dimensional native
+dielectric output labelled as supercell response. See the spectroscopy reference
+for reuse; no separate Gamma-force tasks are needed for native IR.
+
 ## Molecular atomic polar tensors
 
 For an isolated molecule, use the default Unified ensemble with `--dim 0`.

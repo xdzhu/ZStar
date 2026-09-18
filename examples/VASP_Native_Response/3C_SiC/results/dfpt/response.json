@@ -1,0 +1,566 @@
+{
+  "schema": "zstar-response",
+  "schema_version": "1.0",
+  "created_at": "2026-09-18T10:18:48.282977+00:00",
+  "backend": "vasp",
+  "dimensionality": {
+    "value": 3,
+    "label": "bulk",
+    "periodic_axes": [
+      "x",
+      "y",
+      "z"
+    ],
+    "nonperiodic_axes": [],
+    "intrinsic_response_kind": "relative dielectric tensor",
+    "intrinsic_response_unit": "1"
+  },
+  "structure": null,
+  "quantities": [
+    {
+      "name": "born_effective_charge",
+      "values": [
+        [
+          [
+            2.69163,
+            -0.0001,
+            -7e-05
+          ],
+          [
+            -0.0001,
+            2.69164,
+            -6e-05
+          ],
+          [
+            -6e-05,
+            -5e-05,
+            2.6916
+          ]
+        ],
+        [
+          [
+            -2.69163,
+            0.0001,
+            7e-05
+          ],
+          [
+            0.0001,
+            -2.69164,
+            6e-05
+          ],
+          [
+            6e-05,
+            5e-05,
+            -2.6916
+          ]
+        ]
+      ],
+      "shape": [
+        2,
+        3,
+        3
+      ],
+      "unit": "e",
+      "normalization": "per_atom",
+      "axes": [
+        "atom",
+        "displacement",
+        "polarization"
+      ],
+      "convention": "rows=atomic displacement/force; columns=polarization/electric field",
+      "source": "vasp",
+      "metadata": {
+        "labels": [
+          "Si",
+          "C"
+        ]
+      }
+    },
+    {
+      "name": "electronic_dielectric",
+      "values": [
+        [
+          7.148589,
+          1e-06,
+          1.3e-05
+        ],
+        [
+          -4e-06,
+          7.148589,
+          2e-05
+        ],
+        [
+          -1.5e-05,
+          -2.1e-05,
+          7.148587
+        ]
+      ],
+      "shape": [
+        3,
+        3
+      ],
+      "unit": "1",
+      "normalization": "cell_volume",
+      "axes": [
+        "field",
+        "polarization"
+      ],
+      "convention": "",
+      "source": "vasp",
+      "metadata": {
+        "intrinsic_low_dimensional_response_required": false
+      }
+    },
+    {
+      "name": "phonon_dielectric",
+      "values": [
+        [
+          3.357841,
+          -0.00022,
+          -0.000132
+        ],
+        [
+          -0.00022,
+          3.357847,
+          -0.000156
+        ],
+        [
+          -0.000132,
+          -0.000156,
+          3.357745
+        ]
+      ],
+      "shape": [
+        3,
+        3
+      ],
+      "unit": "1",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "field"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "fixed strain",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ]
+      }
+    },
+    {
+      "name": "static_dielectric",
+      "values": [
+        [
+          10.50643,
+          -0.000219,
+          -0.000119
+        ],
+        [
+          -0.000224,
+          10.506436,
+          -0.000136
+        ],
+        [
+          -0.00014700000000000002,
+          -0.000177,
+          10.506332
+        ]
+      ],
+      "shape": [
+        3,
+        3
+      ],
+      "unit": "1",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "field"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "fixed strain",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ]
+      }
+    },
+    {
+      "name": "piezoelectric_clamped",
+      "values": [
+        [
+          -9e-05,
+          -0.0001,
+          0.00017,
+          -0.9862,
+          0.00033,
+          0.00021
+        ],
+        [
+          -2e-05,
+          -0.00011,
+          0.0001,
+          0.00033,
+          -0.98619,
+          0.00022
+        ],
+        [
+          6e-05,
+          0.00012,
+          -0.00025,
+          0.00018,
+          0.00018,
+          -0.98608
+        ]
+      ],
+      "shape": [
+        3,
+        6
+      ],
+      "unit": "C/m^2",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; ions clamped",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ]
+      }
+    },
+    {
+      "name": "piezoelectric_internal",
+      "values": [
+        [
+          0.00019,
+          -0.00011,
+          -7e-05,
+          0.8028,
+          0.00581,
+          -0.01114
+        ],
+        [
+          0.00045,
+          0.00019,
+          -0.00062,
+          -0.01081,
+          0.803,
+          0.00701
+        ],
+        [
+          -0.00045,
+          0.0001,
+          0.00038,
+          0.0094,
+          -0.00897,
+          0.80518
+        ]
+      ],
+      "shape": [
+        3,
+        6
+      ],
+      "unit": "C/m^2",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; internal ionic contribution",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ]
+      }
+    },
+    {
+      "name": "piezoelectric_relaxed",
+      "values": [
+        [
+          0.0001,
+          -0.00021,
+          0.00010000000000000002,
+          -0.1834,
+          0.00614,
+          -0.01093
+        ],
+        [
+          0.00043,
+          8e-05,
+          -0.00052,
+          -0.01048,
+          -0.18318999999999996,
+          0.0072299999999999994
+        ],
+        [
+          -0.00039,
+          0.00022,
+          0.00013000000000000002,
+          0.00958,
+          -0.008790000000000001,
+          -0.18089999999999995
+        ]
+      ],
+      "shape": [
+        3,
+        6
+      ],
+      "unit": "C/m^2",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "polarization",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; internal ions relaxed",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ]
+      }
+    },
+    {
+      "name": "elastic_internal_contribution",
+      "values": [
+        [
+          -1e-05,
+          -0.0,
+          2e-05,
+          -0.004920000000000001,
+          -0.012270000000000001,
+          0.012220000000000002
+        ],
+        [
+          -0.0,
+          -0.0,
+          0.0,
+          0.0029300000000000003,
+          -0.0051600000000000005,
+          -0.00288
+        ],
+        [
+          2e-05,
+          0.0,
+          -2e-05,
+          0.0014500000000000001,
+          0.016900000000000002,
+          -0.010180000000000002
+        ],
+        [
+          -0.004920000000000001,
+          0.0029300000000000003,
+          0.0014500000000000001,
+          -21.68427,
+          0.13656,
+          0.04791000000000001
+        ],
+        [
+          -0.012270000000000001,
+          -0.0051600000000000005,
+          0.016900000000000002,
+          0.13656,
+          -21.692300000000003,
+          0.054740000000000004
+        ],
+        [
+          0.012220000000000002,
+          -0.00288,
+          -0.010180000000000002,
+          0.04791000000000001,
+          0.054740000000000004,
+          -21.812510000000003
+        ]
+      ],
+      "shape": [
+        6,
+        6
+      ],
+      "unit": "GPa",
+      "normalization": "bulk_cell_volume",
+      "axes": [
+        "stress_voigt",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "prescribed strain; internal ionic contribution",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ]
+      }
+    },
+    {
+      "name": "native_internal_strain",
+      "values": [
+        [
+          [
+            0.00315,
+            -0.00165,
+            -0.00136,
+            7.01212,
+            0.17992,
+            -0.30915
+          ],
+          [
+            0.00795,
+            0.00318,
+            -0.01095,
+            -0.29258,
+            7.01219,
+            0.20576
+          ],
+          [
+            -0.00783,
+            0.00176,
+            0.00639,
+            0.24804,
+            -0.26697,
+            7.05411
+          ]
+        ],
+        [
+          [
+            -0.00036,
+            0.00029,
+            -0.00015,
+            -7.52396,
+            0.07436,
+            -0.10763
+          ],
+          [
+            -0.00016,
+            -0.00032,
+            0.00029,
+            -0.09732,
+            -7.52761,
+            0.07853
+          ],
+          [
+            0.00036,
+            -0.00011,
+            -0.00049,
+            0.07755,
+            -0.10497,
+            -7.52527
+          ]
+        ]
+      ],
+      "shape": [
+        2,
+        3,
+        6
+      ],
+      "unit": "eV/angstrom",
+      "normalization": "none",
+      "axes": [
+        "atom",
+        "displacement",
+        "voigt_engineering"
+      ],
+      "convention": "native VASP; engineering Voigt xx,yy,zz,yz,xz,xy; no improper-to-proper recorrection",
+      "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+      "metadata": {
+        "electric_boundary": "fixed macroscopic E",
+        "mechanical_boundary": "ions clamped; mixed displacement/strain derivative",
+        "intrinsic_low_dimensional_response_required": false,
+        "voigt_convention": [
+          "xx",
+          "yy",
+          "zz",
+          "yz",
+          "xz",
+          "xy"
+        ],
+        "derivative_kind": "native force-strain coupling, not relaxed displacement per strain"
+      }
+    }
+  ],
+  "provenance": {
+    "collector": "zstar.vasp_bec.collect_vasp_bec",
+    "source": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/response/OUTCAR",
+    "legacy_result": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/dfpt/vasp_bec.json",
+    "backend_result_schema_version": 1,
+    "source_backend": "vasp"
+  },
+  "metadata": {
+    "method": "dfpt",
+    "sum_scope": "all_atoms",
+    "acoustic_sum_tensor": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "native_response_diagnostics": {
+      "irreps_degeneracy_tolerance_thz": 0.02,
+      "internal_strain_translation_max_eV_per_A": 0.5154199999999998,
+      "internal_strain_translation_relative": 0.0684706035514592,
+      "electromechanical_warning": "Native internal-strain tensor violates translational force balance; ionic piezoelectric/elastic contributions need convergence checks. Compare with --elastic native strain finite differences before use.",
+      "internal_strain_source": "displaced_atoms",
+      "static_dielectric_max_abs": 3.944157316482233e-05
+    }
+  }
+}
