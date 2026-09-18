@@ -1,7 +1,11 @@
-# ZStar User Manual
+# ZStar Documentation
 
 [简体中文](README.zh-CN.md) | [Project overview](../README.md) |
 [English PDF](README.en.pdf) | [Chinese PDF](README.zh-CN.pdf)
+
+[Full user manual](user_guide.md) covers the complete workflows, physical
+conventions, representative results, and validation figures. Start with the
+[project Quick Start](../README.md#quick-start) for the shortest introduction.
 
 These instructions follow the current ZStar release. Install with
 `pip install zstar`. ABACUS and PYATB are external requirements for the
@@ -18,7 +22,7 @@ cases are needed:
 
 ```bash
 git clone https://github.com/xdzhu/ZStar.git
-cd zstar
+cd ZStar
 pip install .
 ```
 

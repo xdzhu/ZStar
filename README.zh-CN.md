@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" alt="ZStar 标志" width="176">
+  <img src="docs/logo.png" alt="ZStar 标志" width="128">
 </p>
 
 <h1 align="center">ZStar</h1>
@@ -10,28 +10,23 @@
 
 <p align="center">
   <a href="https://pypi.org/project/zstar/"><img alt="PyPI" src="https://img.shields.io/pypi/v/zstar"></a>
-  <a href="https://pypi.org/project/zstar/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/zstar"></a>
   <a href="LICENSE"><img alt="许可证" src="https://img.shields.io/badge/license-GPL--3.0-green"></a>
 </p>
 
 <p align="center">
   <a href="README.md">English</a> | 简体中文 |
-  <a href="docs/README.en.pdf">English PDF</a> |
-  <a href="docs/README.zh-CN.pdf">中文 PDF</a>
+  <a href="docs/user_guide.zh-CN.md">完整手册</a> |
+  <a href="docs/README.zh-CN.pdf">PDF</a>
 </p>
-
----
 
 ## 快速上手
 
-最短的完整入门路线使用仓库自带的双原子 3C-SiC 案例。它从同一套对称性适配
-位移中计算 BEC 和 Gamma 点力常数，随后生成 IR 与 Raman 谱。案例已经包含
-ABACUS 输入、SG15 赝势和 DZP 轨道。
+双原子 **3C-SiC** 案例从同一套对称性适配计算中得到 BEC 和 Gamma 点声子，
+随后生成 IR 与 Raman 谱。案例已附 ABACUS 输入、SG15 赝势、DZP 轨道及参考结果。
 
-### 1. 安装 ZStar 并获取案例
+### 1. 安装
 
-如果不需要复现案例，直接执行 `pip install zstar` 即可安装并使用
-ZStar。如需获取可复现案例，则克隆仓库并安装同一份源码：
+不需要案例时，直接执行 `pip install zstar`。如需复现 SiC：
 
 ```bash
 git clone https://github.com/xdzhu/ZStar.git
@@ -39,830 +34,65 @@ cd ZStar
 pip install .
 ```
 
-可复现案例位于 GitHub 仓库中，不包含在 PyPI wheel 内。
+### 2. 配置计算软件
 
-### 2. 安装并配置计算软件
+另行安装 [ABACUS](https://github.com/deepmodeling/abacus-develop)
+（推荐 [LTSv3.10.0](https://github.com/deepmodeling/abacus-develop/releases/tag/LTSv3.10.0)）
+和 [PYATB](https://github.com/pyatb/pyatb)；Phonopy 会随 ZStar 安装。
+按照[配置教程](docs/cli_reference.zh-CN.md#计算软件路径配置)设置可执行文件路径与 MPI/OMP，然后检查：
 
-本案例需要安装 [ABACUS](https://github.com/deepmodeling/abacus-develop)，推荐使用经过测试的
-[LTSv3.10.0 版本](https://github.com/deepmodeling/abacus-develop/releases/tag/LTSv3.10.0)。
-同时还需要安装 [PYATB](https://github.com/pyatb/pyatb)；Phonopy 会随 ZStar 一同安装。
+```bash
+zstar config check
+```
 
-安装 ABACUS 和 PYATB 后，请按照
-[计算软件配置教程](docs/cli_reference.zh-CN.md#计算软件路径配置)设置可执行文件路径及
-MPI/OMP 资源。随后执行 `zstar config check`，确认两者均显示为 `available` 后再运行案例。
+确认 ABACUS 和 PYATB 均显示为 `available` 后再继续。
 
 ### 3. 计算 BEC 与 Gamma 点声子
 
-先建立独立工作目录，避免修改案例输入和保留结果：
+建立工作副本，不改动案例输入和已有结果：
 
 ```bash
 cd examples/3D_Bulk/SiC
 cp -r run work
 cd work
-```
 
-依次准备、预览、运行、检查并后处理 Unified 计算：
-
-```bash
 zstar bec pre --stru STRU
-zstar bec run --dry-run
 zstar bec run
-zstar bec stat
 zstar bec post
 ```
 
-`bec pre` 生成参考态及对称性适配位移任务；`bec run` 依次完成绝缘性检查、
-ABACUS 自洽计算和 PYATB 极化计算，再次执行时会续算未完成阶段；`bec post`
-同时重建 BEC 与 Gamma 点力常数，并输出 `BEC.dat`、`BORN`、
-`FORCE_CONSTANTS` 和模式数据。
+结果包括 `BEC.dat`、`BORN`、`FORCE_CONSTANTS` 和 `qpoints.yaml`。
+Si/C 的对角 BEC 约为符号相反的 **2.70 e**，三重简并光学模式约为 **773 cm^-1**。
+使用 `zstar bec stat` 查看进度；重复执行会跳过已完成阶段。
 
 ### 4. 生成 IR 与 Raman 谱
-
-将已经完成的响应计算作为谱学数据源：
 
 ```bash
 zstar spectra pre --root spectra --response .
 zstar spectra run --root spectra
-zstar spectra stat --root spectra
 zstar spectra post --root spectra
 ```
 
-IR 谱由模式频率和 BEC 后处理得到；`spectra run` 补充 Raman 所需的 PYATB
-介电响应，`spectra post` 将数据表和谱图写入 `spectra/ir/` 与
-`spectra/raman/`。保留结果中 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并
-光学模式约为 773 cm^-1；对应档案位于 `../results/spectra/`。
-
-理解各阶段后，也可以回到案例目录执行 `bash run.sh --with-spectra`，以同一
-流程进行一键断点续算。
-
-### 5. 让智能体运行同一案例
-
-示例提示词：
-
-```text
-假设本机尚未安装 ZStar 及其 agent skill。按照以下固定位置完成安装、配置并复现
-SiC Quick Start：
-
-- ZStar 源码：$HOME/software/zstar
-- Python 环境：$HOME/.venvs/zstar
-- agent skills 目录：$HOME/.codex/skills
-- 计算工作目录：$HOME/zstar-work/SiC
-
-将 https://github.com/xdzhu/ZStar.git 克隆到 $HOME/software/zstar。使用
-Python 3.10 在 $HOME/.venvs/zstar 创建并激活独立环境，然后在源码目录执行
-`pip install .` 安装 ZStar。执行以下命令安装软件自带的 agent skill：
-
-zstar skill install --dest "$HOME/.codex/skills" --force
-
-确认 skill 已安装至 $HOME/.codex/skills/run-zstar-workflows，并在本次任务中
-读取和遵循其中的 SKILL.md。
-
-查找本机已有的 ABACUS 和 PYATB 可执行文件，将它们的真实路径以及可用的
-MPI/OMP 资源写入 ZStar 配置。不要猜测可执行文件路径。执行
-`zstar config check`，确认 ABACUS 和 PYATB 均显示为 available 后直接继续。
-
-将 $HOME/software/zstar/examples/3D_Bulk/SiC/run 复制到干净的工作目录
-$HOME/zstar-work/SiC。先执行 preflight，再逐步运行
-`zstar bec pre/run/stat/post` 和 `zstar spectra pre/run/stat/post`，不要使用
-run.sh。简要解释每个阶段，并保持仓库中的原始案例文件不变。
-
-全部完成后，报告 ZStar、ABACUS 和 PYATB 的版本及可执行文件路径、计算得到的
-BEC、Gamma 点光学模式频率、IR 与 Raman 结果路径，以及各阶段是否均成功完成。
-```
-
-后续章节再依次说明物理约定、其他维度、计算器后端、作业系统与进阶分析。
-
-## 工作流总览
-
-![ZStar 工作流](docs/paper_figures/unified_workflow.png)
-
-## 项目简介
-
-ZStar 面向高效、精确的响应性质自动化计算。其 Unified ABACUS + PYATB
-框架从同一组对称性适配位移中重建 Born 有效电荷（BEC）、Gamma 点力常数和
-Raman 导数，通过极化、力与电子介电响应得到 IR、Raman 和介电结果，并保留
-明确的精度诊断。VASP、CP2K 和 Quantum ESPRESSO 接口提供各自文档说明的
-补充计算路线。
-
-ZStar 不会隐藏中间步骤。结构、输入文件、绝缘性门控、极化值、电荷密度、张量重构报告、光谱和任务状态都会保留下来，便于检查、复现与断点续算。
-
-按任务查找教程、配置、案例及适用边界，请从[使用手册](docs/README.zh-CN.md)开始。
-
-当前版本的数值验证与运行环境汇总见 [docs/validation.zh-CN.md](docs/validation.zh-CN.md)。
-
-Unified ABACUS + PYATB 流程由 Phonopy 生成共用位移，同时获取 BEC
-与 Gamma 点声子响应。推导、真实位移处理、极化输出精度及验证状态见
-[Unified BEC/声子教程](docs/research/shared_response/USAGE.zh-CN.md) 和
-[配对案例](examples/Benchmarks/README.md)。
-[Unified 谱学教程](docs/unified_spectroscopy.zh-CN.md)进一步说明如何用同一套计算
-继续得到 IR 与 Raman 结果。
-已发布版本与历史案例仍保留其原有版本记录。
-
-当前仓库包含可复现输入和保留的参考结果；历史案例保留原始版本与来源记录。
-
-混合位移不仅需要检查 SCF 与位移步长，也要检查 PYATB 的 Berry 积分网格。
-[直接验证报告](docs/research/shared_response/DIRECT_VALIDATION.md) 保留了 SiC、
-四方 HfO₂、重新优化的 α-In₂Se₃ 的原始张量、网格与步长收敛检查，以及
-分别记录的 CPU 核时，不将输出小数位数等同于物理精度。
-
-### 主要功能
-
-- Unified BEC/APT、Gamma 力常数与静态非共振 Raman 导数，保留独立的
-  Separate 对照采用笛卡尔或模式位移。
-- 对称性约化、全原子张量重构和声学求和规则修正。
-- `0.no-move -> 位移结构` 的单任务串行、可恢复工作流。
-- 所有位移任务复用 `0.no-move` 的收敛电荷密度。
-- 参考 SCF 完成后只执行一次绝缘性检查。
-- 生成 shell、Slurm 和 Torque/PBS 驱动脚本。
-- 自动兼容旧版 PYATB 与支持静态直算的新版本 PYATB。
-- CP2K Berry 相位 BEC 的串行断点续算后端及原生 APT 对照。
-- 三维、二维混合以及一维混合极化/BEC 处理。
-- 声子生成、后处理、模式分类、红外谱、拉曼谱和介电响应。
-- 面向薄膜和极性材料的静电势辅助分析。
-- 随软件打包的规范化 agent skill 和 JSON 工作区预检查。
-- 版本化的计算器无关响应规范和后端插件注册机制。
-- 面向分子和三维 bulk 的 Quantum ESPRESSO 原生 DFPT BEC/IR 收集流程。
-
-计算器无关接口、`dim=0/1/2/3` 物理约定、QE 工作流、电荷密度适配器、
-Phonopy 数据交换、偏振 Raman、光学常数及不同维度响应归一化详见
-[计算器无关中文手册](docs/calculator_independent_backends.zh-CN.md)。
-
-## 物理处理范围
-
-### 三维周期晶体
-
-对于三维周期晶体，ZStar 根据
-
-```text
-Z*(kappa, alpha, beta) = Omega/e * dP_alpha / du_(kappa,beta)
-```
-
-计算 BEC。有限差分之前会按照极化量子对 Berry 相位极化分支进行匹配，避免直接相减导致的分支跳变。
-
-### 一维链与纳米线
-
-对于沿 `z` 周期的纳米线，ZStar 将周期 `z` 方向的 PYATB Berry 极化与非周期
-`x/y` 方向的 ABACUS 电荷 cube 实空间偶极结合，输出与真空无关的 BEC 和单位为
-`Angstrom^2` 的线极化率，并支持 Gamma 点 IR/Raman。程序会拒绝错误的 bulk NAC，
-因为有限波矢极性声子需要真正的 1D Coulomb cutoff。详见
-[一维工作流中文手册](docs/one_dimensional_workflow.zh-CN.md)。
-
-[BN(9,0) 纳米管](examples/IR_Raman_Spectra/Nanotube_BN_9_0)与
-[Sb2S3 单链](examples/IR_Raman_Spectra/Nanowire_Sb2S3)提供完整 unified BEC/Gamma
-计算、全张量、IR/Raman 结果、赝势轨道及可续算的 `run.sh`。BEC 与力常数来自
-同一套 SCF。Sb2S3 图中的参考为公开计算数据集，尚未核实对应期刊论文；保留
-原始参考曲线及实际存在的 Raman 相对强度差异，不作峰位平移或强度拟合。
-
-### 二维材料
-
-二维薄膜的面内与面外响应采用不同处理：
-
-- **面内极化分量：**在体系保持绝缘的前提下，沿用 Berry 相位极化差分。
-- **面外极化分量：**从 ABACUS 电荷密度 cube 文件做实空间积分，同时包含离子和电子偶极。
-- **归一化：**面内 BEC 通过超胞体积因子消除真空层高度依赖；二维介电谱默认输出与真空无关的片层极化率。
-
-旧版带编号的 `Z-BORN-*.out` 表采用行表示位移、列表示极化的排列；Phonopy
-`BORN` 和统一重建内核采用极化优先排列，与上面的定义公式一致，结构化记录
-明确标出轴含义。完整二维 BEC 需要覆盖三个方向的位移信息。默认统一流程通过 Phonopy 种子位移及其位点
-对称性像获得满秩的信息；旧式笛卡尔流程则显式生成 `x`、`y`、`z` 三个
-方向。当前混合算法要求薄膜法向与笛卡尔 `z` 轴对齐；对于倾斜薄膜会明确报错退出。
-
-完整二维响应计算使用规范 BEC 生命周期：
-
-```bash
-zstar bec pre --stru STRU --dim 2
-zstar bec run
-zstar bec post
-```
-
-后处理会组合面内 Berry 相位响应与面外 cube 积分偶极。底层
-`zstar polar2d` 仅保留用于审计已有参考/位移 cube 文件对，不作为新工作流入口。
-
-## 安装
-
-ZStar 要求 Python 3.9 或更高版本。
-
-仓库中的 `examples/` 目录提供可复现输入和保留结果。PyPI 安装包不包含案例目录。
-参见[可复现基准](examples/Benchmarks/README.zh-CN.md)
-及[本轮验证记录](docs/research/PUBLICATION_REVISION_20260904.md)。
-
-从 PyPI 安装：
-
-```bash
-pip install -U zstar
-```
-
-从本地仓库安装：
-
-```bash
-git clone https://github.com/xdzhu/ZStar.git
-cd ZStar
-pip install .
-```
-
-外部程序只在对应功能中需要：
-
-- ABACUS：SCF、电荷密度、力与稀疏矩阵。
-- PYATB：Berry 相位极化、能带检查和电子介电响应。
-- Phonopy：位移结构生成与声子后处理。
-- CP2K：可选的 CP2K 有限位移 BEC 后端。
-- VASP：原生三维 BEC 和模式位移介电响应工作流。
-- Quantum ESPRESSO：可选的原生 DFPT BEC、介电和 IR 路线。
-
-核心安装使用 `spglib` 完成周期对称性处理，不再强制依赖 `pymatgen`。
-如果使用 `vasprun.xml`、`CHGCAR/POTCAR` 转换，或旧版 smodes/Wyckoff 适配器，
-请安装可选的 VASP 扩展：
-
-```bash
-pip install -U "zstar[vasp]"
-```
-
-POSCAR/CONTCAR、ABACUS `STRU`、MD 结构帧读取以及核心对称性约化均由 ZStar
-自带的轻量读取器完成。
-
-检查安装：
-
-```bash
-zstar --version
-zstar --help
-```
-
-计算软件路径只需在项目内配置一次（加 `--user` 可写入用户配置），随后任务脚本
-会按 shell/Torque 或 Slurm 自动选择 `mpirun` 或 `srun`：
-
-```bash
-zstar config init
-zstar config set executables.abacus /opt/abacus/bin/abacus
-zstar config set executables.pyatb /opt/pyatb/bin/pyatb
-zstar config check
-zstar backend list --check
-```
+谱图和数据分别写入 `spectra/ir/`、`spectra/raman/`。
+无需运行 DFT 也可直接查看[已有 SiC 谱学结果](examples/3D_Bulk/SiC/results/spectra)。
+命令预览、进度检查及可选的 `run.sh` 用法见[案例教程](examples/3D_Bulk/SiC/README.zh-CN.md)。
 
 ## agent skill
 
-安装 ZStar 后，可直接安装随软件提供的 `$run-zstar-workflows` 技能：
+执行 `zstar skill install`，新建智能体会话并调用 `$run-zstar-workflows`。
+[示例提示词](docs/user_guide.zh-CN.md#5-让智能体运行同一案例)说明如何让智能体从零安装
+ZStar 和 skill、配置计算软件并复现 SiC。
 
-```bash
-zstar skill install
-zstar skill preflight --root . --lane bec --dim bulk
-```
+## 案例与文档
 
-安装后新建智能体会话。升级 ZStar 后使用 `--force` 刷新技能；其他兼容框架可用
-`--dest /path/to/skills` 指定技能父目录。该 Skill 固化了维度约定、参考态优先执行、
-断点续算、调度系统权限边界和基于产物的完成判据。详见
-[docs/agent_skill.zh-CN.md](docs/agent_skill.zh-CN.md)。
+![体材料、二维片层、一维纳米线与分子的 IR 和 Raman 谱](docs/paper_figures/spectroscopy_across_dimensions.png)
 
-规范 CLI、兼容别名、配置优先级和全部公共工具族见
-[命令行参考](docs/cli_reference.zh-CN.md)。
-
-## Born 有效电荷工作流
-
-### 1. 生成参考与位移目录
-
-在包含 `STRU` 的目录中执行：
-
-```bash
-zstar bec pre --stru STRU
-```
-
-`bec pre` 默认使用 ABACUS + PYATB 与 Unified 对称性适配位移，自动选择正负位移，因此不必
-重复写这些参数。只有切换到其他后端时，才使用 `--calculator cp2k`、
-`--calculator vasp` 或 `--calculator qe`。
-
-二维薄膜：
-
-```bash
-zstar bec pre --stru STRU --dim 2
-```
-
-沿 `z` 周期的一维纳米线：
-
-```bash
-zstar bec pre --stru STRU --dim 1 --method central
-```
-
-默认 ABACUS + PYATB 目录从 `0.no-move` 开始，后面是 `disp-001`、`disp-002`
-等 Phonopy 位移目录，自动打开 `cal_force 1`，同一批 SCF 同时提供 BEC 和 Gamma
-声子响应。`--ensemble cartesian` 保留 `1.Ti/x+` 等旧布局。无需向每个位移目录
-单独复制任务脚本。
-
-常用选项：
-
-| 选项 | 含义 |
-| --- | --- |
-| `--method auto\|forward\|central` | 自动选择正负位移（Unified 默认）、单边或显式中心差分。 |
-| `--ensemble phonopy\|cartesian` | 默认共用 BEC/Gamma 位移，或采用旧笛卡尔布局。 |
-| `--reduce` / `--all` | 默认只算对称性代表原子，或强制计算全部原子。 |
-| `--move "x y z"` | 显式指定方向，使用旧笛卡尔流程。 |
-| `--displacement 0.01` | 指定位移长度，单位 Å；共享默认 0.02 bohr，重建使用实际结构差分向量。 |
-| `--dim 0\|1\|2\|3` | 分子、一维、二维或三维处理。 |
-| `--input-mode abacus\|pyatb\|hamgnn\|custom` | 输入文件准备方式。 |
-| `--input_sets FILES` | 复制到任务目录的附加文件或文件夹。 |
-| `--pp DIR` | ABACUS 赝势（`.upf`）目录。 |
-| `--orb DIR` | ABACUS 数值轨道（`.orb`）目录。 |
-
-```bash
-zstar bec pre --stru STRU \
-  --pp /path/to/PSEUDO \
-  --orb /path/to/ORBITAL
-```
-
-如果赝势和数值轨道不与案例放在一起，可以在生成任务前指定资源目录。ZStar
-会先按照 `STRU` 中的精确文件名查找；如果找不到，只有在元素前缀匹配结果唯一
-时才会自动选取文件。多个候选文件会使命令停止，并列出候选项以及如何填写精确
-文件名或指定更窄的目录。ZStar 不会修改原始 `STRU`，解析后的副本写入
-`.zstar/STRU.resolved`，资源来源和 SHA256 校验值写入 `.zstar/assets.json`。
-
-常用目录可以配置为全局默认值：
-
-```bash
-zstar config init --user
-zstar config set abacus.pseudo_dir /opt/abacus/PSEUDO --user
-zstar config set abacus.orbital_dir /opt/abacus/ORBITAL --user
-zstar config check
-```
-
-单次命令中的 `--pp` 和 `--orb` 优先于全局配置。原始 `STRU` 中的相对路径
-始终相对于 `STRU` 所在目录解析，而不是相对于偶然的 shell 当前目录。
-
-### 2. 串行执行并支持断点续算
-
-本地 shell 运行：
-
-```bash
-zstar bec run --root . \
-  --abacus-command "mpirun -np 1 abacus" \
-  --pyatb-command "mpirun -np 1 pyatb" \
-  --omp-threads 28
-```
-
-一维纳米线和二维材料分别使用 `--dim 1` 与 `--dim 2`。
-孤立分子使用 `--dim 0`；程序采用 Gamma 点真空超胞并输出原子极化张量
-（APT），不把它误称为周期晶体的 BEC。
-低维极化/BEC 任务会自动写入 `out_chg 1 10`，避免 ABACUS cube 默认舍入精度限制
-横向偶极差分。
-
-默认执行顺序如下：
-
-1. 执行 `0.no-move` SCF，输出电荷密度与稀疏矩阵。
-2. 使用 `pyatb_input --band` 生成常规高对称能带路径。
-3. 如果参考结构为金属，在任何位移计算开始前报错退出。
-4. 计算参考结构的极化和电子介电张量。
-5. 将参考电荷 cube/restart 文件复制到每个位移任务的 `OUT.<suffix>/`。
-6. 按确定顺序串行执行全部位移及其极化计算。
-7. 在 `.zstar/` 保存阶段状态；中断后再次执行同一命令即可继续。
-
-默认沿常规高对称能带路径检查 band gap。也可显式选择更密的 MP 网格：
-
-```bash
-zstar bec run --root . --gap-mode mp --mp-density 0.08
-```
-
-查看进度：
-
-```bash
-zstar bec stat --root .
-```
-
-### 3. 生成不同运行环境的脚本
-
-本地 shell：
-
-```bash
-zstar bec job --root . --system shell
-```
-
-Slurm：
-
-```bash
-zstar bec job --system slurm
-```
-
-Torque/PBS：
-
-```bash
-zstar bec job --system torque
-```
-
-队列、资源、时限、账号和 `module`/环境命令放在一个 header 中，依次选择：
-**Specified** `--header FILE` > **Current** 工作流根目录的 `header.sh` >
-**Global** `~/.zstar/header.sh`。不合并；都没有时生成带简短指引的默认模板。
-软件路径和 MPI/OMP 仍放在 `zstar config`：
-
-```bash
-zstar config set execution.mpi 1
-zstar config set execution.omp 40
-zstar bec job --system slurm --header /path/to/header.sh
-```
-
-header 申请的资源须与 MPI/OMP 匹配；选中的内容会嵌入生成脚本并记录哈希。
-`zstar phonon job` 和 `zstar spectra job` 使用相同规则。
-Slurm、Torque、本地运行的完整例子见[header 教程](docs/job_headers.zh-CN.md)。
-旧资源参数及 `--env-script` 继续兼容。
-
-后端默认启动命令会自动适配：shell/Torque 使用 `mpirun -np N`，Slurm
-使用 `srun --ntasks=N`。加入 `--dry-run` 可以在不启动计算的情况下检查
-脚本、环境、执行顺序和断点状态。三类后端及调度器接收验证见
-[docs/validation.zh-CN.md](docs/validation.zh-CN.md#调度后端冒烟检查)。
-
-只有在检查脚本内容并确认运行环境正确后，再使用 `--submit`。
-
-### 4. 后处理极化并构造 BEC
-
-ABACUS + PYATB 分子 APT：
-
-```bash
-zstar bec pre --stru STRU --dim 0 --method central --displacement 0.01
-zstar bec run --root . \
-  --abacus-command abacus --pyatb-command pyatb --omp-threads 20
-zstar bec post --root .
-```
-
-Unified 收集器同时重构分子 APT 与力常数，将原始及投影后张量保存在
-`response_fit.json`，并写出统一格式的 `response.json`。
-PYATB 输出适配器保留完整精度的极化数值，不修改已安装的 PYATB 内核。
-旧式分子收集流程（`--ensemble cartesian`）仍写出 `apt.json`；对于旧的舍入输出，
-它也可以从分别打印的离子相位与电子相位中恢复微小的极化信号。
-
-三维：
-
-```bash
-zstar bec post --root .
-```
-
-二维混合处理：
-
-```bash
-zstar bec post --root .
-```
-
-沿 `z` 周期的一维混合处理：
-
-```bash
-zstar bec post --root .
-```
-
-工作流清单会把 `pre` 选择的维度与差分方法传递给后续动作。旧的
-`gen/workflow/deal` 命令继续作为兼容入口保留。
-
-关键输出：
-
-| 文件 | 含义 |
-| --- | --- |
-| `BEC.rep.raw.dat` | 显式计算的对称性代表原子的原始张量。 |
-| `BEC.raw.dat` | 电中性投影前的全原子原始张量。 |
-| `BEC.dat` | 经对称性展开并满足声学求和规则的全原子张量。 |
-| `BEC.rep.dat` | 对称展开与电中性修正后的约化张量。 |
-| `BORN` | 电子介电张量和 Phonopy 原子顺序的 BEC。 |
-| `force_fit.json` | 力响应拟合诊断，与统一响应交换记录分开保存。 |
-| `response_fit.json` | Unified 原始及投影后的 BEC/APT、力常数、单位与诊断。 |
-| `response.json` | 统一响应记录，包括维度和数据来源。 |
-| `BEC_symmetry.json` | 旧式笛卡尔位移结果的对称重构与残差报告。 |
-| `zstar_2d_bec.json` | 旧式笛卡尔位移的二维混合 BEC 诊断。 |
-| `zstar_1d_bec.json` | 旧式笛卡尔位移的一维混合 BEC 诊断。 |
-| `apt.json` | 旧式笛卡尔位移/cube 分子 APT 及平移求和诊断。 |
-
-新计算使用上述短文件名。历史档案保留 `Z-BORN-symm.out`、
-`zstar_response.json`、`molecular_apt.json` 等原名和原始哈希。
-读取时，仅当指定的标准文件不存在，才回退到对应旧名；已存在的明确路径优先。
-更名不改变张量方向或单位。`BORN` 只输出一份，不再重复生成
-`BORN-for-phonopy.out`。
-
-## CP2K BEC 后端
-
-对于分子（`--dim 0`）或三维绝缘 Gamma 点 CP2K 输入，ZStar 可以从偶极直接
-构造 APT 或 BEC 张量：
-
-```bash
-zstar bec pre --calculator cp2k --input input.inp --root cp2k_bec --dim 0 \
-  --method central --displacement 0.005
-zstar bec run --root cp2k_bec --cp2k-command cp2k.ssmp \
-  --omp-threads 20 --data-dir /path/to/cp2k/data
-zstar bec post --root cp2k_bec
-```
-
-参考波函数会被所有位移任务复用，中断后从 `.zstar/cp2k_bec_state.json` 恢复。
-对于 CP2K 2025.2 及以上版本，还可以用 `cp2k-bec native` 和
-`cp2k-bec compare` 生成并比较原生 `APT_FD` 张量。张量约定、输入限制、收敛检查
-和直连计算节点验证见[完整中文文档](docs/cp2k_bec.zh-CN.md)。
-
-## VASP BEC 后端
-
-ZStar 也可直接驱动 VASP 的原生 BEC 功能。默认 `auto` 对 LDA/GGA 优先采用
-`LEPSILON` DFPT；对轨道依赖泛函采用原生有限电场，也可显式指定计算路线。
-
-```bash
-zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec --phonons
-zstar bec run --root vasp_bec --vasp-command "mpirun -np 20 vasp_std"
-zstar bec post --root vasp_bec
-```
-
-工作流会先完成参考 SCF 并检查带隙，确认绝缘后才进入响应阶段；已完成阶段可以
-断点续算。收集器统一输出 JSON、ZStar 张量和 Phonopy 兼容的 `BORN` 文件。
-有限场保护、集群脚本、张量约定及 VASP 6.3.2 SiC 实机验证见
-[完整中文文档](docs/vasp_bec_zh.md)。
-
-按需添加 `--phonons` 获取原生 Γ 点声子，供介电与 IR 复用；只求含离子弛豫的
-压电 e 可使用 `--piezo`，同样采用原生离子响应，无需外部重复差分。添加 `--elastic`
-获取完整 Bulk 弹性响应及推导的 d。后者采用原生应变有限差分，因为 VASP 未实现弹性应变
-DFPT。[原生响应指南](docs/vasp_native_response.zh-CN.md)说明张量约定、Raman
-混合路线以及低维功能的适用边界。
-
-## 声子与介电响应
-
-共享 BEC 流程的 `zstar bec post` 已同时写出 Gamma 力常数、`qpoints.yaml`、
-`irreps.yaml` 和 `BORN`，可直接继续 `zstar phonon irrep` 与
-`zstar dielectric static`，无需重复生成 Gamma 力计算。下面的独立声子目录
-用于超胞声子或旧档案；有限波矢超胞计算不能与共享 Gamma 目录混用。
-
-### 1. 生成声子位移任务
-
-在包含 `STRU`、`KPT` 以及已设置 `cal_force 1` 的 `INPUT` 的声子目录中执行：
-
-```bash
-zstar phonon pre --root . --calculator abacus \
-  --stru STRU --dim "2 2 2" --symmprec 1e-3
-zstar phonon run --root .
-```
-
-随后按照选定运行环境完成全部 `disp-*` 目录中的力计算。`zstar phonon pre`
-不要求也不会强制复制 `abacus_x.sh`；若当前目录确有该脚本，则只把它作为
-可选便利文件复制。
-
-### 2. 后处理力并查看 Gamma 模式分类
-
-```bash
-zstar phonon stat --root .
-zstar phonon post --root .
-zstar phonon irrep --root . --file irreps.yaml --mode db
-```
-
-Phonopy 无法可靠解析的模式会标记为 `Unresolved`，而不会被直接推断为
-静默模式。选择定则及 32 个点群的独立核验见
-[点群活性规则核验](docs/point_group_activity_validation.zh-CN.md)。
-
-如果需要非解析项修正，应先把 BEC 工作流中的 `BORN` 复制到声子目录：
-
-```bash
-cp ../polar/BORN .
-zstar phonon post --root . --nac
-```
-
-### 3. 静态与频率相关介电响应
-
-同时复制完整 BEC：
-
-```bash
-cp ../polar/BORN .
-cp ../polar/BEC.dat .
-```
-
-静态介电响应：
-
-```bash
-zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
-  --dielectric BORN --dim 3
-```
-
-频率相关介电响应：
-
-```bash
-zstar dielectric freq --qpoints qpoints.yaml --born BEC.dat \
-  --dielectric BORN --dim 3
-```
-
-程序默认写出零频张量、响应实部/虚部数据以及 PNG/PDF/SVG 图；只需数据时
-使用 `--no-plot`。默认排除低于 5 cm-1 的声学模式；可以通过
-`--acoustic-cutoff` 调整。
-
-二维体系不指定 `--thickness` 时，输出与真空层无关、单位为埃的片层极化率：
-
-```bash
-zstar dielectric static --qpoints qpoints.yaml --born BEC.dat \
-  --dielectric BORN --dim 2
-```
-
-`--thickness ANGSTROM` 输出厚度归一化的源电场响应，不能直接称为面外本征
-介电常数。明确输入为相容且包含屏蔽的宏观超胞响应时，可加
-`--slab-boundary macroscopic`，采用面内直接、面外逆响应转换；该选项不会为
-PYATB 增加局域场修正。电场约定及分子/1D/2D/bulk Raman 单位详见
-[响应定义与单位](docs/response_conventions.md)。
-完整物理约定、三维与二维算例及输出规范见
-[介电响应指南](docs/dielectric_response.zh-CN.md)。
-
-## 红外谱
-
-计算模式有效电荷、振子强度、展宽后的红外谱和介电/片层响应：
-
-```bash
-zstar spectra pre --kind ir
-zstar spectra post
-```
-
-典型输出包括 `ir_modes.csv`、`ir_spectrum.dat`、`ir_response_real.dat`、`ir_response_imag.dat`、`ir_spectrum.png`、`ir_spectrum.pdf`、`ir_spectrum.svg` 和 `ir_summary.json`。
-
-## 拉曼谱
-
-ZStar 沿 Gamma 点简正坐标对电子介电响应做中心差分，得到非共振 Raman 张量与 Placzek 强度。
-
-### 1. 生成简正模式正负位移
-
-```bash
-zstar spectra pre --stru STRU --kind raman \
-  --modes "4-12" --amplitude 0.02
-```
-
-`--amplitude` 的单位为 `angstrom * sqrt(amu)`。
-
-### 2. 串行计算、收集并绘谱
-
-```bash
-zstar spectra run --omp-threads 28
-zstar spectra stat
-zstar spectra post
-```
-
-参考结构的绝缘性门控只复用一次，不会对每个模式位移重复计算。所有 `plus`/`minus` 阶段都复用参考电荷密度，并记录可恢复状态。
-
-已有模式位移树可用 `zstar spectra stat --root raman` 检查，并用
-`zstar spectra post --root raman` 重新后处理。
-
-二维体系使用 `--dim 2`。程序会利用声子数据中的超胞高度，将依赖真空的介电导数转换为片层极化率导数。
-
-## 分子 IR 与 Raman
-
-完整的物理约定、工作流、输出文件与 benchmark 请见
-[分子 IR 与 Raman 光谱](docs/molecular_spectroscopy.zh-CN.md)。
-
-孤立分子使用足够大的周期真空超胞表示。首先沿正频分子振动模式生成 Raman 与 IR
-共用的简正坐标正负位移：
-
-```bash
-zstar spectra pre --stru STRU --dim 0 \
-  --acoustic-cutoff 100 --amplitude 0.02
-```
-
-以下命令以可断点续算的串行工作流同时生成两种谱：
-
-```bash
-zstar spectra run
-zstar spectra post
-```
-
-每个已完成的位移 SCF 只增加两个很轻的 PYATB 后处理阶段。静态介电响应按照
-`dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ` 转换为分子极化率导数；完成极化分支回绕
-后的 Berry 极化按照 `dmu/dQ = V * dP/dQ` 转换为分子偶极矩导数。简正坐标步长
-`Q` 的单位为 `angstrom * sqrt(amu)`。
-
-已有分子位移结果仍通过同一套规范生命周期检查和重新后处理：
-
-```bash
-zstar spectra stat --root raman
-zstar spectra post --root raman
-```
-
-分子谱默认归一化，用于模式归属和工作流验证，不宣称为气相积分截面。定量强度计算
-需要分别检查真空尺寸、基组、位移幅度和电子响应网格的收敛性。
-
-### VASP 与 CP2K 计算器
-
-计算器无关谱学层也支持 VASP 和 CP2K：
-
-```bash
-zstar spectra pre --calculator vasp --response vasp_bec --root vasp_spectra
-zstar spectra run --root vasp_spectra --command "mpirun -np 20 vasp_std"
-zstar spectra post --root vasp_spectra
-
-zstar spectra pre --calculator cp2k --input h2o.inp \
-  --root cp2k_spectra --dim 0
-```
-
-VASP 对原生介电响应做模式中心差分；CP2K 使用原生振动偶极和
-`LINRES/POLAR` 活动度。详见[计算器谱学文档](docs/calculator_spectroscopy.zh-CN.md)。
-SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
-[后端基准](docs/spectroscopy_backend_benchmark.zh-CN.md)。
-
-分子 APT 案例还包含紧凑的 HSE 参考记录：
-`examples/0D_Molecules/{H2O,CH4}/results/hse_apt_summary.json`。完整求解器
-临时目录和 cube 文件有意不纳入仓库；JSON 保留泛函、收敛阈值、位移、张量约定
-和对称性修正后的结果，足以追溯该基准。
-两套 HSE 案例均采用 ABACUS 电荷密度 cube 积分，不经过 PYATB。
-
-## 代表性 BEC 与 APT 结果
-
-案例库保留了下列代表值对应的完整张量、原始响应记录和计算设置：
-
-| 维度 | 体系 | 方法 | 代表性结果 |
-| --- | --- | --- | --- |
-| 3D | [立方 BaTiO3](examples/3D_Bulk/cubic_BaTiO3) | ABACUS + PYATB, PBEsol | `Z*(Ti) = 7.440 e`; `Z*(Ba) = 2.734 e` |
-| 3D | [四方 HfO2](examples/3D_Bulk/t_HfO2) | ABACUS + PYATB, PBEsol | `Z*(Hf,xx) = 5.394 e`; `Z*(Hf,zz) = 4.828 e` |
-| 2D | [单层 hBN](examples/2D_Slab/hBN_unified) | ABACUS + PYATB, PBE | `Z*(B,parallel) = 2.702 e`; `Z*(B,z) = 0.343 e` |
-| 2D | [alpha-In2Se3](examples/2D_Slab/alpha_In2Se3_PBE) | ABACUS + PYATB, PBE | `Z*(In(2),parallel) = 4.016 e`; `Z*(In(2),zz) = 0.278 e` |
-| 1D | [BN(9,0)](examples/1D_Nanowire/BN_9_0) | ABACUS + PYATB, PBE | `(Zrr,Ztt,Zzz)_B = (0.397,1.256,2.745) e` |
-| 0D | [H2O](examples/0D_Molecules/H2O_unified) | ABACUS + PYATB, PBE | `q_GAPT(O) = -0.481 e`; `q_GAPT(H) = +0.240 e` |
-| 0D | [CH4](examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.021 e`; `q_GAPT(H) = +0.005 e` |
-
-周期体系行列出 BEC 的代表分量。分子行列出原子极化张量的旋转不变量
-`q_GAPT = Tr(A)/3`，不应将其解释为周期晶体 BEC。
-
-<div class="print-page-break"></div>
-
-## 实测计算效率
-
-成对柱是在相同设置下测得的求解器核时。每个 Separate 柱归一化为 100%，
-柱内数字为实际 CPU 核时，右侧数字为 `Separate / Unified` 加速倍数。
-十体系 BEC/APT 与 Gamma 点声子基准最高加速
-3.98 倍，覆盖四种维度的 IR/Raman 联合基准最高加速 8.35 倍。精确任务数、
-统计边界和源数据保留在[基准案例](examples/Benchmarks/README.zh-CN.md)和
-[绘图归档](docs/paper_figures/README.md)中。
-
-<p align="center" class="efficiency-figure">
-  <img src="docs/paper_figures/unified_efficiency_benchmarks.png" alt="BEC、声子、IR 与 Raman 计算中 Separate 与 Unified 工作流的实测核时" width="820">
-</p>
-
-<div class="print-page-break"></div>
-
-## 代表性验证图
-
-紧凑源数据、绘图脚本、矢量图片和完整性清单均归档在
-[docs/paper_figures](docs/paper_figures/README.md)。
-
-<p align="center">
-  <img src="docs/paper_figures/spectroscopy_across_dimensions.png" alt="体材料、二维片层、一维纳米线与分子的 IR 和 Raman 谱" width="820">
-</p>
-
-四行对比图展示四方 HfO2（`3D, bulk`）、单层 MoS2
-（`2D, slab`）、Sb2S3（`1D, nanowire`）和 CH4（`0D, molecule`）。PBEsol HfO2 行包含全部 15 个
-稳定光学模式和 30 个已完成的 Raman 响应阶段；更新后的
-ABACUS/PBE-D3(BJ) MoS2 行则将全部 6 个光学模式与生产级 BEC 导出的
-IR 强度及 12 个已完成的中心差分 Raman 响应阶段结合起来。
-
-<p align="center">
-  <img src="docs/paper_figures/dielectric_response_examples.png" alt="四方 HfO2 与单层 MoS2 的静态和频率相关介电响应" width="820">
-</p>
-
-HfO2 面板给出包含电子背景的三维总响应，PBEsol/TZDP 9-au 闭环得到
-`epsilon(0) = diag(75.761034, 75.761034, 18.045191)`；MoS2 面板给出不依赖
-真空层的晶格片层极化率，而不是依赖超胞高度的“二维介电常数”。
-
-## PYATB 新旧版本兼容
-
-ZStar 会探测实际使用的 PYATB 可执行文件：
-
-- 支持静态直算的新版本使用 `static_dielectric_only`。
-- 旧版本使用经新版静态截距对照验证的 0-30 eV 紧凑光学区间，步长为 0.1 eV；粗网格避免为静态介电常数计算不必要的高密度完整光谱。
-- 同时兼容 `static_dielectric_function.dat` 与旧版 `dielectric_function_real_part.dat`。
-
-探测到的版本和实际选择会记录在 `zstar_pyatb_compat.json`。
-
-## 静电势分析
-
-`zstar pot` 可分析 ABACUS 的 `ElecStaticPot.cube`：
-
-```bash
-zstar pot --cube OUT.ABACUS/ElecStaticPot.cube \
-  --axes z --plane xy --plane-average --tile 5 5 \
-  --vacuum-level --vacuum-sides --vacuum-window 0.75 \
-  --direction a+b --mirror-test \
-  --polar-arrow auto \
-  --outdir potential
-```
-
-它可以输出轴向平均势、平面周期拼接图、方向平均曲线、单侧或双侧真空能级诊断，
-以及单周期最佳镜面中心和非对称度。局部平台窗口可避免把 dipole correction 的
-真空复位段混入极性薄膜表面平台。代表性结果中，MoS2 的
-`Delta V_vac = -1.65e-5 eV`，alpha-In2Se3 的
-`Delta V_vac = 1.220812 eV`。
-
-![二维材料静电势代表性结果](docs/paper_figures/potential_examples_2d.png)
-
-完整命令、适用边界和 SnS/SnSe/SnTe 方向对比见[中文示例文档](docs/potential_examples.zh-CN.md)。
-
-## 命令总览
-
-| 命令 | 功能 |
-| --- | --- |
-| `zstar bec pre/job/run/stat/post` | 极化、APT/BEC、`BORN`、续算状态和任务脚本。 |
-| `zstar phonon pre/job/run/stat/post/irrep` | 位移、串行力计算、力常数、频率和不可约表示。 |
-| `zstar spectra pre/job/run/stat/post` | 计算器感知的 IR 与 Raman 工作流。 |
-| `zstar dielectric static/freq/optics` | 静态、振动及电子介电响应。 |
-| `zstar backend list` | 列出能力，并可检查程序或插件。 |
-| `zstar config init/show/set/check` | 配置计算软件路径、运行时默认值和 ABACUS 全局资源目录。 |
-| `zstar response` | 校验并统一计算器无关响应数据。 |
-| `zstar density` | 生成电荷密度导出适配器和来源 sidecar。 |
-| `zstar stru convert/wyckoff` | 转换结构或检查 Wyckoff 位置。 |
-| `zstar data db/qnep` | 管理可追溯 BEC/High-K 数据库或导出 qNEP 数据。 |
-| `zstar skill install/path/preflight` | 安装 agent skill 或检查工作区。 |
-| `zstar pot` | 绘制势曲线/平面图、真空势差和镜面非对称度。 |
-
-别名、全部叶节点和软件路径解析规则见[完整命令行参考](docs/cli_reference.zh-CN.md)。
+- [完整手册](docs/user_guide.zh-CN.md)（[PDF](docs/README.zh-CN.pdf)）：详细工作流、BEC/APT 结果、效率基准及验证图。
+- [文档索引](docs/README.zh-CN.md)：配置、维度约定、作业系统及各项功能教程。
+- [案例库](examples/README.zh-CN.md)：bulk、slab、wire 与分子案例，均提供 `run/`、`results/` 和 `run.sh`。
+- [VASP 原生响应](docs/vasp_native_response.zh-CN.md)：bulk BEC、介电、声子、压电及弹性工作流；[其他计算器](docs/calculator_independent_backends.zh-CN.md)。
 
 ## 引用与许可证
 
-如果 ZStar 支持了您的论文工作，请引用 ZStar 软件论文或对应仓库版本，同时引用实际使用的电子结构与晶格动力学程序。
-
-本版本的机器可读引用信息见 [CITATION.cff](CITATION.cff)。
-
-ZStar 使用 GNU General Public License v3.0。
-
-Copyright (c) Xudong Zhu.
+使用时请引用 ZStar 及实际调用的计算软件，见 [CITATION.cff](CITATION.cff)。
+软件采用 [GPL-3.0](LICENSE) 许可证。

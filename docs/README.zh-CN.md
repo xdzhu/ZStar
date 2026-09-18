@@ -1,7 +1,10 @@
-# ZStar 使用手册
+# ZStar 文档索引
 
 [English](README.md) | [项目首页](../README.zh-CN.md) |
 [中文 PDF](README.zh-CN.pdf) | [English PDF](README.en.pdf)
+
+[完整使用手册](user_guide.zh-CN.md)涵盖详细工作流、物理约定、代表性结果及验证图。
+首次使用请从[项目快速上手](../README.zh-CN.md#快速上手)开始。
 
 本手册对应当前 ZStar 发布版，安装命令为 `pip install zstar`。
 默认路线需要另行安装 ABACUS 和 PYATB；安装 ZStar 的 Python 包不会安装这些求解器。
@@ -16,7 +19,7 @@
 
 ```bash
 git clone https://github.com/xdzhu/ZStar.git
-cd zstar
+cd ZStar
 pip install .
 ```
 

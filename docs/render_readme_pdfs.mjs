@@ -37,7 +37,7 @@ if (!versionMatch) {
 const tempDir = path.join(repoRoot, "tmp", "pdfs", "readme-render");
 fs.mkdirSync(tempDir, { recursive: true });
 
-function inlineLocalImages(html) {
+function inlineLocalImages(html, sourceDirectory) {
   const mimeTypes = {
     ".gif": "image/gif",
     ".jpeg": "image/jpeg",
@@ -51,7 +51,7 @@ function inlineLocalImages(html) {
       return match;
     }
     const cleanSrc = decodeURIComponent(src.split(/[?#]/, 1)[0]);
-    const imagePath = path.resolve(repoRoot, cleanSrc);
+    const imagePath = path.resolve(sourceDirectory, cleanSrc);
     const mimeType = mimeTypes[path.extname(imagePath).toLowerCase()];
     if (!mimeType || !fs.existsSync(imagePath)) {
       return match;
@@ -61,9 +61,28 @@ function inlineLocalImages(html) {
   });
 }
 
+function publicRepositoryLinks(html, sourceDirectory) {
+  return html.replace(/(<a\b[^>]*\bhref=")([^"]+)("[^>]*>)/gi, (match, prefix, href, suffix) => {
+    if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(href)) {
+      return match;
+    }
+    const localUrl = new URL(href, pathToFileURL(`${sourceDirectory}${path.sep}`));
+    const localPath = fileURLToPath(localUrl);
+    const relative = path.relative(repoRoot, localPath);
+    if (relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) {
+      throw new Error(`Documentation link leaves the repository: ${href}`);
+    }
+    const view = fs.existsSync(localPath) && fs.statSync(localPath).isDirectory() ? "tree" : "blob";
+    const publicUrl = new URL(relative.split(path.sep).join("/"), `https://github.com/xdzhu/ZStar/${view}/main/`);
+    publicUrl.search = localUrl.search;
+    publicUrl.hash = localUrl.hash;
+    return `${prefix}${publicUrl.href}${suffix}`;
+  });
+}
+
 const documents = [
-  ["README.md", "docs/README.en.pdf", "ZStar English Manual"],
-  ["README.zh-CN.md", "docs/README.zh-CN.pdf", "ZStar 中文手册"],
+  ["docs/user_guide.md", "docs/README.en.pdf", "ZStar English Manual"],
+  ["docs/user_guide.zh-CN.md", "docs/README.zh-CN.pdf", "ZStar 中文手册"],
 ];
 
 const browserCandidates = [
@@ -85,6 +104,7 @@ if (!browserExecutable) {
 }
 
 for (const [sourceName, outputName, title] of documents) {
+  const sourceDirectory = path.dirname(path.join(repoRoot, sourceName));
   const markdown = fs
     .readFileSync(path.join(repoRoot, sourceName), "utf8")
     .replace(
@@ -99,12 +119,15 @@ for (const [sourceName, outputName, title] of documents) {
       /<img alt="(?:License|许可证)"[^>]*>/g,
       '<span class="pdf-badge badge-license">License GPL-3.0</span>',
     );
-  const content = inlineLocalImages(marked.parse(markdown, { gfm: true }));
+  const content = publicRepositoryLinks(
+    inlineLocalImages(marked.parse(markdown, { gfm: true }), sourceDirectory),
+    sourceDirectory,
+  );
   const html = `<!doctype html>
 <html>
 <head>
   <meta charset="utf-8">
-  <base href="${pathToFileURL(`${repoRoot}${path.sep}`).href}">
+  <base href="${pathToFileURL(`${sourceDirectory}${path.sep}`).href}">
   <title>${title}</title>
   <style>${css}</style>
 </head>
