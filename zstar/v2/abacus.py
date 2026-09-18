@@ -488,20 +488,8 @@ def collect_abacus_strain_response(
                 "v2 requires symprec=1e-3 in ensemble metadata; "
                 f"got {declared_symprec:g}"
             )
-    require_abacus_symmetry_prec = ensemble.metadata.get("preparation") == "abacus"
-    if require_abacus_symmetry_prec:
-        backend_symprec = ensemble.metadata.get("abacus_symmetry_prec")
-        try:
-            backend_symprec = float(backend_symprec)
-        except (TypeError, ValueError) as exc:
-            raise ValueError(
-                "v2 ABACUS ensemble metadata must declare abacus_symmetry_prec=1e-3"
-            ) from exc
-        if backend_symprec != V2_SYMPREC:
-            raise ValueError(
-                "v2 requires ABACUS symmetry_prec=1e-3; "
-                f"ensemble metadata declares {backend_symprec:g}"
-            )
+    require_abacus_symmetry_modes = ensemble.metadata.get("preparation") == "abacus"
+    if require_abacus_symmetry_modes:
         if ensemble.metadata.get("abacus_reference_symmetry") != 1:
             raise ValueError("v2 ABACUS reference must declare symmetry=1")
         if ensemble.metadata.get("abacus_perturbation_symmetry") != 0:
@@ -568,21 +556,18 @@ def collect_abacus_strain_response(
             )
         stage_vectors.append(np.asarray(stage.actual_vector, dtype=float))
         stage_names.append(stage.stage_id)
-    if require_abacus_symmetry_prec:
+    if require_abacus_symmetry_modes:
         for record_index, record in enumerate(records):
-            raw_backend_symprec = record["input_parameters"].get("symmetry_prec")
-            try:
-                backend_symprec = float(raw_backend_symprec)
-            except (TypeError, ValueError) as exc:
-                raise ValueError(
-                    "v2 ABACUS stage must serialize symmetry_prec=1e-3; "
-                    f"stage {record['stage']!r} has {raw_backend_symprec!r}"
-                ) from exc
-            if backend_symprec != V2_SYMPREC:
-                raise ValueError(
-                    "v2 requires ABACUS symmetry_prec=1e-3; "
-                    f"stage {record['stage']!r} has {backend_symprec:g}"
-                )
+            # Historical inputs retain their configured tolerances as
+            # provenance. New ensembles explicitly use calculator defaults.
+            if ensemble.metadata.get("abacus_symmetry_tolerance_policy") == "calculator-default":
+                overrides = {key for key in ("symmetry_prec", "symmetry_autoclose")
+                             if key in record["input_parameters"]}
+                if overrides:
+                    raise ValueError(
+                        f"v2 calculator-default symmetry policy forbids {sorted(overrides)} "
+                        f"in stage {record['stage']!r}; regenerate the inputs"
+                    )
             expected_symmetry = "1" if record_index == 0 else "0"
             actual_symmetry = record["input_parameters"].get("symmetry")
             if actual_symmetry != expected_symmetry:

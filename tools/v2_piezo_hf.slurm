@@ -49,9 +49,6 @@ require_equal() {
 validate_stage_input() {
     local input="$1" stage="$2" calculation symmetry
     symmetry=$(input_value "$input" symmetry)
-    awk -v x="$(input_value "$input" symmetry_prec)" 'BEGIN { exit !(x == 1e-3) }' || {
-        echo "v2 HF runner requires symmetry_prec=1e-3 in $input" >&2; return 1;
-    }
     calculation=$(input_value "$input" calculation)
     calculation=${calculation:-scf}
     case "$stage" in

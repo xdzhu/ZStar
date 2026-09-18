@@ -22,7 +22,7 @@ cleanup_lock() { rmdir "$lock_dir" 2>/dev/null || true; }
 trap cleanup_lock EXIT INT TERM
 relax_log=$(find OUT.* -maxdepth 1 -type f \( -name 'running_cell-relax.log' -o -name 'running_relax.log' \) -print -quit 2>/dev/null || true)
 relaxed_stru=$(find OUT.* -maxdepth 1 -type f -name STRU_ION_D -print -quit 2>/dev/null || true)
-if test -n "$relax_log" && test -n "$relaxed_stru" && grep -qiE 'relaxation is converged|calculation *finished' "$relax_log"; then
+if test -n "$relax_log" && test -n "$relaxed_stru" && grep -qi 'relaxation is converged' "$relax_log"; then
     printf '%s\n' "{\"node\":\"$(hostname)\",\"mpi\":$NP,\"omp\":$OMP,\"returncode\":0,\"elapsed_seconds\":0,\"reused_converged_output\":true}" > "runtime_relax_${NP}mpi.json"
     echo "REUSE_CONVERGED_REFERENCE_RELAX node=$(hostname) mpi=$NP omp=$OMP"
 else
@@ -35,6 +35,6 @@ else
     relax_log=$(find OUT.* -maxdepth 1 -type f \( -name 'running_cell-relax.log' -o -name 'running_relax.log' \) -print -quit 2>/dev/null || true)
     relaxed_stru=$(find OUT.* -maxdepth 1 -type f -name STRU_ION_D -print -quit 2>/dev/null || true)
 fi
-test -n "$relax_log" && grep -qiE 'relaxation is converged|calculation *finished' "$relax_log" || exit 2
+test -n "$relax_log" && grep -qi 'relaxation is converged' "$relax_log" || exit 2
 test -n "$relaxed_stru" || exit 3
 echo "REFERENCE_RELAX_COMPLETE node=$(hostname) mpi=$NP omp=$OMP"

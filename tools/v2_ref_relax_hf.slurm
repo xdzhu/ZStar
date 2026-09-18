@@ -35,9 +35,6 @@ test "$(input_value "$INPUT" calculation)" = "cell-relax" || {
 test "$(input_value "$INPUT" symmetry)" = "1" || {
     echo "v2 reference requires symmetry=1" >&2; exit 2;
 }
-awk -v x="$(input_value "$INPUT" symmetry_prec)" 'BEGIN { exit !(x == 1e-3) }' || {
-    echo "v2 reference requires symmetry_prec=1e-3" >&2; exit 2;
-}
 awk -v x="$(input_value "$INPUT" force_thr_ev)" -v limit="$MAX_FORCE" 'BEGIN { exit !(x == limit) }' || {
     echo "v2 $PROFILE reference requires force_thr_ev=$MAX_FORCE" >&2; exit 2;
 }

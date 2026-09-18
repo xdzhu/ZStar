@@ -172,6 +172,18 @@ def _read_input_parameter(path: Path, key: str) -> str | None:
     return None
 
 
+def _use_abacus_symmetry_defaults(path: Path) -> None:
+    """Keep spglib's tolerance out of calculator inputs, including templates."""
+
+    text = path.read_text(encoding="utf-8")
+    text = re.sub(
+        r"(?im)^[ \t]*(?:symmetry_prec|symmetry_autoclose)\b[^\n]*(?:\n|$)",
+        "",
+        text,
+    )
+    path.write_text(text, encoding="utf-8", newline="\n")
+
+
 def prepare_abacus_reference_relaxation(
     root: str | Path,
     *,
@@ -244,13 +256,13 @@ def prepare_abacus_reference_relaxation(
         ("cal_force", "1"),
         ("cal_stress", "1"),
         ("symmetry", "1"),
-        ("symmetry_prec", f"{float(symprec):.16g}"),
         ("force_thr_ev", f"{force:.16g}"),
         ("stress_thr", f"{stress:.16g}"),
         ("scf_thr", f"{electronic:.16g}"),
         ("relax_nmax", str(int(relax_nmax))),
     ):
         _set_input_parameter(output / "INPUT", key, value)
+    _use_abacus_symmetry_defaults(output / "INPUT")
     prepared = prepare_stru_assets(
         output / "STRU", pp_dir=pp_dir, orb_dir=orb_dir, output_dir=output / ".zstar-assets"
     )
@@ -342,12 +354,12 @@ def prepare_abacus_fixed_cell_relaxation(
         ("cal_force", "1"),
         ("cal_stress", "1"),
         ("symmetry", "1"),
-        ("symmetry_prec", f"{float(symprec):.16g}"),
         ("force_thr_ev", f"{force:.16g}"),
         ("scf_thr", f"{electronic:.16g}"),
         ("relax_nmax", str(int(relax_nmax))),
     ):
         _set_input_parameter(output / "INPUT", key, value)
+    _use_abacus_symmetry_defaults(output / "INPUT")
     prepared = prepare_stru_assets(
         output / "STRU", pp_dir=pp_dir, orb_dir=orb_dir, output_dir=output / ".zstar-assets"
     )
@@ -638,7 +650,7 @@ def prepare_abacus_strain_ensemble(
         metadata={
             "preparation": "abacus",
             "symprec": float(symprec),
-            "abacus_symmetry_prec": float(symprec),
+            "abacus_symmetry_tolerance_policy": "calculator-default",
             "abacus_reference_symmetry": 1,
             "abacus_perturbation_symmetry": 0,
             "ion_relaxation": relaxation,
@@ -676,7 +688,7 @@ def prepare_abacus_strain_ensemble(
         _set_input_parameter(reference_dir / input_name, "cal_force", "1")
         _set_input_parameter(reference_dir / input_name, "cal_stress", "1")
         _set_input_parameter(reference_dir / input_name, "symmetry", "1")
-        _set_input_parameter(reference_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
+        _use_abacus_symmetry_defaults(reference_dir / input_name)
         _set_input_parameter(reference_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
         # A finite-strain polarization stage is an ABACUS-to-PYATB workflow,
         # not merely an SCF calculation.  Do not inherit a legacy template
@@ -708,11 +720,11 @@ def prepare_abacus_strain_ensemble(
         if (stage_dir / input_name).is_file():
             _set_input_parameter(stage_dir / input_name, "cal_force", "1")
             _set_input_parameter(stage_dir / input_name, "cal_stress", "1")
-            # A perturbation with amplitude comparable to symmetry_prec must
-            # not be projected away by the calculator's internal symmetry.
+            # Preserve the finite perturbation instead of imposing the
+            # calculator's reference symmetry on the strained geometry.
             # ZStar handles response reconstruction from the unmodified data.
             _set_input_parameter(stage_dir / input_name, "symmetry", "0")
-            _set_input_parameter(stage_dir / input_name, "symmetry_prec", f"{float(symprec):.16g}")
+            _use_abacus_symmetry_defaults(stage_dir / input_name)
             _set_input_parameter(stage_dir / input_name, "scf_thr", f"{scf_threshold:.16g}")
             _set_input_parameter(stage_dir / input_name, "out_mat_hs2", "1")
             _set_input_parameter(stage_dir / input_name, "out_mat_r", "1")

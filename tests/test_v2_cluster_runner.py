@@ -9,7 +9,7 @@ HF_REFERENCE_RUNNER = Path(__file__).resolve().parents[1] / "tools" / "v2_ref_re
 def test_relaxed_235_runner_enforces_fixed_protocol_and_ionic_convergence():
     text = RUNNER.read_text(encoding="utf-8")
 
-    assert "v2 requires symmetry_prec=1e-3" in text
+    assert "requires symmetry_prec=1e-3" not in text
     assert "v2 perturbation requires symmetry=0" in text
     assert 'read -r -a requested_stages <<< "${ZSTAR_STAGE_IDS//,/ }"' in text
     assert "v2 fixed protocol requires force_thr_ev=1e-4" in text
@@ -33,7 +33,7 @@ def test_hf_runners_enforce_matching_production_or_verification_profiles():
     assert "calculation=cell-relax" in reference
     assert 'PROFILE_MARKER="$ROOT/convergence_profile.txt"' in reference
     assert 'EXPECTED_PROFILE=$(tr -d' in reference
-    assert "symmetry_prec=1e-3" in reference
+    assert "symmetry_prec=1e-3" not in reference
     assert "force_thr_ev=$MAX_FORCE" in reference
     assert "stress_thr=$MAX_STRESS kbar" in reference
     assert "scf_thr=$MAX_SCF" in reference
@@ -45,7 +45,7 @@ def test_hf_runners_enforce_matching_production_or_verification_profiles():
     assert 'NP="${ZSTAR_MPI_RANKS:-32}"' in response
     assert 'PROFILE="${ZSTAR_V2_CONVERGENCE_PROFILE:-production}"' in response
     assert "production|verification) MAX_SCF=1e-8; MAX_RELAX_FORCE=1e-4" in response
-    assert "symmetry_prec=1e-3" in response
+    assert "symmetry_prec=1e-3" not in response
     assert 'PROFILE_MARKER="$ROOT/convergence_profile.txt"' in response
     assert "v2 reference requires symmetry=1" in response
     assert "v2 perturbations require symmetry=0" in response

@@ -39,7 +39,8 @@ def test_reference_relaxation_preparation_defaults_to_cost_balanced_production_g
     assert values["calculation"] == "cell-relax"
     assert values["cal_force"] == values["cal_stress"] == "1"
     assert values["symmetry"] == "1"
-    assert float(values["symmetry_prec"]) == pytest.approx(1.0e-3)
+    assert "symmetry_prec" not in values
+    assert "symmetry_autoclose" not in values
     assert float(values["force_thr_ev"]) == pytest.approx(1.0e-4)
     assert float(values["stress_thr"]) == pytest.approx(0.5)
     assert float(values["scf_thr"]) == pytest.approx(1.0e-8)
@@ -59,7 +60,8 @@ def test_fixed_cell_relaxation_preparation_cannot_inherit_cell_relax(tmp_path):
     assert values["calculation"] == "relax"
     assert values["cal_force"] == values["cal_stress"] == "1"
     assert values["symmetry"] == "1"
-    assert float(values["symmetry_prec"]) == pytest.approx(1.0e-3)
+    assert "symmetry_prec" not in values
+    assert "symmetry_autoclose" not in values
     assert float(values["force_thr_ev"]) == pytest.approx(1.0e-4)
     assert float(values["scf_thr"]) == pytest.approx(1.0e-8)
     assert values["relax_nmax"] == "100"
@@ -118,11 +120,12 @@ def test_abacus_strain_preparation_is_dry_run_and_serializes_actual_vectors(tmp_
     input_text = (tmp_path / "strain" / "reference" / "INPUT").read_text()
     assert "cal_force           1" in input_text
     assert "cal_stress          1" in input_text
-    assert "symmetry_prec       0.001" in input_text
+    assert "symmetry_prec" not in _input_parameters(tmp_path / "strain" / "reference" / "INPUT")
     assert "out_mat_hs2         1" in input_text
     assert "out_mat_r           1" in input_text
     assert "out_chg             1" in input_text
-    assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
+    assert ensemble.metadata["symprec"] == 1.0e-3
+    assert ensemble.metadata["abacus_symmetry_tolerance_policy"] == "calculator-default"
     assert ensemble.metadata["abacus_reference_symmetry"] == 1
     assert ensemble.metadata["abacus_perturbation_symmetry"] == 0
     assert _input_parameters(tmp_path / "strain" / "reference" / "INPUT")["symmetry"] == "1"
@@ -401,7 +404,8 @@ def test_abacus_strain_verification_profile_uses_unified_precision_and_100_steps
     assert ensemble.metadata["relax_nmax"] == 100
     assert ensemble.metadata["initial_cell_relax_force_thr_ev"] == 1.0e-4
     assert ensemble.metadata["response_reference_force_thr_ev"] == 1.0e-4
-    assert ensemble.metadata["abacus_symmetry_prec"] == 1.0e-3
+    assert ensemble.metadata["symprec"] == 1.0e-3
+    assert ensemble.metadata["abacus_symmetry_tolerance_policy"] == "calculator-default"
     assert "scf_thr             1e-08" in (
         tmp_path / "tight-force-policy" / "reference" / "INPUT"
     ).read_text()
@@ -469,7 +473,7 @@ def test_abacus_strain_preparation_rejects_nonstandard_symprec(tmp_path):
         )
 
 
-def test_abacus_collection_rejects_generated_ensemble_without_backend_symmetry_prec(tmp_path):
+def test_abacus_collection_rejects_generated_ensemble_without_backend_symmetry_mode(tmp_path):
     case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
     root = tmp_path / "missing-backend-symprec"
     result = prepare_abacus_strain_ensemble(
@@ -481,12 +485,12 @@ def test_abacus_collection_rejects_generated_ensemble_without_backend_symmetry_p
     )
     ensemble = result["ensemble"]
     metadata = dict(ensemble.metadata)
-    metadata.pop("abacus_symmetry_prec")
+    metadata.pop("abacus_reference_symmetry")
     replace(ensemble, metadata=metadata).write(root / "ensemble.json")
 
     from zstar.v2 import collect_abacus_strain_response
 
-    with pytest.raises(ValueError, match="abacus_symmetry_prec=1e-3"):
+    with pytest.raises(ValueError, match="reference must declare symmetry=1"):
         collect_abacus_strain_response(root)
 
     wrong_mode_metadata = dict(ensemble.metadata)
@@ -494,6 +498,27 @@ def test_abacus_collection_rejects_generated_ensemble_without_backend_symmetry_p
     replace(ensemble, metadata=wrong_mode_metadata).write(root / "ensemble.json")
     with pytest.raises(ValueError, match="perturbations must declare symmetry=0"):
         collect_abacus_strain_response(root)
+
+
+@pytest.mark.parametrize("prepare", [
+    prepare_abacus_reference_relaxation,
+    prepare_abacus_fixed_cell_relaxation,
+    prepare_abacus_strain_ensemble,
+])
+def test_preparation_removes_inherited_abacus_symmetry_tolerance_overrides(tmp_path, prepare):
+    case = Path("examples/3D_Bulk/tetragonal_BaTiO3/inputs").resolve()
+    template = tmp_path / "INPUT"
+    template.write_text((case / "INPUT").read_text() +
+                        "\nsymmetry_prec 0.001\nsymmetry_autoclose 1\n"
+                        "symmetry_prec 0.002\n", encoding="utf-8")
+    root = tmp_path / "prepared"
+    prepare(root, structure=case / "STRU", input_template=template, kpt_template=case / "KPT")
+    inputs = list(root.rglob("INPUT"))
+    assert inputs
+    for path in inputs:
+        parameters = _input_parameters(path)
+        assert "symmetry_prec" not in parameters
+        assert "symmetry_autoclose" not in parameters
 
 
 def test_abacus_strain_preparation_rejects_unknown_ion_relaxation(tmp_path):

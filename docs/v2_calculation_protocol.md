@@ -7,13 +7,16 @@ slab、wire 或分子：低维体系须先确定真空、面内/轴向归一化�
 ## 规则优先级
 
 1. 结构空间群、原子映射和任务生成固定 `symprec = 1e-3 Å`。这是结构识别阈值，
-   不是拟合残差的数值验收阈值。
+   仅适用于 Phonopy/spglib，不是 ABACUS 的内部对称性阈值，也不是拟合残差的验收阈值。
+   生成的 ABACUS INPUT 不设置 `symmetry_prec` 或 `symmetry_autoclose`，即使模板中已有
+   这两个关键字也应删除，使用计算器默认值。
 2. 参考平衡结构必须先由独立且**与所选 profile 匹配**的 `cell-relax` 得到；不允许把数据库 CIF、
    低精度预弛豫结构或应变结构的 `STRU_ION_D` 直接作为响应参考态。
 3. 响应导数必须由**实际序列化的**位移/应变向量计算，采用中心差分；名义步长只
    作为任务生成参数。
-4. 切换 cutoff、k 网格、赝势、轨道、泛函、smearing、晶胞表示或收敛阈值后，参考
+4. 切换 cutoff、k 网格、赝势、轨道、泛函、smearing、晶胞表示后，参考
    结构与全部响应必须重新生成，禁止拼接不同 Hamiltonian 的 stage。
+   仅放宽验收阈值时，已满足更严格阈值的收敛结果继续有效；历史输入和 provenance 保留原值。
 5. 任一 failed/non-converged stage 都使相应张量不可接受；保存输入和日志后定位原因，
    不以重复盲投覆盖证据。
 
@@ -27,11 +30,11 @@ ZStar 开发者做幅度、异常分量、cutoff/k-point 和论文冻结前复�
 | 阶段 | ABACUS 类型与目的 | 生产档 | 验证档 | 其他强制项 |
 |---|---|---|---|---|
 | R0：绝缘与基组预检 | SCF；检查绝缘性、赝势/轨道唯一匹配、cutoff 与 k 网格 | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`；检查 band gap 非零、无异常占据 |
-| R1：参考平衡结构 | `cell-relax`；同时弛豫晶胞和离子 | `force_thr_ev=1e-4 eV/Å`；`stress_thr=0.5 kbar`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `symmetry=1`，`symmetry_prec=0.001`，`cal_force=1`，`cal_stress=1` |
-| R2c：clamped-ion 零点 | 在 R1 的已验证 `STRU_ION_D` 上 SCF，供应 clamped-ion 力、应力和 PYATB | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=1`、`symmetry_prec=0.001` |
-| R2r：relaxed-ion 零点 | R1 固定晶胞下仅弛豫内部离子，并在最终几何做 PYATB | `force_thr_ev=1e-4 eV/Å`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | 与 R3r 使用**同一**力与电子收敛档；`symmetry=1`、`symmetry_prec=0.001` |
-| R3c：clamped-ion 应变 | 固定原子分数坐标的 ± 应变 SCF | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
-| R3r：relaxed-ion 应变 | 固定已应变晶胞、仅弛豫内部离子的 ± 应变 `relax` | `force_thr_ev=1e-4 eV/Å`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=0`、`symmetry_prec=0.001` |
+| R1：参考平衡结构 | `cell-relax`；同时弛豫晶胞和离子 | `force_thr_ev=1e-4 eV/Å`；`stress_thr=0.5 kbar`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `symmetry=1`，计算器对称性阈值默认，`cal_force=1`，`cal_stress=1` |
+| R2c：clamped-ion 零点 | 在 R1 的已验证 `STRU_ION_D` 上 SCF，供应 clamped-ion 力、应力和 PYATB | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=1`；计算器对称性阈值默认 |
+| R2r：relaxed-ion 零点 | R1 固定晶胞下仅弛豫内部离子，并在最终几何做 PYATB | `force_thr_ev=1e-4 eV/Å`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | 与 R3r 使用**同一**力与电子收敛档；`symmetry=1`；计算器对称性阈值默认 |
+| R3c：clamped-ion 应变 | 固定原子分数坐标的 ± 应变 SCF | `scf_thr=1e-8` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=0`；计算器对称性阈值默认 |
+| R3r：relaxed-ion 应变 | 固定已应变晶胞、仅弛豫内部离子的 ± 应变 `relax` | `force_thr_ev=1e-4 eV/Å`；`scf_thr=1e-8`；`relax_nmax=100` | 同生产档 | `cal_force=1`、`cal_stress=1`、`symmetry=0`；计算器对称性阈值默认 |
 | R4：Berry 极化 | 每个已完成几何一次 PYATB polar | 继承 R2/R3 Hamiltonian 和 profile | 同左 | 一次 PYATB 输出同时读取三个 Cartesian 极化方向；禁止为三个方向重复三次 ABACUS NSCF |
 | R5：BEC/Γ 声子（v1 基线） | 继续使用 v1 Unified 路径，不重新发明算法 | `scf_thr=1e-8`；中心 ± 位移 | 同生产档 | BEC/IFC 位移默认 `0.01 Å`，以实际序列化位移取差分；不以极小位移放大 SCF 噪声 |
 

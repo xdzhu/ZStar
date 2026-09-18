@@ -27,12 +27,8 @@ input_value() {
 }
 
 validate_symmetry_protocol() {
-    local input="$1" stage="$2" symmetry_prec symmetry
-    symmetry_prec=$(input_value "$input" symmetry_prec)
-    test -n "$symmetry_prec" && awk -v s="$symmetry_prec" 'BEGIN { exit !(s == 1e-3) }' || {
-        echo "v2 requires symmetry_prec=1e-3 in $input" >&2
-        return 1
-    }
+    local input="$1" stage="$2" symmetry
+    # spglib/Phonopy symprec belongs to reconstruction, not ABACUS INPUT.
     symmetry=$(input_value "$input" symmetry)
     case "$stage" in
         reference)
