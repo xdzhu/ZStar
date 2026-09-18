@@ -10,8 +10,8 @@ VASP 的原生线性响应能力，而不是照搬 ABACUS/PYATB 的有限位移�
 
 Γ 点声子、IR/Raman 复用及原生压电/弹性响应见
 [原生响应指南](vasp_native_response.zh-CN.md)：`--piezo` 请求含离子弛豫的 e，
-`--elastic` 还提供完整弹性矩阵以推导 d。扩展目前在独立原生响应 checkout
-完成验证，尚未合并主发布版。
+`--elastic` 还提供完整弹性矩阵以推导 d。扩展已完成 SiC 和 AlN 验证，
+使用新增开关前请通过 `pip install '.[vasp]'` 安装相应源码。
 
 两条路径都会得到电子介电张量和完整的逐原子 BEC。工作流先完成普通 SCF，
 读取 `vasprun.xml` 检查带隙，确认绝缘后才运行响应计算，并复用 `WAVECAR`

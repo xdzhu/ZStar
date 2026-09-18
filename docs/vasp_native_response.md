@@ -5,9 +5,9 @@ finite-displacement reconstruction on VASP calculations.
 
 ## Preparation and reuse
 
-The extension is validated in the isolated native-response development branch;
-it is not yet merged into the main release. Install this checkout with
-`pip install '.[vasp]'`. Prepare
+The native response extensions have been validated on 3C-SiC and wurtzite AlN.
+Install the source checkout containing these extensions with
+`pip install '.[vasp]'`; older published wheels may not expose the new switches. Prepare
 `INCAR`, `POSCAR`, `KPOINTS`, and a licensed `POTCAR` in `input/`.
 
 ```bash
@@ -57,6 +57,8 @@ zstar spectra post --root raman
 Use `--kind ir` with `--response` for IR-only preparation; no Raman displacement
 stages are generated and a completed reference needs no additional VASP calls.
 All cache reuse uses ordinary file copies, not symlinks.
+Reused mode sources are stored relative to the new reference directory, so
+collection remains independent of the original response workspace.
 Native post-processing exports frequency-ascending mode IDs. The matching
 `spectra_results.json` retains source IDs as `native_mode_numbers`; reuse it
 with the exported `qpoints.yaml`. A Raman subset `.npy` has no reliable mode-ID

@@ -13,8 +13,8 @@ finite-displacement implementation:
 For Gamma phonons, IR/Raman reuse and native piezoelectric/elastic response,
 see the [native response guide](vasp_native_response.md): `--piezo` requests
 relaxed-ion `e`, while `--elastic` also supplies complete elasticity for `d`.
-Those extensions are validated on the isolated native-response checkout,
-not yet merged into the main release.
+These extensions have been validated on 3C-SiC and wurtzite AlN. Install the
+source checkout with `pip install '.[vasp]'` to use the new switches.
 
 Both routes produce the electronic dielectric tensor and all atomic BEC
 tensors. The workflow first performs a normal SCF, checks the fundamental gap,

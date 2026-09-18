@@ -31,6 +31,7 @@ def test_aln_seed_and_native_parallel_settings():
 
 @pytest.fixture
 def acceptance_data(tmp_path, monkeypatch):
+    pytest.importorskip("pymatgen.io.vasp.outputs")
     from pymatgen.io.vasp import outputs
 
     spec = importlib.util.spec_from_file_location("aln_verifier", CASE / "verify_results.py")
