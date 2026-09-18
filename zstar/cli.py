@@ -536,6 +536,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     )
     parser_vasp_bec_prepare.add_argument('--phonons', action='store_true',
         help='Also compute native Gamma force constants for dielectric/IR reuse.')
+    parser_vasp_bec_prepare.add_argument('--piezo', action='store_true',
+        help='Include native ionic response for relaxed-ion piezoelectric e; use --elastic to also derive d.')
     parser_vasp_bec_prepare.add_argument('--elastic', action='store_true',
         help='Also compute native bulk elastic response; uses native finite differences for ionic/strain perturbations.')
     parser_vasp_bec_prepare.add_argument(
@@ -1628,6 +1630,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 dimensionality=args.dim,
                 periodic_axes=args.periodic_axes,
                 phonons=args.phonons,
+                piezo=args.piezo,
                 elastic=args.elastic,
                 force=args.force,
             )

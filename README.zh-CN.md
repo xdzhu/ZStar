@@ -562,8 +562,9 @@ zstar bec post --root vasp_bec
 有限场保护、集群脚本、张量约定及 VASP 6.3.2 SiC 实机验证见
 [完整中文文档](docs/vasp_bec_zh.md)。
 
-按需添加 `--phonons` 获取原生 Γ 点声子，供介电与 IR 复用；添加 `--elastic`
-获取完整 Bulk 弹性响应。后者采用原生应变有限差分，因为 VASP 未实现弹性应变
+按需添加 `--phonons` 获取原生 Γ 点声子，供介电与 IR 复用；只求含离子弛豫的
+压电 e 可使用 `--piezo`，同样采用原生离子响应，无需外部重复差分。添加 `--elastic`
+获取完整 Bulk 弹性响应及推导的 d。后者采用原生应变有限差分，因为 VASP 未实现弹性应变
 DFPT。[原生响应指南](docs/vasp_native_response.zh-CN.md)说明张量约定、Raman
 混合路线以及低维功能的适用边界。
 

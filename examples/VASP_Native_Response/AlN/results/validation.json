@@ -154,12 +154,13 @@
         "internal_strain_source": "displaced_atoms",
         "strained_cell_internal_strain_translation_max_eV_per_A": 1.0000000000000026e-05,
         "internal_strain_reciprocity_max_eV_per_A": 0.03345999999999982,
+        "elastic_antisymmetry_max_GPa": 0.0,
         "static_dielectric_max_abs": 0.00032453193837866934
       },
       "d31_d33_d15_pm_V": [
-        -2.1901741201151226,
-        5.324396108819313,
-        -2.7681967897631083
+        -2.190174120115123,
+        5.324396108819314,
+        -2.768196789763108
       ],
       "elastic_GPa": [
         [

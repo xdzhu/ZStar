@@ -621,7 +621,8 @@ ZStar tensors, and a Phonopy-compatible `BORN` file. The
 cluster scripts, tensor conventions, and the VASP 6.3.2 SiC validation.
 
 Add `--phonons` to collect native Gamma modes for dielectric/IR reuse, or
-`--elastic` for complete bulk elastic response. The latter uses native strain
+`--piezo` for relaxed-ion piezoelectric `e` using the same native ionic response.
+Use `--elastic` for complete bulk elastic response and derived `d`. It uses native strain
 finite differences because VASP does not implement elastic strain DFPT.
 The [native response guide](docs/vasp_native_response.md) explains tensor
 conventions, Raman's mixed route, and the boundaries of low-dimensional support.

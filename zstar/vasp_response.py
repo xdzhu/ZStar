@@ -59,6 +59,9 @@ def append_native_quantities(path: str | Path, native: dict) -> None:
                 "mechanical_boundary": mechanical_boundary,
                 "intrinsic_low_dimensional_response_required": not bulk,
                 "voigt_convention": list(ENGINEERING_VOIGT),
+                "solver_provenance": native.get("solver_provenance", {}),
+                **({"derivation": "d = e C^-1 using native relaxed-ion tensors; GPa to Pa conversion"}
+                   if key == "piezoelectric_d_pm_V" else {}),
                 **({"derivative_kind": "native force-strain coupling, not relaxed displacement per strain"}
                    if key.startswith("internal_strain_") else {}),
             },
@@ -181,12 +184,24 @@ def parse_native_tensors(path: str | Path) -> dict:
         antisymmetry = float(np.max(np.abs(elastic - elastic.T)))
         result["elastic_antisymmetry_max_GPa"] = antisymmetry
         result["elastic_eigenvalues_GPa"] = np.linalg.eigvalsh(0.5 * (elastic + elastic.T))
-        if (antisymmetry <= 1e-3 * max(1.0, float(np.max(np.abs(elastic))))
-                and np.min(result["elastic_eigenvalues_GPa"]) > 0.0
-                and result.get("internal_strain_translation_relative", 0.0) <= 1e-3):
-            result["piezoelectric_d_pm_V"] = result["piezoelectric_total_C_m2"] @ np.linalg.inv(elastic) * 1000.0
+        failures = []
+        if antisymmetry > 1e-3 * max(1.0, float(np.max(np.abs(elastic)))):
+            failures.append("elastic major symmetry failed")
+        if np.min(result["elastic_eigenvalues_GPa"]) <= 0.0:
+            failures.append("elastic stability failed")
+        if "internal_strain_translation_relative" not in result:
+            failures.append("internal-strain force-balance data missing")
+        elif result["internal_strain_translation_relative"] > 1e-3:
+            failures.append("internal-strain force balance failed")
+        if not {"piezoelectric_clamped_C_m2", "piezoelectric_ionic_C_m2"} <= result.keys():
+            failures.append("electronic or ionic piezoelectric contribution missing")
+        if result.get("piezoelectric_closure_max_C_m2", 0.0) > 1e-4:
+            failures.append("piezoelectric electronic + ionic closure failed")
+        if not failures:
+            # Solve rather than explicitly forming the compliance inverse.
+            result["piezoelectric_d_pm_V"] = np.linalg.solve(elastic.T, result["piezoelectric_total_C_m2"].T).T * 1000.0
         else:
-            result["d_rejected_reason"] = "Elastic stability, major symmetry or internal-strain force balance failed; no d tensor emitted"
+            result["d_rejected_reason"] = "; ".join(failures) + "; no d tensor emitted"
     return result
 
 
@@ -250,6 +265,8 @@ def collect_native_response(root: Path, manifest: dict, epsilon: np.ndarray, bor
         raise ValueError("Native phonon response is incomplete: ionic dielectric tensor missing from OUTCAR")
     if manifest.get("elastic") and "elastic_relaxed_GPa" not in native:
         raise ValueError("Requested native elastic response is missing TOTAL ELASTIC MODULI")
+    if manifest.get("piezo") and not {"piezoelectric_clamped_C_m2", "piezoelectric_ionic_C_m2"} <= native.keys():
+        raise ValueError("Requested native piezoelectric response is incomplete: electronic or ionic contribution missing from OUTCAR")
     modes = load_vasp_gamma_modes(source / "vasprun.xml")
     order = np.argsort(modes.frequencies_thz, kind="stable")
     modes = GammaModes(modes.frequencies_thz[order], modes.eigenvectors[order], modes.masses_amu,
@@ -271,7 +288,8 @@ def collect_native_response(root: Path, manifest: dict, epsilon: np.ndarray, bor
     for key in ("internal_strain_translation_max_eV_per_A", "internal_strain_translation_relative",
                 "electromechanical_warning", "d_rejected_reason", "internal_strain_source",
                 "strained_cell_internal_strain_translation_max_eV_per_A",
-                "internal_strain_reciprocity_max_eV_per_A"):
+                "internal_strain_reciprocity_max_eV_per_A", "piezoelectric_closure_max_C_m2",
+                "elastic_antisymmetry_max_GPa"):
         if key in native:
             diagnostics[key] = native[key]
     if manifest.get("dimensionality", 3) == 3:
@@ -290,6 +308,14 @@ def collect_native_response(root: Path, manifest: dict, epsilon: np.ndarray, bor
         "backend": "vasp",
         "electronic_response_method": manifest["method"],
         "ionic_response_method": manifest["ionic_response_method"],
+        "solver_provenance": {
+            "electronic_dielectric_bec_clamped_piezoelectric": "VASP native " + manifest["method"],
+            "gamma_force_constants_internal_strain_ionic_response": "VASP native " + manifest["ionic_response_method"],
+            "elastic": "VASP native strain finite differences" if manifest.get("elastic") else "not requested",
+            "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT" if "piezoelectric_d_pm_V" in native else "not emitted",
+            "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT" if "static_dielectric_max_abs" in diagnostics else "not emitted",
+            "raman": "not computed here; additional native dielectric derivatives required",
+        },
         "dimensionality": manifest.get("dimensionality", 3),
         "normalization": "bulk" if manifest.get("dimensionality", 3) == 3 else "periodic-supercell; intrinsic low-dimensional conversion required",
         "voigt_convention": list(ENGINEERING_VOIGT),

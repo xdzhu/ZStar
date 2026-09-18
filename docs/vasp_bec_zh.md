@@ -3,9 +3,15 @@
 ZStar 现在可将 VASP 作为独立的波恩有效电荷（BEC）后端。该实现直接调用
 VASP 的原生线性响应能力，而不是照搬 ABACUS/PYATB 的有限位移算法：
 
-- `dfpt`（默认）：设置 `LEPSILON = .TRUE.`，适用于局域和半局域泛函；
+- `auto`（默认）：LDA/GGA 采用原生 DFPT，杂化/meta-GGA 输入采用原生有限电场；
+- `dfpt`：设置 `LEPSILON = .TRUE.`，适用于 LDA/GGA 泛函；
 - `finite-field`：设置 `LCALCEPS = .TRUE.`，适用于 VASP 尚不支持 DFPT
   的杂化泛函等情况。
+
+Γ 点声子、IR/Raman 复用及原生压电/弹性响应见
+[原生响应指南](vasp_native_response.zh-CN.md)：`--piezo` 请求含离子弛豫的 e，
+`--elastic` 还提供完整弹性矩阵以推导 d。扩展目前在独立原生响应 checkout
+完成验证，尚未合并主发布版。
 
 两条路径都会得到电子介电张量和完整的逐原子 BEC。工作流先完成普通 SCF，
 读取 `vasprun.xml` 检查带隙，确认绝缘后才运行响应计算，并复用 `WAVECAR`
@@ -32,12 +38,10 @@ VASP 的电场边界条件。对于低维体系，`response.json` 将电子介�
 目录。`POTCAR` 不应提交到仓库或对外分发。
 
 ```bash
-zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec --method dfpt
+zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec
 zstar bec run --root vasp_bec --vasp-command "mpirun -np 32 vasp_std"
 zstar bec stat --root vasp_bec
 zstar bec post --root vasp_bec
-zstar vasp-bec compare --first dfpt/vasp_bec.json \
-  --second finite_field/vasp_bec.json --output comparison.json
 ```
 
 如需生成单个可断点续算的集群驱动脚本，而不是交互运行：
@@ -54,7 +58,7 @@ sbatch vasp_bec/run_vasp_bec.slurm
 杂化泛函或其他依赖轨道的泛函可使用：
 
 ```bash
-zstar vasp-bec prepare \
+zstar bec pre --calculator vasp \
   --input-dir vasp_input --root vasp_bec_hse \
   --method finite-field --field-strength 0.001
 ```

@@ -163,9 +163,20 @@ def test_aln_spectra_verifier_rejects_frequency_id_mismatch(spectral_data):
 
 
 def test_retained_aln_spectra_pass_delivery_selection_rules():
+    from zstar.response_schema import ResponseRecord
+
     spec = importlib.util.spec_from_file_location("retained_aln_spectra_verifier", CASE / "verify_spectra.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert module.validate(CASE)["passed"]
     native = json.loads((CASE / "results/dfpt/vasp_native_response.json").read_text())
     assert "electromechanical_warning" in native["diagnostics"]
+    assert native["solver_provenance"]["elastic"] == "not requested"
+    assert native["solver_provenance"]["piezoelectric_d"] == "not emitted"
+    elastic = json.loads((CASE / "results/elastic/vasp_native_response.json").read_text())
+    assert elastic["solver_provenance"]["elastic"] == "VASP native strain finite differences"
+    record = ResponseRecord.read(CASE / "results/elastic/response.json")
+    d = record.quantity("piezoelectric_d")
+    assert d.unit == "pm/V" and d.normalization == "none"
+    assert "no extra DFT" in d.metadata["solver_provenance"]["piezoelectric_d"]
+    assert "native relaxed-ion" in d.metadata["derivation"]

@@ -71,6 +71,37 @@ Raman 需要介电/极化率对振动坐标的导数，因此仍采用正负模�
 
 ## 方法选择与弹性
 
+### 只求 e 与同时求 d
+
+只求包含离子弛豫的压电应力系数 `e`，可直接请求原生响应：
+
+```bash
+zstar bec pre --calculator vasp --input-dir input --root piezo --piezo
+zstar bec run --root piezo
+zstar bec post --root piezo
+```
+
+`--piezo` 自动包含 Γ 点力常数，无需再加 `--phonons`。LDA/GGA 采用原生
+`LEPSILON + IBRION=8`，收集电子、离子及总压电贡献。内部应变耦合本身不是
+压电张量；VASP 将原子弛豫响应与 BEC 结合得到离子贡献，ZStar 直接读取，
+不另建外部应变/极化差分任务来重复计算。
+
+| 所需结果 | 准备选项 | 原生求解与复用 |
+| --- | --- | --- |
+| BEC、电子介电 | 无额外选项 | LDA/GGA 电场 DFPT |
+| 含离子弛豫的压电 e | `--piezo` | 电场 DFPT 与原生 Γ 点离子响应 |
+| Γ 点声子、声子介电、IR | `--phonons` | 同一原生离子响应；IR 只做后处理 |
+| 完整弹性 C 与推导的 d | `--elastic` | 原生离子/应变有限差分；`d = e C^-1` |
+| Raman | 后续 `zstar spectra pre --response ...` | 额外模式位移上的原生介电响应 |
+
+需要 `d` 时改用 `--elastic`，该选项已包含必要的离子响应。仅 `--piezo` 或
+`--phonons` 不提供完整弹性矩阵。应变有限差分由 VASP 内部执行，不是 ZStar
+生成的另一套外部应变计算。AlN/SiC 案例同时比较两条原生路线是验证安排，
+不是日常计算 `e` 的必需步骤；Raman 也不是一次电场/声子 DFPT 自动给出的。
+方法边界见 [LEPSILON](https://vasp.at/wiki/LEPSILON)、
+[声子 DFPT](https://vasp.at/wiki/Phonons_from_density-functional-perturbation_theory)和
+[原生有限差分](https://vasp.at/wiki/Phonons_from_finite_differences)官方说明。
+
 默认 `--method auto` 优先采用原生电场 DFPT；杂化或 meta-GGA 泛函选择
 原生有限电场。显式指定不兼容的 `--method dfpt` 会报错并提供指引。
 有限电场路线的 Γ 点声子采用原生有限差分。方法选择并不等于任意泛函均已
@@ -81,6 +112,11 @@ Raman 需要介电/极化率对振动坐标的导数，因此仍采用正负模�
 的列顺序转换为 `(xx, yy, zz, yz, xz, xy)`，应变采用工程剪切约定。
 机械稳定且满足主对称性时才输出 d。原生压电张量不再重复应用针对 improper
 极化差分的几何修正。
+输出 d 还要求内部应变平移平衡通过；缺失检查数据不能视为通过。电子和离子
+压电贡献须同时存在；若 VASP 显式打印总压电张量，其与两项之和的差异须不超过
+1e-4 C/m²。上述条件属于一致性检查，不能代替截断能、k 点及响应的收敛验证。
+原生 JSON 与通用响应记录保存求解来源，区分原生 DFT、代数转换得到的 d 和
+IR 后处理。检查失败时保留原始张量与原因，不静默切换算法或自动重跑。
 
 ## 作业头部
 

@@ -1,7 +1,7 @@
 {
   "schema": "zstar-response",
   "schema_version": "1.0",
-  "created_at": "2026-09-18T10:03:43.094877+00:00",
+  "created_at": "2026-09-18T12:36:52.386236+00:00",
   "backend": "vasp",
   "dimensionality": {
     "value": 3,
@@ -189,7 +189,15 @@
           "yz",
           "xz",
           "xy"
-        ]
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+          "elastic": "not requested",
+          "piezoelectric_d": "not emitted",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
       }
     },
     {
@@ -234,7 +242,15 @@
           "yz",
           "xz",
           "xy"
-        ]
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+          "elastic": "not requested",
+          "piezoelectric_d": "not emitted",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
       }
     },
     {
@@ -288,7 +304,15 @@
           "yz",
           "xz",
           "xy"
-        ]
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+          "elastic": "not requested",
+          "piezoelectric_d": "not emitted",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
       }
     },
     {
@@ -342,7 +366,15 @@
           "yz",
           "xz",
           "xy"
-        ]
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+          "elastic": "not requested",
+          "piezoelectric_d": "not emitted",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
       }
     },
     {
@@ -396,7 +428,15 @@
           "yz",
           "xz",
           "xy"
-        ]
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+          "elastic": "not requested",
+          "piezoelectric_d": "not emitted",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
       }
     },
     {
@@ -474,7 +514,15 @@
           "yz",
           "xz",
           "xy"
-        ]
+        ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+          "elastic": "not requested",
+          "piezoelectric_d": "not emitted",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        }
       }
     },
     {
@@ -611,6 +659,14 @@
           "xz",
           "xy"
         ],
+        "solver_provenance": {
+          "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+          "gamma_force_constants_internal_strain_ionic_response": "VASP native dfpt",
+          "elastic": "not requested",
+          "piezoelectric_d": "not emitted",
+          "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+          "raman": "not computed here; additional native dielectric derivatives required"
+        },
         "derivative_kind": "native force-strain coupling, not relaxed displacement per strain"
       }
     }

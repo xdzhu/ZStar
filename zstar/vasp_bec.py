@@ -129,6 +129,7 @@ def prepare_vasp_bec(
     dimensionality: int = 3,
     periodic_axes: str | None = None,
     phonons: bool = False,
+    piezo: bool = False,
     elastic: bool = False,
     force: bool = False,
 ) -> Path:
@@ -212,7 +213,8 @@ def prepare_vasp_bec(
         response_updates["LCALCEPS"] = ".TRUE."
         value = f"{field_strength:.10g}"
         response_updates["EFIELD_PEAD"] = f"{value} {value} {value}"
-    if phonons or elastic:
+    ionic_response = phonons or piezo or elastic
+    if ionic_response:
         response_updates.update({
             "IBRION": "6" if elastic or method_key == "finite-field" else "8",
             "NSW": "1",
@@ -245,11 +247,12 @@ def prepare_vasp_bec(
         "source_directory": str(source),
         "method": method_key,
         "requested_method": method,
-        "phonons": bool(phonons or elastic),
+        "phonons": bool(ionic_response),
+        "piezo": bool(piezo),
         "elastic": bool(elastic),
         "ionic_response_method": (
-            "native-finite-difference" if elastic or (phonons and method_key == "finite-field")
-            else "dfpt" if phonons else None
+            "native-finite-difference" if elastic or (ionic_response and method_key == "finite-field")
+            else "dfpt" if ionic_response else None
         ),
         "field_strength_eV_per_angstrom": field_strength if method_key == "finite-field" else None,
         "occupation_override": occupation_override,

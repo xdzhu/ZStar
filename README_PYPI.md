@@ -280,7 +280,9 @@ retain their documented native response workflows.
 For VASP, `zstar bec pre --calculator vasp --input-dir input --root response
 --phonons` selects native electric and Gamma-phonon response; `--elastic`
 selects native strain finite differences for bulk elastic and piezoelectric
-quantities. A completed response can be reused by `zstar spectra pre
+quantities, including derived `d`. Use `--piezo` to request relaxed-ion
+piezoelectric `e` without elastic strain jobs or external repeat calculations.
+A completed response can be reused by `zstar spectra pre
 --calculator vasp --response response --root spectra`. IR needs no additional
 VASP calculation; Raman still needs mode-displaced dielectric derivatives.
 See the [native response guide](https://github.com/xdzhu/ZStar/blob/main/docs/vasp_native_response.md)
