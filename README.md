@@ -115,7 +115,7 @@ with residual diagnostics.
 | IR and Raman | Mode charges, oscillator strengths, Raman tensors, polarized/broadened spectra |
 | Dielectric response | Electronic, phonon, static, and frequency-dependent response |
 | Supercell phonons | High-symmetry phonon bands, DOS, bulk NAC and LO-TO splitting |
-| Piezoelectric response | Native VASP clamped/ionic/total `e`; elastic response and derived `d` |
+| Piezoelectric response | ABACUS + PYATB proper finite-strain `e/C/d`; native VASP `e/C/d` |
 | Polarization-related potential analysis | Planar maps, line profiles, vacuum potential steps, mirror asymmetry |
 
 Details: [Unified BEC/phonons](docs/research/shared_response/USAGE.md),
@@ -203,7 +203,7 @@ Install `zstar[vasp]` when optional VASP readers are needed.
 
 | Calculator | Supported route | Guide |
 | --- | --- | --- |
-| ABACUS + PYATB | Unified BEC/APT, Gamma phonons, IR/Raman, dielectric response | [Unified workflow](docs/research/shared_response/USAGE.md) |
+| ABACUS + PYATB | Unified BEC/APT, Gamma phonons, IR/Raman, dielectric and proper bulk piezoelectric response | [Unified workflow](docs/research/shared_response/USAGE.md), [piezoelectric response](docs/piezoelectric_response.md) |
 | VASP | Native bulk BEC/dielectric/phonon response, IR, piezoelectric/elastic tensors; mode-displaced Raman | [Native response](docs/vasp_native_response.md) |
 | CP2K | Dipole-based BEC/APT and native spectroscopy routes | [BEC](docs/cp2k_bec.md), [spectra](docs/calculator_spectroscopy.md) |
 | Quantum ESPRESSO | Native DFPT BEC, dielectric, and IR collection | [Backend guide](docs/calculator_independent_backends.md) |
@@ -221,6 +221,11 @@ provides the elastic matrix and derived `d`. [SiC](examples/VASP_Native_Response
 and [AlN](examples/VASP_Native_Response/AlN) retain validation results. Raman
 needs additional mode-displaced calculations. Supply licensed `POTCAR` locally;
 see the guides for functional and low-dimensional boundaries.
+
+The independent ABACUS + PYATB finite-strain route is available through
+`zstar.piezoelectric`. Curated [AlN and ZnO cases](examples/Piezoelectric_Response)
+retain complete PBE tensors, input assets, native VASP comparisons, and
+self-checking reproduction scripts.
 
 ## Running Your Own Structures and Cluster Jobs
 

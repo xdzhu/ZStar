@@ -530,6 +530,19 @@ zstar bec post --root .
 更名不改变张量方向或单位。`BORN` 只输出一份，不再重复生成
 `BORN-for-phonopy.out`。
 
+## 三维压电响应
+
+对于绝缘三维晶体，ZStar 按工程 Voigt 顺序
+`(xx, yy, zz, 2yz, 2xz, 2xy)` 拟合 proper 压电应力系数 `e`、含离子弛豫的
+弹性系数 `C` 及 `d = e C^-1`。ABACUS + PYATB 路线通过
+`zstar.piezoelectric` Python API 提供，采用一个参考结构和显式中心应变，
+完成极化分支匹配并拟合实际写出的晶胞形变。VASP 用户优先使用下文原生
+`--piezo --elastic` 路线。
+
+[AlN 与 ZnO 案例](../examples/Piezoelectric_Response)提供干净输入及 ABACUS
+资产、两条路线的完整 PBE 张量、文献参照和可自检复现脚本。Python API、单位、
+执行边界及低维限制见[压电响应指南](piezoelectric_response.zh-CN.md)。
+
 ## CP2K BEC 后端
 
 对于分子（`--dim 0`）或三维绝缘 Gamma 点 CP2K 输入，ZStar 可以从偶极直接

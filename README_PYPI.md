@@ -78,7 +78,8 @@ each stage and report the BEC table, optical-mode frequencies, and spectrum path
 - Hybrid 1D BECs: transverse charge-density dipoles plus longitudinal Berry polarization.
 - Hybrid 2D BECs: Berry-phase in-plane response plus cube-integrated out-of-plane dipole.
 - IR, Raman, and static/frequency-dependent dielectric response.
-- Native VASP bulk piezoelectric and elastic response collection.
+- Proper bulk piezoelectric and elastic response through the ABACUS + PYATB
+  finite-strain API or VASP-native collection.
 - A packaged `run-zstar-workflows` agent skill with JSON preflight.
 - Slab electrostatic-potential maps, directional profiles, and local two-sided
   vacuum diagnostics.
@@ -98,6 +99,11 @@ Representative archived results include `Z*(Ti) = 7.440 e` for cubic BaTiO3,
 `(Zrr,Ztt,Zzz)_B = (0.397,1.256,2.745) e` for BN(9,0), and
 `q_GAPT(O) = -0.481 e` for H2O. Periodic values are BEC components; the molecular
 value is the APT invariant `Tr(A)/3`.
+
+The [piezoelectric examples](https://github.com/xdzhu/ZStar/tree/main/examples/Piezoelectric_Response)
+retain complete PBE `e`, `C`, and `d` tensors for wurtzite AlN and ZnO from
+both ABACUS + PYATB and native VASP routes, together with self-checking inputs
+and literature anchors.
 
 ## Installation
 

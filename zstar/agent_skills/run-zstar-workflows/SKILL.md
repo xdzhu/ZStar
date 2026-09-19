@@ -1,6 +1,6 @@
 ---
 name: run-zstar-workflows
-description: Prepare, execute, monitor, resume, and validate ZStar workflows for polarization, Born effective charges, phonons, IR/Raman spectra, and dielectric response. Use for scientific calculations with the installed zstar CLI; do not use for developing ZStar itself or for unrelated electronic-structure tasks.
+description: Prepare, execute, monitor, resume, and validate ZStar workflows for polarization, Born effective charges, phonons, dielectric and piezoelectric response, and IR/Raman spectra. Use for scientific calculations with ZStar; do not use for developing ZStar itself or for unrelated electronic-structure tasks.
 metadata:
   short-description: Run ZStar response workflows
 ---
@@ -18,6 +18,7 @@ Identify the requested lane before constructing commands:
 - Polarization or BEC: read [references/bec-and-phonons.md](references/bec-and-phonons.md).
 - Phonons, mode classification, or harmonic dielectric response: read the same reference.
 - IR, Raman, or molecules: read [references/spectroscopy.md](references/spectroscopy.md).
+- Bulk piezoelectric or elastic response: read [references/piezoelectric.md](references/piezoelectric.md).
 - Before declaring success, read [references/completion-contracts.md](references/completion-contracts.md).
 
 Determine whether the system is a molecule, a 1D wire or chain, a 2D slab, or
@@ -78,6 +79,11 @@ Gamma-point IR/Raman response, but it does not implement a finite-wavevector
   before comparing individual Cartesian components.
 - Keep atom ordering consistent among structures, BEC tensors, Phonopy data,
   and trajectory frames.
+- For bulk piezoelectric response, preserve engineering Voigt order and report
+  `e`, `C`, and `d` with their mechanical boundary conditions. Prefer VASP's
+  native `--piezo --elastic` route for VASP; use the finite-strain ABACUS +
+  PYATB Python API for that backend. Do not reinterpret vacuum-supercell
+  derivatives as intrinsic slab or wire piezoelectric coefficients.
 
 ## Execute conservatively
 

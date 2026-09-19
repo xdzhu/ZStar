@@ -1,0 +1,25 @@
+ADDGRID = True
+ALGO = Normal
+EDIFF = 1e-08
+EDIFFG = -0.0001
+ENCUT = 1000
+GGA = Pe
+ISIF = 3
+ISMEAR = 0
+ISPIN = 1
+LASPH = True
+LREAL = False
+NELM = 200
+NFREE = 5
+POTIM = 0.1
+PREC = Accurate
+SIGMA = 0.02
+
+# ZStar VASP Born-charge workflow
+NSW = 0
+IBRION = -1
+LCHARG = .TRUE.
+LWAVE = .TRUE.
+ISYM = 2
+NCORE = 4
+SYMPREC = 1E-4

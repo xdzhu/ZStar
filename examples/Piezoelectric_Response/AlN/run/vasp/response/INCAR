@@ -1,0 +1,24 @@
+SYSTEM = Wurtzite AlN PBE native response validation
+ENCUT = 600
+EDIFF = 1E-9
+EDIFFG = -0.0001
+ISMEAR = 0
+SIGMA = 0.05
+LASPH = .TRUE.
+LWAVE = .TRUE.
+LCHARG = .TRUE.
+
+# ZStar VASP Born-charge workflow
+NSW = 1
+IBRION = 6
+ISTART = 1
+ICHARG = 1
+LREAL = .FALSE.
+LRPA = .FALSE.
+ISYM = 2
+NCORE = 4
+LEPSILON = .TRUE.
+ISIF = 3
+PREC = Accurate
+NFREE = 2
+POTIM = 0.01
