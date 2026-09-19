@@ -316,10 +316,13 @@ HF CG-reset 终点随后在235的原ABACUS构建 `e84abb4` 上进行了独立、
 `1.842059315 eV`。输入继续保持`scf_thr=1e-8`、`force_thr_ev=1e-4 eV/Å`、
 `relax_nmax=100`、`stress_thr=0.5 kbar`与`symmetry=0`，没有提高精度或改变阈值。
 
-需要明确记录ABACUS停止量与辅助诊断的区别。ABACUS e84abb4实际源代码
+需要明确记录ABACUS停止量与辅助诊断的区别。本次e84abb4日志打印的largest gradient
+与实际力表的`max(abs(F_iα))=8.62814e-5 eV/Å`在输出精度内一致，并随即打印离子
+收敛；当前ABACUS官方
 [`ions_move_basic.cpp`](https://github.com/abacusmodeling/abacus-develop/blob/develop/source/source_relax/ions_move_basic.cpp)
-逐Cartesian分量取`max(abs(grad[i]))`并与`force_thr`比较；本点该停止量为
-`8.62814e-5 eV/Å`，因此计算器按所配置的`1e-4`门合法收敛。ZStar解析器另外报告
+也逐Cartesian分量取`max(abs(grad[i]))`并与`force_thr`比较。由于短构建哈希不能从
+上游仓库直接解析到完整源码快照，这里不把develop链接冒充e84abb4逐文件来源；运行
+证据和当前官方实现分别保留。本点按所配置的`1e-4`门合法收敛。ZStar解析器另外报告
 最大单原子三维力向量范数`1.102670696e-4 eV/Å`，作为更严格诊断保留，不能反过来
 冒充ABACUS输入参数的定义。由此本点按既定求解器生产阈值接受，但两个量均写入
 最终provenance；没有放宽门、改输入或追加重算。
