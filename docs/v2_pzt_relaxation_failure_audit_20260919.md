@@ -307,3 +307,28 @@ HF CG-reset 终点随后在235的原ABACUS构建 `e84abb4` 上进行了独立、
 该任务不是放宽收敛、不是从初始结构盲目重跑，也不会覆盖原100步失败证据。
 只有在离子/电子收敛、最大力、绝缘性、实际应变、终态几何与PYATB三方向极化全部
 通过后才可替代`004−`；否则保留为失败诊断且不再自动重投。
+
+## strain-004− 原构建CG reset终态
+
+该单次有界任务随后在cu21正常结束，ABACUS与PYATB返回码均为0；使用40 MPI×1 OMP，
+两阶段分别耗时1639s和17s，合计18.4 rank-wall core-hours。原构建日志含
+`Commit: e84abb4`、9个电子收敛步骤、离子收敛和`Finish Time`，PBE带隙为
+`1.842059315 eV`。输入继续保持`scf_thr=1e-8`、`force_thr_ev=1e-4 eV/Å`、
+`relax_nmax=100`、`stress_thr=0.5 kbar`与`symmetry=0`，没有提高精度或改变阈值。
+
+需要明确记录ABACUS停止量与辅助诊断的区别。ABACUS e84abb4实际源代码
+[`ions_move_basic.cpp`](https://github.com/abacusmodeling/abacus-develop/blob/develop/source/source_relax/ions_move_basic.cpp)
+逐Cartesian分量取`max(abs(grad[i]))`并与`force_thr`比较；本点该停止量为
+`8.62814e-5 eV/Å`，因此计算器按所配置的`1e-4`门合法收敛。ZStar解析器另外报告
+最大单原子三维力向量范数`1.102670696e-4 eV/Å`，作为更严格诊断保留，不能反过来
+冒充ABACUS输入参数的定义。由此本点按既定求解器生产阈值接受，但两个量均写入
+最终provenance；没有放宽门、改输入或追加重算。
+
+PYATB一次运行同时得到三个Cartesian方向极化
+`(7.614711853e-9, -2.141544011e-2, 1.124341500655) C/m²`；
+`polarization.dat` SHA256为
+`fa740471147d90dd60e00d0d07f443acd4726e2abd63dd8421e55c642623cea1`，与
+`zstar_precision.json`声明完全一致。日志SHA256为
+`6b567f57d5c727ed52230f6c9ec5a27c83023dcd1305f26482ce159a16210287`。
+启动回执更新为`stage_finished_pending_scientific_intake`且`returncode=0`；全ensemble
+计数增至10/12。`004+`与`005+`仍须各自终态验收，故这里仍不发布完整PZT张量。
