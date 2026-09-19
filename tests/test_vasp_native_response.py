@@ -60,11 +60,11 @@ def test_native_gamma_dfpt_preparation(tmp_path):
     assert "IBRION = 8" in incar
     assert "LEPSILON = .TRUE." in incar
     assert "NSW = 1" in incar
-    assert "NCORE = 4" in incar
+    assert "NCORE = 1" in incar
     assert "NPAR" not in incar
-    assert "NCORE = 4" in (root / "reference/INCAR").read_text()
-    assert "ISYM = 0" in incar
-    assert "ISYM = 0" in (root / "reference/INCAR").read_text()
+    assert "NCORE = 1" in (root / "reference/INCAR").read_text()
+    assert "ISYM = 2" in incar
+    assert "ISYM = 2" in (root / "reference/INCAR").read_text()
     assert "POTIM" not in incar
     data = json.loads((root / "vasp_bec_manifest.json").read_text())
     assert data["ionic_response_method"] == "dfpt"
@@ -77,7 +77,7 @@ def test_native_hybrid_uses_field_and_finite_difference_phonons(tmp_path):
     assert "LEPSILON" not in incar
     assert "IBRION = 6" in incar
     assert "NFREE = 2" in incar
-    assert "NCORE = 4" in incar
+    assert "NCORE = 1" in incar
     assert "NPAR" not in incar
 
 
@@ -87,7 +87,7 @@ def test_native_elastic_uses_strain_finite_differences_with_electric_dfpt(tmp_pa
     assert "IBRION = 6" in incar
     assert "ISIF = 3" in incar
     assert "LEPSILON = .TRUE." in incar
-    assert "NCORE = 4" in incar
+    assert "NCORE = 1" in incar
     assert "NPAR" not in incar
 
 
@@ -129,9 +129,56 @@ def test_native_preparation_removes_user_npar_from_both_stages(tmp_path):
     root = prepare_vasp_bec(inputs(tmp_path, "ENCUT=500; NCORE=1; NPAR=1\n"), tmp_path / "response", phonons=True)
     for stage in ("reference", "response"):
         text = (root / stage / "INCAR").read_text()
-        assert "NCORE = 4" in text
+        assert "NCORE = 1" in text
         assert "NPAR" not in text
         assert "ENCUT=500" in text
+
+
+@pytest.mark.parametrize("source_isym", [0, -1])
+def test_native_ionic_response_replaces_disabled_symmetry(tmp_path, source_isym):
+    root = prepare_vasp_bec(
+        inputs(tmp_path, f"ISYM={source_isym}\nNCORE=4\n"),
+        tmp_path / "response",
+        elastic=True,
+    )
+    manifest = json.loads((root / "vasp_bec_manifest.json").read_text())
+    for stage in ("reference", "response"):
+        text = (root / stage / "INCAR").read_text()
+        assert "ISYM = 2" in text
+        assert "NCORE = 1" in text
+    assert manifest["source_isym"] == source_isym
+    assert manifest["native_isym"] == 2
+    assert manifest["symmetry_policy"] == "native-enabled"
+    assert "replaced by ISYM=2" in manifest["symmetry_override"]
+    assert "replaced by NCORE=1" in manifest["parallelization_override"]
+
+
+def test_native_ionic_response_preserves_enabled_source_symmetry(tmp_path):
+    root = prepare_vasp_bec(
+        inputs(tmp_path, "ISYM=1\nNCORE=4\n"),
+        tmp_path / "response",
+        piezo=True,
+    )
+    manifest = json.loads((root / "vasp_bec_manifest.json").read_text())
+    assert "ISYM = 1" in (root / "response/INCAR").read_text()
+    assert "NCORE = 1" in (root / "response/INCAR").read_text()
+    assert manifest["source_isym"] == 1
+    assert manifest["native_isym"] == 1
+    assert manifest["symmetry_override"] is None
+
+
+def test_electronic_only_response_does_not_force_symmetry_or_ncore(tmp_path):
+    root = prepare_vasp_bec(
+        inputs(tmp_path, "ISYM=-1\nNCORE=4\n"),
+        tmp_path / "response",
+    )
+    for stage in ("reference", "response"):
+        text = (root / stage / "INCAR").read_text()
+        assert "ISYM=-1" in text
+        assert "NCORE=4" in text
+    manifest = json.loads((root / "vasp_bec_manifest.json").read_text())
+    assert manifest["symmetry_policy"] == "source-or-vasp-default"
+    assert manifest["symmetry_override"] is None
 
 
 def test_force_cannot_delete_original_vasp_inputs(tmp_path):

@@ -23,11 +23,13 @@ zstar bec post --root response
 保存完整原子张量。`qpoints.yaml` 与 `FORCE_CONSTANTS` 可被现有后处理复用。
 同时导出 `phonopy.yaml` 和 `irreps.yaml`，供现有声子与模式分类入口使用。
 原胞 Γ 点力常数不等于完整声子色散；声子能带仍需要足够大的超胞。
-参考 SCF、原生响应与 Raman 输入采用 `NCORE = 4`，移除 `NPAR`，
-不同时设置这两个并行参数。HF 的 Slurm 分配内采用 `mpirun -np 64 vasp_std`。
-采用 `ISYM = 0` 固定电子 k 点集合，以规避 VASP 6.3.2 在 `NCORE > 1`
-时改变 k 点集合的限制。这会取消电子点群的 k 点约化，属于兼容性设置；
-不能据此宣称原生声子扰动仍保留全部对称性约化收益。
+原生离子响应保持 VASP 对称性开启：源输入已有 `ISYM = 1/2/3` 时予以保留，
+未设置或写成 `0/-1` 时改为 PAW 默认的 `ISYM = 2`。参考和响应阶段同时采用
+`NCORE = 1` 并移除 `NPAR`，从而规避已经在 VASP 6.3.2 观察到的
+`NCORE > 1` 对称 k 点重分配冲突，而不是关闭 `IBRION = 6/8` 所依赖的
+对称约化。纯电子 `LEPSILON`/`LCALCEPS` 计算保留源输入或 VASP 默认的
+对称性与并行策略；所有覆盖均写入 manifest。MPI 进程数仍由 Slurm 分配和
+运行命令决定，不能把 `NCORE` 误当成 MPI 进程数。
 
 `vasp_native_response.json` 分别保存电子/声子/总介电响应、钳制/离子/总压电
 贡献和适用的弹性及 d 张量。低维结果明确标记为周期超胞响应，不直接称为本征

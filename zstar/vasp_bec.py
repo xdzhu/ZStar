@@ -164,14 +164,39 @@ def prepare_vasp_bec(
     target.mkdir(parents=True, exist_ok=True)
 
     response_tags = ("LEPSILON", "LCALCEPS", "EFIELD_PEAD", "LOPTICS", "NPAR")
+    ionic_response = phonons or piezo or elastic
+    source_isym_value = _incar_value(original, "ISYM")
+    try:
+        source_isym = int(source_isym_value) if source_isym_value is not None else None
+    except ValueError as exc:
+        raise ValueError(f"ISYM must be an integer, got {source_isym_value!r}") from exc
+    native_isym = source_isym if source_isym in {1, 2, 3} else 2
+    symmetry_override = None
+    parallelization_override = None
     reference_updates = {
         "NSW": "0",
         "IBRION": "-1",
         "LCHARG": ".TRUE.",
         "LWAVE": ".TRUE.",
-        "NCORE": "4",
-        "ISYM": "0",
     }
+    if ionic_response:
+        # IBRION=6/8 are VASP's symmetry-enabled native response routes.  Do
+        # not silently turn them into full unsymmetrized sampling with
+        # ISYM=0/-1.  NCORE=1 avoids the VASP 6.3.2 k-point redistribution
+        # restriction observed when the symmetry-reduced perturbation changes
+        # the irreducible k-point set.
+        reference_updates.update({"ISYM": str(native_isym), "NCORE": "1"})
+        if source_isym not in {1, 2, 3}:
+            symmetry_override = (
+                f"ISYM={source_isym_value or 'unset'} replaced by ISYM=2 for "
+                "native symmetry-enabled IBRION=6/8 response"
+            )
+        source_ncore = _incar_value(original, "NCORE")
+        if source_ncore != "1":
+            parallelization_override = (
+                f"NCORE={source_ncore or 'unset'} replaced by NCORE=1 for "
+                "symmetry-reduced native response compatibility"
+            )
     convergence_override = None
     ediff_value = _incar_value(original, "EDIFF")
     try:
@@ -200,9 +225,9 @@ def prepare_vasp_bec(
         "ICHARG": "1",
         "LREAL": ".FALSE.",
         "LRPA": ".FALSE.",
-        "NCORE": "4",
-        "ISYM": "0",
     }
+    if ionic_response:
+        response_updates.update({"ISYM": str(native_isym), "NCORE": "1"})
     if convergence_override:
         response_updates["EDIFF"] = "1E-8"
     if method_key == "dfpt":
@@ -213,7 +238,6 @@ def prepare_vasp_bec(
         response_updates["LCALCEPS"] = ".TRUE."
         value = f"{field_strength:.10g}"
         response_updates["EFIELD_PEAD"] = f"{value} {value} {value}"
-    ionic_response = phonons or piezo or elastic
     if ionic_response:
         response_updates.update({
             "IBRION": "6" if elastic or method_key == "finite-field" else "8",
@@ -257,6 +281,11 @@ def prepare_vasp_bec(
         "field_strength_eV_per_angstrom": field_strength if method_key == "finite-field" else None,
         "occupation_override": occupation_override,
         "convergence_override": convergence_override,
+        "source_isym": source_isym,
+        "native_isym": native_isym if ionic_response else source_isym,
+        "symmetry_policy": "native-enabled" if ionic_response else "source-or-vasp-default",
+        "symmetry_override": symmetry_override,
+        "parallelization_override": parallelization_override,
         "natoms_total": len(labels),
         "labels": labels,
         "stages": [

@@ -20,13 +20,15 @@ zstar bec post --root response
 
 The reference SCF is checked for an insulating gap before the native response
 stage. For LDA/GGA, `--phonons` selects `LEPSILON = .TRUE.` and `IBRION = 8`.
-Reference, native response and Raman inputs use `NCORE = 4` and remove `NPAR`;
-the two parallelization tags must not be specified together. On hf, use
-`mpirun -np 64 vasp_std` inside the Slurm allocation.
-`ISYM = 0` keeps the electronic k-point set fixed across perturbations, avoiding
-the VASP 6.3.2 k-point redistribution restriction with `NCORE > 1`. This removes
-electronic point-group k-point reduction; it is a compatibility choice, not a
-claim that all native phonon perturbations retain symmetry reduction.
+Native ionic response keeps VASP symmetry enabled: an existing `ISYM = 1`, `2`,
+or `3` is preserved, while an absent or disabled setting is replaced by the PAW
+default `ISYM = 2`. Both the reference and response stages then use `NCORE = 1`
+and remove `NPAR`. This avoids the VASP 6.3.2 k-point redistribution conflict
+observed for `NCORE > 1` without disabling the symmetry reduction that defines
+`IBRION = 6/8`. Pure electronic `LEPSILON`/`LCALCEPS` response retains the
+source or VASP-default symmetry and parallelization policy. The manifest records
+every override. On hf, run the requested MPI ranks inside the Slurm allocation;
+`NCORE` is not the MPI-rank count.
 The output includes `BORN`, `qpoints.yaml`, `FORCE_CONSTANTS`, `phonopy.yaml`,
 `irreps.yaml`, the existing BEC
 response record, and `vasp_native_response.json`. The latter separates electronic

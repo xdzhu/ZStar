@@ -68,8 +68,12 @@ derived `d`; retain native tensors and warnings instead of projecting or rerunni
 without authorization. Raman still needs additional dielectric derivatives.
 Native electric DFPT is preferred for LDA/GGA; the automatic
 finite-field choice for orbital-dependent functionals still requires validation
-for the selected system. Inputs use `NCORE=4`, no `NPAR`, and `ISYM=0` to avoid
-VASP 6.3.2 k-point redistribution restrictions. Keep low-dimensional native
+for the selected system. Native ionic response keeps symmetry enabled as required
+by `IBRION=6/8`: an existing `ISYM=1/2/3` is preserved and otherwise `ISYM=2`
+is used. These stages use `NCORE=1` and no `NPAR` to avoid the VASP 6.3.2
+k-point redistribution restriction seen with symmetry-reduced perturbations.
+Pure electronic response keeps the source/VASP symmetry and parallelization
+policy. Keep low-dimensional native
 dielectric output labelled as supercell response. See the spectroscopy reference
 for reuse; no separate Gamma-force tasks are needed for native IR.
 
