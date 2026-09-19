@@ -1,0 +1,24 @@
+{
+  "schema": "zstar-piezoelectric-example",
+  "material": "wurtzite AlN",
+  "space_group": "P6_3mc",
+  "functional": "PBE",
+  "strain_amplitude": 0.005,
+  "valence": ["3", "5"],
+  "required_run_files": [
+    "INPUT", "KPT", "STRU", "Al.upf", "N.upf",
+    "Al_gga_8au_100Ry_2s2p1d.orb", "N_gga_8au_100Ry_2s2p1d.orb",
+    "vasp/reference/INCAR", "vasp/reference/KPOINTS", "vasp/reference/POSCAR",
+    "vasp/response/INCAR", "vasp/response/KPOINTS", "vasp/response/POSCAR"
+  ],
+  "expected": {
+    "abacus_e31": -0.5689779442,
+    "abacus_e33": 1.3879557363,
+    "abacus_e15": -0.2973434834,
+    "abacus_d33": 4.9754104024,
+    "vasp_e31": -0.58149,
+    "vasp_e33": 1.4614,
+    "vasp_e15": -0.30953,
+    "vasp_d33": 5.3236878679
+  }
+}

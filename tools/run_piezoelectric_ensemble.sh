@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+# Direct single-node runner for a prepared piezoelectric-response ensemble.
+# Scheduler allocation and module/environment setup remain the user's choice.
+set -u -o pipefail
+
+ROOT="${1:?usage: $0 CASE_ROOT VALENCE_LIST}"
+shift
+# Accept either one quoted list ("20 6") or two shell words (20 6).  This
+# makes nested gateway->compute-node SSH launchers immune to quote splitting.
+VALENCE="${*:?usage: $0 CASE_ROOT VALENCE_LIST}"
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
+NP="${ZSTAR_MPI_RANKS:-1}"
+OMP="${ZSTAR_OMP_THREADS:-1}"
+ABACUS="${ZSTAR_ABACUS:-abacus}"
+MPI="${ZSTAR_MPI_LAUNCHER:-mpirun}"
+PYATB_INPUT="${ZSTAR_PYATB_INPUT:-pyatb_input}"
+PYTHON="${ZSTAR_PYTHON:-python}"
+ADAPTER="${ZSTAR_PYATB_ADAPTER:-$REPO_ROOT/zstar/pyatb_precision.py}"
+command -v "$MPI" >/dev/null || { echo "MPI launcher not found: $MPI" >&2; exit 2; }
+command -v "$ABACUS" >/dev/null || { echo "ABACUS executable not found: $ABACUS" >&2; exit 2; }
+command -v "$PYATB_INPUT" >/dev/null || { echo "PYATB input generator not found: $PYATB_INPUT" >&2; exit 2; }
+test -f "$ADAPTER" || { echo "PYATB adapter not found: $ADAPTER" >&2; exit 2; }
+export OMP_NUM_THREADS="$OMP" MKL_NUM_THREADS="$OMP" OPENBLAS_NUM_THREADS="$OMP"
+export I_MPI_FABRICS="${I_MPI_FABRICS:-shm}"
+
+input_value() {
+    local input="$1" key="$2"
+    awk -v wanted="$key" '
+        /^[[:space:]]*($|#)/ { next }
+        $1 == wanted { value=$2 }
+        END { if (value != "") print value }
+    ' "$input"
+}
+
+validate_symmetry_protocol() {
+    local input="$1" stage="$2" symmetry
+    # spglib/Phonopy symprec belongs to reconstruction, not ABACUS INPUT.
+    symmetry=$(input_value "$input" symmetry)
+    case "$stage" in
+        reference)
+            test "$symmetry" = 1 || {
+                echo "reference requires symmetry=1 in $input" >&2
+                return 1
+            }
+            ;;
+        strain-*)
+            test "$symmetry" = 0 || {
+                echo "perturbation requires symmetry=0 in $input" >&2
+                return 1
+            }
+            ;;
+    esac
+}
+
+validate_relax_protocol() {
+    local input="$1" force_thr scf_thr relax_nmax
+    force_thr=$(input_value "$input" force_thr_ev)
+    scf_thr=$(input_value "$input" scf_thr)
+    relax_nmax=$(input_value "$input" relax_nmax)
+    test -n "$relax_nmax" && awk -v n="$relax_nmax" 'BEGIN { exit !(n >= 100 && n == int(n)) }' || {
+        echo "invalid or missing relax_nmax in $input" >&2
+        return 1
+    }
+    test -n "$force_thr" && awk -v f="$force_thr" 'BEGIN { exit !(f == 1e-4) }' || {
+        echo "fixed protocol requires force_thr_ev=1e-4 in $input" >&2
+        return 1
+    }
+    test -n "$scf_thr" && awk -v s="$scf_thr" 'BEGIN { exit !(s == 1e-8) }' || {
+        echo "fixed protocol requires scf_thr=1e-8 in $input" >&2
+        return 1
+    }
+}
+
+stage_paths=()
+if test -n "${ZSTAR_STAGE_IDS:-}"; then
+    read -r -a requested_stages <<< "${ZSTAR_STAGE_IDS//,/ }"
+    for stage in "${requested_stages[@]}"; do
+        case "$stage" in
+            reference|strain-*) stage_paths+=("$ROOT/$stage") ;;
+            *) echo "invalid stage id in ZSTAR_STAGE_IDS: $stage" >&2; exit 2 ;;
+        esac
+    done
+else
+    shopt -s nullglob
+    stage_paths=("$ROOT"/reference "$ROOT"/strain-*)
+    shopt -u nullglob
+fi
+test "${#stage_paths[@]}" -gt 0 || { echo "no stages selected under $ROOT" >&2; exit 2; }
+
+# ABACUS and the following PYATB calculation both write within one stage
+# directory.  Treat that directory as an exclusive transaction: concurrent
+# launchers otherwise corrupt OUT.*, restart data, and the polarization record.
+# A completed stage releases its own lock so resumable runs can skip it.  An
+# interrupted active stage deliberately leaves its lock behind and must be
+# audited before it can be retried.
+
+for d in "${stage_paths[@]}"; do
+    test -d "$d" || continue
+    stage=$(basename "$d")
+    lock="$d/.zstar-piezo-${NP}mpi.lock"
+    if ! mkdir "$lock" 2>/dev/null; then
+        echo "ERROR: active ZStar piezo stage lock: $lock" >&2
+        echo "Resolve the existing stage run before launching another copy." >&2
+        exit 10
+    fi
+    compat=""
+    test -f "$d/INPUT" && test -f "$d/STRU" && test -f "$d/KPT" || { echo "missing inputs in $d" >&2; exit 2; }
+    validate_symmetry_protocol "$d/INPUT" "$stage" || exit 3
+    calculation=$(input_value "$d/INPUT" calculation)
+    calculation=${calculation:-scf}
+    case "$calculation" in
+        relax|cell-relax) validate_relax_protocol "$d/INPUT" || exit 3 ;;
+    esac
+    if test ! -f "$d/.abacus_done_${NP}"; then
+        start=$(date +%s)
+        (cd "$d" && "$MPI" -np "$NP" "$ABACUS" > "abacus_${NP}mpi.log" 2>&1)
+        rc=$?; end=$(date +%s)
+        printf '{"stage":"%s","node":"%s","mpi":%s,"omp":%s,"returncode":%s,"elapsed_seconds":%s}\n' \
+            "$stage" "$(hostname)" "$NP" "$OMP" "$rc" "$((end-start))" > "$d/runtime_abacus_${NP}mpi.json"
+        test "$rc" -eq 0 || { echo "ABACUS failed: $stage" >&2; exit "$rc"; }
+        case "$calculation" in
+            relax|cell-relax)
+                grep -qi 'relaxation is converged' "$d"/OUT.*/running_relax.log 2>/dev/null || {
+                    echo "ionic relaxation did not converge: $stage" >&2
+                    exit 4
+                }
+                ;;
+            *)
+                grep -qiE 'charge density convergence is achieved|calculation *finished' "$d"/OUT.*/running_*.log 2>/dev/null || {
+                    echo "electronic calculation did not converge: $stage" >&2
+                    exit 4
+                }
+                ;;
+        esac
+        touch "$d/.abacus_done_${NP}"
+    else
+        echo "SKIP ABACUS $stage"
+    fi
+    if test "$stage" != reference; then
+        out=$(find "$d" -maxdepth 2 -type f -name STRU_ION_D -print -quit)
+        test -n "$out" || { echo "relaxed structure missing for $stage" >&2; exit 5; }
+        test -f "$d/STRU_INITIAL" || cp "$d/STRU" "$d/STRU_INITIAL"
+        cp "$out" "$d/STRU"
+        # PYATB's input generator expects running_scf.log even when the
+        # preceding fixed-cell calculation was an ionic relaxation.
+        if test -f "$d/OUT."*/running_relax.log; then
+            compat=$(find "$d" -maxdepth 2 -type f -name running_relax.log -print -quit | sed 's/running_relax.log/running_scf.log/')
+            cp "$(find "$d" -maxdepth 2 -type f -name running_relax.log -print -quit)" "$compat"
+        fi
+    fi
+    test -f "$d/pyatb/Out/Polarization/zstar_precision.json" && {
+        test -z "$compat" || rm -f "$compat"
+        echo "SKIP PYATB $stage"
+        rmdir "$lock" || { echo "failed to release completed-stage lock: $lock" >&2; exit 11; }
+        continue
+    }
+    test -d "$d/pyatb" && mv "$d/pyatb" "$d/pyatb.aborted" || true
+    "$PYATB_INPUT" -i "$d" -o "$d/pyatb" --polar --valence "$VALENCE" > "$d/pyatb_input.log" 2>&1 || { test -z "$compat" || rm -f "$compat"; echo "PYATB input failed: $stage" >&2; exit 6; }
+    start=$(date +%s)
+    (cd "$d/pyatb" && "$MPI" -np "$NP" "$PYTHON" "$ADAPTER" > "pyatb_precision_${NP}mpi.log" 2>&1)
+    rc=$?; end=$(date +%s)
+    printf '{"stage":"%s","node":"%s","mpi":%s,"omp":%s,"returncode":%s,"elapsed_seconds":%s}\n' \
+        "$stage" "$(hostname)" "$NP" "$OMP" "$rc" "$((end-start))" > "$d/runtime_pyatb_${NP}mpi.json"
+    test -z "$compat" || rm -f "$compat"
+    test "$rc" -eq 0 || { echo "PYATB failed: $stage" >&2; exit 7; }
+    test -f "$d/pyatb/Out/Polarization/polarization.dat" && test -f "$d/pyatb/Out/Polarization/zstar_precision.json" || { echo "missing polarization output: $stage" >&2; exit 8; }
+    touch "$d/.pyatb_done_${NP}"
+    echo "DONE $stage"
+    rmdir "$lock" || {
+        echo "failed to release completed-stage lock: $lock" >&2
+        exit 11
+    }
+done
+echo "PIEZO_CASE_COMPLETE root=$ROOT node=$(hostname) mpi=$NP omp=$OMP"

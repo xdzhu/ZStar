@@ -14,6 +14,7 @@ scratch 目录不放入仓库。
 | `0D_Molecules/` | 分子 APT、IR 与 Raman | H2O、CH4、CO2 |
 | `backend_examples/` | 计算器后端验证 | CP2K BEC/IR/Raman、ABACUS/VASP 的 SiC 与 HfO2 基准 |
 | `VASP_Native_Response/` | VASP 原生 BEC、Γ 模式、介电、压电及弹性响应；混合 Raman | 3C-SiC、纤锌矿 AlN |
+| `Piezoelectric_Response/` | 三维 proper 有限应变及原生响应验证 | 纤锌矿 AlN、ZnO |
 | `IR_Raman_Spectra/` | 一键 IR 与 Raman 工作流 | HfO2、MoS2、Sb2S3、CH4、BN 管；早期 GaAs 示例 |
 | `Electrostatic_Potential/` | 基于 cube 的静电势分析 | MoS2、alpha-In2Se3、GeS、SnS、SnSe、SnTe |
 

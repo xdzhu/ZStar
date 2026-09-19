@@ -103,7 +103,7 @@ ABACUS + PYATB 核心路线采用 Phonopy 对称性适配位移，从同一套�
 | IR 与 Raman | 模式电荷、振子强度、Raman 张量、偏振/展宽光谱 |
 | 介电响应 | 电子、声子、静态及频率相关响应 |
 | 超胞声子 | 高对称路径声子能带、DOS、bulk NAC 与 LO-TO 劈裂 |
-| 压电响应 | VASP 原生电子/离子/总压电 `e`，弹性响应及推导的 `d` |
+| 压电响应 | ABACUS + PYATB proper 有限应变 `e/C/d`；VASP 原生 `e/C/d` |
 | 极化相关静电势分析 | 平面分布、线剖面、真空势差与镜面非对称度 |
 
 详见 [Unified BEC/声子](docs/research/shared_response/USAGE.zh-CN.md)、
@@ -183,7 +183,7 @@ bulk NAC 不用于片层或一维体系。
 
 | 计算器 | 支持的路线 | 教程 |
 | --- | --- | --- |
-| ABACUS + PYATB | Unified BEC/APT、Gamma 声子、IR/Raman、介电响应 | [统一流程](docs/research/shared_response/USAGE.zh-CN.md) |
+| ABACUS + PYATB | Unified BEC/APT、Gamma 声子、IR/Raman、介电及三维 proper 压电响应 | [统一流程](docs/research/shared_response/USAGE.zh-CN.md)、[压电响应](docs/piezoelectric_response.zh-CN.md) |
 | VASP | 原生 bulk BEC/介电/声子、IR、压电/弹性张量，模式位移 Raman | [原生响应](docs/vasp_native_response.zh-CN.md) |
 | CP2K | 偶极 BEC/APT 及原生谱学路线 | [BEC](docs/cp2k_bec.zh-CN.md)、[谱学](docs/calculator_spectroscopy.zh-CN.md) |
 | Quantum ESPRESSO | 原生 DFPT BEC、介电与 IR 收集 | [后端教程](docs/calculator_independent_backends.zh-CN.md) |
@@ -200,6 +200,10 @@ VASP 的 LDA/GGA 路线采用原生 DFPT/离子响应；`--elastic` 还获取弹
 [SiC](examples/VASP_Native_Response/3C_SiC)和[AlN](examples/VASP_Native_Response/AlN)
 保留验证结果。Raman 仍需模式位移计算；用户自行提供获许可的 `POTCAR`。
 泛函及低维适用边界见教程。
+
+独立的 ABACUS + PYATB 有限应变路线通过 `zstar.piezoelectric` Python API
+提供。[AlN 与 ZnO 案例](examples/Piezoelectric_Response)保留完整 PBE 张量、
+输入资产、原生 VASP 对照和可自检复现脚本。
 
 ## 自有结构与集群作业
 

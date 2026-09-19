@@ -585,6 +585,22 @@ standard file is absent; an explicitly existing file always takes precedence.
 The rename does not change tensor axes or units. `BORN` is written once, without
 the redundant `BORN-for-phonopy.out` copy.
 
+## Bulk Piezoelectric Response
+
+For insulating bulk crystals, ZStar fits proper piezoelectric stress
+coefficients `e`, relaxed-ion elastic coefficients `C`, and
+`d = e C^-1` in engineering Voigt order `(xx, yy, zz, 2yz, 2xz, 2xy)`.
+The ABACUS + PYATB route is exposed through `zstar.piezoelectric`; it uses one
+reference and explicit central strains, matches polarization branches, and
+fits the actual serialized cell deformation. VASP users should prefer the
+native `--piezo --elastic` route described below.
+
+The curated [AlN and ZnO examples](../examples/Piezoelectric_Response) include
+clean inputs and ABACUS assets, archived full PBE tensors from both routes,
+literature anchors, and self-checking reproduction scripts. See the
+[piezoelectric response guide](piezoelectric_response.md) for the Python API,
+units, execution boundary, and low-dimensional limitations.
+
 ## CP2K BEC Backend
 
 For a molecular (`--dim 0`) or three-dimensional insulating Gamma-point CP2K
