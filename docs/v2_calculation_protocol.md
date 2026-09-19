@@ -46,6 +46,14 @@ ABACUS 默认的 `0.5 kbar`；此前已经以 `0.1 kbar` 收敛的结果是更�
 JARVIS 的高通量 DFPT 压电/介电数据集采用全弛豫最大残余力 `0.001 eV/Å`；ZStar
 当前统一值比该方法学锚点再严格一个数量级，但不继续追求 `1e-6 eV/Å`。
 
+ABACUS 的 `force_thr_ev` 停止量按其实际实现定义为所有原子Cartesian力分量的
+`max(abs(F_iα))`，不是先对每个原子取三维Euclidean范数再取最大值。ZStar同时保存
+`force_component_max_eV_per_angstrom`（用于与ABACUS输入门一致的验收）和
+`force_max_eV_per_angstrom`（最大单原子三维范数，作为更严格诊断），并在provenance
+中写入`force_convergence_metric=maximum_absolute_cartesian_component`。不能用后者
+悄悄替换前者后声称生产输入没有收敛；也不能因为前者通过而删除后者。VASP仍按
+其自身收敛定义和完整力向量审计，不能把这条ABACUS后端语义机械迁移过去。
+
 ## 生成器约束与参考结构传递
 
 Python API `prepare_abacus_reference_relaxation` 和私有工具

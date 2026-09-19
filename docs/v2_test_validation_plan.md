@@ -50,8 +50,9 @@ branch jump、condition number 和 residual。故意删除一个 stage，验证�
 * production/verification 均固定 `force_thr_ev=1e-4 eV/Å`、`scf_thr=1e-8` 和
   `relax_nmax=100`；生成器与 runner 必须拒绝任何偏离固定 profile 的值，历史输出中
   的 `1e-6/1e-10` 只作为 provenance 回读测试，不得反向改变默认值；
-* reference 和全部应变阶段必须实际序列化 `symmetry_prec=1e-3`；缺失或其他值在
-  运行/收集前失败；
+* reference 和全部应变阶段的 ensemble 必须声明 spglib/Phonopy
+  `symprec=1e-3 Å`；ABACUS INPUT 必须不含 `symmetry_prec` 和
+  `symmetry_autoclose`，出现这些计算器专用覆盖时在运行/收集前失败；
 * reference 必须为 `symmetry=1`，有限扰动 stage 必须为 `symmetry=0`，并用故意
   同量级的应变验证后端不会把扰动投影掉；
 * backend command 不可用、非零退出、重启后不得重复已完成 stage。

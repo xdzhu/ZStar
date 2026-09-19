@@ -141,11 +141,18 @@ relaxed-ion ABACUS 输入由准备层统一写入固定的 `relax_nmax=100`、
 profile 的值。collector 仍从实际序列化的每个 `INPUT` 回读并保存 `scf_thr`、
 `force_thr_ev` 和 `relax_nmax`，使旧的 `1e-6/1e-10` 开发输出可真实追溯，但历史
 设置不能反向改变当前默认值。
-同一准备层还对 reference 和每个 perturbation stage 显式写入
-`symmetry_prec=1e-3`；ensemble metadata、collector 和直接运行器均复核该值，防止
-ZStar 的 `symprec=1e-3` 与 ABACUS 默认容差分裂成两套对称性定义。
+ABACUS实际以最大绝对Cartesian力分量与`force_thr_ev`比较；collector另行保留
+最大单原子三维力范数作为诊断，但不以另一停止量反向改写计算器收敛结论。两项
+分别序列化为`force_component_max_eV_per_angstrom`和
+`force_max_eV_per_angstrom`，并显式记录验收量定义。
+
+结构空间群、原子映射和Phonopy分析仍统一使用`spglib symprec=1e-3 Å`，但这个有量纲
+结构容差不写入ABACUS INPUT。准备层从reference和每个perturbation stage删除
+`symmetry_prec`与`symmetry_autoclose`，让ABACUS使用自身默认值；ensemble metadata、
+collector和直接运行器复核的是结构侧`1e-3 Å`与“计算器默认”策略，而不是把两者
+混成同一个参数。
 reference 显式使用 `symmetry=1`，所有有限扰动 stage 显式使用 `symmetry=0`；后者
-避免计算器在 `1e-3` 容差下把同为 `1e-3` 量级的扰动误认为未破缺对称性。
+避免计算器对已施加的有限扰动作额外对称投影。
 
 `prepare_abacus_strain_ensemble` now hashes each serialized stage input (INPUT,
 STRU/KPT and copied UPF/ORB assets) and stores a separate reference-input hash.

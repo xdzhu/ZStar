@@ -479,6 +479,12 @@ def main() -> int:
             for record in gap_records
         },
         "reference_force_max_eV_per_angstrom": fitted.metadata.get("reference_force_max_eV_per_angstrom"),
+        "reference_force_component_max_eV_per_angstrom": fitted.metadata.get(
+            "reference_force_component_max_eV_per_angstrom"
+        ),
+        "reference_force_acceptance_metric": fitted.metadata.get(
+            "reference_force_acceptance_metric"
+        ),
         # Keep the fixed scientific acceptance gate distinct from the input
         # actually serialized.  Historical development runs can be tighter,
         # but that provenance must not silently redefine the v2 protocol.

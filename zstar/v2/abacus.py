@@ -426,6 +426,13 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
     stress = _parse_stress(text)
     energy = _parse_energy(text)
     gap = _parse_istate_gap(log.parent / "istate.info")
+    # ABACUS compares ``force_thr_ev`` with the largest absolute Cartesian
+    # gradient component (see source/source_relax/ions_move_basic.cpp) and
+    # prints that value as its convergence diagnostic.  Retain the per-atom
+    # Euclidean norm as a useful stricter diagnostic, but do not substitute it
+    # for the backend's configured stopping metric.
+    force_component_max = float(np.max(np.abs(forces)))
+    initial_force_component_max = float(np.max(np.abs(initial_forces)))
     force_max = float(np.max(np.linalg.norm(forces, axis=1)))
     stress_max_abs = float(np.max(np.abs(stress)))
     timing: dict[str, Any] = {}
@@ -442,6 +449,9 @@ def collect_abacus_stage(stage: str | Path, *, natoms: int | None = None) -> dic
         "force_blocks_count": len(force_blocks),
         "initial_force_max_eV_per_angstrom": float(np.max(np.linalg.norm(initial_forces, axis=1))),
         "force_max_eV_per_angstrom": force_max,
+        "initial_force_component_max_eV_per_angstrom": initial_force_component_max,
+        "force_component_max_eV_per_angstrom": force_component_max,
+        "force_convergence_metric": "maximum_absolute_cartesian_component",
         "stress": stress,
         "stress_max_abs_kbar": stress_max_abs,
         "stress_unit": "kbar",
@@ -584,6 +594,7 @@ def collect_abacus_strain_response(
             f"got {ion_relaxation!r}"
         )
     reference_force_max: float | None = None
+    reference_force_component_max: float | None = None
     reference_force_threshold: float | None = None
     reference_force_configured_threshold: float | None = None
     if ion_relaxation == "relaxed-ion":
@@ -626,10 +637,12 @@ def collect_abacus_strain_response(
             V2_PRODUCTION_RELAXED_STRAIN_FORCE_THRESHOLD_EV_PER_ANGSTROM
         )
         reference_force_max = float(np.max(np.linalg.norm(records[0]["forces"], axis=1)))
-        if reference_force_max > reference_force_threshold:
+        reference_force_component_max = float(records[0]["force_component_max_eV_per_angstrom"])
+        if reference_force_component_max > reference_force_threshold:
             raise ValueError(
-                "relaxed-ion reference is not internally equilibrated: maximum force "
-                f"{reference_force_max:.6g} eV/angstrom exceeds the fixed v2 acceptance "
+                "relaxed-ion reference is not internally equilibrated: ABACUS maximum "
+                f"Cartesian force component {reference_force_component_max:.6g} eV/angstrom "
+                "exceeds the fixed v2 acceptance "
                 f"threshold {reference_force_threshold:.6g}; relax the reference structure "
                 "before fitting"
             )
@@ -881,6 +894,8 @@ def collect_abacus_strain_response(
         "reference_hash": ensemble.reference_hash,
         "stage_names": stage_names,
         "reference_force_max_eV_per_angstrom": reference_force_max,
+        "reference_force_component_max_eV_per_angstrom": reference_force_component_max,
+        "reference_force_acceptance_metric": "maximum_absolute_cartesian_component",
         "reference_force_thr_eV_per_angstrom": reference_force_threshold,
         "reference_force_configured_thr_eV_per_angstrom": reference_force_configured_threshold,
         "stages": [
@@ -895,6 +910,13 @@ def collect_abacus_strain_response(
                 "scf_iterations": record["scf_iterations"],
                 "force_max_eV_per_angstrom": record["force_max_eV_per_angstrom"],
                 "initial_force_max_eV_per_angstrom": record["initial_force_max_eV_per_angstrom"],
+                "force_component_max_eV_per_angstrom": record[
+                    "force_component_max_eV_per_angstrom"
+                ],
+                "initial_force_component_max_eV_per_angstrom": record[
+                    "initial_force_component_max_eV_per_angstrom"
+                ],
+                "force_convergence_metric": record["force_convergence_metric"],
                 "force_blocks_count": record["force_blocks_count"],
                 "stress_max_abs_kbar": record["stress_max_abs_kbar"],
                 "energy": record["energy"],
@@ -962,6 +984,8 @@ def collect_abacus_strain_response(
             "energy_collected": all(value is not None for value in energies),
             "ion_relaxation": ion_relaxation,
             "reference_force_max_eV_per_angstrom": reference_force_max,
+            "reference_force_component_max_eV_per_angstrom": reference_force_component_max,
+            "reference_force_acceptance_metric": "maximum_absolute_cartesian_component",
             "reference_force_thr_eV_per_angstrom": provenance[
                 "reference_force_thr_eV_per_angstrom"
             ],

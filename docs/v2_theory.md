@@ -301,12 +301,12 @@ SCF 能量阈值和离子力阈值控制不同层次的误差。较严格的 `sc
 relaxed-ion 输入默认 `relax_nmax=100`；常规力阈值的电子基线可用
 `scf_thr=1e-8`。当要求 `force_thr_ev<=1e-6 eV/Å` 时，输入协议必须同步采用
 `scf_thr<=1e-10`，省略时自动写入 `1e-10`，显式给出更松的阈值则在准备阶段失败。
-空间群识别与计算器内部的对称操作也必须使用同一物理容差：ABACUS 输入显式写入
-`symmetry_prec=1e-3`，不能让其回退到默认 `1e-6`，否则结构映射与计算器施加的
-对称约束可能采用不同等价类。零扰动 reference 使用 `symmetry=1`；有限位移或应变
-stage 必须使用 `symmetry=0`。原因是扰动幅度本身可能与 `symmetry_prec` 同量级，
-若让计算器继续施加参考态对称性，会把待测响应信号错误投影掉；响应对称性只在
-ZStar 重建与 residual 审计阶段恢复。
+空间群识别、原子映射和Phonopy操作固定使用spglib `symprec=1e-3 Å`；它是有量纲的
+结构容差，不应写成ABACUS的无量纲`INPUT`参数。ABACUS输入不设置
+`symmetry_prec`或`symmetry_autoclose`，使用计算器默认值。零扰动reference使用
+`symmetry=1`；有限位移或应变stage必须使用`symmetry=0`，避免计算器对已施加的
+有限扰动作额外对称投影。响应对称性在ZStar重建与residual审计阶段用同一结构侧
+`symprec=1e-3 Å`恢复，并与计算器内部操作数分开记录。
 这仍不能仅凭 SCF 迭代数或达到最大离子步数宣称收敛；必须同时检查离子收敛标记、
 最终最大力、响应斜率和重建残差。
 

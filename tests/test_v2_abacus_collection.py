@@ -107,6 +107,8 @@ def test_collect_abacus_stage_parses_force_stress_and_iterations(tmp_path):
     assert record["forces"].shape == (5, 3)
     np.testing.assert_allclose(record["stress"], np.eye(3) * 0.4)
     assert np.isclose(record["force_max_eV_per_angstrom"], 0.0)
+    assert np.isclose(record["force_component_max_eV_per_angstrom"], 0.0)
+    assert record["force_convergence_metric"] == "maximum_absolute_cartesian_component"
     assert np.isclose(record["stress_max_abs_kbar"], 0.4)
     assert record["scf_iterations"] == 1
     assert record["scf_converged"] is True
@@ -146,6 +148,8 @@ def test_collect_abacus_stage_keeps_initial_and_final_force_blocks(tmp_path):
     assert record["force_blocks_count"] == 2
     assert np.isclose(record["initial_force_max_eV_per_angstrom"], 0.0)
     assert np.isclose(record["force_max_eV_per_angstrom"], 0.125)
+    assert np.isclose(record["initial_force_component_max_eV_per_angstrom"], 0.0)
+    assert np.isclose(record["force_component_max_eV_per_angstrom"], 0.125)
     assert np.isclose(record["initial_forces"][0, 0], 0.0)
     assert np.isclose(record["forces"][0, 0], 0.125)
 
@@ -209,7 +213,11 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     reference_log = root / "reference" / "OUT.POLAR" / "running_scf.log"
     reference_log.write_text(
         "\n".join(
-            line.replace("0.0000000000", "0.0000500000", 1) if "Ba1" in line else line
+            (
+                "        Ba1  0.0000800000  0.0000800000  0.0000000000"
+                if "Ba1" in line
+                else line
+            )
             for line in reference_log.read_text(encoding="utf-8").splitlines()
         )
         + "\n",
@@ -252,10 +260,29 @@ def test_collect_abacus_strain_response_collects_internal_displacements(tmp_path
     # structure moves atom 1 by 0.01 in fractional z.
     np.testing.assert_allclose(quantity.values[1:, 1, 2], 0.01 * 4.1, atol=1.0e-12)
     assert document.metadata["internal_displacement_collected"] is True
-    assert document.metadata["reference_force_max_eV_per_angstrom"] == pytest.approx(5.0e-5)
+    # ABACUS converges this reference because its stopping metric is the
+    # largest absolute Cartesian component (8e-5), even though the stricter
+    # per-atom Euclidean norm is sqrt(2)*8e-5 and exceeds 1e-4.
+    assert document.metadata["reference_force_max_eV_per_angstrom"] == pytest.approx(
+        np.sqrt(2.0) * 8.0e-5
+    )
+    assert document.metadata[
+        "reference_force_component_max_eV_per_angstrom"
+    ] == pytest.approx(8.0e-5)
+    assert document.metadata[
+        "reference_force_acceptance_metric"
+    ] == "maximum_absolute_cartesian_component"
     assert document.metadata["reference_force_thr_eV_per_angstrom"] == 1.0e-4
     assert document.metadata["reference_force_configured_thr_eV_per_angstrom"] == 1.0e-3
-    assert document.provenance["reference_force_max_eV_per_angstrom"] == pytest.approx(5.0e-5)
+    assert document.provenance["reference_force_max_eV_per_angstrom"] == pytest.approx(
+        np.sqrt(2.0) * 8.0e-5
+    )
+    assert document.provenance[
+        "reference_force_component_max_eV_per_angstrom"
+    ] == pytest.approx(8.0e-5)
+    assert document.provenance[
+        "reference_force_acceptance_metric"
+    ] == "maximum_absolute_cartesian_component"
     assert document.provenance["reference_force_thr_eV_per_angstrom"] == 1.0e-4
     assert document.provenance["reference_force_configured_thr_eV_per_angstrom"] == 1.0e-3
     assert document.convergence["force_thr_ev"] == 1.0e-5
