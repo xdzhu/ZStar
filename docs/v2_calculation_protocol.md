@@ -45,6 +45,10 @@ ABACUS 默认的 `0.5 kbar`；此前已经以 `0.1 kbar` 收敛的结果是更�
 优化的公开建议是 `0.04 eV/Å`；固定的 `1e-4 eV/Å` 已比此严格约 400 倍。
 JARVIS 的高通量 DFPT 压电/介电数据集采用全弛豫最大残余力 `0.001 eV/Å`；ZStar
 当前统一值比该方法学锚点再严格一个数量级，但不继续追求 `1e-6 eV/Å`。
+该高通量阈值不能自动替代软模体系的精确验证：有序PZT50/50 `[001]` 的`+0.5%`
+剪切端点在首次达到`9.24e-4 eV/Å`的几何上重新做静态ABACUS/PYATB后，横向极化
+相对最终`9.89e-5 eV/Å`几何变化`4.0324%`。所以本轮PZT benchmark保留`1e-4`；
+该单点证据不证明每个刚性材料或日常生产都必须采用相同门槛，也不是完整`e15`误差。
 
 ABACUS 的 `force_thr_ev` 停止量按其实际实现定义为所有原子Cartesian力分量的
 `max(abs(F_iα))`，不是先对每个原子取三维Euclidean范数再取最大值。ZStar同时保存
@@ -170,9 +174,10 @@ required**，而不是悄悄缩小应变并继续给出貌似精确的张量。�
 - 只有 rank 完整、力/电子/离子收敛、机械稳定、跨幅度稳定、极化 branch 连续，且与
   `PBEsol → PBE → other-GGA → LDA` 分层理论文献比较完成后，才能标为材料验证结果。
 
-## HF 执行约束
+## 集群执行约束
 
-从本协议生效后，所有补算只在 **HF Slurm** 提交；235 的计算节点不再用于 v2。
+补算默认优先使用 **HF Slurm**；用户明确授权235节点或正常PBS资源时，也可在235运行，
+但两套调度和资源记录必须分开，不能把直接节点任务、PBS和Slurm状态混为一谈。
 
 - 使用 `tools/v2_ref_relax_hf.slurm` 跑 R1，并通过
   `ZSTAR_V2_CONVERGENCE_PROFILE=production|verification` 选择相同 profile；驱动会
@@ -184,6 +189,10 @@ required**，而不是悄悄缩小应变并继续给出貌似精确的张量。�
   输入 hash 后，才提交其余 stage。一个 case root 同一时刻只允许一个 driver。
 - 每个任务的 node、Slurm job id、MPI、OMP、wall time、SCF/ionic iteration、失败
   原因与重启次数写入 `provenance.json`；大体积输出和 scratch 不进入 Git。
+- 235使用正常PBS时，每个SCF固定`40 MPI × 1 OMP`，由调度器分配节点；提交前核查
+  `pbsnodes`、已有作业和实时负载，不以“负载为零”替代PBS占用状态。只有用户明确
+  提供的占位节点才可直接SSH运行，且必须再次确认没有重叠进程。节点重启、MOM失联
+  或共享目录丢失属于基础设施失败，残缺输出隔离后才允许一次有依据的重试。
 
 旧案例只保留历史可追溯性。其结果必须按本文件的 profile、完整输入 hash 与跨幅度
 审计重新分级；不得仅凭较小的 `scf_thr` 数字把旧结果重标为验证级。
@@ -192,7 +201,7 @@ required**，而不是悄悄缩小应变并继续给出貌似精确的张量。�
 
 - [ABACUS 输入文档](https://abacus.deepmodeling.com/en/v3.8.0/advanced/input_files/input-main.html)
   给出 LCAO `force_thr_ev=0.04 eV/Å` 的建议、`stress_thr` 的 kbar 单位和默认
-  `0.5 kbar`；ZStar 固定使用 `1e-4 eV/Å`、`0.1 kbar`，不再区分更严格的求解器档。
+  `0.5 kbar`；ZStar 固定使用 `1e-4 eV/Å`、`0.5 kbar`，不再区分更严格的求解器档。
 - [JARVIS 高通量 DFPT 研究](https://doi.org/10.1038/s41524-020-0337-2) 对压电、BEC、
   介电和声子数据采用 `0.001 eV/Å` 的全结构弛豫并对 cutoff/k 网格作材料级收敛，支持
   production R1 的取值和“响应量而非只看能量”的收敛策略。
