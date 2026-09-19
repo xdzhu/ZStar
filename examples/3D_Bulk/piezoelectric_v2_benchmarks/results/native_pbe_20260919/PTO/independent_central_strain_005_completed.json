@@ -1,0 +1,10 @@
+{
+  "status": "observations_complete_pending_tensor_reconstruction",
+  "job_id": "27723065",
+  "original_job_id": "27722735",
+  "continuation": "single audited correction at strain-002-plus",
+  "force_gate_eV_per_A": 0.0001,
+  "threshold_changed": false,
+  "accepted_full_tensor": false,
+  "native_d_gate_changed": false
+}

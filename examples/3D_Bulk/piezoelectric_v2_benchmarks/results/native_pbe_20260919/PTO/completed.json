@@ -1,0 +1,10 @@
+{
+  "status": "completed_pending_tensor_comparison",
+  "slurm_job_id": "27723306",
+  "node": "node47",
+  "mpi": 32,
+  "omp": 1,
+  "wall_seconds": 2980,
+  "core_hours": 26.488888888888887,
+  "code_commit": "f702793d"
+}

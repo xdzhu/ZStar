@@ -72,7 +72,7 @@ GaN/ZnO的原始结构直接对应并非同极性取向，反演后接近；AlN�
 | ZnO/ABACUS | 9.666372 | 9.273189 | +4.24% |
 | ZnO/VASP，精确六方 `ISYM=2`（已验收） | 9.750071 | 9.273189 | +5.14% |
 | PTO/ABACUS | 49.084674 | 没有配对C，不推断 | — |
-| PTO/VASP | 未验收，不填 | 没有配对C，不推断 | — |
+| PTO/VASP native（cross-route conditional） | 63.994672 | 没有配对C，不推断 | — |
 
 保留ZnO/ABACUS辅助Lambda对称性警告；该列d来自独立直接应变e/C。
 GaN/ZnO 的内部应变分解警告继续保留；这里的 native d 资格来自总 e、relaxed-ion C、

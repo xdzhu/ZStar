@@ -1,0 +1,613 @@
+{
+  "schema_version": 1,
+  "backend": "vasp",
+  "electronic_response_method": "dfpt",
+  "ionic_response_method": "native-finite-difference",
+  "solver_provenance": {
+    "electronic_dielectric_bec_clamped_piezoelectric": "VASP native dfpt",
+    "gamma_force_constants_internal_strain_ionic_response": "VASP native native-finite-difference",
+    "elastic": "VASP native strain finite differences",
+    "piezoelectric_d": "ZStar algebraic conversion of native e and C; no extra DFT",
+    "ir": "ZStar post-processing of native BEC and Gamma modes; no extra DFT",
+    "raman": "not computed here; additional native dielectric derivatives required"
+  },
+  "dimensionality": 3,
+  "normalization": "bulk",
+  "voigt_convention": [
+    "xx",
+    "yy",
+    "zz",
+    "yz",
+    "xz",
+    "xy"
+  ],
+  "electric_boundary": "fixed macroscopic E",
+  "mechanical_boundary": "fixed strain for dielectric; internal ions relaxed in ionic piezoelectric and elastic contributions",
+  "gamma_boundary_condition": "native Gamma modes; no directional nonanalytic correction applied",
+  "mode_index_convention": "frequency-ascending",
+  "native_mode_numbers": [
+    12,
+    11,
+    10,
+    9,
+    8,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1
+  ],
+  "epsilon_infinity": [
+    [
+      6.085149,
+      1e-06,
+      0.0
+    ],
+    [
+      1e-06,
+      6.085151,
+      -1e-06
+    ],
+    [
+      0.0,
+      -1e-06,
+      6.20095
+    ]
+  ],
+  "tensors": {
+    "piezoelectric_clamped_C_m2": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.5639,
+        -0.0
+      ],
+      [
+        -0.0,
+        -0.0,
+        -0.0,
+        0.5639,
+        0.0,
+        0.0
+      ],
+      [
+        0.51912,
+        0.51912,
+        -1.05245,
+        -0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "elastic_clamped_GPa": [
+      [
+        370.44769,
+        86.94172,
+        54.39807,
+        -1e-05,
+        0.0,
+        4e-05
+      ],
+      [
+        86.94172,
+        370.44792000000007,
+        54.39808000000001,
+        -4e-05,
+        0.0,
+        4e-05
+      ],
+      [
+        54.39807,
+        54.39808000000001,
+        399.05379,
+        -4e-05,
+        0.0,
+        1e-05
+      ],
+      [
+        -1e-05,
+        -4e-05,
+        -4e-05,
+        101.62191000000001,
+        1e-05,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1e-05,
+        101.62186000000001,
+        -1e-05
+      ],
+      [
+        4e-05,
+        4e-05,
+        1e-05,
+        0.0,
+        -1e-05,
+        141.75304000000003
+      ]
+    ],
+    "epsilon_ph": [
+      [
+        4.612269,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        4.61227,
+        -1e-06
+      ],
+      [
+        0.0,
+        -1e-06,
+        5.592874
+      ]
+    ],
+    "elastic_ionic_GPa": [
+      [
+        -48.56376,
+        23.76667,
+        23.344120000000004,
+        -0.0,
+        -0.0,
+        -1e-05
+      ],
+      [
+        23.76667,
+        -48.563790000000004,
+        23.344130000000003,
+        0.0,
+        0.0,
+        -1e-05
+      ],
+      [
+        23.344120000000004,
+        23.344130000000003,
+        -43.952560000000005,
+        0.0,
+        -0.0,
+        0.0
+      ],
+      [
+        -0.0,
+        0.0,
+        0.0,
+        -12.34692,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.0,
+        0.0,
+        -0.0,
+        -0.0,
+        -12.34699,
+        0.0
+      ],
+      [
+        -1e-05,
+        -1e-05,
+        0.0,
+        -0.0,
+        0.0,
+        -36.16522
+      ]
+    ],
+    "elastic_relaxed_GPa": [
+      [
+        321.88393,
+        110.70839000000001,
+        77.74219000000001,
+        -1e-05,
+        0.0,
+        2.9999999999999997e-05
+      ],
+      [
+        110.70839000000001,
+        321.88413,
+        77.74221,
+        -2.9999999999999997e-05,
+        0.0,
+        2.9999999999999997e-05
+      ],
+      [
+        77.74219000000001,
+        77.74221,
+        355.10123,
+        -4e-05,
+        0.0,
+        1e-05
+      ],
+      [
+        -1e-05,
+        -2.9999999999999997e-05,
+        -4e-05,
+        89.27499,
+        1e-05,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1e-05,
+        89.27487,
+        -1e-05
+      ],
+      [
+        2.9999999999999997e-05,
+        2.9999999999999997e-05,
+        1e-05,
+        0.0,
+        -1e-05,
+        105.58782000000002
+      ]
+    ],
+    "piezoelectric_ionic_C_m2": [
+      [
+        -0.0,
+        -0.0,
+        0.0,
+        -0.0,
+        -0.71008,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0,
+        -0.71008,
+        -0.0,
+        -0.0
+      ],
+      [
+        -0.78357,
+        -0.78357,
+        1.47531,
+        0.0,
+        0.0,
+        -0.0
+      ]
+    ],
+    "internal_strain_source": "displaced_atoms",
+    "internal_strain_eV_per_A": [
+      [
+        [
+          0.0,
+          0.0,
+          -0.0,
+          -0.0,
+          -4.58139,
+          6.75609
+        ],
+        [
+          6.75609,
+          -6.75609,
+          0.0,
+          -4.58137,
+          -0.0,
+          0.0
+        ],
+        [
+          -4.38826,
+          -4.38826,
+          8.28126,
+          0.0,
+          -0.0,
+          -0.0
+        ]
+      ],
+      [
+        [
+          -0.0,
+          -0.0,
+          -0.0,
+          -0.0,
+          -4.58139,
+          -6.75609
+        ],
+        [
+          -6.75609,
+          6.75609,
+          0.0,
+          -4.58137,
+          -0.0,
+          -0.0
+        ],
+        [
+          -4.38826,
+          -4.38826,
+          8.28126,
+          0.0,
+          -0.0,
+          -0.0
+        ]
+      ],
+      [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          4.59507,
+          8.1807
+        ],
+        [
+          8.1807,
+          -8.18071,
+          -0.0,
+          4.59505,
+          0.0,
+          0.0
+        ],
+        [
+          4.40122,
+          4.40123,
+          -8.26768,
+          -0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      [
+        [
+          -0.0,
+          -0.0,
+          0.0,
+          0.0,
+          4.59507,
+          -8.1807
+        ],
+        [
+          -8.1807,
+          8.18071,
+          -0.0,
+          4.59505,
+          0.0,
+          -0.0
+        ],
+        [
+          4.40123,
+          4.40123,
+          -8.26768,
+          -0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    ],
+    "internal_strain_translation_max_eV_per_A": 0.02735999999999983,
+    "internal_strain_translation_relative": 0.0033038450670549928,
+    "internal_strain_from_strained_cells_eV_per_A": [
+      [
+        [
+          0.0,
+          -0.0,
+          0.0,
+          -0.0,
+          -4.59249,
+          6.76975
+        ],
+        [
+          6.77448,
+          -6.7778,
+          -0.0,
+          -4.59086,
+          -5e-05,
+          3e-05
+        ],
+        [
+          -4.40784,
+          -4.4095,
+          8.29897,
+          -0.00269,
+          -2e-05,
+          0.00021
+        ]
+      ],
+      [
+        [
+          -0.0,
+          0.0,
+          0.0,
+          -0.0,
+          -4.59249,
+          -6.76975
+        ],
+        [
+          -6.77448,
+          6.7778,
+          -0.0,
+          -4.59139,
+          5e-05,
+          -3e-05
+        ],
+        [
+          -4.40784,
+          -4.4095,
+          8.29897,
+          0.00272,
+          -2e-05,
+          0.00021
+        ]
+      ],
+      [
+        [
+          0.0,
+          -0.0,
+          -0.0,
+          0.0,
+          4.59249,
+          8.17918
+        ],
+        [
+          8.18958,
+          -8.19846,
+          0.0,
+          4.5912,
+          1e-05,
+          -6e-05
+        ],
+        [
+          4.40784,
+          4.4095,
+          -8.29897,
+          0.0012,
+          2e-05,
+          -0.00021
+        ]
+      ],
+      [
+        [
+          -0.0,
+          0.0,
+          -0.0,
+          0.0,
+          4.59249,
+          -8.17918
+        ],
+        [
+          -8.18958,
+          8.19846,
+          0.0,
+          4.59105,
+          -1e-05,
+          6e-05
+        ],
+        [
+          4.40784,
+          4.4095,
+          -8.29897,
+          -0.00123,
+          2e-05,
+          -0.00021
+        ]
+      ]
+    ],
+    "strained_cell_internal_strain_translation_max_eV_per_A": 0.0,
+    "internal_strain_reciprocity_max_eV_per_A": 0.03129000000000026,
+    "electromechanical_warning": "Native internal-strain tensor violates translational force balance; ionic piezoelectric/elastic contributions need convergence checks. Compare with --elastic native strain finite differences before use.",
+    "piezoelectric_total_C_m2": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.1461800000000001,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        -0.0,
+        -0.1461800000000001,
+        0.0,
+        0.0
+      ],
+      [
+        -0.26444999999999996,
+        -0.26444999999999996,
+        0.4228599999999998,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "elastic_antisymmetry_max_GPa": 0.0,
+    "elastic_eigenvalues_GPa": [
+      89.27486917236858,
+      89.27499082761722,
+      105.58782000000056,
+      211.17563999994232,
+      277.275299945312,
+      510.4183500547594
+    ],
+    "elastic_condition_number": 5.717379983713704,
+    "piezoelectric_d_pm_V": [
+      [
+        7.309712164017742e-15,
+        2.4680306418186905e-14,
+        1.8023836113863952e-14,
+        1.834124959141538e-07,
+        -1.6374148738609584,
+        -1.5507611331127703e-07
+      ],
+      [
+        3.134795497940898e-08,
+        -1.237278905860673e-07,
+        -1.6421989283384422e-07,
+        -1.6374126729111018,
+        1.8341249591415382e-07,
+        5.917085849181968e-14
+      ],
+      [
+        -0.8958090886104401,
+        -0.8958083901364976,
+        1.5830536108147015,
+        3.0792276585400545e-07,
+        5.734033896261524e-15,
+        3.591132789204395e-07
+      ]
+    ],
+    "piezoelectric_d_ec_closure_max_C_m2": 5.551115123125783e-17,
+    "epsilon_static": [
+      [
+        10.697418,
+        1e-06,
+        0.0
+      ],
+      [
+        1e-06,
+        10.697420999999999,
+        -2e-06
+      ],
+      [
+        0.0,
+        -2e-06,
+        11.793824
+      ]
+    ],
+    "frequencies_thz": [
+      -0.00021253268336893504,
+      -1.4531910645197349e-05,
+      -1.4531180509511263e-05,
+      4.084692693459326,
+      4.084693452390277,
+      9.560168152286863,
+      14.906763934536563,
+      15.59532901223953,
+      15.595331961840376,
+      15.821334362183235,
+      15.821337332855274,
+      19.59012531863949
+    ]
+  },
+  "diagnostics": {
+    "irreps_degeneracy_tolerance_thz": 0.02,
+    "internal_strain_translation_max_eV_per_A": 0.02735999999999983,
+    "internal_strain_translation_relative": 0.0033038450670549928,
+    "electromechanical_warning": "Native internal-strain tensor violates translational force balance; ionic piezoelectric/elastic contributions need convergence checks. Compare with --elastic native strain finite differences before use.",
+    "internal_strain_source": "displaced_atoms",
+    "strained_cell_internal_strain_translation_max_eV_per_A": 0.0,
+    "internal_strain_reciprocity_max_eV_per_A": 0.03129000000000026,
+    "piezoelectric_d_ec_closure_max_C_m2": 5.551115123125783e-17,
+    "elastic_antisymmetry_max_GPa": 0.0,
+    "elastic_condition_number": 5.717379983713704,
+    "static_dielectric_max_abs": 0.0001805022832428449
+  },
+  "files": {
+    "qpoints": "qpoints.yaml",
+    "force_constants": "FORCE_CONSTANTS",
+    "modes_source": "response/vasprun.xml",
+    "phonopy": "phonopy.yaml",
+    "irreps": "irreps.yaml"
+  },
+  "source": "/public/home/iai806/zstar-validation/pbe-native-piezo-20260918/gan-native-f702793d-20260919/response/response/OUTCAR"
+}

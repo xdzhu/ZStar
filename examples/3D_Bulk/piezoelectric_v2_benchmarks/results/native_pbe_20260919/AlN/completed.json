@@ -1,0 +1,21 @@
+{
+  "status": "completed_pending_tensor_comparison",
+  "slurm_job_id": "27723215",
+  "node": "node338",
+  "mpi": 32,
+  "omp": 1,
+  "wall_seconds": 682,
+  "core_hours": 6.062222222222222,
+  "code_commit": "30f5d54a",
+  "route": "VASP native IBRION=6 ISIF=3 LEPSILON ISYM=2 NCORE=1",
+  "input_sha256": {
+    "input/INCAR": "d412fd0b7cf1105e0e8ae488127b8828ec8b1a29ff2b2e6ff348eebb4dcdfebc",
+    "input/POSCAR": "ccf854af7d7f499a08f628eb344c63ad2a23927ed32c06b32c1a0a4a41ac1625",
+    "input/KPOINTS": "ec144c870eea65361495f321aef4b46cb15e3f86bab334db927ba750ab678e18",
+    "input/POTCAR": "60c5158ae7329d8d76206c9aadd1265b9ebf9541a5bd60ae2c640d280a23928e",
+    "response/reference/INCAR": "53a11386078f06ff2bd7fb26bf4cb974cd58a0d9e6145d85323f26d3efae4148",
+    "response/response/INCAR": "930519c4d30774a0a615304fb9471e13d27ba229b7a48393651af84355249676",
+    "response/vasp_bec_manifest.json": "406119214ad33f1dd112fe9218c9f292eb683f20ef15aacb490b3de52557ecde",
+    "response/vasp_native_response.json": "70943d534615aee0a90d4e6f14f59dbc99915c09d73e70f6a33a74e962a74a08"
+  }
+}

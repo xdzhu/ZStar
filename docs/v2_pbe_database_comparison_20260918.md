@@ -4,12 +4,11 @@
 
 2026-09-19 四体系完整双后端差异与单列 d33 已整理于
 [完整 e/C/d 比较](v2_completed_backend_pair_audit_20260919.md)。
-明确区分已验收 d 和 VASP 原生 e/C 的诊断代数值，不改变原生 null d 或质量门。
+明确区分已验收 d、内部闭合但跨路线仍有分歧的 PTO d，以及历史诊断代数值。
 
-本轮双后端、五体系验证尚未全部完成。已经取得可靠的 **AlN/VASP/PBE 完整 e、C、d**，
-来自用户指定会话已完成的原生优先实现，而非本轮参考结构优化。
-该实现位于独立 worktree `D:/Work/Code/zstar-vasp-native`、分支
-`codex/vasp-native-response`，提交 `bbaf059a`；本报告只读复用已验收结果，未合并分支。
+本轮双后端、五体系验证尚未全部完成。AlN/GaN/ZnO 的 VASP/PBE 原生 e/C/d
+已通过各自门槛；PTO 原生与独立0.5%中心差分均已完成但存在定量分歧。
+原生实现已经合并到 `zstar-v2-development`，不在 main 或正式发布分支。
 
 原生 AlN 案例：`examples/VASP_Native_Response/AlN/results/validation.json` 的
 `passed=true`，`elastic: reliable derived d emitted=true`。
@@ -62,7 +61,8 @@ e对称投影最大差5.88e-6 C/m²，Lambda去平移后最大对称残差3.46e-
 a/b小0.9237%。因此24.26%的e33差异不能全部归因于软件或赝势，亦不能宣称严格外部复现。
 全18分量e差的Frobenius比为14.5936%，见PTO_ABACUS_full_tensor_comparison.csv。
 选定冻结档案没有PTO同来源C/d参考，d33外部参考与百分差保持空缺。
-VASP原生PTO的d质量门仍未通过，不把其诊断代数d33充当已验收参考。
+VASP原生PTO目前d33=63.994672 pm/V，独立VASP 0.5%中心差分为52.203773；
+两者各自闭合但相差18.42%，故不把任一值单独冒充已完成的跨路线验收参考。
 
 13个几何的累计ABACUS19668 s、PYATB139 s；40 MPI×1 OMP对应220.0778 rank-wall core-hours，
 分布于cu25/cu16。统计191次SCF循环、1779条电子迭代行；不含参考优化、历史失败，
@@ -71,26 +71,29 @@ VASP原生PTO的d质量门仍未通过，不把其诊断代数d33充当已验收
 `outputs/pbe_database_comparison_20260918/PTO_ABACUS/completed_response_audit.json`。
 本次既有比较/续算测试11项通过；未修改核心API/CLI、main或正式v1论文。
 
-## PTO / VASP / PBE 原生响应完成，完整 e/C/d 验收仍待补充
+## PTO / VASP / PBE：原生与独立0.5%中心差分均完成，跨路线仍conditional
 
-Slurm27720995确认COMPLETED/0:0，node203、32 MPI × 1 OMP、wall time1:40:46，
-分配计53.7422 core-hours（含参考处理），native阶段档案计28.1828 rank-wall core-hours；
-两种计时口径不混用。收集完整原生e/C、BORN/IFC与内部应变诊断。
-参考结构力6.9970e-5 eV/Å、最大应力0.00585573 kbar、PBE间隙1.9272 eV、SG99。
-同+c极化畴，c较数据库大3.5467%，a/b约小0.90%，不隐式调整结构或张量符号。
+当前原生重算Slurm27723306确认COMPLETED/0:0，node47、32 MPI × 1 OMP、
+wall time00:49:40，26.4889 rank-wall core-hours；参考带隙1.9272 eV、SG99。
+完整原生e/C/d、BORN/IFC及内部应变诊断已收集。独立中心差分作业27723065也以
+0:0完成，node43、01:53:27、60.5067 rank-wall core-hours；它采用同一父POSCAR
+的精确P4mm投影、13点±0.5%中心差分、逐点离子弛豫与LCALCPOL。
+最大晶格/原子投影变化仅4.86e-5/3.44e-5 Å，不是新平衡结构。
 
 | 分量 | PTO/VASP/PBE (C/m²) | 同相PBE数据库 (C/m²) | 绝对相对差异 |
 |---|---:|---:|---:|
-| e31 | 1.66857 | 1.64365 | 1.52% |
-| e33 | 2.43823 | 2.79212 | 12.67% |
-| e15 | 2.79621 | 3.25989 | 14.22% |
+| e31 | 1.67007 | 1.64365 | 1.61% |
+| e33 | 2.43952 | 2.79212 | 12.63% |
+| e15 | 2.79597 | 3.25989 | 14.23% |
 
-全部18分量差异见`PTO_VASP_full_tensor_comparison.csv`，全e Frobenius相对差12.7033%。
-弹性矩阵最小特征值26.5624 GPa为正，major symmetry通过。
-原生内应变raw平移相对残差0.00106288793，略高于现有0.001门，
-native仍未输出d（包括d33）；保持`scientific_gate_pending`，不填诊断代数值。
-这项raw残差不是最终d误差的直接估计。独立ABACUS结果现已收集（见上节），
-后续继续结合内部贡献审计解释跨后端差异，而非提高SCF精度或直接为填表放宽门槛。
+原生弹性矩阵最小特征值26.5045 GPa、条件数10.3808，d33=63.994672 pm/V，
+`e=dC`闭合4.44e-16 C/m²；内应变平移相对残差7.33e-4通过既定诊断门。
+独立0.5%路线得到e31/e33/e15=1.573594/2.058918/2.868509 C/m²，
+d33=52.203773 pm/V；C最小特征值26.4204 GPa，闭合8.88e-16 C/m²。
+其e/C拟合相对残差0.477%/2.138%，P4mm对称残差0.0187%/0.0125%。
+两条VASP路线的C仅差0.300%（Frobenius），但e差7.999%、d差8.838%，
+d33相差18.42%。因此两者均是内部完整结果，但PTO不能提升为跨路线定量验收。
+同设置独立±1%判别作业27723491只改变应变幅度，用于分离非线性与原生收缩差异。
 
 PTO完成档案的实际几何也已审计：参考1、应变12、原子位移30；正负配对通过，
 工程应变±1%、原子位移±0.01 Å；同样先应变、后原子位移。
@@ -289,9 +292,12 @@ PTO 的晶格与内部坐标差异明显，后续响应偏差不能全部归因�
 | PTO/ABACUS+PYATB | e31 | 1.710979 | 1.643650 | 4.10 | 完整中心差分e/C/d；外部差异保留 |
 | PTO/ABACUS+PYATB | e33 | 2.114819 | 2.792120 | 24.26 | 同上，不宣称严格复现 |
 | PTO/ABACUS+PYATB | e15 | 2.895233 | 3.259890 | 11.19 | 同上 |
-| PTO/VASP native | e31 | 1.668570 | 1.643650 | 1.52 | 已计算；原生d门待解决 |
-| PTO/VASP native | e33 | 2.438230 | 2.792120 | 12.67 | 同上 |
-| PTO/VASP native | e15 | 2.796210 | 3.259890 | 14.22 | 同上 |
+| PTO/VASP native，`ISYM=2` | e31 | 1.670070 | 1.643650 | 1.61 | 内部 e/C/d 闭合；与独立0.5%路线存在定量差异 |
+| PTO/VASP native，`ISYM=2` | e33 | 2.439520 | 2.792120 | 12.63 | 同上 |
+| PTO/VASP native，`ISYM=2` | e15 | 2.795970 | 3.259890 | 14.23 | 同上 |
+| PTO/VASP 独立中心0.5% | e31 | 1.573594 | 1.643650 | 4.26 | 13点、rank/稳定性/闭合通过；幅度审计中 |
+| PTO/VASP 独立中心0.5% | e33 | 2.058918 | 2.792120 | 26.26 | 同上 |
+| PTO/VASP 独立中心0.5% | e15 | 2.868509 | 3.259890 | 12.01 | 同上 |
 
 ### d33 单列：不伪造数据库参考
 
@@ -299,7 +305,8 @@ PTO 的晶格与内部坐标差异明显，后续响应偏差不能全部归因�
 AlN/GaN/ZnO的**有条件跨档案PBE d33参考**，并注明几何、设置和极性取向差异。
 数值与完整C比较见[v2_pbe_cross_archive_d_reference_20260919.md](v2_pbe_cross_archive_d_reference_20260919.md)。
 下表“此数据库d33”仍指直接报告值，不将跨档案推导值冒充原生数据库字段。
-PTO在该弹性档案没有配对C，外部d33仍空缺；其 native 重算完成前仍不提升旧值。
+PTO在该弹性档案没有配对C，外部d33仍空缺；当前native与独立中心差分值只作
+内部及跨路线比较，不制造数据库百分差。
 
 | 材料/计算器 | d33 pm/V（=pC/N） | 此数据库 d33 | 备注 |
 |---|---:|---|---|
@@ -310,7 +317,7 @@ PTO在该弹性档案没有配对C，外部d33仍空缺；其 native 重算完�
 | ZnO/ABACUS+PYATB | 9.666372 | 未提供 | 由本次直接proper e和relaxed C导出；不宣称内应变张量已验收 |
 | ZnO/VASP native，精确六方 `ISYM=2` | 9.750071 | 未提供 | 总 e/C/d 已验收；不把结构序列化噪声修正冒充物理优化 |
 | PTO/ABACUS+PYATB | 49.084674 | 未提供 | 同一组proper e与relaxed C导出；外部d验证未完成 |
-| PTO/VASP native | 未发布 | 未提供 | raw内应变警告保留；诊断代数值不代替合格d |
+| PTO/VASP native，`ISYM=2` | 63.994672 | 未提供 | 自身 e/C/d 闭合；独立0.5%为52.203773，分歧未解决，保持conditional |
 
 AlN 两后端 d33 差6.54%（以新 `ISYM=2` VASP 结果为分母）；此前完整张量
 Frobenius 比基于旧验收档案，待统一结果档案重生成后更新，不混用新旧来源。
@@ -361,7 +368,8 @@ AlN/ABACUS响应部分 ABACUS累计2841 s，PYATB累计91 s，日志计数109次
 可复现比较需增加
 `--additional-calculations outputs/pbe_database_comparison_20260918/completed_calculations.json`。
 冻结旧比较JSON中的GaN/ZnO/PTO状态为 `scientific_gate_pending`；当前GaN/ZnO已由
-新对称性开启重算及 e/C/d 闭合证据取代，PTO仍等待本轮重算完成。
+新对称性开启重算及 e/C/d 闭合证据取代。PTO重算已完成，但因native与独立0.5%
+路线的定量分歧而保持cross-route conditional，等待27723491幅度判别。
 AlN/GaN/ZnO/PTO ABACUS完整收集；PZT的ABACUS及原生对称性对照尚需收齐，目标未完成。
 
 ## ZnO / ABACUS / PBE 完成与逐响应质量边界

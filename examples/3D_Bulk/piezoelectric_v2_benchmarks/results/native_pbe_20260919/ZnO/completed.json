@@ -1,0 +1,11 @@
+{
+  "status": "completed_pending_tensor_comparison",
+  "slurm_job_id": "27723364",
+  "node": "node60",
+  "mpi": 32,
+  "omp": 1,
+  "wall_seconds": 952,
+  "core_hours": 8.462222222222222,
+  "code_commit": "f702793d",
+  "control": "exact P63mc metric/Wyckoff projection; ISYM=2; VASP SYMPREC=1e-4"
+}
