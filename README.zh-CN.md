@@ -548,11 +548,11 @@ zstar bec post --root cp2k_bec
 
 ## VASP BEC 后端
 
-ZStar 也可直接驱动 VASP 的原生 BEC 功能：`dfpt` 对应 `LEPSILON` 线性响应，
-`finite-field` 对应 `LCALCEPS`/PEAD 有限场：
+ZStar 也可直接驱动 VASP 的原生 BEC 功能。默认 `auto` 对 LDA/GGA 优先采用
+`LEPSILON` DFPT；对轨道依赖泛函采用原生有限电场，也可显式指定计算路线。
 
 ```bash
-zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec --method dfpt
+zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec --phonons
 zstar bec run --root vasp_bec --vasp-command "mpirun -np 20 vasp_std"
 zstar bec post --root vasp_bec
 ```
@@ -561,6 +561,12 @@ zstar bec post --root vasp_bec
 断点续算。收集器统一输出 JSON、ZStar 张量和 Phonopy 兼容的 `BORN` 文件。
 有限场保护、集群脚本、张量约定及 VASP 6.3.2 SiC 实机验证见
 [完整中文文档](docs/vasp_bec_zh.md)。
+
+按需添加 `--phonons` 获取原生 Γ 点声子，供介电与 IR 复用；只求含离子弛豫的
+压电 e 可使用 `--piezo`，同样采用原生离子响应，无需外部重复差分。添加 `--elastic`
+获取完整 Bulk 弹性响应及推导的 d。后者采用原生应变有限差分，因为 VASP 未实现弹性应变
+DFPT。[原生响应指南](docs/vasp_native_response.zh-CN.md)说明张量约定、Raman
+混合路线以及低维功能的适用边界。
 
 ## 声子与介电响应
 
@@ -723,8 +729,7 @@ zstar spectra post --root raman
 计算器无关谱学层也支持 VASP 和 CP2K：
 
 ```bash
-zstar spectra pre --calculator vasp --input-dir vasp_input \
-  --modes-xml phonon/vasprun.xml --root vasp_spectra --dim 3
+zstar spectra pre --calculator vasp --response vasp_bec --root vasp_spectra
 zstar spectra run --root vasp_spectra --command "mpirun -np 20 vasp_std"
 zstar spectra post --root vasp_spectra
 

@@ -1,0 +1,15 @@
+SYSTEM = 3C-SiC PBE native response validation
+ENCUT = 600
+PREC = Accurate
+EDIFF = 1E-8
+EDIFFG = -0.0001
+ISMEAR = 0
+SIGMA = 0.05
+LREAL = .FALSE.
+LASPH = .TRUE.
+LWAVE = .TRUE.
+LCHARG = .TRUE.
+NCORE = 4
+IBRION = 2
+ISIF = 3
+NSW = 100

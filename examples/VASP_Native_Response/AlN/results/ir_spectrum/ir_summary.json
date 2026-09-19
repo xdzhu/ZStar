@@ -1,0 +1,38 @@
+{
+  "dimensionality": 3,
+  "response_kind": "total relative dielectric tensor",
+  "response_unit": "1",
+  "response_convention": "relative permittivity",
+  "electronic_response_included": true,
+  "static_response": [
+    [
+      8.229282077856082,
+      -3.0401532262638187e-06,
+      7.070059290031731e-06
+    ],
+    [
+      6.959846773736183e-06,
+      8.229238053653855,
+      7.228140072512564e-05
+    ],
+    [
+      1.0070059290031731e-05,
+      6.928140072512565e-05,
+      9.74789453193838
+    ]
+  ],
+  "modes": 9,
+  "files": {
+    "modes": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/ir_modes.csv",
+    "spectrum": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/ir_spectrum.dat",
+    "response_real": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/ir_response_real.dat",
+    "response_imag": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/ir_response_imag.dat",
+    "static_response": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/static_response.json",
+    "plot": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/ir_spectrum.png",
+    "plot_pdf": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/ir_spectrum.pdf",
+    "plot_svg": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/ir_spectrum.svg",
+    "response_plot": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/dielectric_response.png",
+    "response_plot_pdf": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/dielectric_response.pdf",
+    "response_plot_svg": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/ir_spectrum/dielectric_response.svg"
+  }
+}

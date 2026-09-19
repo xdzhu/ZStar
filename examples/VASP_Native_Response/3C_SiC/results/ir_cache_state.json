@@ -1,0 +1,15 @@
+{
+  "updated_at": "2026-09-18T09:43:22.118947+00:00",
+  "stages": [
+    {
+      "name": "reference",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/ir_cache_validation/reference",
+      "status": "completed",
+      "started_at": null,
+      "finished_at": null,
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/3C_SiC/.work/ir_cache_validation/reference/OUTCAR",
+      "error": null,
+      "gap_eV": 1.3697
+    }
+  ]
+}

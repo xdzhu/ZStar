@@ -1,0 +1,138 @@
+{
+  "passed": true,
+  "checks": {
+    "equilibrium point group is 6mm": true,
+    "nine optical Raman tensors": true,
+    "finite Raman tensors": true,
+    "JSON IDs match exported mode frequencies": true,
+    "ir: finite nonnegative activities": true,
+    "ir: all optical modes exported": true,
+    "ir: inactive modes below numerical tolerance": true,
+    "raman: finite nonnegative activities": true,
+    "raman: all optical modes exported": true,
+    "raman: inactive modes below numerical tolerance": true
+  },
+  "results": {
+    "ir": {
+      "inactive_activity_max_normalized": 2.797001495111103e-07,
+      "inactive_activity_tolerance": 0.0001,
+      "modes": [
+        {
+          "mode": 12,
+          "irrep": "B1",
+          "frequency_cm-1": 707.6980067527958,
+          "activity_normalized": 5.904825598978971e-08
+        },
+        {
+          "mode": 11,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9478251295016,
+          "activity_normalized": 0.8843094011117189
+        },
+        {
+          "mode": 10,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9439954834262,
+          "activity_normalized": 0.8843094942044337
+        },
+        {
+          "mode": 9,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7174521058618,
+          "activity_normalized": 2.797001495111103e-07
+        },
+        {
+          "mode": 8,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7085199042511,
+          "activity_normalized": 1.9573174508402104e-08
+        },
+        {
+          "mode": 7,
+          "irrep": "A1",
+          "frequency_cm-1": 596.4144799085539,
+          "activity_normalized": 1.0
+        },
+        {
+          "mode": 6,
+          "irrep": "B1",
+          "frequency_cm-1": 536.4627469183555,
+          "activity_normalized": 9.21341447941243e-09
+        },
+        {
+          "mode": 5,
+          "irrep": "E2",
+          "frequency_cm-1": 237.13000840471292,
+          "activity_normalized": 1.7657758310043984e-11
+        },
+        {
+          "mode": 4,
+          "irrep": "E2",
+          "frequency_cm-1": 237.10403521682986,
+          "activity_normalized": 2.319387313030131e-10
+        }
+      ]
+    },
+    "raman": {
+      "inactive_activity_max_normalized": 4.6716133166333646e-08,
+      "inactive_activity_tolerance": 0.01,
+      "modes": [
+        {
+          "mode": 12,
+          "irrep": "B1",
+          "frequency_cm-1": 707.6980067527958,
+          "activity_normalized": 4.6716133166333646e-08
+        },
+        {
+          "mode": 11,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9478251295016,
+          "activity_normalized": 0.20685427589595184
+        },
+        {
+          "mode": 10,
+          "irrep": "E1",
+          "frequency_cm-1": 650.9439954834262,
+          "activity_normalized": 0.20628051717993842
+        },
+        {
+          "mode": 9,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7174521058618,
+          "activity_normalized": 0.4246100519636155
+        },
+        {
+          "mode": 8,
+          "irrep": "E2",
+          "frequency_cm-1": 638.7085199042511,
+          "activity_normalized": 0.4256468666523213
+        },
+        {
+          "mode": 7,
+          "irrep": "A1",
+          "frequency_cm-1": 596.4144799085539,
+          "activity_normalized": 1.0
+        },
+        {
+          "mode": 6,
+          "irrep": "B1",
+          "frequency_cm-1": 536.4627469183555,
+          "activity_normalized": 2.6690380789388595e-08
+        },
+        {
+          "mode": 5,
+          "irrep": "E2",
+          "frequency_cm-1": 237.13000840471292,
+          "activity_normalized": 0.010182275719139194
+        },
+        {
+          "mode": 4,
+          "irrep": "E2",
+          "frequency_cm-1": 237.10403521682986,
+          "activity_normalized": 0.010258874725961122
+        }
+      ]
+    }
+  },
+  "note": "Gamma TO modes without directional NAC; activity checks are not an absolute intensity benchmark."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "vasp_native_3c_sic",
+  "calculator": "VASP",
+  "dim": 3,
+  "material": "3C-SiC",
+  "XC": "PBE",
+  "licensed_inputs_required": true,
+  "potential_redistribution": false,
+  "native_routes": ["electric-dfpt", "gamma-dfpt", "strain-finite-difference"],
+  "raman_route": "mode-displaced native dielectric derivatives",
+  "status": "computed; internal DFPT electromechanical warning retained"
+}

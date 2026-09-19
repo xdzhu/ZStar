@@ -108,6 +108,14 @@ def _manifest_defaults(root: str, calculator: str | None, dimensionality: int | 
             else dimensionality
         )
         options = dict(saved.get("options", {}))
+    elif calculator is None and (Path(root) / "vasp_bec_manifest.json").is_file():
+        saved = json.loads((Path(root) / "vasp_bec_manifest.json").read_text(encoding="utf-8"))
+        if saved.get("backend") != "vasp":
+            raise ValueError("Invalid backend in vasp_bec_manifest.json")
+        calculator = "vasp"
+        dimensionality = int(saved.get("dimensionality", 3)) if dimensionality is None else dimensionality
+        options = {"method": saved["method"], "gamma_phonons": saved.get("phonons", False),
+                   "elastic": saved.get("elastic", False)}
     else:
         options = {}
     return calculator or "abacus", 3 if dimensionality is None else dimensionality, options
@@ -154,6 +162,11 @@ def _run_bec(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             raise SystemExit(f"Unsupported BEC calculator: {calculator}")
         from .shared_abacus import MANIFEST, load_manifest
         shared_options = {}
+        if calculator == 'vasp' and (Path(manifest_root) / 'vasp_bec_manifest.json').is_file():
+            native_data = json.loads((Path(manifest_root) / 'vasp_bec_manifest.json').read_text())
+            shared_options = {'method': native_data['method'], 'gamma_phonons': native_data.get('phonons', False),
+                              'piezo': native_data.get('piezo', False),
+                              'elastic': native_data.get('elastic', False)}
         if calculator == 'abacus' and (Path(manifest_root) / MANIFEST).is_file():
             shared_data = load_manifest(manifest_root)
             shared_options = {'method': shared_data['method'], 'ensemble': 'phonopy', 'gamma_phonons': True}

@@ -1,0 +1,195 @@
+{
+  "updated_at": "2026-09-18T10:27:33.164922+00:00",
+  "stages": [
+    {
+      "name": "reference",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/reference",
+      "status": "completed",
+      "started_at": null,
+      "finished_at": null,
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/reference/OUTCAR",
+      "error": null,
+      "gap_eV": 4.0754
+    },
+    {
+      "name": "mode-0001/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0001/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:03:58.489628+00:00",
+      "finished_at": "2026-09-18T10:05:03.236322+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0001/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0001/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0001/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:05:03.238519+00:00",
+      "finished_at": "2026-09-18T10:06:05.972549+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0001/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0002/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0002/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:06:05.974815+00:00",
+      "finished_at": "2026-09-18T10:07:10.705477+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0002/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0002/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0002/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:07:10.709262+00:00",
+      "finished_at": "2026-09-18T10:08:14.561518+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0002/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0003/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0003/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:08:14.563983+00:00",
+      "finished_at": "2026-09-18T10:09:19.892519+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0003/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0003/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0003/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:09:19.894779+00:00",
+      "finished_at": "2026-09-18T10:10:24.872660+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0003/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0004/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0004/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:10:24.874931+00:00",
+      "finished_at": "2026-09-18T10:11:27.486698+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0004/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0004/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0004/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:11:27.489668+00:00",
+      "finished_at": "2026-09-18T10:12:29.730393+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0004/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0005/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0005/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:12:29.734547+00:00",
+      "finished_at": "2026-09-18T10:13:32.130498+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0005/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0005/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0005/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:13:32.133257+00:00",
+      "finished_at": "2026-09-18T10:14:34.565162+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0005/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0006/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0006/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:14:34.568965+00:00",
+      "finished_at": "2026-09-18T10:15:37.045638+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0006/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0006/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0006/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:15:37.048351+00:00",
+      "finished_at": "2026-09-18T10:16:38.682749+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0006/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0007/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0007/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:16:38.685593+00:00",
+      "finished_at": "2026-09-18T10:17:41.519552+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0007/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0007/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0007/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:17:41.528964+00:00",
+      "finished_at": "2026-09-18T10:18:44.389571+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0007/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0008/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0008/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:18:44.392200+00:00",
+      "finished_at": "2026-09-18T10:19:47.087509+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0008/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0008/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0008/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:19:47.091590+00:00",
+      "finished_at": "2026-09-18T10:20:49.352680+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0008/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0009/plus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0009/plus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:20:49.374388+00:00",
+      "finished_at": "2026-09-18T10:21:51.978893+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0009/plus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    },
+    {
+      "name": "mode-0009/minus",
+      "path": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0009/minus",
+      "status": "completed",
+      "started_at": "2026-09-18T10:21:51.981592+00:00",
+      "finished_at": "2026-09-18T10:22:54.368037+00:00",
+      "output": "/public/home/iai806/zstar-validation/vasp-native-20260918/code/examples/VASP_Native_Response/AlN/.work/raman/mode-0009/minus/OUTCAR",
+      "error": null,
+      "gap_eV": null
+    }
+  ]
+}

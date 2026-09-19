@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "checks": {
+    "dfpt: three stable optical modes": true,
+    "dfpt: harmonic dielectric closure": true,
+    "dfpt: charge sum rule": true,
+    "elastic: three stable optical modes": true,
+    "elastic: harmonic dielectric closure": true,
+    "elastic: charge sum rule": true,
+    "native optical routes agree": true,
+    "quality-checked elastic d emitted": true,
+    "Raman tensors match optical Gamma IDs": true,
+    "Raman frequency-ID alignment": true,
+    "triplet Raman activity agreement": true,
+    "T2 depolarization ratio": true
+  },
+  "DFPT_diagnostics": {
+    "irreps_degeneracy_tolerance_thz": 0.02,
+    "internal_strain_translation_max_eV_per_A": 0.5154199999999998,
+    "internal_strain_translation_relative": 0.0684706035514592,
+    "electromechanical_warning": "Native internal-strain tensor violates translational force balance; ionic piezoelectric/elastic contributions need convergence checks. Compare with --elastic native strain finite differences before use.",
+    "internal_strain_source": "displaced_atoms",
+    "static_dielectric_max_abs": 3.944157316482233e-05
+  },
+  "elastic_diagnostics": {
+    "irreps_degeneracy_tolerance_thz": 0.02,
+    "internal_strain_translation_max_eV_per_A": 0.005029999999999646,
+    "internal_strain_translation_relative": 0.0006627411659764293,
+    "internal_strain_source": "displaced_atoms",
+    "strained_cell_internal_strain_translation_max_eV_per_A": 0.0,
+    "internal_strain_reciprocity_max_eV_per_A": 0.010100000000000442,
+    "static_dielectric_max_abs": 9.083118709796167e-05
+  },
+  "note": "Native DFPT electromechanical warnings remain; Gamma TO data without directional NAC."
+}

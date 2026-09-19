@@ -4,9 +4,17 @@ ZStar supports VASP as an independent Born-effective-charge (BEC) backend. It
 uses VASP's native linear response rather than reproducing the ABACUS/PYATB
 finite-displacement implementation:
 
-- `dfpt` (default): `LEPSILON = .TRUE.` for local/semi-local functionals.
+- `auto` (default): selects native DFPT for LDA/GGA and native finite fields
+  for hybrid/meta-GGA inputs.
+- `dfpt`: `LEPSILON = .TRUE.` for LDA/GGA functionals.
 - `finite-field`: `LCALCEPS = .TRUE.` for cases such as hybrid functionals,
   where VASP DFPT is unavailable.
+
+For Gamma phonons, IR/Raman reuse and native piezoelectric/elastic response,
+see the [native response guide](vasp_native_response.md): `--piezo` requests
+relaxed-ion `e`, while `--elastic` also supplies complete elasticity for `d`.
+Those extensions are validated on the isolated native-response checkout,
+not yet merged into the main release.
 
 Both routes produce the electronic dielectric tensor and all atomic BEC
 tensors. The workflow first performs a normal SCF, checks the fundamental gap,
@@ -37,12 +45,10 @@ Put a converged `INCAR`, `POSCAR`, `KPOINTS`, and licensed `POTCAR` in one
 directory. Do not commit or redistribute `POTCAR`.
 
 ```bash
-zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec --method dfpt
+zstar bec pre --calculator vasp --input-dir vasp_input --root vasp_bec
 zstar bec run --root vasp_bec --vasp-command "mpirun -np 32 vasp_std"
 zstar bec stat --root vasp_bec
 zstar bec post --root vasp_bec
-zstar vasp-bec compare --first dfpt/vasp_bec.json \
-  --second finite_field/vasp_bec.json --output comparison.json
 ```
 
 To generate one resumable cluster driver instead of running interactively:
@@ -60,7 +66,7 @@ collection of independent perturbation jobs.
 For a hybrid or another orbital-dependent functional:
 
 ```bash
-zstar vasp-bec prepare \
+zstar bec pre --calculator vasp \
   --input-dir vasp_input --root vasp_bec_hse \
   --method finite-field --field-strength 0.001
 ```

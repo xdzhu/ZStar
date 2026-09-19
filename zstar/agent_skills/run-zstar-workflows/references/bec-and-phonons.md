@@ -45,6 +45,38 @@ zstar bec stat --root cp2k_bec
 zstar bec post --root cp2k_bec
 ```
 
+## VASP native response
+
+For VASP bulk native response, use:
+
+```bash
+zstar bec pre --calculator vasp --input-dir vasp_input --root response --phonons
+zstar bec run --root response --dry-run
+zstar bec stat --root response
+```
+
+Inspect before running without `--dry-run`; collect with `zstar bec post --root response`.
+`--phonons` adds native Gamma modes and ionic dielectric/piezoelectric terms.
+Use `--piezo` when relaxed-ion piezoelectric `e` is the requested property; it
+includes the same native Gamma response without requesting elastic strain jobs.
+`--elastic` instead adds bulk native ionic/strain finite differences and complete
+elastic output for derived `d`. Do not default to an external strain/BEC
+finite-difference ensemble when native VASP supplies the response. The two-route
+AlN/SiC comparison is a validation example, not a routine requirement.
+Missing internal-strain diagnostics or inconsistent piezo contributions block
+derived `d`; retain native tensors and warnings instead of projecting or rerunning
+without authorization. Raman still needs additional dielectric derivatives.
+Native electric DFPT is preferred for LDA/GGA; the automatic
+finite-field choice for orbital-dependent functionals still requires validation
+for the selected system. Native ionic response keeps symmetry enabled as required
+by `IBRION=6/8`: an existing `ISYM=1/2/3` is preserved and otherwise `ISYM=2`
+is used. These stages use `NCORE=1` and no `NPAR` to avoid the VASP 6.3.2
+k-point redistribution restriction seen with symmetry-reduced perturbations.
+Pure electronic response keeps the source/VASP symmetry and parallelization
+policy. Keep low-dimensional native
+dielectric output labelled as supercell response. See the spectroscopy reference
+for reuse; no separate Gamma-force tasks are needed for native IR.
+
 ## Molecular atomic polar tensors
 
 For an isolated molecule, use the default Unified ensemble with `--dim 0`.
