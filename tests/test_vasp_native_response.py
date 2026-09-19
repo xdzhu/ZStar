@@ -167,6 +167,42 @@ def test_native_ionic_response_preserves_enabled_source_symmetry(tmp_path):
     assert manifest["symmetry_override"] is None
 
 
+def test_native_ionic_response_caps_loose_vasp_symprec_without_changing_structural_symprec(tmp_path):
+    root = prepare_vasp_bec(
+        inputs(tmp_path, "ISYM=2\nSYMPREC=1e-3\n"),
+        tmp_path / "response",
+        elastic=True,
+    )
+    manifest = json.loads((root / "vasp_bec_manifest.json").read_text())
+    for stage in ("reference", "response"):
+        text = (root / stage / "INCAR").read_text()
+        assert "SYMPREC = 1E-4" in text
+        assert "SYMPREC=1e-3" not in text
+    assert manifest["source_vasp_symprec"] == pytest.approx(1e-3)
+    assert manifest["native_vasp_symprec"] == pytest.approx(1e-4)
+    assert "separate structural tolerance" in manifest["vasp_symprec_override"]
+
+
+@pytest.mark.parametrize("source", ["", "SYMPREC=1e-5\n"])
+def test_native_ionic_response_keeps_vasp_default_or_tighter_symprec(tmp_path, source):
+    root = prepare_vasp_bec(inputs(tmp_path, source), tmp_path / "response", elastic=True)
+    manifest = json.loads((root / "vasp_bec_manifest.json").read_text())
+    response = (root / "response/INCAR").read_text()
+    if source:
+        assert "SYMPREC=1e-5" in response
+        assert manifest["native_vasp_symprec"] == pytest.approx(1e-5)
+    else:
+        assert "SYMPREC" not in response
+        assert manifest["native_vasp_symprec"] is None
+    assert manifest["vasp_symprec_override"] is None
+
+
+@pytest.mark.parametrize("source", ["SYMPREC=bad\n", "SYMPREC=0\n", "SYMPREC=-1e-5\n"])
+def test_native_preparation_rejects_invalid_vasp_symprec(tmp_path, source):
+    with pytest.raises(ValueError, match="SYMPREC must be"):
+        prepare_vasp_bec(inputs(tmp_path, source), tmp_path / "response", elastic=True)
+
+
 def test_electronic_only_response_does_not_force_symmetry_or_ncore(tmp_path):
     root = prepare_vasp_bec(
         inputs(tmp_path, "ISYM=-1\nNCORE=4\n"),

@@ -22,6 +22,7 @@ _NUMBER = r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[EeDd][-+]?\d+)?"
 _INCAR_KEY = re.compile(r"^\s*([A-Za-z][A-Za-z0-9_]*)\s*=")
 BEC_OUTPUT_PRECISION = 8
 BEC_OUTPUT_WIDTH = 14
+VASP_NATIVE_MAX_SYMPREC = 1.0e-4
 
 
 def _utc_now() -> str:
@@ -171,7 +172,16 @@ def prepare_vasp_bec(
     except ValueError as exc:
         raise ValueError(f"ISYM must be an integer, got {source_isym_value!r}") from exc
     native_isym = source_isym if source_isym in {1, 2, 3} else 2
+    source_symprec_value = _incar_value(original, "SYMPREC")
+    try:
+        source_symprec = _float(source_symprec_value) if source_symprec_value is not None else None
+    except ValueError as exc:
+        raise ValueError(f"SYMPREC must be numeric, got {source_symprec_value!r}") from exc
+    if source_symprec is not None and source_symprec <= 0.0:
+        raise ValueError(f"SYMPREC must be positive, got {source_symprec_value!r}")
+    native_symprec = source_symprec
     symmetry_override = None
+    symprec_override = None
     parallelization_override = None
     reference_updates = {
         "NSW": "0",
@@ -196,6 +206,21 @@ def prepare_vasp_bec(
             parallelization_override = (
                 f"NCORE={source_ncore or 'unset'} replaced by NCORE=1 for "
                 "symmetry-reduced native response compatibility"
+            )
+        # The project-wide spglib/Phonopy symprec=1e-3 Angstrom controls
+        # structure identification and atom mapping; it is not VASP's
+        # dimensionless SYMPREC. A loose VASP SYMPREC=1e-3 made exact
+        # eta_4=-0.005 GaN and ZnO cells fail with inconsistent direct and
+        # reciprocal Bravais classifications. The same serialized cells
+        # passed initialization at 1e-4. Keep tighter user values and the
+        # VASP default (tag absent), but cap looser inherited values for native
+        # ionic response.
+        if source_symprec is not None and source_symprec > VASP_NATIVE_MAX_SYMPREC:
+            native_symprec = VASP_NATIVE_MAX_SYMPREC
+            reference_updates["SYMPREC"] = "1E-4"
+            symprec_override = (
+                f"SYMPREC={source_symprec_value} replaced by SYMPREC=1E-4; "
+                "spglib/Phonopy symprec is a separate structural tolerance"
             )
     convergence_override = None
     ediff_value = _incar_value(original, "EDIFF")
@@ -228,6 +253,8 @@ def prepare_vasp_bec(
     }
     if ionic_response:
         response_updates.update({"ISYM": str(native_isym), "NCORE": "1"})
+        if symprec_override:
+            response_updates["SYMPREC"] = "1E-4"
     if convergence_override:
         response_updates["EDIFF"] = "1E-8"
     if method_key == "dfpt":
@@ -285,6 +312,13 @@ def prepare_vasp_bec(
         "native_isym": native_isym if ionic_response else source_isym,
         "symmetry_policy": "native-enabled" if ionic_response else "source-or-vasp-default",
         "symmetry_override": symmetry_override,
+        "source_vasp_symprec": source_symprec,
+        "native_vasp_symprec": native_symprec if ionic_response else source_symprec,
+        "vasp_symprec_policy": (
+            "source-or-vasp-default-capped-at-1e-4-for-native-ionic-response"
+            if ionic_response else "source-or-vasp-default"
+        ),
+        "vasp_symprec_override": symprec_override,
         "parallelization_override": parallelization_override,
         "natoms_total": len(labels),
         "labels": labels,

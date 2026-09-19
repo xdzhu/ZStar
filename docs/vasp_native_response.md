@@ -29,6 +29,14 @@ observed for `NCORE > 1` without disabling the symmetry reduction that defines
 source or VASP-default symmetry and parallelization policy. The manifest records
 every override. On hf, run the requested MPI ranks inside the Slurm allocation;
 `NCORE` is not the MPI-rank count.
+
+The structural tolerance used by spglib/Phonopy is distinct from VASP's
+dimensionless `SYMPREC`. ZStar does not copy the structural `symprec=1e-3 A`
+into VASP. For native ionic response, an absent `SYMPREC` keeps VASP's default
+and an explicitly tighter value is preserved. An inherited value looser than
+`1e-4` is capped at `1e-4` and recorded in the manifest. This prevents the
+inconsistent direct/reciprocal Bravais classification reproduced for exact
+`eta_4=-0.005` GaN and ZnO cells with `SYMPREC=1e-3`.
 The output includes `BORN`, `qpoints.yaml`, `FORCE_CONSTANTS`, `phonopy.yaml`,
 `irreps.yaml`, the existing BEC
 response record, and `vasp_native_response.json`. The latter separates electronic

@@ -31,6 +31,13 @@ zstar bec post --root response
 对称性与并行策略；所有覆盖均写入 manifest。MPI 进程数仍由 Slurm 分配和
 运行命令决定，不能把 `NCORE` 误当成 MPI 进程数。
 
+spglib/Phonopy 的结构识别阈值与 VASP 的无量纲 `SYMPREC` 是两个不同参数。
+ZStar 不会把结构侧的 `symprec=1e-3 A` 直接写入 VASP。原生离子响应中，未设置
+`SYMPREC` 时保留 VASP 默认值，用户明确给出的更紧阈值也保持不变；若继承值宽于
+`1e-4`，则收紧到 `1e-4` 并写入 manifest。GaN 和 ZnO 的精确
+`eta_4=-0.005` 输入已经复现：`SYMPREC=1e-3` 会导致直接/倒易 Bravais 类型不一致，
+而同一输入在 `1e-4` 下可正常进入 SCF。
+
 `vasp_native_response.json` 分别保存电子/声子/总介电响应、钳制/离子/总压电
 贡献和适用的弹性及 d 张量。低维结果明确标记为周期超胞响应，不直接称为本征
 Bulk 常数。二维谱学的现有保护仍保留，待边界条件与转换完成验证后再开放。
