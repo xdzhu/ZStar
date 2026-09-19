@@ -335,3 +335,21 @@ PYATB一次运行同时得到三个Cartesian方向极化
 `6b567f57d5c727ed52230f6c9ec5a27c83023dcd1305f26482ce159a16210287`。
 启动回执更新为`stage_finished_pending_scientific_intake`且`returncode=0`；全ensemble
 计数增至10/12。`004+`与`005+`仍须各自终态验收，故这里仍不发布完整PZT张量。
+
+## strain-004+ 原始任务终态
+
+`004+`未重启、未放宽门槛，在cu25的原始40 MPI×1 OMP任务中于第97个离子步
+打印`Relaxation is converged!`并正常结束。ABACUS耗时17979s，PYATB耗时16s，
+合计约199.94 rank-wall core-hour。最终最大笛卡尔力分量为
+`9.88795e-5 eV/Å`，低于配置的`force_thr_ev=1e-4 eV/Å`；最大单原子三维力范数
+`1.147779683e-4 eV/Å`继续仅作为更严格诊断保存。SCF和离子弛豫标记均完整，
+occupation-manifold带隙为`1.842042964 eV`，体系保持绝缘。
+
+一次PYATB计算同时得到a/b/c极化
+`(5.347895385e-8, 2.140382068e-2, 1.124337660908) C/m²`，对应极化量子
+`(0.865509136, 0.865511840, 2.051548064) C/m²`。精确文本SHA256为
+`da40d25e5d9ff95d40a9f5e153172f040cde664ae17cd8bfbf3abc19d7fe2576`，与
+`zstar_precision.json`完全一致。独立冻结收据为235上的
+`pzt-strain004plus-accepted-20260919.json`，包含输入、终态结构、日志、带隙和
+极化哈希；没有新增DFT计算。完整PZT计数增至11/12，仅`005+`仍在原任务运行，
+因此完整e/C/d、rank和residual仍不能提前发布。

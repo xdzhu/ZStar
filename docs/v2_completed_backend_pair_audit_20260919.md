@@ -85,7 +85,8 @@ python -m pytest tests/test_v2_completed_backend_pairs.py -q
 
 PZT/VASP精确对称`ISYM=1`对照已经完成：e/C相对原任务仅变化0.384%/0.216%，
 但两条内应变路线的d33仍为232.397456/250.678969 pm/V，未提升为原生验收d。
-PZT/ABACUS中心±0.5%当前10/12点通过，`004+`与`005+`仍按原阈值运行；须待终态
+PZT/ABACUS中心±0.5%当前11/12点通过，`004+`已按原阈值完成并通过完整
+ABACUS/PYATB验收，仅`005+`仍在原任务运行；须待终态
 收集后再比较完整e/C/d，不能以VASP诊断d预填结果。PTO保持cross-route conditional，
 不因1%任务未成张量而无依据提高精度或重新扫描。
 PTO 外部同泛函 d33 参考尚缺，不能用本报告诊断值冒充文献参考。
