@@ -12,8 +12,8 @@ it is not yet merged into the main release. Install this checkout with
 
 ```bash
 zstar bec pre --calculator vasp --input-dir input --root response --phonons
-zstar bec job --root response --system slurm --header header.sh --tasks 64 \
-  --vasp-command 'mpirun -np 64 vasp_std'
+zstar bec job --root response --system slurm --header header.sh --tasks 32 \
+  --vasp-command 'mpirun -np 32 vasp_std'
 sbatch response/run_vasp_bec.slurm
 zstar bec post --root response
 ```
@@ -58,8 +58,8 @@ A completed native reference can be reused without another reference SCF:
 
 ```bash
 zstar spectra pre --calculator vasp --response response --root raman
-zstar spectra job --root raman --system slurm --header header.sh --tasks 64 \
-  --command 'mpirun -np 64 vasp_std'
+zstar spectra job --root raman --system slurm --header header.sh --tasks 32 \
+  --command 'mpirun -np 32 vasp_std'
 sbatch raman/run_zstar_spectra.slurm
 zstar spectra post --root raman
 ```
@@ -127,13 +127,15 @@ Electric response remains native DFPT for LDA/GGA. Elastic units are converted
 from kbar to GPa, and both piezoelectric columns and elastic rows/columns are
 reordered to `(xx, yy, zz, yz, xz, xy)` with engineering shear strains.
 The derived `d` is emitted only for a mechanically stable, sufficiently
-symmetric elastic matrix and a reliable internal-strain translation residual.
-Missing internal-strain data are not treated as a passed check. Electronic and
-ionic piezoelectric contributions must both be present; an explicitly printed
-total must agree with their sum to within 1e-4 C/m2. These are consistency gates,
-not substitutes for cutoff, k-mesh or response convergence tests.
-The collector preserves raw tensors and warns about failed force balance;
-it does not silently project native electromechanical contributions.
+symmetric elastic matrix. Electronic and ionic piezoelectric contributions must
+both be present; an explicitly printed total must agree with their sum to within
+1e-4 C/m2. ZStar records the condition number of `C` and the closure residual of
+`e = d C`. These are consistency gates, not substitutes for cutoff, k-mesh or
+response convergence tests. Internal-strain translation balance remains an
+independent diagnostic of the native ionic decomposition: a failure is warned
+and retained, but it does not invalidate the algebraic conversion `d = e C^-1`
+when the printed total `e` and relaxed-ion `C` pass their own checks. The
+collector does not silently project native electromechanical contributions.
 A native piezoelectric tensor is not subjected to
 the geometric correction for an improper finite-polarization derivative.
 `vasp_native_response.json` and the common response record retain solver
@@ -154,7 +156,7 @@ DFPT electronic dielectric data.
 #!/usr/bin/env bash
 #SBATCH --partition=hfacnormal01
 #SBATCH --nodes=1
-#SBATCH --ntasks=64
+#SBATCH --ntasks=32
 #SBATCH --cpus-per-task=1
 #SBATCH --time=02:00:00
 source /public/home/iai806/Software/VASP/env.sh 6.3.2

@@ -184,15 +184,12 @@ def parse_native_tensors(path: str | Path) -> dict:
         antisymmetry = float(np.max(np.abs(elastic - elastic.T)))
         result["elastic_antisymmetry_max_GPa"] = antisymmetry
         result["elastic_eigenvalues_GPa"] = np.linalg.eigvalsh(0.5 * (elastic + elastic.T))
+        result["elastic_condition_number"] = float(np.linalg.cond(elastic))
         failures = []
         if antisymmetry > 1e-3 * max(1.0, float(np.max(np.abs(elastic)))):
             failures.append("elastic major symmetry failed")
         if np.min(result["elastic_eigenvalues_GPa"]) <= 0.0:
             failures.append("elastic stability failed")
-        if "internal_strain_translation_relative" not in result:
-            failures.append("internal-strain force-balance data missing")
-        elif result["internal_strain_translation_relative"] > 1e-3:
-            failures.append("internal-strain force balance failed")
         if not {"piezoelectric_clamped_C_m2", "piezoelectric_ionic_C_m2"} <= result.keys():
             failures.append("electronic or ionic piezoelectric contribution missing")
         if result.get("piezoelectric_closure_max_C_m2", 0.0) > 1e-4:
@@ -200,6 +197,10 @@ def parse_native_tensors(path: str | Path) -> dict:
         if not failures:
             # Solve rather than explicitly forming the compliance inverse.
             result["piezoelectric_d_pm_V"] = np.linalg.solve(elastic.T, result["piezoelectric_total_C_m2"].T).T * 1000.0
+            reconstructed_e = result["piezoelectric_d_pm_V"] @ elastic / 1000.0
+            result["piezoelectric_d_ec_closure_max_C_m2"] = float(
+                np.max(np.abs(reconstructed_e - result["piezoelectric_total_C_m2"]))
+            )
         else:
             result["d_rejected_reason"] = "; ".join(failures) + "; no d tensor emitted"
     return result
@@ -289,7 +290,8 @@ def collect_native_response(root: Path, manifest: dict, epsilon: np.ndarray, bor
                 "electromechanical_warning", "d_rejected_reason", "internal_strain_source",
                 "strained_cell_internal_strain_translation_max_eV_per_A",
                 "internal_strain_reciprocity_max_eV_per_A", "piezoelectric_closure_max_C_m2",
-                "elastic_antisymmetry_max_GPa"):
+                "piezoelectric_d_ec_closure_max_C_m2", "elastic_antisymmetry_max_GPa",
+                "elastic_condition_number"):
         if key in native:
             diagnostics[key] = native[key]
     if manifest.get("dimensionality", 3) == 3:

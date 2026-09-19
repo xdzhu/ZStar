@@ -11,8 +11,8 @@ ZStar 优先使用 VASP 原生求解器，不将 ABACUS+PYATB 的有限位移重
 
 ```bash
 zstar bec pre --calculator vasp --input-dir input --root response --phonons
-zstar bec job --root response --system slurm --header header.sh --tasks 64 \
-  --vasp-command 'mpirun -np 64 vasp_std'
+zstar bec job --root response --system slurm --header header.sh --tasks 32 \
+  --vasp-command 'mpirun -np 32 vasp_std'
 sbatch response/run_vasp_bec.slurm
 zstar bec post --root response
 ```
@@ -47,8 +47,9 @@ Bulk 常数。二维谱学的现有保护仍保留，待边界条件与转换完
 [纤锌矿 AlN 案例](../examples/VASP_Native_Response/AlN/README.zh-CN.md)
 从结构优化开始，对比原生 DFPT 和原生应变有限差分，再计算 IR 及模式差分 Raman 谱。
 验收包含独立压电分量 `e31`、`e33`、`e15`、介电闭合与 `e = d C`。
-内部应变平移平衡不通过时保留原始张量并给出警告，不静默投影，
-也不输出未经质量检查的 d 张量。保留的 PBE PAW 响应与谱学选择定则验收均通过：
+内部应变平移平衡不通过时保留原始张量并给出警告，不静默投影；只要总 e 与
+relaxed-ion C 通过各自的一致性检查，仍按 `d=eC^-1` 输出并记录闭合残差。
+保留的 PBE PAW 响应与谱学选择定则验收均通过：
 e31=-0.582、e33=1.462 C/m²，原生应变路线 d33=5.324 pm/V。
 [验收记录](development/vasp_native_AlN_validation_20260918.md) 保存计算来源与当前状态。
 
@@ -62,7 +63,7 @@ zstar spectra pre --calculator vasp --response response --kind ir --root ir
 zstar spectra run --root ir
 zstar spectra post --root ir
 zstar spectra pre --calculator vasp --response response --root raman
-zstar spectra job --root raman --system slurm --header header.sh --tasks 64 \
+zstar spectra job --root raman --system slurm --header header.sh --tasks 32 \
   --command 'mpirun -np 64 vasp_std'
 sbatch raman/run_zstar_spectra.slurm
 zstar spectra post --root raman
@@ -120,10 +121,12 @@ zstar bec post --root piezo
 有限差分；LDA/GGA 电场响应仍采用 DFPT。输出将 kbar 转为 GPa，将 VASP
 的列顺序转换为 `(xx, yy, zz, yz, xz, xy)`，应变采用工程剪切约定。
 机械稳定且满足主对称性时才输出 d。原生压电张量不再重复应用针对 improper
-极化差分的几何修正。
-输出 d 还要求内部应变平移平衡通过；缺失检查数据不能视为通过。电子和离子
-压电贡献须同时存在；若 VASP 显式打印总压电张量，其与两项之和的差异须不超过
-1e-4 C/m²。上述条件属于一致性检查，不能代替截断能、k 点及响应的收敛验证。
+极化差分的几何修正。电子和离子压电贡献须同时存在；若 VASP 显式打印总压电
+张量，其与两项之和的差异须不超过 1e-4 C/m²。ZStar 同时记录 C 的条件数以及
+`e = d C` 的闭合残差。内部应变平移平衡是离子贡献分解的独立诊断：未通过时
+保留警告和原始数据，但在总 e 与 relaxed-ion C 各自通过检查时，不应错误阻断
+代数关系 `d = e C^-1`。上述条件属于一致性检查，不能代替截断能、k 点及响应的
+收敛验证。
 原生 JSON 与通用响应记录保存求解来源，区分原生 DFT、代数转换得到的 d 和
 IR 后处理。检查失败时保留原始张量与原因，不静默切换算法或自动重跑。
 
@@ -133,7 +136,7 @@ IR 后处理。检查失败时保留原始张量与原因，不静默切换算�
 #!/usr/bin/env bash
 #SBATCH --partition=hfacnormal01
 #SBATCH --nodes=1
-#SBATCH --ntasks=64
+#SBATCH --ntasks=32
 #SBATCH --cpus-per-task=1
 #SBATCH --time=02:00:00
 source /public/home/iai806/Software/VASP/env.sh 6.3.2

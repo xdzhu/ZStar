@@ -250,7 +250,7 @@ def test_tensor_reordering_units_and_derived_d(tmp_path):
     np.testing.assert_allclose(data["piezoelectric_d_pm_V"], expected)
 
 
-@pytest.mark.parametrize("problem", ["missing-internal-strain", "inconsistent-total", "missing-ionic"])
+@pytest.mark.parametrize("problem", ["inconsistent-total", "missing-ionic"])
 def test_unchecked_or_inconsistent_native_data_do_not_emit_d(tmp_path, problem):
     source = tmp_path / "OUTCAR"
     text = table("PIEZOELECTRIC TENSOR (C/m^2)", np.ones((3, 6)))
@@ -292,7 +292,7 @@ def test_native_parser_ignores_intermediate_field_direction_blocks(tmp_path):
     np.testing.assert_allclose(parse_native_tensors(source)["piezoelectric_clamped_C_m2"], np.ones((3, 6)))
 
 
-def test_internal_strain_force_balance_warns_and_gates_derived_d(tmp_path):
+def test_internal_strain_force_balance_warns_without_gating_derived_d(tmp_path):
     source = tmp_path / "OUTCAR"
     source.write_text(table("PIEZOELECTRIC TENSOR (C/m^2)", np.ones((3, 6)), ["x", "y", "z"])
                       + table("PIEZOELECTRIC TENSOR IONIC CONTR (C/m^2)", np.zeros((3, 6)), ["x", "y", "z"])
@@ -302,8 +302,19 @@ def test_internal_strain_force_balance_warns_and_gates_derived_d(tmp_path):
     result = parse_native_tensors(source)
     assert result["internal_strain_translation_relative"] == .5
     assert "electromechanical_warning" in result
-    assert "piezoelectric_d_pm_V" not in result
-    assert "d_rejected_reason" in result
+    np.testing.assert_allclose(result["piezoelectric_d_pm_V"], np.ones((3, 6)) * 10.0)
+    assert result["piezoelectric_d_ec_closure_max_C_m2"] < 1e-12
+    assert "d_rejected_reason" not in result
+
+
+def test_missing_internal_strain_does_not_gate_consistent_e_c_conversion(tmp_path):
+    source = tmp_path / "OUTCAR"
+    source.write_text(table("PIEZOELECTRIC TENSOR (C/m^2)", np.ones((3, 6)))
+                      + table("PIEZOELECTRIC TENSOR IONIC CONTR (C/m^2)", np.zeros((3, 6)))
+                      + table("TOTAL ELASTIC MODULI (kBar)", np.eye(6) * 1000))
+    result = parse_native_tensors(source)
+    np.testing.assert_allclose(result["piezoelectric_d_pm_V"], np.ones((3, 6)) * 10.0)
+    assert "electromechanical_warning" not in result
 
 
 def test_vasp_mode_masses_use_actual_atom_types_and_pomass(tmp_path):
