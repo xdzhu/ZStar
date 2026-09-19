@@ -88,3 +88,38 @@ PTO calculation on the same exact P4mm structure. It can separate finite-strain
 amplitude effects from the native internal-strain contraction. Until that audit
 is complete, production recommendations remain central `+/-0.5%`; no parameter
 scan or automatic workflow retry is introduced.
+
+## Bounded 1% discriminator outcome
+
+The single authorized `+/-1%` discriminator was run on HF as Slurm job
+`27723548` (`node122`, `32 x 1`, elapsed `00:32:02`, about `17.08`
+allocated rank-wall core-hours).  The job retained the same PBE/PAW parent,
+`ENCUT=1000 eV`, `EDIFF=1e-8`, and `1e-4 eV/A` force gate.  It stopped at the
+first failed intake gate and was not automatically resubmitted.
+
+The completed sequence was:
+
+| stage | maximum force (eV/A) | gap (eV) | ionic steps | gate |
+| --- | ---: | ---: | ---: | --- |
+| `eta1=-1%` relax continuation | 9.715e-5 | 1.9135 | 3 | pass |
+| `eta1=-1%` static | 9.626e-5 | 1.9135 | 1 | pass |
+| `eta1=+1%` relax | 9.964e-5 | 1.9365 | 17 | pass |
+| `eta1=+1%` static | 8.308e-5 | 1.9365 | 1 | pass |
+| `eta2=-1%` relax | 8.411e-5 | 1.9135 | 10 | pass |
+| `eta2=-1%` static | 1.0805e-4 | 1.9135 | 1 | fail |
+
+All six electronic calculations converged and remained insulating.  The
+failed static calculation used the byte-identical relaxed geometry: the
+`eta2=-1%` relax `CONTCAR` and static `POSCAR` both have SHA256
+`a9cbe61395e2dec64a2446d44efaf9f6c6e729c1e2964537ce322fee38c1e3d5`.
+The failure is therefore an 8.05% force-gate overshoot on a cold static
+reevaluation, not a geometry handoff, band-gap, or SCF failure.  The terminal
+static `OUTCAR` SHA256 is
+`3e2f086af6531425550c380be9e08ad28022d774e06c81fb72706bc9d7a77593`.
+
+Because the full 13-structure set is incomplete, no 1% e/C/d tensor is fitted
+and no strain-amplitude conclusion is drawn from this partial sequence.  The
+accepted 0.5% central result and its production recommendation are unchanged.
+The stopped calculation is retained as negative evidence for the strict
+intake gate; completing it would require a separately justified continuation,
+not a hidden tolerance expansion or blind retry.
