@@ -77,6 +77,9 @@ site stabilizer 只用于旋转响应，不把不同 Wyckoff site 的原子合�
 2. 对每个响应输出表示（polarization、stress/strain 或 internal displacement）
    建立 intertwiner null-space。对一个候选应变 (v)，把所有允许基矩阵作用后的
    输出列堆成 design block；按 canonical index 贪心保留能增加联合系数秩的方向。
+   秩判定同时使用绝对下限 `1e-10` 和相对奇异值阈值 `1e-8*s_max`；只通过
+   `1e-9` 量级坐标轴泄漏出现的“新方向”不算可辨识信息，必须继续加入物理 canonical
+   方向。这一阈值是无量纲系数设计矩阵的线性代数阈值，不是新的空间群 `symprec`。
    这给出“在 canonical seed 集合内”的最小可识别集合，而不是未经证明的晶系特例。
 3. 对多个输出取 block-diagonal 联合秩：clamped-ion 至少联合 polarization 与
    strain/stress；relaxed-ion 再加入 displacement。若 `identified_rank` 小于允许
@@ -90,7 +93,7 @@ site stabilizer 只用于旋转响应，不把不同 Wyckoff site 的原子合�
 
 当前 draft API `symmetry_adapted_input_plan(report, input_kind="strain", output_kinds=...)`
 实现了上述 rank 选择，返回 canonical vectors、selected indices、各输出允许秩、
-identified rank、容差和 `complete` 标志。`prepare_abacus_strain_ensemble` 通过
+identified rank、绝对/相对秩容差和 `complete` 标志。`prepare_abacus_strain_ensemble` 通过
 `symmetry_reduce=True` 采用这个计划；默认仍保留显式六分量路径以便与已有审计和 all-
 component control 对照。P4mm BaTiO3 的联合 `(polarization, strain, displacement)`
 计划由 6 个分量降为 `(xx, zz, 2yz, 2xy)` 4 个方向（8 个正负 stage），允许秩为
@@ -98,6 +101,12 @@ component control 对照。P4mm BaTiO3 的联合 `(polarization, strain, displac
 实现中对允许秩为零的输出使用显式零列 block，而不是跳过该输出或调用空矩阵
 操作；因此像 Pmmm 这样的非极性正交晶体仍可联合规划弹性采样，同时将压电
 分量严格标记为 `symmetry-forbidden`。
+
+真实优化后的PTO和ZnO审计揭示了仅用绝对秩阈值的失败模式：近似对称晶胞的
+Cartesian坐标轴相对理想对称轴有约`1e-9`量级混合，旧贪心计划分别只选两个/三个
+法向方向，却以约`6e8--1.3e9`的条件数宣称联合满秩。此信息远低于有限差分DFT的
+可辨识尺度。相对秩门使PTO恢复为`(xx,zz,2yz,2xy)`，近似hexagonal测试恢复为
+包含物理剪切的计划；完整六方向设计条件数约1，仍作为无约化审计基准。
 
 ### 3.3 联合 response ensemble
 

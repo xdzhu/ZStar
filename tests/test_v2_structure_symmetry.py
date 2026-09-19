@@ -444,6 +444,44 @@ def test_accepted_approximate_hex_metric_is_orthogonalized_for_representations()
     assert displacement_basis.allowed_rank == 8
     assert displacement_basis.singular_values[-1] < 1.0e-10
     assert report.diagnostics["operation_metric_projection_applied"] is True
+    plan = symmetry_adapted_input_plan(
+        report,
+        input_kind="strain",
+        output_kinds=("polarization", "strain", "displacement"),
+    )
+    assert plan.complete
+    # A coefficient visible only through a 1e-9 leakage is not a usable DFT
+    # task reduction.  The relative rank gate must add physical shear input.
+    assert plan.selected_indices == (0, 2, 3)
+    assert plan.relative_rank_tolerance == 1.0e-8
+
+
+def test_nearly_axis_aligned_p4mm_plan_does_not_use_tiny_rotation_leakage():
+    structure = StructureSpec(
+        lattice=np.array([
+            [3.8374793747, -8.99e-10, -2.11e-9],
+            [2.07e-9, 3.8375766673, -3.18e-10],
+            [4.04e-9, 1.57e-9, 4.7473664700],
+        ]),
+        fractional_positions=np.array([
+            [7.28e-10, 7.07e-10, .15622844],
+            [.5-1.03e-9, .5-1.02e-9, .59737860],
+            [1.85e-10, .5+1.39e-9, .48530497],
+            [.5+1.38e-9, 2.00e-10, .48530832],
+            [.5-1.26e-9, .5-1.28e-9, .96597968],
+        ]),
+        symbols=("Pb", "Ti", "O", "O", "O"),
+    )
+    report = analyze_space_group(structure, symprec_grid=(1.0e-3,))
+    assert report.space_group == "P4mm"
+    plan = symmetry_adapted_input_plan(
+        report,
+        input_kind="strain",
+        output_kinds=("polarization", "strain", "displacement"),
+    )
+    assert plan.complete
+    assert plan.selected_indices == (0, 2, 3, 5)
+    assert plan.to_dict()["relative_rank_tolerance"] == 1.0e-8
 
 
 def test_periodic_symmetry_analysis_rejects_missing_spglib(monkeypatch):

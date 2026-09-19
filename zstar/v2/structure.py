@@ -217,6 +217,7 @@ class SymmetryInputPlan:
     allowed_ranks: dict[str, int]
     identified_rank: int
     tolerance: float
+    relative_rank_tolerance: float = 1.0e-8
 
     @property
     def complete(self) -> bool:
@@ -232,6 +233,7 @@ class SymmetryInputPlan:
             "identified_rank": int(self.identified_rank),
             "complete": self.complete,
             "tolerance": float(self.tolerance),
+            "relative_rank_tolerance": float(self.relative_rank_tolerance),
         }
 
 
@@ -581,6 +583,7 @@ def symmetry_adapted_input_plan(
     input_kind: str,
     output_kinds: str | Iterable[str] = "polarization",
     tolerance: float = 1.0e-10,
+    relative_rank_tolerance: float = 1.0e-8,
 ) -> SymmetryInputPlan:
     """Select canonical perturbations sufficient to identify allowed responses.
 
@@ -601,6 +604,8 @@ def symmetry_adapted_input_plan(
         raise ValueError("cannot build a symmetry-adapted input plan without operations")
     if not np.isfinite(float(tolerance)) or float(tolerance) <= 0.0:
         raise ValueError("tolerance must be finite and positive")
+    if not np.isfinite(float(relative_rank_tolerance)) or not 0.0 < float(relative_rank_tolerance) < 1.0:
+        raise ValueError("relative_rank_tolerance must be finite and between zero and one")
     input_name = str(input_kind).strip().lower()
     if not input_name:
         raise ValueError("input_kind must be non-empty")
@@ -632,6 +637,7 @@ def symmetry_adapted_input_plan(
             allowed_ranks=allowed_ranks,
             identified_rank=0,
             tolerance=float(tolerance),
+            relative_rank_tolerance=float(relative_rank_tolerance),
         )
 
     coefficient_matrices: dict[str, list[np.ndarray]] = {}
@@ -674,7 +680,10 @@ def symmetry_adapted_input_plan(
     for index in range(input_dimension):
         direction = np.eye(input_dimension, dtype=float)[index]
         candidate = np.vstack([selected_features, feature(direction)])
-        candidate_rank = int(np.linalg.matrix_rank(candidate, tol=float(tolerance)))
+        singular_values = np.linalg.svd(candidate, compute_uv=False)
+        scale = float(singular_values[0]) if singular_values.size else 1.0
+        cutoff = max(float(tolerance), float(relative_rank_tolerance) * scale)
+        candidate_rank = int(np.count_nonzero(singular_values > cutoff))
         if candidate_rank > identified_rank:
             selected.append(index)
             selected_features = candidate
@@ -690,4 +699,5 @@ def symmetry_adapted_input_plan(
         allowed_ranks=allowed_ranks,
         identified_rank=identified_rank,
         tolerance=float(tolerance),
+        relative_rank_tolerance=float(relative_rank_tolerance),
     )
