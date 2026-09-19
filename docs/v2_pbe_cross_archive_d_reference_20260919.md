@@ -6,7 +6,7 @@ de Jong 的941条压电档案直接报告proper relaxed-ion e，不直接报告d
 另一个1181条弹性档案包含AlN/mp-661、GaN/mp-804、ZnO/mp-2133的完整C；
 没有PTO/mp-20459。因此可以为前三者构造**有条件的跨档案d参考**，
 不能将其写成“数据库直接报告的d33”或“同一计算来源的精确配对d”。
-全部结构和设置差异保留；本审计不改变任何native d质量门。
+全部结构和设置差异保留；跨档案数值接近不能替代 native d 的内部质量门。
 
 两篇原始论文分别为
 [A database to enable discovery and design of piezoelectric materials, de Jong et al., Scientific Data 2, 150053 (2015), DOI10.1038/sdata.2015.53](https://perssongroup.lbl.gov/papers/sdata2015-piezoprops.pdf)
@@ -66,16 +66,17 @@ GaN/ZnO的原始结构直接对应并非同极性取向，反演后接近；AlN�
 | 材料/后端 | 本次/已验收d33 | 跨档案PBE参考d33 | 有符号差异 |
 |---|---:|---:|---:|
 | AlN/ABACUS | 4.975410 | 5.342677 | −6.87% |
-| AlN/VASP（已验收） | 5.324396 | 5.342677 | −0.34% |
+| AlN/VASP，`ISYM=2`（已验收） | 5.323688 | 5.342677 | −0.36% |
 | GaN/ABACUS | 1.872239 | 1.720637 | +8.81% |
-| GaN/VASP | 未验收，不填 | 1.720637 | — |
+| GaN/VASP，`ISYM=2`（已验收） | 1.583054 | 1.720637 | −8.00% |
 | ZnO/ABACUS | 9.666372 | 9.273189 | +4.24% |
-| ZnO/VASP | 未验收，不填 | 9.273189 | — |
+| ZnO/VASP，精确六方 `ISYM=2`（已验收） | 9.750071 | 9.273189 | +5.14% |
 | PTO/ABACUS | 49.084674 | 没有配对C，不推断 | — |
 | PTO/VASP | 未验收，不填 | 没有配对C，不推断 | — |
 
 保留ZnO/ABACUS辅助Lambda对称性警告；该列d来自独立直接应变e/C。
-不将诊断代数native d填入未通过门限的行，不用参考接近来覆盖质量警告。
+GaN/ZnO 的内部应变分解警告继续保留；这里的 native d 资格来自总 e、relaxed-ion C、
+弹性稳定性和 `e=dC` 闭合，而不是因为跨档案参考接近。
 
 ## 完整 C 比较
 
@@ -87,9 +88,9 @@ GaN/ZnO的原始结构直接对应并非同极性取向，反演后接近；AlN�
 | AlN/ABACUS | 1.4136% | 4.6674 |
 | AlN/VASP | 0.4574% | 1.7187 |
 | GaN/ABACUS | 3.0811% | 12.6487 |
-| GaN/VASP | 0.9176% | 3.4833 |
+| GaN/VASP，`ISYM=2` | 1.0046% | 3.7547 |
 | ZnO/ABACUS | 4.9203% | 12.6715 |
-| ZnO/VASP | 2.1387% | 5.7648 |
+| ZnO/VASP，精确六方 `ISYM=2` | 1.8789% | 5.3308 |
 
 这些差异是确定性的比较指标，不是置信区间、标准不确定度或普适精度保证。
 原始数据没有所需不确定度/协方差，故standard_uncertainty=null；不虚构误差条。

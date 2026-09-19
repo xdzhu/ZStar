@@ -18,7 +18,8 @@ mechanical-stability, and matched-theory comparison gates all pass.
 ## PBE dual-backend campaign (2026-09-18)
 
 The authoritative [full PBE tensor comparison and separate d33 table](../../../docs/v2_pbe_database_comparison_20260918.md)
-now include completed AlN/GaN/ZnO/PTO ABACUS and the already accepted AlN/native VASP.
+now include completed AlN/GaN/ZnO/PTO ABACUS and accepted symmetry-enabled
+AlN/GaN/ZnO native VASP responses; PTO native validation is still running.
 AlN/ABACUS uses central engineering strain ±0.005 and passes the internal
 rank, insulating, tensor-symmetry and mechanical-stability checks:
 e33=1.387956 C/m², d33=4.975410 pm/V. Its e33 differs by 5.01% from the
@@ -26,9 +27,9 @@ same-phase de Jong PBE database. This is not an identical-input comparison.
 
 | Material | ABACUS/PYATB PBE | Native VASP PBE |
 |---|---|---|
-| AlN | Complete full e/C/d, internally consistent, external differences reported | Reuse accepted full e/C/d; ENCUT600 rather than database1000 eV disclosed |
-| GaN | Complete full e/C/d; d33=1.872239 pm/V, internal checks pass; database e15 difference35.07% retained, not strict external reproduction | Original and single symmetry-control e/C collected; force balance improves but d gate remains pending |
-| ZnO | Complete direct e/C/d; d33=9.666372 pm/V, database e Frobenius difference1.73%; auxiliary Lambda symmetry gate remains pending | e/C collected; same warning, d not accepted; explicit frame transformation documented |
+| AlN | Complete full e/C/d, internally consistent, external differences reported | Symmetry-enabled full e/C/d accepted; d33=5.323688 pm/V; ENCUT600 rather than database1000 eV disclosed |
+| GaN | Complete full e/C/d; d33=1.872239 pm/V, internal checks pass; database e15 difference35.07% retained, not strict external reproduction | `ISYM=2` full e/C/d accepted; d33=1.583054 pm/V; internal-strain decomposition warning retained separately |
+| ZnO | Complete direct e/C/d; d33=9.666372 pm/V, database e Frobenius difference1.73%; auxiliary Lambda symmetry gate remains pending | Exact-hexagonal `ISYM=2` full e/C/d accepted; d33=9.750071 pm/V; projection only removes serialization noise |
 | PTO | Complete full central e/C/d; d33=49.084674 pm/V; internal checks pass, PBE database e33 difference24.26% retained, not strict external reproduction | Complete e/C collected and compared with PBE database; internal-strain warning retained, native d gate pending |
 | Ordered PZT50/50 [001] | Last audited 7/12 strain points complete, including newly checked strain003−; original cu25/cu26 calculations continue. PBS714459 strain005− failed after100 steps; isolated HF27722565 CG reset relaxation converged, but polarization/build compatibility remain unchecked and it is not an accepted original ensemble point | Original native e/C complete (72/72); exact-symmetry ISYM1 control also complete (48 perturbations), native d still rejected; no matching ordered-model database entry |
 
@@ -77,7 +78,9 @@ now presents current same-phase PBE e31/e33/e15, full-e matrix differences and a
 separate d33 comparison before historical snapshots. PTO/PBE d33 is49.084674 pm/V;
 the historical PBEsol128.75 pm/V belongs to a different calculation and must not
 be substituted. Matched PBE external PTO d33 remains unavailable.
-GaN/ZnO/PTO VASP d values are explicitly diagnostic, not accepted native output.
+GaN/ZnO VASP d values now pass the total e/C stability and closure gates; their
+internal-strain decomposition warnings remain visible. PTO retains the historical
+diagnostic label until its current symmetry-enabled rerun completes.
 The existing `results/benchmark_comparison.json` is a historical 2026-09-17 snapshot,
 including superseded acceptance labels; it is not an authoritative current result.
 Use the frozen full-tensor sources linked by the current case matrix instead.

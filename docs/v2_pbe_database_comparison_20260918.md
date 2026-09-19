@@ -259,7 +259,7 @@ PTO 的晶格与内部坐标差异明显，后续响应偏差不能全部归因�
 保留源结构 SHA256、数据库哈希、原子对应与平移；原始计算目录仍保留输入。
 新增平移/同元素置换、反畴与错误坐标方向测试，相关回归 **60 passed**。
 
-## 已收集 PBE 响应更新：AlN/GaN/ZnO/PTO ABACUS完整；GaN/ZnO/PTO原生保留警告
+## 已收集 PBE 响应更新：ABACUS 四体系完整；AlN/GaN/ZnO 原生 e/C/d 通过
 
 以下均为三维 bulk proper relaxed-ion e，单位 C/m²。
 差值百分比为 `100 × abs(计算值−数据库值)/abs(数据库值)`；
@@ -271,21 +271,21 @@ PTO 的晶格与内部坐标差异明显，后续响应偏差不能全部归因�
 | AlN/ABACUS+PYATB | e31 | −0.568978 | −0.580060 | 1.91 | 内部 e/C/d 检查通过 |
 | AlN/ABACUS+PYATB | e33 | 1.387956 | 1.461150 | 5.01 | 同上 |
 | AlN/ABACUS+PYATB | e15 | −0.297343 | −0.289305 | 2.78 | 同上 |
-| AlN/VASP native（复用已验收） | e31 | −0.581620 | −0.580060 | 0.27 | 已验收，600 eV 与数据库1000 eV不同 |
-| AlN/VASP native（复用已验收） | e33 | 1.461500 | 1.461150 | 0.024 | 同上 |
-| AlN/VASP native（复用已验收） | e15 | −0.309520 | −0.289305 | 6.99 | 同上 |
+| AlN/VASP native，`ISYM=2` | e31 | −0.581490 | −0.580060 | 0.25 | e/C/d 已验收，600 eV 与数据库1000 eV不同 |
+| AlN/VASP native，`ISYM=2` | e33 | 1.461400 | 1.461150 | 0.017 | 同上 |
+| AlN/VASP native，`ISYM=2` | e15 | −0.309530 | −0.289305 | 6.99 | 同上 |
 | GaN/ABACUS+PYATB | e31 | −0.303847 | −0.289820 | 4.84 | 内部完整e/C/d检查通过，外部差异保留 |
 | GaN/ABACUS+PYATB | e33 | 0.525069 | 0.464510 | 13.04 | 同上 |
 | GaN/ABACUS+PYATB | e15 | −0.188174 | −0.139315 | 35.07 | 同上，未称严格外部复现 |
-| GaN/VASP native | e31 | −0.267490 | −0.289820 | 7.70 | 已计算；内应变力平衡警告，未验收完整 e/C/d |
-| GaN/VASP native | e33 | 0.419950 | 0.464510 | 9.59 | 同上 |
-| GaN/VASP native | e15 | −0.146750 | −0.139315 | 5.34 | 同上 |
+| GaN/VASP native，`ISYM=2` | e31 | −0.264450 | −0.289820 | 8.75 | 总 e/C/d 已验收；内应变分解警告保留 |
+| GaN/VASP native，`ISYM=2` | e33 | 0.422860 | 0.464510 | 8.97 | 同上 |
+| GaN/VASP native，`ISYM=2` | e15 | −0.146180 | −0.139315 | 4.93 | 同上 |
 | ZnO/ABACUS+PYATB | e31 | −0.521673 | −0.537510 | 2.95 | 直接e/C/d内部检查通过；独立内应变张量警告保留 |
 | ZnO/ABACUS+PYATB | e33 | 1.047482 | 1.036810 | 1.03 | 同上 |
 | ZnO/ABACUS+PYATB | e15 | −0.384008 | −0.385000 | 0.26 | 同上 |
-| ZnO/VASP native（显式坐标变换） | e31 | −0.540920 | −0.537510 | 0.63 | 已计算；内应变力平衡警告，未验收完整 e/C/d |
-| ZnO/VASP native（显式坐标变换） | e33 | 1.039140 | 1.036810 | 0.225 | 同上 |
-| ZnO/VASP native（显式坐标变换） | e15 | −0.397950 | −0.385000 | 3.36 | 同上 |
+| ZnO/VASP native，精确六方 `ISYM=2` | e31 | −0.536880 | −0.537510 | 0.12 | 总 e/C/d 已验收；结构投影仅去除序列化噪声 |
+| ZnO/VASP native，精确六方 `ISYM=2` | e33 | 1.042050 | 1.036810 | 0.51 | 同上 |
+| ZnO/VASP native，精确六方 `ISYM=2` | e15 | −0.399280 | −0.385000 | 3.71 | 同上 |
 | PTO/ABACUS+PYATB | e31 | 1.710979 | 1.643650 | 4.10 | 完整中心差分e/C/d；外部差异保留 |
 | PTO/ABACUS+PYATB | e33 | 2.114819 | 2.792120 | 24.26 | 同上，不宣称严格复现 |
 | PTO/ABACUS+PYATB | e15 | 2.895233 | 3.259890 | 11.19 | 同上 |
@@ -299,20 +299,21 @@ PTO 的晶格与内部坐标差异明显，后续响应偏差不能全部归因�
 AlN/GaN/ZnO的**有条件跨档案PBE d33参考**，并注明几何、设置和极性取向差异。
 数值与完整C比较见[v2_pbe_cross_archive_d_reference_20260919.md](v2_pbe_cross_archive_d_reference_20260919.md)。
 下表“此数据库d33”仍指直接报告值，不将跨档案推导值冒充原生数据库字段。
-PTO在该弹性档案没有配对C，外部d33仍空缺；native未验收d仍不填。
+PTO在该弹性档案没有配对C，外部d33仍空缺；其 native 重算完成前仍不提升旧值。
 
 | 材料/计算器 | d33 pm/V（=pC/N） | 此数据库 d33 | 备注 |
 |---|---:|---|---|
 | AlN/ABACUS+PYATB | 4.975410 | 未提供 | 同一组 proper e 与 C^E 导出 |
-| AlN/VASP native | 5.324396 | 未提供 | 已验收 native strain 路线 |
+| AlN/VASP native，`ISYM=2` | 5.323688 | 未提供 | 已验收 native strain 路线；`e=dC` 闭合通过 |
 | GaN/ABACUS+PYATB | 1.872239 | 未提供 | 同一组proper e与relaxed C导出；外部d验证未完成 |
-| GaN/VASP native | 未发布 | 未提供 | 原生 force-balance gate 拒绝，不绕过门导出 d |
+| GaN/VASP native，`ISYM=2` | 1.583054 | 未提供 | 总 e/C、弹性稳定性与 `e=dC` 闭合通过；内应变分解警告保留 |
 | ZnO/ABACUS+PYATB | 9.666372 | 未提供 | 由本次直接proper e和relaxed C导出；不宣称内应变张量已验收 |
-| ZnO/VASP native | 未发布 | 未提供 | 同上 |
+| ZnO/VASP native，精确六方 `ISYM=2` | 9.750071 | 未提供 | 总 e/C/d 已验收；不把结构序列化噪声修正冒充物理优化 |
 | PTO/ABACUS+PYATB | 49.084674 | 未提供 | 同一组proper e与relaxed C导出；外部d验证未完成 |
 | PTO/VASP native | 未发布 | 未提供 | raw内应变警告保留；诊断代数值不代替合格d |
 
-AlN 两后端 d33 差6.55%（以该 VASP 结果为分母），e 全张量 Frobenius 差4.47%，
+AlN 两后端 d33 差6.54%（以新 `ISYM=2` VASP 结果为分母）；此前完整张量
+Frobenius 比基于旧验收档案，待统一结果档案重生成后更新，不混用新旧来源。
 C 全矩阵 Frobenius 差1.32%。这些是后端/不同平衡结构/不同数值设置的整体差异，
 不能当成同输入下仅赝势误差的分离证明。ABACUS e 对数据库全张量差4.39%。
 
@@ -350,13 +351,17 @@ NCORE1是为避开旧版本原生k点变化兼容限制，见
 
 AlN/ABACUS响应部分 ABACUS累计2841 s，PYATB累计91 s，日志计数109次已收敛SCF cycle，
 40 rank-wall约32.578 core-hours；不含R1/R2r、不冒充实测rank CPU。
-GaN/VASP作业27720982总分配46m04s×32≈24.569 core-hours，native两阶段及收集记时约15.985。
-ZnO/VASP恢复作业27721213总分配26m55s×32≈14.356 core-hours，native约11.736。
+历史GaN/VASP作业27720982总分配46m04s×32≈24.569 core-hours，历史ZnO/VASP恢复
+作业27721213总分配26m55s×32≈14.356 core-hours。当前验收重算分别为GaN
+27723293（18m29s，9.858 rank-wall core-hours）和精确六方ZnO 27723364
+（15m52s，8.462 rank-wall core-hours）；失败的隔离控制另行记录，不能并入成功作业
+制造加速比。
 这些不同材料/阶段成本不能作为同任务加速比。
 
 可复现比较需增加
 `--additional-calculations outputs/pbe_database_comparison_20260918/completed_calculations.json`。
-GaN/ZnO/PTO的VASP JSON状态为 `scientific_gate_pending`，即使e与文献接近也不会提升为完整验收。
+冻结旧比较JSON中的GaN/ZnO/PTO状态为 `scientific_gate_pending`；当前GaN/ZnO已由
+新对称性开启重算及 e/C/d 闭合证据取代，PTO仍等待本轮重算完成。
 AlN/GaN/ZnO/PTO ABACUS完整收集；PZT的ABACUS及原生对称性对照尚需收齐，目标未完成。
 
 ## ZnO / ABACUS / PBE 完成与逐响应质量边界
