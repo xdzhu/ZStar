@@ -64,13 +64,23 @@ max ΔC≤8.51e−5 GPa、max Δd≤2.55e−4 pm/V；该检查只证明收集/�
 
 ```powershell
 $env:PYTHONPATH='D:/Work/Code/zstar-v2-development'
-python tools/audit_v2_completed_backend_pairs.py --archive outputs/pbe_database_comparison_20260918 --output outputs/pbe_database_comparison_20260918/completed_backend_pair_audit_NEW.json
+python tools/audit_v2_completed_backend_pairs.py `
+  --archive outputs/pbe_database_comparison_20260918 `
+  --accepted-native GaN=outputs/pbe_database_comparison_20260918/accepted_native_20260919/GaN/vasp_native_response.json `
+  --accepted-native ZnO=outputs/pbe_database_comparison_20260918/accepted_native_20260919/ZnO/vasp_native_response.json `
+  --accepted-native PTO=outputs/pbe_database_comparison_20260918/accepted_native_20260919/PTO/vasp_native_response.json `
+  --output outputs/pbe_database_comparison_20260918/completed_backend_pair_accepted_sources_NEW.json
 python -m pytest tests/test_v2_completed_backend_pairs.py -q
 ```
 
 输出采用独占新路径，包含完整有符号差矩阵、单位、来源 SHA256、算法 SHA256、版本和来源警告。
-冻结结果为 `outputs/pbe_database_comparison_20260918/completed_backend_pair_audit_20260919.json`。
-此次数值档案生成后新增的是旋转测试，算法文件未变；复核输入哈希后可重现。
+历史首轮结果 `completed_backend_pair_audit_20260919.json` 保留但使用的是当时的原生档案，
+不得再覆盖后续已验收的 GaN `ISYM=2`、ZnO 精确六方 `ISYM=2` 和 PTO 原生重算。
+当前三份显式覆盖文件的 SHA256 分别为
+`482e8c34852922a43b11801eb21d59f29147292b2a0353884cd37cc6d5e4cef1`、
+`3a4525ad7939836dc1c5af3d87b4f8ca2fd273b58c5447bb4cf32097d9db9095` 和
+`15319a80f0d0c705e048c8a21760701aefebc91f51a8a5ce0c7116e73d5b5042`。
+审计器要求覆盖文件本身含完整且闭合的 e/C/d，不能用缺失 d 的诊断档案提升验收状态。
 描述性分量阈值沿用精度协议，但不是跨后端验收阈值；标准不确定度保持 null。
 
 PZT/VASP精确对称`ISYM=1`对照已经完成：e/C相对原任务仅变化0.384%/0.216%，
