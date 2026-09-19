@@ -6,17 +6,20 @@ The ABACUS + PYATB route uses the included norm-conserving pseudopotentials and
 `1e-4 eV/Angstrom` fixed-cell force threshold.  The central ensemble contains
 one reference and 12 `+-0.5%` engineering-strain structures.
 
-| Source | `e31` | `e33` | `e15` (C/m2) | `d33` (pm/V) |
-| --- | ---: | ---: | ---: | ---: |
-| ZStar / ABACUS + PYATB | -0.5217 | 1.0475 | -0.3840 | 9.666 |
-| ZStar / native VASP | -0.5369 | 1.0421 | -0.3993 | 9.750 |
-| de Jong et al. / VASP-PBE | -0.5375 | 1.0368 | -0.3850 | not reported |
+| Source | Method | `e31` | `e33` | `e15` (C/m2) | `d31` | `d33` | `d15` (pm/V) |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| ZStar / ABACUS + PYATB | PBE | -0.5217 | 1.0475 | -0.3840 | -4.669 | 9.666 | -9.217 |
+| ZStar / native VASP | PBE | -0.5369 | 1.0421 | -0.3993 | -4.887 | 9.750 | -10.828 |
+| de Jong et al. / VASP | PBE | -0.5375 | 1.0368 | -0.3850 | not reported | not reported | not reported |
+| Catti et al. / CRYSTAL | Hartree-Fock | -0.54 | 1.19 | -0.46 | -3.70 | 8.00 | -8.20 |
+| Kobiakov / resonance | experiment | not reported | not reported | not reported | -5.12 | 12.3 | -8.3 |
 
-The external dataset is de Jong et al., *Scientific Data* **2**, 150053
-(2015), DOI: [10.1038/sdata.2015.53](https://doi.org/10.1038/sdata.2015.53).
-The native VASP archive uses the exact-hexagonal, symmetry-enabled result.  Its
-internal-strain decomposition warning is retained, but the independently
-closed total `e`, positive-definite `C`, and algebraic `d=e C^-1` remain usable.
+References: [de Jong et al.](https://doi.org/10.1038/sdata.2015.53),
+[Catti et al.](https://doi.org/10.1016/S0022-3697(03)00219-1), and
+[Kobiakov](https://doi.org/10.1016/0038-1098(80)90502-5). The native VASP
+archive uses the exact-hexagonal, symmetry-enabled result. Its internal-strain
+decomposition warning is retained, but the independently closed total `e`,
+positive-definite `C`, and algebraic `d=e C^-1` remain usable.
 
 ```bash
 ./run.sh check

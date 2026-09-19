@@ -6,8 +6,8 @@ deliberately limited to the two clearest completed comparisons:
 
 | Case | Role | ABACUS / VASP agreement |
 | --- | --- | --- |
-| [Wurtzite AlN](AlN) | Primary external benchmark against the de Jong PBE dataset | full `e`, `C`, and `d` tensors retained |
-| [Wurtzite ZnO](ZnO) | Second polar 6mm benchmark with a larger strain response | full `e`, `C`, and `d` tensors retained |
+| [Wurtzite AlN](AlN) | PBE dual-backend benchmark with direct-GGA and interferometric literature anchors | full `e`, `C`, and `d` tensors retained |
+| [Wurtzite ZnO](ZnO) | Polar 6mm benchmark with HF and room-temperature single-crystal references | full `e`, `C`, and `d` tensors retained |
 
 Each directory contains clean ABACUS inputs and redistributable assets in
 `run/`, native VASP input decks without licensed `POTCAR` files in `run/vasp/`,

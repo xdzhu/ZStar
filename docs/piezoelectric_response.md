@@ -4,6 +4,15 @@ ZStar supports proper piezoelectric stress coefficients `e`, relaxed-ion
 elastic coefficients `C`, and strain coefficients `d = e C^-1` for insulating
 bulk crystals. Engineering Voigt order is `(xx, yy, zz, 2yz, 2xz, 2xy)`;
 `e` is reported in C/m2, `C` in GPa, and `d` in pm/V (= pC/N).
+The conversion is
+
+```text
+d [pm/V] = 1000 * e [C/m2] * inverse(C [GPa])
+```
+
+because `(C/m2) * (m2/N) = C/N = m/V`. The factor of 1000 is required
+when the elastic matrix is supplied in GPa. All tensors must use the same
+engineering-shear convention and electrical and ionic boundary conditions.
 
 ## ABACUS + PYATB finite-strain route
 
