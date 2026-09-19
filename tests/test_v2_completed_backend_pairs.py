@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from tools.audit_v2_completed_backend_pairs import compare_pair, difference, tensors
+from tools.audit_v2_completed_backend_pairs import accepted_native_record, compare_pair, difference, tensors
 from zstar.v2.mechanical import rotate_elastic_tensor, rotate_piezoelectric_tensor, stress_representation
 
 
@@ -72,3 +72,28 @@ def test_generic_3d_rotation_preserves_stress_dual_d_closure():
     # Treating d as an engineering-strain map gives the wrong shear scaling.
     with pytest.raises(ValueError):
         tensors(er, cr, rotate_piezoelectric_tensor(d, q))
+
+
+def test_accepted_native_override_requires_complete_closing_tensors(tmp_path):
+    import json
+
+    e, c = sample()
+    _, _, d = tensors(e, c)
+    path = tmp_path / 'vasp_native_response.json'
+    path.write_text(json.dumps({'tensors': {
+        'piezoelectric_total_C_m2': e.tolist(),
+        'elastic_relaxed_GPa': c.tolist(),
+        'piezoelectric_d_pm_V': d.tolist(),
+        'electromechanical_warning': 'retained diagnostic warning',
+    }}), encoding='utf-8')
+    record = accepted_native_record(path)
+    assert record['status'] == 'accepted_native_response_override'
+    assert record['quality_issues'] == ['retained diagnostic warning']
+    np.testing.assert_allclose(record['d_pm_V'], d)
+
+    path.write_text(json.dumps({'tensors': {
+        'piezoelectric_total_C_m2': e.tolist(),
+        'elastic_relaxed_GPa': c.tolist(),
+    }}), encoding='utf-8')
+    with pytest.raises(ValueError, match='lacks complete e/C/d'):
+        accepted_native_record(path)

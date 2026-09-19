@@ -61,10 +61,45 @@ def compare_pair(abacus, native):
                                      'Diagnostic algebra of serialized native e/C only; source d remains null'}
 
 
+def accepted_native_record(path: Path):
+    """Load a completed, already accepted native-response document.
+
+    The historical comparison archive is immutable, so later symmetry-control
+    calculations are supplied explicitly instead of silently replacing its
+    sources.  Requiring a complete e/C/d closure prevents a diagnostic native
+    document from being promoted by this override.
+    """
+    if path.stat().st_size > 5_000_000:
+        raise ValueError('Bounded accepted native-response input required')
+    document = strict_json(path.read_bytes())
+    raw = document.get('tensors', {})
+    required = ('piezoelectric_total_C_m2', 'elastic_relaxed_GPa',
+                'piezoelectric_d_pm_V')
+    missing = [name for name in required if raw.get(name) is None]
+    if missing:
+        raise ValueError(f'Accepted native override lacks complete e/C/d: {missing}')
+    e, c, d = tensors(raw[required[0]], raw[required[1]], raw[required[2]])
+    warning = raw.get('electromechanical_warning')
+    return {
+        'backend': 'vasp',
+        'source': str(path.resolve()),
+        'source_sha256': digest(path),
+        'status': 'accepted_native_response_override',
+        'quality_issues': [] if warning is None else [warning],
+        'frame_rotation_old_to_new': None,
+        'e_C_m2': e.tolist(),
+        'C_GPa': c.tolist(),
+        'd_pm_V': d.tolist(),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--archive', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument(
+        '--accepted-native', action='append', default=[], metavar='MATERIAL=PATH',
+        help='explicit later accepted VASP native-response JSON; repeat per material')
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
@@ -100,12 +135,25 @@ def main():
                     raise ValueError('Frozen reconstruction parent changed')
                 source_hashes[str(parent)] = expected
             route_records[record['case']] = record
+    overrides = {}
+    for item in args.accepted_native:
+        if '=' not in item:
+            raise ValueError('--accepted-native requires MATERIAL=PATH')
+        material, raw_path = item.split('=', 1)
+        if material not in {'AlN', 'GaN', 'ZnO', 'PTO'} or material in overrides:
+            raise ValueError(f'Unknown or duplicate accepted-native material: {material!r}')
+        record = accepted_native_record(Path(raw_path))
+        record['material'] = material
+        overrides[material] = record
+        source_hashes[record['source']] = record['source_sha256']
     results = {}
     for material, case in [('AlN', 'AlN_accepted'), ('GaN', 'GaN_primary'), ('ZnO', 'ZnO_primary'), ('PTO', 'PTO_primary')]:
         matching = [r for r in records if r['material'] == material]
         selected = {r['backend']: r for r in matching}
         if len(matching) != 2 or set(selected) != {'abacus', 'vasp'}:
             raise ValueError('Exactly one completed tensor source per material/backend required')
+        if material in overrides:
+            selected['vasp'] = overrides[material]
         abacus, native = selected['abacus'], selected['vasp']
         results[material] = compare_pair(abacus, native)
         results[material]['coordinate_audit_evidence'] = {backend: r.get('coordinate_audit_evidence', 'Previously accepted aligned AlN archive')
