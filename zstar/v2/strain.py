@@ -255,6 +255,10 @@ def prepare_abacus_reference_relaxation(
         ("calculation", "cell-relax"),
         ("cal_force", "1"),
         ("cal_stress", "1"),
+        # Geometry-only R1 must not rebuild PYATB matrices at every ionic step.
+        # The separate polarization ensemble explicitly enables these outputs.
+        ("out_mat_hs2", "0"),
+        ("out_mat_r", "0"),
         ("symmetry", "1"),
         ("force_thr_ev", f"{force:.16g}"),
         ("stress_thr", f"{stress:.16g}"),
@@ -353,6 +357,9 @@ def prepare_abacus_fixed_cell_relaxation(
         ("calculation", "relax"),
         ("cal_force", "1"),
         ("cal_stress", "1"),
+        # R2r supplies a reference geometry, not a polarization observation.
+        ("out_mat_hs2", "0"),
+        ("out_mat_r", "0"),
         ("symmetry", "1"),
         ("force_thr_ev", f"{force:.16g}"),
         ("scf_thr", f"{electronic:.16g}"),

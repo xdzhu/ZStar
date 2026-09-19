@@ -38,6 +38,7 @@ def test_reference_relaxation_preparation_defaults_to_cost_balanced_production_g
     values = _input_parameters(Path(result["input"]))
     assert values["calculation"] == "cell-relax"
     assert values["cal_force"] == values["cal_stress"] == "1"
+    assert values["out_mat_hs2"] == values["out_mat_r"] == "0"
     assert values["symmetry"] == "1"
     assert "symmetry_prec" not in values
     assert "symmetry_autoclose" not in values
@@ -59,6 +60,7 @@ def test_fixed_cell_relaxation_preparation_cannot_inherit_cell_relax(tmp_path):
     values = _input_parameters(Path(result["input"]))
     assert values["calculation"] == "relax"
     assert values["cal_force"] == values["cal_stress"] == "1"
+    assert values["out_mat_hs2"] == values["out_mat_r"] == "0"
     assert values["symmetry"] == "1"
     assert "symmetry_prec" not in values
     assert "symmetry_autoclose" not in values
