@@ -51,6 +51,12 @@ ZnO、PTO 的同相完整参考行，PZT 有序模型没有匹配条目。
 
 ## 已执行与待执行：严格区分
 
+> 本节以下队列、PID和参考优化状态是2026-09-18初始快照，不是当前终态。
+> 当前四种主验证材料的完整结果见
+> [双后端审计](v2_completed_backend_pair_audit_20260919.md)；有序PZT的ABACUS中心
+> 差分最终为11/12端点通过，`005+`在100步后未过固定力门，见
+> [终态审计](data/v2_pzt_strain005plus_terminal_audit_20260919.json)。
+
 远端独立目录：
 `235:/home/zhuxd/abacus/agent-runs/20260918-v2-pbe-dual-backend`。
 

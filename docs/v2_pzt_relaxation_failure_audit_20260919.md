@@ -382,3 +382,29 @@ PZT `004+`剪切端点，`1e-3`不足以替代本轮精确性benchmark的`1e-4`�
 终态JSON及输入/日志/极化SHA保存在235的
 `pzt-force-threshold-controls/strain-004plus-step45-force1e-3/terminal_receipt.json`；
 `standard_uncertainty=null`，不把确定性阈值敏感度写成统计误差条。
+
+## strain-005+ 原始任务100步终态
+
+唯一剩余正剪切端点`005+`在cu26按原始40 MPI×1 OMP运行完100个离子步，
+ABACUS正常写出`Finish Time`且返回0，耗时18550秒。电子自洽全部完成，带隙
+`1.842021804 eV`并保持绝缘；但没有打印离子收敛标记。末步实际ABACUS停止量
+`max(abs(F_iα))=1.486934e-4 eV/Å`，最大单原子三维力范数为
+`1.810706724e-4 eV/Å`，均高于或不满足配置的`1e-4 eV/Å`门。
+
+驱动器因此将启动回执冻结为`failed_logs_retained_no_retry`、总返回码4，
+没有生成`.abacus_done_40`、没有运行PYATB，也没有生成极化结果。原INPUT/STRU/KPT
+哈希保持不变；运行日志、终态结构和`istate.info`的SHA256分别为
+`070b6b8101da36afa60e636b4810f0b8a41f6e6256765d25a4506a0a32bf99e9`、
+`9dfc3654aba1765e3c877feb8233537bc58a45dea0dd3c812dfdea86b7618652`和
+`66b577ea8855e08f7ef3a553c2899e77964b5cd64f013200c8c1fc252409c7bd`。
+
+终态科学审计保存在235 campaign根目录的
+`pzt-strain005plus-terminal-failure-audit-20260919.json`，并同步小型JSON到本地
+`PZT_ABACUS_pending/strain005_plus_terminal_failure/`。完整ensemble构建器再次运行时
+唯一拒绝项为本点缺少合格运行/PYATB证据；其余11点通过预验收。故当前不能构造
+完整中心差分e/C/d，不能将本终态按“残差很小”接受，也不自动重投。40个rank的
+wall计费口径为`206.111111 core-hours`；可移植的紧凑证据见
+[终态审计JSON](data/v2_pzt_strain005plus_terminal_audit_20260919.json)。
+新增终态证据测试与相关定向回归共`91 passed`；随后完整本地回归为
+`780 passed, 5466 warnings`。警告仍来自既有spglib/Phonopy等弃用接口，
+不是本点终态处理引入的测试失败。

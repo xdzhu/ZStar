@@ -1248,3 +1248,27 @@ cu25上的原始`004+`任务在第97个离子步达到ABACUS实际最大分量�
 清单一致。独立收据`pzt-strain004plus-accepted-20260919.json`冻结全部输入、运行、
 结构、带隙和极化证据。PZT当前11/12点通过，仅`005+`仍运行；未重投、未改变
 `scf_thr=1e-8`、`force_thr_ev=1e-4`、`relax_nmax=100`或`stress_thr=0.5`。
+
+## 2026-09-19：PZT strain-005+ 原任务终止，完整中心差分未过门
+
+cu26上的原始`005+`任务以40 MPI×1 OMP运行完100个离子步，ABACUS返回码为0、
+耗时18550秒并写出`Finish Time`；电子自洽完成，occupation-manifold带隙为
+`1.842021804 eV`。但末步最大笛卡尔力分量为`1.486934e-4 eV/Å`，最大单原子
+三维力范数为`1.810706724e-4 eV/Å`，高于冻结的`force_thr_ev=1e-4 eV/Å`。
+驱动器据此返回4，保留全部日志且不运行PYATB、不自动重投。
+
+冻结输入继续为`scf_thr=1e-8`、`relax_nmax=100`、`stress_thr=0.5 kbar`、
+`symmetry=0`；INPUT/STRU/KPT SHA256分别为
+`1f52b231ecf19b94b50c0998241777729a2241e6dad96005e683f4bb2fe7d7d6`、
+`e57eed6875b5f2823b1cdc4b566c7d2fac2a0a7b22bf6be80916f988d1208d49`和
+`dc17da384ea3907de5b3d0ef6de6df819e457ec56829991c909a43fbf1ed54e9`，证明活动输入
+没有被修改。远端终态审计为
+`pzt-strain005plus-terminal-failure-audit-20260919.json`，SHA256
+`e98f5a733f85f66da201fbfe98e40890a999ba4cd11e447be0c3e8c51ce41dc8`；小型回执已同步到
+`outputs/pbe_database_comparison_20260918/PZT_ABACUS_pending/strain005_plus_terminal_failure/`。
+本点耗用`18550 s × 40 ranks = 206.111111 rank-wall core-hours`；紧凑可移植证据见
+[终态审计JSON](data/v2_pzt_strain005plus_terminal_audit_20260919.json)。
+
+因此有序PZT的ABACUS中心差分最终状态是11/12端点合格，不发布完整e/C/d、rank或
+residual，也不以VASP路线敏感诊断d替代缺失结果。本次终止不是电子结构失败、
+金属化或节点故障，而是固定离子力门在100步内未满足。
