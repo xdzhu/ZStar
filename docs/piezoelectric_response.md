@@ -36,16 +36,18 @@ headers, modules, and resource requests remain site-controlled.
 
 ## Native VASP route
 
-For LDA/GGA, ZStar keeps VASP's native electric and ionic response definitions:
+For LDA/GGA, ZStar keeps VASP's native electric and ionic response definitions.
+The dedicated command family is:
 
 ```bash
-zstar bec pre --calculator vasp --input-dir input --root response --piezo --elastic
-zstar bec run --root response
-zstar bec post --root response
+zstar piezo pre --calculator vasp --input-dir input --root response
+zstar piezo run --root response
+zstar piezo post --root response
 ```
 
-`--piezo` requests relaxed-ion `e`; `--elastic` additionally obtains the bulk
-elastic matrix and derives `d`. Licensed `POTCAR` data are not redistributed.
+The command requests relaxed-ion `e`, the bulk elastic matrix, and derived `d`.
+The lower-level `zstar bec ... --piezo [--elastic]` switches remain available
+for compatibility. Licensed `POTCAR` data are not redistributed.
 See [native VASP response](vasp_native_response.md) for solver and symmetry
 details.
 

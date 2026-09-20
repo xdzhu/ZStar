@@ -20,6 +20,10 @@ class CliReachabilityTests(unittest.TestCase):
             for action in ("pre", "run", "stat", "post", "job")
         ]
         commands += [
+            ["piezo", action, "--help"]
+            for action in ("pre", "run", "stat", "post", "job")
+        ]
+        commands += [
             ["dielectric", action, "--help"]
             for action in ("static", "freq", "optics")
         ]

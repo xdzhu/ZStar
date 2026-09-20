@@ -8,7 +8,7 @@ Subcommands:
 - gen, deal, born, polar, polar2d, workflow
 - ph, postph
 - wyckoff, irrep, ir, raman, vasp
-- calc, freq, md, potential
+- calc, freq, md, potential, piezo
 - symcheck, bornsym
 
 This is adapted from the original pykappa-dev CLI, with imports rewritten to
@@ -28,6 +28,7 @@ PUBLIC_COMMANDS = (
     ('bec', 'Polarization and Born effective-charge workflows.'),
     ('phonon', 'Phonon preparation, execution, collection, and irreps.'),
     ('spectra', 'Calculator-independent IR and Raman workflows.'),
+    ('piezo', 'Proper piezoelectric, elastic, and strain-coefficient workflows.'),
     ('dielectric', 'Static and frequency-dependent dielectric response.'),
     ('backend', 'List calculator capabilities and executable availability.'),
     ('config', 'Configure and check calculator executables.'),

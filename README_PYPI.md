@@ -284,11 +284,18 @@ Raman adds dielectric postprocessing of retained matrices, not additional SCFs.
 explicit normal-mode finite differences for comparison. Other calculators
 retain their documented native response workflows.
 
-For VASP, `zstar bec pre --calculator vasp --input-dir input --root response
---phonons` selects native electric and Gamma-phonon response; `--elastic`
-selects native strain finite differences for bulk elastic and piezoelectric
-quantities, including derived `d`. Use `--piezo` to request relaxed-ion
-piezoelectric `e` without elastic strain jobs or external repeat calculations.
+For bulk piezoelectric response, use the dedicated command family:
+
+```bash
+zstar piezo pre --calculator vasp --input-dir input --root response
+zstar piezo run --root response
+zstar piezo post --root response
+```
+
+This requests VASP's native piezoelectric and elastic response and derives `d`.
+The lower-level `zstar bec ... --piezo [--elastic]` switches remain available
+for compatibility. For native electric and Gamma-phonon response, use
+`zstar bec pre --calculator vasp --input-dir input --root response --phonons`.
 A completed response can be reused by `zstar spectra pre
 --calculator vasp --response response --root spectra`. IR needs no additional
 VASP calculation; Raman still needs mode-displaced dielectric derivatives.
@@ -355,6 +362,25 @@ polarization magnitudes.
 | `static_response.json` | Zero-frequency tensor with dimensional convention and electronic-background provenance. |
 | `dielectric_response.pdf` / `.svg` | Editable real/imaginary frequency-response plots. |
 | `raman_spectrum/` | Raman activities, tensors, and broadened spectrum. |
+
+## Citation
+
+If you use ZStar, please cite the software article:
+
+```bibtex
+@misc{Zhu2026ZSar,
+  title        = {ZStar: A unified toolkit for polarization, Born effective charges, dielectric and piezoelectric responses, and infrared and Raman spectra},
+  author       = {Zhu, Xudong and Li, Junhong and Jin, Gan and Guan, Zheng and Zhang, Meng and He, Lixin},
+  year         = {2026},
+  eprint       = {2609.16802},
+  archivePrefix = {arXiv},
+  primaryClass = {cond-mat.mtrl-sci},
+  url          = {https://arxiv.org/abs/2609.16802}
+}
+```
+
+Machine-readable citation metadata are maintained in the
+[CITATION.cff](https://github.com/xdzhu/ZStar/blob/main/CITATION.cff) file.
 
 ## License
 

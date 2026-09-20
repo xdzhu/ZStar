@@ -39,6 +39,7 @@ FAMILY_HELP = {
     "bec": "pre, job, run, stat, post",
     "phonon": "pre, job, run, stat, post, irrep, spectrum",
     "spectra": "pre, job, run, stat, post",
+    "piezo": "pre, job, run, stat, post",
     "dielectric": "static, freq, optics",
     "stru": "convert, wyckoff",
     "data": "db, qnep",
@@ -288,6 +289,218 @@ def _run_bec(arguments: Sequence[str], legacy: LegacyRunner) -> None:
                 os.chdir(previous)
             return
     legacy([*target, *clean])
+
+
+def _piezo_manifest_defaults(root: str, calculator: str | None) -> tuple[str, dict]:
+    path = manifest_path(root, "piezo")
+    if path.is_file():
+        saved = read_manifest("piezo", root)
+        return calculator or str(saved["calculator"]), dict(saved.get("options", {}))
+    native = Path(root) / "vasp_bec_manifest.json"
+    if calculator in {None, "vasp"} and native.is_file():
+        saved = json.loads(native.read_text(encoding="utf-8"))
+        if saved.get("backend") == "vasp" and saved.get("piezo"):
+            return "vasp", {"method": saved.get("method", "dfpt"), "elastic": saved.get("elastic", False)}
+    return calculator or "abacus", {}
+
+
+def _run_piezo(arguments: Sequence[str], legacy: LegacyRunner) -> None:
+    if not arguments or arguments[0] in {"-h", "--help"}:
+        _print_family_help("piezo")
+        return
+    action = ACTION_ALIASES.get(arguments[0], arguments[0])
+    if action not in {"pre", "run", "stat", "post", "job"}:
+        raise SystemExit(f"Unknown zstar piezo action: {arguments[0]}")
+    rest = list(arguments[1:])
+    calculator = str(_option(rest, "--calculator", "--calc", default="abacus")).lower()
+    root = str(_option(rest, "--root", default="piezo_response"))
+
+    if action == "pre" and calculator == "vasp":
+        clean = _drop_options(rest, "--calculator", "--calc")
+        if not _has_option(clean, "--root"):
+            clean.extend(["--root", root])
+        for flag in ("--piezo", "--elastic"):
+            if not _has_option(clean, flag):
+                clean.append(flag)
+        legacy(["vasp-bec", "prepare", *clean])
+        write_manifest(
+            "piezo", root=root, calculator="vasp", dimensionality=3,
+            options={"method": "dfpt", "piezo": True, "elastic": True},
+        )
+        print(f"[MANIFEST] {manifest_path(root, 'piezo')}")
+        return
+
+    if action == "pre":
+        if calculator != "abacus":
+            raise SystemExit("zstar piezo currently supports --calculator abacus or vasp")
+        from .piezoelectric_workflow import prepare_abacus_piezoelectric_workflow
+
+        parser = argparse.ArgumentParser(prog="zstar piezo pre")
+        parser.add_argument("--calculator", "--calc", default="abacus")
+        parser.add_argument("--source", default=None, help="directory containing INPUT, KPT, and STRU")
+        parser.add_argument("--root", default="piezo_response")
+        parser.add_argument("--stru", default="STRU")
+        parser.add_argument("-i", "--input", dest="input_template", default="INPUT")
+        parser.add_argument("--kpt", default="KPT")
+        parser.add_argument("--pp", default=None)
+        parser.add_argument("--orb", default=None)
+        parser.add_argument("--amplitude", type=float, default=5.0e-3)
+        parser.add_argument("--profile", choices=("production", "verification"), default="production")
+        parser.add_argument("--method", choices=("central", "forward"), default="central")
+        parser.add_argument("--symprec", type=float, default=1.0e-3)
+        parser.add_argument("--force-thr-ev", type=float, default=None)
+        parser.add_argument("--scf-thr", type=float, default=None)
+        parser.add_argument("--relax-nmax", type=int, default=100)
+        parser.add_argument("--ion-relaxation", choices=("clamped-ion", "relaxed-ion"), default="relaxed-ion")
+        parser.add_argument("--valence", nargs="+", type=float, default=None)
+        args = parser.parse_args(rest)
+        source = Path(args.source).expanduser().resolve() if args.source else Path.cwd()
+        config = load_config(args.root)
+        assets = config.get("abacus", {})
+        pp = args.pp or assets.get("pseudo_dir") or source
+        orb = args.orb or assets.get("orbital_dir") or source
+
+        def source_path(value: str) -> Path:
+            path = Path(value).expanduser()
+            return path.resolve() if path.is_absolute() else (source / path).resolve()
+
+        output = prepare_abacus_piezoelectric_workflow(
+            args.root,
+            structure=source_path(args.stru),
+            input_template=source_path(args.input_template),
+            kpt_template=source_path(args.kpt),
+            pp_dir=pp,
+            orb_dir=orb,
+            amplitude=args.amplitude,
+            profile=args.profile,
+            method=args.method,
+            symprec=args.symprec,
+            force_thr_ev=args.force_thr_ev,
+            scf_thr=args.scf_thr,
+            relax_nmax=args.relax_nmax,
+            ion_relaxation=args.ion_relaxation,
+        )
+        write_manifest(
+            "piezo", root=output, calculator="abacus", dimensionality=3,
+            options={"method": args.method, "valence": args.valence or []},
+        )
+        print(f"[OUT] {output}")
+        print(f"[MANIFEST] {manifest_path(output, 'piezo')}")
+        return
+
+    calculator, saved_options = _piezo_manifest_defaults(root, None if not _has_option(rest, "--calculator", "--calc") else calculator)
+    if calculator == "vasp":
+        clean = _drop_options(rest, "--calculator", "--calc")
+        if not _has_option(clean, "--root"):
+            clean.extend(["--root", root])
+        target = {"run": "run", "stat": "status", "post": "collect", "job": "script"}[action]
+        if action == "job":
+            clean = _replace_option(clean, "--system", "--backend")
+        if action == "run" and not _has_option(clean, "--vasp-command"):
+            tasks, _ = resolve_parallelism(root, tasks=_option(clean, "--tasks"))
+            clean = _drop_options(clean, "--tasks")
+            clean.extend(["--vasp-command", launcher_command("vasp", root=root, tasks=tasks)])
+        elif action == "job" and not _has_option(clean, "--vasp-command"):
+            system = str(_option(clean, "--backend", default="shell"))
+            tasks, _ = resolve_parallelism(root, tasks=_option(clean, "--tasks"))
+            clean.extend([
+                "--vasp-command",
+                launcher_command("vasp", root=root, system=system, tasks=tasks),
+            ])
+        legacy(["vasp-bec", target, *clean])
+        return
+    if calculator != "abacus":
+        raise SystemExit(f"Unsupported piezoelectric calculator: {calculator}")
+
+    from .piezoelectric_workflow import (
+        collect_abacus_piezoelectric_workflow,
+        format_piezoelectric_status,
+        generate_piezoelectric_script,
+        piezoelectric_workflow_status,
+        run_abacus_piezoelectric_workflow,
+    )
+    if action == "stat":
+        parser = argparse.ArgumentParser(prog="zstar piezo stat")
+        parser.add_argument("--root", default="piezo_response")
+        parser.add_argument("--calculator", "--calc", default=None)
+        args = parser.parse_args(rest)
+        print(format_piezoelectric_status(piezoelectric_workflow_status(args.root)))
+        return
+    if action == "post":
+        parser = argparse.ArgumentParser(prog="zstar piezo post")
+        parser.add_argument("--root", default="piezo_response")
+        parser.add_argument("--calculator", "--calc", default=None)
+        parser.add_argument("--output", default=None)
+        parser.add_argument("--method", choices=("central", "forward"), default=None)
+        args = parser.parse_args(rest)
+        result = collect_abacus_piezoelectric_workflow(
+            args.root, output=args.output, method=args.method or str(saved_options.get("method", "central"))
+        )
+        print(f"[OUT] {result['output']}")
+        return
+    if action == "run":
+        parser = argparse.ArgumentParser(prog="zstar piezo run")
+        parser.add_argument("--root", default="piezo_response")
+        parser.add_argument("--calculator", "--calc", default=None)
+        parser.add_argument("--abacus-command", default=None)
+        parser.add_argument("--pyatb-input", default="pyatb_input")
+        parser.add_argument("--pyatb-command", default=None)
+        parser.add_argument("--pyatb-executable", default=None)
+        parser.add_argument("--valence", nargs="+", type=float, default=None)
+        parser.add_argument("--tasks", type=int, default=None)
+        parser.add_argument("--omp-threads", type=int, default=None)
+        parser.add_argument("--dry-run", action="store_true")
+        parser.add_argument("--stop-after", type=int, default=None)
+        args = parser.parse_args(rest)
+        tasks, threads = resolve_parallelism(args.root, tasks=args.tasks, cpus_per_task=args.omp_threads)
+        pyatb_executable = args.pyatb_executable or resolve_executable("pyatb", root=args.root)
+        records = run_abacus_piezoelectric_workflow(
+            args.root,
+            abacus_command=args.abacus_command or launcher_command("abacus", root=args.root, tasks=tasks),
+            pyatb_input=args.pyatb_input,
+            pyatb_command=args.pyatb_command or launcher_command("pyatb", root=args.root, tasks=tasks),
+            pyatb_executable=pyatb_executable,
+            valence=args.valence or saved_options.get("valence") or None,
+            omp_threads=threads,
+            dry_run=args.dry_run,
+            stop_after=args.stop_after,
+        )
+        print(format_piezoelectric_status(piezoelectric_workflow_status(args.root)))
+        if any(record["status"] == "failed" for record in records):
+            raise SystemExit(1)
+        return
+
+    parser = argparse.ArgumentParser(prog="zstar piezo job")
+    parser.add_argument("--root", default="piezo_response")
+    parser.add_argument("--calculator", "--calc", default=None)
+    parser.add_argument("--system", "--backend", choices=("shell", "local", "slurm", "torque", "pbs"), default="shell")
+    parser.add_argument("--output", default=None)
+    parser.add_argument("--job-name", default="zstar-piezo")
+    parser.add_argument("--nodes", type=int, default=1)
+    parser.add_argument("--tasks", type=int, default=None)
+    parser.add_argument("--cpus-per-task", type=int, default=None)
+    parser.add_argument("--walltime", default="24:00:00")
+    parser.add_argument("--queue", default=None)
+    parser.add_argument("--account", default=None)
+    parser.add_argument("--env-script", default=None)
+    parser.add_argument("--header", default=None, help="Specified header; otherwise ./header.sh, then ~/.zstar/header.sh.")
+    parser.add_argument("--abacus-command", default=None)
+    parser.add_argument("--pyatb-input", default="pyatb_input")
+    parser.add_argument("--pyatb-command", default=None)
+    parser.add_argument("--valence", nargs="+", type=float, default=None)
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args(rest)
+    output = generate_piezoelectric_script(
+        args.root, backend=args.system, output=args.output, job_name=args.job_name,
+        nodes=args.nodes, tasks=args.tasks, cpus_per_task=args.cpus_per_task,
+        walltime=args.walltime, queue=args.queue, account=args.account,
+        env_script=args.env_script, header_file=args.header,
+        abacus_command=args.abacus_command, pyatb_command=args.pyatb_command,
+        pyatb_input=args.pyatb_input,
+        valence=args.valence or saved_options.get("valence") or None,
+        dry_run=args.dry_run,
+    )
+    print(f"[OUT] {output}")
 
 
 def _run_config(arguments: Sequence[str]) -> None:
@@ -555,6 +768,9 @@ def handle_canonical_cli(arguments: Sequence[str], legacy: LegacyRunner) -> bool
     rest = list(arguments[1:])
     if family == "bec":
         _run_bec(rest, legacy)
+        return True
+    if family == "piezo":
+        _run_piezo(rest, legacy)
         return True
     phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum"}
     if family == "phonon" or (

@@ -25,6 +25,7 @@ pre -> job (optional) -> run -> stat -> post
 | `zstar bec` | `pre/job/run/stat/post` | 极化、APT/BEC 与 `BORN`；支持 ABACUS + PYATB、VASP、CP2K、QE。 |
 | `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep/spectrum` | 位移、串行力计算、力常数、频率、Gamma 点不可约表示、有限波矢声子能带与 DOS。 |
 | `zstar spectra` | `pre/job/run/stat/post` | ABACUS + PYATB、VASP、CP2K、QE 的 IR 与 Raman 工作流。 |
+| `zstar piezo` | `pre/job/run/stat/post` | 三维 proper 压电 `e`、弹性 `C` 和应变系数 `d`；ABACUS + PYATB 或 VASP 原生路线。 |
 | `zstar dielectric` (`diel`) | `static` (`zero`)、`freq`、`optics` | 晶格静态响应、频率相关振动响应与电子光学响应。 |
 | `zstar backend list` | `--check`、`--json`、`--discover` | 列出已实现能力，并可检查本机程序或第三方插件。 |
 | `zstar config` | `init/show/set/check` | 分层管理计算软件路径与运行配置。 |
@@ -77,7 +78,7 @@ zstar config set execution.omp 40
 zstar bec job --system slurm --header /path/to/header.sh
 ```
 
-`zstar phonon job` 和 `zstar spectra job` 使用相同选择规则。header 内容嵌入脚本，
+`zstar phonon job`、`zstar spectra job` 和 `zstar piezo job` 使用相同选择规则。header 内容嵌入脚本，
 哈希和选中层级保存在 `.zstar/job_header.json`。MPI/OMP 须与申请的资源相符。
 旧资源参数及 `--env-script` 继续兼容。完整示例与断点续算说明见
 [header 教程](job_headers.zh-CN.md)。
@@ -170,6 +171,20 @@ zstar spectra post
 `zstar phonon job --system slurm`，检查生成的脚本后自行提交。
 上述路线默认使用 Unified 计算。独立模式位移对照需显式指定
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml`。
+
+三维 proper 压电响应：
+
+```bash
+zstar piezo pre --source run --root piezo --pp run --orb run
+zstar piezo run --root piezo
+zstar piezo stat --root piezo
+zstar piezo post --root piezo
+```
+
+ABACUS + PYATB 路线对中心有限应变下的极化、应力和内部坐标响应进行拟合。
+VASP 使用 `zstar piezo pre --calculator vasp --input-dir input --root piezo`；
+该命令族自动选择 VASP 原生压电与弹性响应，并推导 `d`。旧的
+`zstar bec ... --piezo [--elastic]` 仍作为兼容接口保留。
 
 静态与频率相关介电响应：
 

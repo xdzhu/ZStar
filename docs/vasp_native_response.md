@@ -73,17 +73,18 @@ For relaxed-ion piezoelectric stress coefficients `e`, request the native ionic
 response, not an external strain/polarization-difference ensemble:
 
 ```bash
-zstar bec pre --calculator vasp --input-dir input --root piezo --piezo
-zstar bec run --root piezo
-zstar bec post --root piezo
+zstar piezo pre --calculator vasp --input-dir input --root piezo
+zstar piezo run --root piezo
+zstar piezo post --root piezo
 ```
 
-`--piezo` also computes Gamma force constants, so a separate `--phonons` is
-unnecessary. For LDA/GGA this is the same native `IBRION=8` response used by
+The dedicated family also computes Gamma force constants, so a separate
+`--phonons` is unnecessary. For LDA/GGA this is the same native `IBRION=8` response used by
 `--phonons`; both routes collect clamped, ionic and total `e`. The internal-strain
 coupling is not itself a piezoelectric tensor: native VASP combines the ionic
 relaxation response with BEC. ZStar reads the native contributions rather than
-reconstructing them from another external displacement ensemble.
+reconstructing them from another external displacement ensemble. The lower-level
+`zstar bec ... --piezo [--elastic]` switches remain available for compatibility.
 
 | Requested result | Preparation option | Native solver / reuse |
 | --- | --- | --- |

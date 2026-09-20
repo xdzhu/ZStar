@@ -208,23 +208,35 @@ Other calculators use their documented native solvers where available. Install
 | CP2K | Dipole-based BEC/APT and native spectroscopy routes | [BEC](docs/cp2k_bec.md), [spectra](docs/calculator_spectroscopy.md) |
 | Quantum ESPRESSO | Native DFPT BEC, dielectric, and IR collection | [Backend guide](docs/calculator_independent_backends.md) |
 
-For example, obtain relaxed-ion piezoelectric `e` from prepared VASP inputs:
+For a complete bulk piezoelectric calculation, use the dedicated `piezo` command
+family. With prepared VASP inputs, it requests the native piezoelectric and
+elastic responses and derives `d`:
 
 ```bash
-zstar bec pre --calculator vasp --input-dir input --root piezo --piezo
-zstar bec run --root piezo
-zstar bec post --root piezo
+zstar piezo pre --calculator vasp --input-dir input --root piezo
+zstar piezo run --root piezo
+zstar piezo post --root piezo
 ```
 
-VASP uses native DFPT/ionic response for LDA/GGA; `--elastic` additionally
-provides the elastic matrix and derived `d`. [SiC](examples/VASP_Native_Response/3C_SiC)
+VASP uses native DFPT/ionic response for LDA/GGA. The lower-level
+`zstar bec ... --piezo [--elastic]` switches remain available for compatibility.
+[SiC](examples/VASP_Native_Response/3C_SiC)
 and [AlN](examples/VASP_Native_Response/AlN) retain validation results. Supply
 licensed `POTCAR` locally; see the guides for functional and low-dimensional
 boundaries.
 
-The ABACUS + PYATB finite-strain route is available through
-`zstar.piezoelectric`; [AlN and ZnO cases](examples/Piezoelectric_Response)
-retain complete tensors, VASP comparisons, and self-checking scripts.
+The ABACUS + PYATB finite-strain route uses the same command family:
+
+```bash
+zstar piezo pre --source input --root piezo --pp input --orb input
+zstar piezo run --root piezo
+zstar piezo stat --root piezo
+zstar piezo post --root piezo
+```
+
+The Python API remains available through `zstar.piezoelectric`.
+[AlN and ZnO cases](examples/Piezoelectric_Response) retain complete tensors,
+VASP comparisons, and self-checking scripts.
 
 ## Running Your Own Structures and Cluster Jobs
 
@@ -293,7 +305,7 @@ resumable `run.sh`; learn the individual stages above before using the launcher.
 | Command family | Purpose |
 | --- | --- |
 | `zstar bec pre/job/run/stat/post` | Polarization, BEC/APT, Unified Gamma outputs or native backend response |
-| `zstar bec ... --piezo [--elastic]` | Native VASP piezoelectric response `e`, elastic `C`, and derived `d` |
+| `zstar piezo pre/job/run/stat/post` | Proper bulk piezoelectric `e`, elastic `C`, and derived `d`; ABACUS + PYATB or native VASP |
 | `zstar phonon pre/job/run/stat/post/irrep/spectrum` | Supercell forces, modes, activity classification, bands and DOS |
 | `zstar spectra pre/job/run/stat/post` | IR and Raman preparation, execution, collection, and plotting |
 | `zstar dielectric static/freq/optics` | Static/frequency response and optical constants |
@@ -309,6 +321,21 @@ documents the charge-aware dataset schema and its compatibility boundaries.
 
 ## Citation and License
 
-Please cite ZStar and the underlying electronic-structure and lattice-dynamics
-programs used in your work; see [CITATION.cff](CITATION.cff).
+If you use ZStar, please cite the software article:
+
+```bibtex
+@misc{Zhu2026ZSar,
+  title        = {ZStar: A unified toolkit for polarization, Born effective charges, dielectric and piezoelectric responses, and infrared and Raman spectra},
+  author       = {Zhu, Xudong and Li, Junhong and Jin, Gan and Guan, Zheng and Zhang, Meng and He, Lixin},
+  year         = {2026},
+  eprint       = {2609.16802},
+  archivePrefix = {arXiv},
+  primaryClass = {cond-mat.mtrl-sci},
+  url          = {https://arxiv.org/abs/2609.16802}
+}
+```
+
+The machine-readable citation metadata are maintained in
+[CITATION.cff](CITATION.cff). Please also cite the underlying electronic-structure
+and lattice-dynamics programs used in your work.
 ZStar is distributed under [GPL-3.0](LICENSE). Copyright (c) Xudong Zhu.

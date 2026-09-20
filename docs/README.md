@@ -98,7 +98,7 @@ from both routes. Exact counts and timing provenance are available in the
 | BEC/APT and Gamma phonons from the same calculations | [Unified BEC and phonons](research/shared_response/USAGE.md) | `zstar bec pre/run/stat/post` |
 | IR and Raman from the Unified calculations | [Unified spectroscopy](unified_spectroscopy.md) | `zstar spectra pre/run/stat/post` |
 | Static and frequency-dependent dielectric response | [Dielectric response](dielectric_response.md) | `zstar dielectric static/freq/optics` |
-| Proper bulk piezoelectric and elastic response | [Piezoelectric response](piezoelectric_response.md) | Python API or VASP-native `zstar bec` route |
+| Proper bulk piezoelectric and elastic response | [Piezoelectric response](piezoelectric_response.md) | `zstar piezo pre/run/stat/post` |
 | Supercell phonons and mode labels | [Command reference](cli_reference.md#representative-lifecycles) | `zstar phonon pre/run/post/irrep` |
 | Potential maps, profiles and vacuum steps | [Electrostatic potential](potential_examples.md) | `zstar pot` |
 | Configure executables, MPI/OMP and PP/orbitals | [Configuration and assets](cli_reference.md#calculator-configuration) | `zstar config` |

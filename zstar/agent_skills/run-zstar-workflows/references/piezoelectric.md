@@ -9,16 +9,19 @@ before comparing tensor components.
 For LDA/GGA, preserve the calculator-native response definitions:
 
 ```bash
-zstar bec pre --calculator vasp --input-dir input --root response --piezo --elastic
-zstar bec run --root response
-zstar bec post --root response
+zstar piezo pre --calculator vasp --input-dir input --root response
+zstar piezo run --root response
+zstar piezo post --root response
 ```
 
-`--piezo` obtains the relaxed-ion piezoelectric stress tensor. `--elastic`
-also obtains the relaxed-ion elastic tensor and permits `d = e C^-1`. Check
+The dedicated family obtains the relaxed-ion piezoelectric stress tensor, the
+relaxed-ion elastic tensor, and permits `d = e C^-1`. Check
 the electronic/ionic closure, elastic symmetry and positive definiteness, and
 the back-conversion `e = d C`. Do not replace this route with the ABACUS finite-
 strain solver when the user selected VASP.
+
+The lower-level `zstar bec ... --piezo [--elastic]` switches remain available
+for compatibility.
 
 ## ABACUS + PYATB finite-strain route
 

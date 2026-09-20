@@ -79,15 +79,16 @@ Raman 需要介电/极化率对振动坐标的导数，因此仍采用正负模�
 只求包含离子弛豫的压电应力系数 `e`，可直接请求原生响应：
 
 ```bash
-zstar bec pre --calculator vasp --input-dir input --root piezo --piezo
-zstar bec run --root piezo
-zstar bec post --root piezo
+zstar piezo pre --calculator vasp --input-dir input --root piezo
+zstar piezo run --root piezo
+zstar piezo post --root piezo
 ```
 
-`--piezo` 自动包含 Γ 点力常数，无需再加 `--phonons`。LDA/GGA 采用原生
+该命令族自动包含 Γ 点力常数，无需再加 `--phonons`。LDA/GGA 采用原生
 `LEPSILON + IBRION=8`，收集电子、离子及总压电贡献。内部应变耦合本身不是
 压电张量；VASP 将原子弛豫响应与 BEC 结合得到离子贡献，ZStar 直接读取，
-不另建外部应变/极化差分任务来重复计算。
+不另建外部应变/极化差分任务来重复计算。旧的
+`zstar bec ... --piezo [--elastic]` 仍作为兼容接口保留。
 
 | 所需结果 | 准备选项 | 原生求解与复用 |
 | --- | --- | --- |

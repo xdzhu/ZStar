@@ -43,6 +43,7 @@ class CanonicalCliArchitectureTests(unittest.TestCase):
             "bec": "pre, job, run, stat, post",
             "phonon": "pre, job, run, stat, post, irrep, spectrum",
             "spectra": "pre, job, run, stat, post",
+            "piezo": "pre, job, run, stat, post",
             "data": "db, qnep",
         }
         for family, actions in expected.items():
@@ -59,7 +60,7 @@ class CanonicalCliArchitectureTests(unittest.TestCase):
         self.assertEqual(context.exception.code, 0)
         text = output.getvalue()
         expected = (
-            "{bec,phonon,spectra,dielectric,backend,config,response,density,"
+            "{bec,phonon,spectra,piezo,dielectric,backend,config,response,density,"
             "stru,data,skill,pot}"
         )
         self.assertIn(expected, text)
@@ -225,6 +226,65 @@ class CanonicalCliArchitectureTests(unittest.TestCase):
             finally:
                 os.chdir(previous)
 
+    def test_canonical_piezo_pre_and_job_use_installed_workflow(self):
+        source = Path(__file__).resolve().parents[1] / "examples" / "Piezoelectric_Response" / "AlN" / "run"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "piezo"
+            handle_canonical_cli(
+                [
+                    "piezo", "pre", "--source", str(source), "--root", str(root),
+                    "--pp", str(source), "--orb", str(source), "--valence", "3", "5",
+                ],
+                zstar_cli,
+            )
+            manifest = json.loads((root / ".zstar" / "piezo.json").read_text())
+            self.assertEqual(manifest["calculator"], "abacus")
+            self.assertEqual(manifest["options"]["method"], "central")
+            self.assertEqual(len(list(root.glob("strain-*"))), 12)
+
+            handle_canonical_cli(
+                ["piezo", "job", "--root", str(root), "--system", "slurm", "--tasks", "4"],
+                zstar_cli,
+            )
+            script = (root / "run_zstar_piezo.slurm").read_text(encoding="utf-8")
+            self.assertIn("zstar piezo run", script)
+            self.assertIn("zstar piezo post", script)
+            self.assertIn("#SBATCH --ntasks=4", script)
+
+    def test_canonical_vasp_piezo_pre_requests_native_piezo_and_elastic(self):
+        calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "native"
+            handle_canonical_cli(
+                ["piezo", "pre", "--calculator", "vasp", "--input-dir", "input", "--root", str(root)],
+                lambda argv: calls.append(list(argv)),
+            )
+            self.assertEqual(calls[0][:2], ["vasp-bec", "prepare"])
+            self.assertIn("--piezo", calls[0])
+            self.assertIn("--elastic", calls[0])
+            manifest = json.loads((root / ".zstar" / "piezo.json").read_text())
+            self.assertEqual(manifest["calculator"], "vasp")
+
+    def test_canonical_vasp_piezo_run_consumes_tasks_option(self):
+        calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "native"
+            write_manifest(
+                "piezo",
+                root=root,
+                calculator="vasp",
+                dimensionality=3,
+                options={"method": "dfpt", "piezo": True, "elastic": True},
+            )
+            handle_canonical_cli(
+                ["piezo", "run", "--root", str(root), "--tasks", "4"],
+                lambda argv: calls.append(list(argv)),
+            )
+            self.assertEqual(calls[0][:2], ["vasp-bec", "run"])
+            self.assertNotIn("--tasks", calls[0])
+            command_index = calls[0].index("--vasp-command")
+            self.assertIn("4", calls[0][command_index + 1])
+
     def test_canonical_bec_job_accepts_pbs_alias_and_writes_pbs_driver(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -302,7 +362,7 @@ class CanonicalCliArchitectureTests(unittest.TestCase):
             zstar_cli(["--help"])
         text = output.getvalue()
         for family in (
-            "bec", "phonon", "spectra", "dielectric", "pot", "backend",
+            "bec", "phonon", "spectra", "piezo", "dielectric", "pot", "backend",
             "config", "response", "density", "stru", "data", "skill",
         ):
             self.assertIn(family, text)

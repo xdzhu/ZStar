@@ -47,7 +47,7 @@ class DocumentationLayoutTests(unittest.TestCase):
                 text = (ROOT / name).read_text(encoding="utf-8")
                 for snippet in (
                     "Unified", "BEC/APT", "--dim", "q_GAPT", "7.440", "5.394",
-                    "CP2K", "VASP", "Quantum ESPRESSO", "--piezo", "--elastic",
+                    "CP2K", "VASP", "Quantum ESPRESSO", "zstar piezo",
                     "LO-TO", "PYATB", "Slurm", "Torque", "Specified", "Current",
                     "Global", "--pp", "--orb", "3.98", "8.35", "zstar data db/qnep",
                     r"Z^*_{\kappa,\alpha\beta}",

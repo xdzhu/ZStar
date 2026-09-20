@@ -33,16 +33,17 @@ prepare_abacus_strain_ensemble(
 
 ## VASP 原生路线
 
-对于 LDA/GGA，ZStar 保持 VASP 原生电子和离子响应的定义：
+对于 LDA/GGA，ZStar 保持 VASP 原生电子和离子响应的定义。独立的命令族为：
 
 ```bash
-zstar bec pre --calculator vasp --input-dir input --root response --piezo --elastic
-zstar bec run --root response
-zstar bec post --root response
+zstar piezo pre --calculator vasp --input-dir input --root response
+zstar piezo run --root response
+zstar piezo post --root response
 ```
 
-`--piezo` 请求含离子弛豫的 `e`；`--elastic` 进一步获得三维弹性矩阵并推导
-`d`。VASP 授权的 `POTCAR` 不随仓库分发。求解器与对称性细节见
+该命令获取含离子弛豫的 `e`、三维弹性矩阵并推导 `d`。旧的
+`zstar bec ... --piezo [--elastic]` 仍作为兼容接口保留。VASP 授权的
+`POTCAR` 不随仓库分发。求解器与对称性细节见
 [VASP 原生响应](vasp_native_response.zh-CN.md)。
 
 ## 可复现案例

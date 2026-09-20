@@ -188,21 +188,31 @@ bulk NAC 不用于片层或一维体系。
 | CP2K | 偶极 BEC/APT 及原生谱学路线 | [BEC](docs/cp2k_bec.zh-CN.md)、[谱学](docs/calculator_spectroscopy.zh-CN.md) |
 | Quantum ESPRESSO | 原生 DFPT BEC、介电与 IR 收集 | [后端教程](docs/calculator_independent_backends.zh-CN.md) |
 
-例如，从已准备的 VASP 输入获取含离子弛豫的压电 `e`：
+完整的三维压电计算使用独立的 `piezo` 命令族。对于已经准备好的 VASP
+输入，它会调用原生压电与弹性响应，并推导 `d`：
 
 ```bash
-zstar bec pre --calculator vasp --input-dir input --root piezo --piezo
-zstar bec run --root piezo
-zstar bec post --root piezo
+zstar piezo pre --calculator vasp --input-dir input --root piezo
+zstar piezo run --root piezo
+zstar piezo post --root piezo
 ```
 
-VASP 的 LDA/GGA 路线采用原生 DFPT/离子响应；`--elastic` 还获取弹性矩阵及 `d`。
+VASP 的 LDA/GGA 路线采用原生 DFPT/离子响应。底层的
+`zstar bec ... --piezo [--elastic]` 仍作为兼容接口保留。
 [SiC](examples/VASP_Native_Response/3C_SiC)和[AlN](examples/VASP_Native_Response/AlN)
 保留验证结果。用户需自行提供获许可的 `POTCAR`；泛函及低维适用边界见教程。
 
-ABACUS + PYATB 有限应变路线通过 `zstar.piezoelectric` Python API
-提供。[AlN 与 ZnO 案例](examples/Piezoelectric_Response)保留完整张量、
-VASP 对照和可自检脚本。
+ABACUS + PYATB 有限应变路线使用同一个命令族：
+
+```bash
+zstar piezo pre --source input --root piezo --pp input --orb input
+zstar piezo run --root piezo
+zstar piezo stat --root piezo
+zstar piezo post --root piezo
+```
+
+`zstar.piezoelectric` Python API 仍然可用。[AlN 与 ZnO 案例](examples/Piezoelectric_Response)
+保留完整张量、VASP 对照和可自检脚本。
 
 ## 自有结构与集群作业
 
@@ -267,7 +277,7 @@ zstar skill install
 | 命令族 | 功能 |
 | --- | --- |
 | `zstar bec pre/job/run/stat/post` | 极化、BEC/APT、Unified Gamma 结果或原生后端响应 |
-| `zstar bec ... --piezo [--elastic]` | VASP 原生压电 `e`、弹性 `C` 及导出 `d` |
+| `zstar piezo pre/job/run/stat/post` | 三维 proper 压电 `e`、弹性 `C` 及导出 `d`；ABACUS + PYATB 或 VASP 原生路线 |
 | `zstar phonon pre/job/run/stat/post/irrep/spectrum` | 超胞力、模式、活性分类、声子能带及 DOS |
 | `zstar spectra pre/job/run/stat/post` | IR 与 Raman 准备、执行、收集及绘图 |
 | `zstar dielectric static/freq/optics` | 静态/频率响应及光学常数 |
@@ -281,6 +291,20 @@ zstar skill install
 
 ## 引用与许可证
 
-使用时请引用 ZStar 及实际调用的电子结构和晶格动力学软件，见
-[CITATION.cff](CITATION.cff)。软件采用 [GPL-3.0](LICENSE) 许可证。
+使用 ZStar 时，请引用软件论文：
+
+```bibtex
+@misc{Zhu2026ZSar,
+  title        = {ZStar: A unified toolkit for polarization, Born effective charges, dielectric and piezoelectric responses, and infrared and Raman spectra},
+  author       = {Zhu, Xudong and Li, Junhong and Jin, Gan and Guan, Zheng and Zhang, Meng and He, Lixin},
+  year         = {2026},
+  eprint       = {2609.16802},
+  archivePrefix = {arXiv},
+  primaryClass = {cond-mat.mtrl-sci},
+  url          = {https://arxiv.org/abs/2609.16802}
+}
+```
+
+机器可读的引用元数据见 [CITATION.cff](CITATION.cff)。同时请引用实际调用的
+电子结构和晶格动力学软件。软件采用 [GPL-3.0](LICENSE) 许可证。
 Copyright (c) Xudong Zhu.

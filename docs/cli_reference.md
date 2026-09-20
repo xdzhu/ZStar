@@ -26,6 +26,7 @@ aliases. New documentation and automation should use the short canonical verbs.
 | `zstar bec` | `pre/job/run/stat/post` | Polarization, APT/BEC, and `BORN`; calculators: ABACUS + PYATB, VASP, CP2K, QE. |
 | `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep/spectrum` | Displacements, serial force calculations, force constants, frequencies, Gamma irreps, finite-q bands, and DOS. |
 | `zstar spectra` | `pre/job/run/stat/post` | IR and Raman workflows for ABACUS + PYATB, VASP, CP2K, and QE. |
+| `zstar piezo` | `pre/job/run/stat/post` | Proper bulk piezoelectric `e`, elastic `C`, and strain coefficients `d`; ABACUS + PYATB or native VASP. |
 | `zstar dielectric` (`diel`) | `static` (`zero`), `freq`, `optics` | Ionic static response, frequency-dependent vibrational response, and electronic optics. |
 | `zstar backend list` | `--check`, `--json`, `--discover` | List implemented capabilities and optionally check configured executables or plugins. |
 | `zstar config` | `init/show/set/check` | Layered executable and launch configuration. |
@@ -81,7 +82,8 @@ zstar config set execution.omp 40
 zstar bec job --system slurm --header /path/to/header.sh
 ```
 
-The same selection applies to `zstar phonon job` and `zstar spectra job`.
+The same selection applies to `zstar phonon job`, `zstar spectra job`, and
+`zstar piezo job`.
 Selected contents are embedded in the script and hashed in
 `.zstar/job_header.json`. Keep MPI/OMP consistent with the scheduler allocation.
 Legacy resource flags and `--env-script` remain supported. For complete header
@@ -182,6 +184,21 @@ For scheduled execution, use `zstar spectra job --system slurm` or
 The spectroscopy example uses the Unified calculations;
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` explicitly
 selects the independent mode-displacement route.
+
+Proper bulk piezoelectric response:
+
+```bash
+zstar piezo pre --source run --root piezo --pp run --orb run
+zstar piezo run --root piezo
+zstar piezo stat --root piezo
+zstar piezo post --root piezo
+```
+
+The ABACUS + PYATB route fits central finite-strain polarization, stress, and
+internal-coordinate responses. For VASP, use `zstar piezo pre --calculator
+vasp --input-dir input --root piezo`; the family selects VASP's native
+piezoelectric and elastic responses for deriving `d`. The older
+`zstar bec ... --piezo [--elastic]` switches remain available for compatibility.
 
 Static and frequency-dependent dielectric response:
 
