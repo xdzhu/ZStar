@@ -178,8 +178,8 @@ bulk NAC 不用于片层或一维体系。
 
 ## 计算器后端与压电响应
 
-其他后端使用各自求解器，不一定采用 Unified 有限位移路线。
-需要可选 VASP 读取器时，安装 `zstar[vasp]`。
+其他后端优先使用各自的原生求解器；需要可选 VASP 读取器时，安装
+`zstar[vasp]`。
 
 | 计算器 | 支持的路线 | 教程 |
 | --- | --- | --- |
@@ -198,12 +198,11 @@ zstar bec post --root piezo
 
 VASP 的 LDA/GGA 路线采用原生 DFPT/离子响应；`--elastic` 还获取弹性矩阵及 `d`。
 [SiC](examples/VASP_Native_Response/3C_SiC)和[AlN](examples/VASP_Native_Response/AlN)
-保留验证结果。Raman 仍需模式位移计算；用户自行提供获许可的 `POTCAR`。
-泛函及低维适用边界见教程。
+保留验证结果。用户需自行提供获许可的 `POTCAR`；泛函及低维适用边界见教程。
 
-独立的 ABACUS + PYATB 有限应变路线通过 `zstar.piezoelectric` Python API
-提供。[AlN 与 ZnO 案例](examples/Piezoelectric_Response)保留完整 PBE 张量、
-输入资产、原生 VASP 对照和可自检复现脚本。
+ABACUS + PYATB 有限应变路线通过 `zstar.piezoelectric` Python API
+提供。[AlN 与 ZnO 案例](examples/Piezoelectric_Response)保留完整张量、
+VASP 对照和可自检脚本。
 
 ## 自有结构与集群作业
 
@@ -214,16 +213,11 @@ zstar bec pre --stru STRU --pp /path/to/PSEUDO --orb /path/to/ORBITAL
 zstar bec job --system slurm
 ```
 
-匹配不唯一时会报出解决指引，不修改原始 `STRU`。可执行文件与 MPI/OMP
-在 `zstar config` 中设置；队列、资源、module 及环境命令放入 header：
+匹配不唯一时会报出解决指引，不修改原始 `STRU`。可执行文件、MPI/OMP、
+队列、资源、module 及环境命令通过 `zstar config` 和[header 教程](docs/job_headers.zh-CN.md)设置：
 **Specified**（`--header`）>
 **Current**（`./header.sh`）> **Global**（`~/.zstar/header.sh`），不合并。
-都没有时，生成的任务脚本提供可编辑模板。
-
-`job` 仅生成脚本：检查、提交、等待完成后再 `post`。支持 shell、Slurm 与 Torque/PBS。
-[header 教程](docs/job_headers.zh-CN.md)与[CLI 参考](docs/cli_reference.zh-CN.md)
-说明资源及全局 PP/ORB 设置。新 PYATB 使用静态直算，旧版使用紧凑光学网格，
-见[兼容说明](docs/user_guide.zh-CN.md#pyatb-新旧版本兼容)。
+都没有时生成可编辑模板；`job` 仅生成脚本，支持 shell、Slurm 与 Torque/PBS。
 
 ## 实测计算效率
 
@@ -273,6 +267,7 @@ zstar skill install
 | 命令族 | 功能 |
 | --- | --- |
 | `zstar bec pre/job/run/stat/post` | 极化、BEC/APT、Unified Gamma 结果或原生后端响应 |
+| `zstar bec ... --piezo [--elastic]` | VASP 原生压电 `e`、弹性 `C` 及导出 `d` |
 | `zstar phonon pre/job/run/stat/post/irrep/spectrum` | 超胞力、模式、活性分类、声子能带及 DOS |
 | `zstar spectra pre/job/run/stat/post` | IR 与 Raman 准备、执行、收集及绘图 |
 | `zstar dielectric static/freq/optics` | 静态/频率响应及光学常数 |

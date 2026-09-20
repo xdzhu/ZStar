@@ -198,8 +198,8 @@ Bulk NAC is not applied to slabs or wires.
 
 ## Calculators and Piezoelectric Response
 
-Other calculators use their documented solvers, not necessarily the Unified route.
-Install `zstar[vasp]` when optional VASP readers are needed.
+Other calculators use their documented native solvers where available. Install
+`zstar[vasp]` when optional VASP readers are needed.
 
 | Calculator | Supported route | Guide |
 | --- | --- | --- |
@@ -218,14 +218,13 @@ zstar bec post --root piezo
 
 VASP uses native DFPT/ionic response for LDA/GGA; `--elastic` additionally
 provides the elastic matrix and derived `d`. [SiC](examples/VASP_Native_Response/3C_SiC)
-and [AlN](examples/VASP_Native_Response/AlN) retain validation results. Raman
-needs additional mode-displaced calculations. Supply licensed `POTCAR` locally;
-see the guides for functional and low-dimensional boundaries.
+and [AlN](examples/VASP_Native_Response/AlN) retain validation results. Supply
+licensed `POTCAR` locally; see the guides for functional and low-dimensional
+boundaries.
 
-The independent ABACUS + PYATB finite-strain route is available through
-`zstar.piezoelectric`. Curated [AlN and ZnO cases](examples/Piezoelectric_Response)
-retain complete PBE tensors, input assets, native VASP comparisons, and
-self-checking reproduction scripts.
+The ABACUS + PYATB finite-strain route is available through
+`zstar.piezoelectric`; [AlN and ZnO cases](examples/Piezoelectric_Response)
+retain complete tensors, VASP comparisons, and self-checking scripts.
 
 ## Running Your Own Structures and Cluster Jobs
 
@@ -237,17 +236,12 @@ zstar bec pre --stru STRU --pp /path/to/PSEUDO --orb /path/to/ORBITAL
 zstar bec job --system slurm
 ```
 
-Ambiguous asset matches stop with guidance; the original `STRU` is preserved.
-Configure executables and MPI/OMP with `zstar config`; put queues, allocations,
-modules, and environment commands in the header. Selection is **Specified**
-(`--header`) > **Current** (`./header.sh`) > **Global** (`~/.zstar/header.sh`),
-without merging; otherwise an editable template is generated.
-
-`job` generates a driver, not a running calculation: inspect, submit, wait, then
-`post`. Shell, Slurm, and Torque/PBS are supported. [Headers](docs/job_headers.md)
-and [CLI options](docs/cli_reference.md) cover resources and global PP/ORB settings.
-New PYATB builds use direct static response; older builds use a compact optical
-grid. See [compatibility](docs/user_guide.md#pyatb-compatibility).
+Ambiguous asset matches stop with guidance and preserve the original `STRU`.
+Configure executables, MPI/OMP, queues, modules, and environment commands with
+`zstar config` and the [header system](docs/job_headers.md): **Specified**
+(`--header`) > **Current** (`./header.sh`) > **Global** (`~/.zstar/header.sh`).
+`job` generates a driver for inspection and submission; Shell, Slurm, and
+Torque/PBS are supported.
 
 ## Measured Efficiency
 
@@ -299,6 +293,7 @@ resumable `run.sh`; learn the individual stages above before using the launcher.
 | Command family | Purpose |
 | --- | --- |
 | `zstar bec pre/job/run/stat/post` | Polarization, BEC/APT, Unified Gamma outputs or native backend response |
+| `zstar bec ... --piezo [--elastic]` | Native VASP piezoelectric response `e`, elastic `C`, and derived `d` |
 | `zstar phonon pre/job/run/stat/post/irrep/spectrum` | Supercell forces, modes, activity classification, bands and DOS |
 | `zstar spectra pre/job/run/stat/post` | IR and Raman preparation, execution, collection, and plotting |
 | `zstar dielectric static/freq/optics` | Static/frequency response and optical constants |
