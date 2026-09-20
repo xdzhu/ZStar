@@ -17,6 +17,8 @@ authors:
     given-names: Gan
   - family-names: Guan
     given-names: Zheng
+  - family-names: Zhang
+    given-names: Meng
   - family-names: He
     given-names: Lixin
 preferred-citation:
@@ -31,7 +33,10 @@ preferred-citation:
       given-names: Gan
     - family-names: Guan
       given-names: Zheng
+    - family-names: Zhang
+      given-names: Meng
     - family-names: He
       given-names: Lixin
-  notes: "Software manuscript prepared for submission; not yet a published journal article."
+  url: "https://arxiv.org/abs/2609.16802"
+  notes: "Software article on arXiv; cite the version used in your work."
   year: 2026

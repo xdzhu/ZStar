@@ -47,14 +47,26 @@ jobs:
         run: |
           python - <<'PY'
           import glob
+          import re
+          import tarfile
           import zipfile
 
           wheels = glob.glob("dist/*.whl")
           assert len(wheels) == 1, wheels
           with zipfile.ZipFile(wheels[0]) as archive:
-              leaked = [name for name in archive.namelist() if name.startswith("examples/")]
-          assert not leaked, leaked
-          print(f"verified {wheels[0]}")
+              names = archive.namelist()
+              leaked_examples = [name for name in names if name.startswith("examples/")]
+              leaked_private = [name for name in names if re.search(r"\.(pt|pth|ckpt|onnx|safetensors)$", name, re.I)]
+          assert not leaked_examples, leaked_examples
+          assert not leaked_private, leaked_private
+
+          sdists = glob.glob("dist/*.tar.gz")
+          assert len(sdists) == 1, sdists
+          with tarfile.open(sdists[0], "r:gz") as archive:
+              names = archive.getnames()
+              leaked_private = [name for name in names if re.search(r"\.(pt|pth|ckpt|onnx|safetensors)$", name, re.I)]
+          assert not leaked_private, leaked_private
+          print(f"verified {wheels[0]} and {sdists[0]}")
           PY
 
       - name: Verify independently installed wheel

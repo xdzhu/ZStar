@@ -14,3 +14,11 @@ output/
 dispatch_accept*.stdout
 dispatch_accept*.stderr
 WorkCo-workJinming.Muhigh-kanalysis_*/
+
+# Private or unpublished model checkpoints.
+# Keep these out of accidental repository-wide adds and release archives.
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors

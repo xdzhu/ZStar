@@ -1,8 +1,24 @@
 include README*.md
 include CHANGELOG.md
 include CITATION.cff
-recursive-include docs *.md *.png *.pdf *.svg *.css *.mjs *.py
-recursive-include docs *.json *.yaml *.csv *.dat *.npy *.out
+include docs/README.md
+include docs/agent_skill.md
+include docs/calculator_independent_backends.md
+include docs/calculator_spectroscopy.md
+include docs/cli_reference.md
+include docs/cp2k_bec.md
+include docs/dielectric_response.md
+include docs/highk_bec_database.md
+include docs/job_headers.md
+include docs/molecular_spectroscopy.md
+include docs/one_dimensional_workflow.md
+include docs/potential_examples.md
+include docs/qnep_dataset.md
+include docs/response_conventions.md
+include docs/spectroscopy_backend_benchmark.md
+include docs/unified_spectroscopy.md
+include docs/validation.md
+include docs/vasp_bec.md
 recursive-include zstar/agent_skills *
 prune zstar/agent_skills/run-zstar-workflows/scripts/__pycache__
 prune examples
@@ -10,3 +26,4 @@ prune examples
 prune tests
 prune tmp
 global-exclude *.py[cod]
+global-exclude *.pt *.pth *.ckpt *.onnx *.safetensors
