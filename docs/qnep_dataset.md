@@ -12,14 +12,14 @@ the join.
 ## One labeled frame
 
 ```bash
-zstar qnep augment \
+zstar data qnep augment \
   --input train.xyz \
   --bec BEC.raw.dat \
   --frame 0 \
   --output train_qnep.xyz
 
-zstar qnep check --input train_qnep.xyz
-zstar qnep init --input train_qnep.xyz --output nep.in \
+zstar data qnep check --input train_qnep.xyz
+zstar data qnep init --input train_qnep.xyz --output nep.in \
   --charge-mode 2 --lambda-z 0.5
 ```
 
@@ -39,7 +39,7 @@ frame,bec
 ```
 
 ```bash
-zstar qnep augment --input train.xyz --map bec_map.csv --output train_qnep.xyz
+zstar data qnep augment --input train.xyz --map bec_map.csv --output train_qnep.xyz
 ```
 
 The generated audit JSON records every labeled frame, BEC source, atom count,
@@ -60,7 +60,7 @@ even though only the neutral, undisplaced parent configuration has a BEC.
 ZStar exports this pattern without inventing zero BEC matrices:
 
 ```bash
-zstar qnep export \
+zstar data qnep export \
   --input bec_force_only_raw.jsonl \
   --annotations all_bec_annotated.jsonl \
   --output multiphase_pbesol_raw.xyz
@@ -78,7 +78,7 @@ For a controlled multiphase diagnostic, retain a fixed cubic benchmark and
 append only selected phase-labelled frames:
 
 ```bash
-zstar qnep compose \
+zstar data qnep compose \
   --base cubic_full.xyz \
   --addition multiphase_pbesol_raw.xyz \
   --phases tetragonal orthorhombic rhombohedral \
@@ -95,7 +95,7 @@ After GPUMD finishes, score the generated `energy_test.out`, `force_test.out`,
 and `bec_test.out` files with the exact BEC mask from the test set:
 
 ```bash
-zstar qnep score --test cubic_full.xyz --directory qnep_run
+zstar data qnep score --test cubic_full.xyz --directory qnep_run
 ```
 
 The BEC MAE/RMSE excludes qNEP's zero placeholders for unlabelled atoms; only

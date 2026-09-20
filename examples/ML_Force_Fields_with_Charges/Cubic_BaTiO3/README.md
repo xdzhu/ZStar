@@ -25,8 +25,8 @@ The intended workflow is:
 2. Select representative frames by temperature, phase, and geometry.
 3. Run BEC only for the selected neutral parents; retain every finite-
    displacement SCF frame as an E/F sample without a BEC.
-4. Export and validate qNEP extxyz with `zstar qnep export` and
-   `zstar qnep check`.
+4. Export and validate qNEP extxyz with `zstar data qnep export` and
+   `zstar data qnep check`.
 5. Train and assess external qNEP/GPUMD software separately.
 
 `run/run.sh` contains path-free command templates.  It intentionally does not

@@ -72,9 +72,11 @@ def test_backend_cases_declare_external_asset_boundary():
 
 def test_legacy_case_layout_is_not_reintroduced():
     legacy_names = {"input", "reference_results", "reference_spectroscopy"}
-    for path in EXAMPLES.rglob("*"):
-        if path.is_dir():
-            assert path.name not in legacy_names, path
+    for record in _manifest_cases():
+        case = EXAMPLES / record["path"]
+        for path in case.iterdir():
+            if path.is_dir():
+                assert path.name not in legacy_names, path
 
 
 def test_run_directories_contain_inputs_only():

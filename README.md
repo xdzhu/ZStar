@@ -305,11 +305,12 @@ resumable `run.sh`; learn the individual stages above before using the launcher.
 | `zstar config init/show/set/check` / `zstar backend list` | Configuration and calculator availability |
 | `zstar response` / `zstar density` | Response interchange and density-export adapters |
 | `zstar stru convert/wyckoff` | Structure conversion and Wyckoff inspection |
-| `zstar data db/qnep` | Traceable BEC database and qNEP export |
+| `zstar data db/qnep` | Traceable BEC database and charge-aware qNEP dataset utilities |
 | `zstar skill install/path/preflight` / `zstar pot` | agent skill and potential analysis |
 
 The [CLI reference](docs/cli_reference.md) lists all actions and aliases;
-full guides contain detailed settings and conventions.
+full guides contain detailed settings and conventions. The [qNEP data bridge](docs/qnep_dataset.md)
+documents the charge-aware dataset schema and its compatibility boundaries.
 
 ## Citation and License
 

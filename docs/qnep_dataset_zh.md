@@ -10,14 +10,14 @@ ZStar 的职责是给已有 NEP 数据集拼接 BEC，并审计这一对应关�
 ## 给一个构型添加 BEC
 
 ```bash
-zstar qnep augment \
+zstar data qnep augment \
   --input train.xyz \
   --bec BEC.raw.dat \
   --frame 0 \
   --output train_qnep.xyz
 
-zstar qnep check --input train_qnep.xyz
-zstar qnep init --input train_qnep.xyz --output nep.in \
+zstar data qnep check --input train_qnep.xyz
+zstar data qnep init --input train_qnep.xyz --output nep.in \
   --charge-mode 2 --lambda-z 0.5
 ```
 
@@ -36,7 +36,7 @@ frame,bec
 ```
 
 ```bash
-zstar qnep augment --input train.xyz --map bec_map.csv --output train_qnep.xyz
+zstar data qnep augment --input train.xyz --map bec_map.csv --output train_qnep.xyz
 ```
 
 生成的审计 JSON 会记录每个带标签构型的 BEC 来源、原子数、张量变换和声学
@@ -52,7 +52,7 @@ BEC 有限差分流程中每一次 SCF 都已经产生真实的能量和力，�
 力场 E/F 数据；只有未位移母结构带 BEC。以下命令不以零矩阵伪造缺失标签：
 
 ```bash
-zstar qnep export \
+zstar data qnep export \
   --input bec_force_only_raw.jsonl \
   --annotations all_bec_annotated.jsonl \
   --output multiphase_pbesol_raw.xyz
@@ -66,7 +66,7 @@ ABACUS 与 extxyz 的氧原子顺序不同而静默错配。审计文件会分�
 为检查加入其他晶相是否影响固定 cubic 基准集，可做确定性的分层拼接：
 
 ```bash
-zstar qnep compose \
+zstar data qnep compose \
   --base cubic_full.xyz \
   --addition multiphase_pbesol_raw.xyz \
   --phases tetragonal orthorhombic rhombohedral \
@@ -79,7 +79,7 @@ zstar qnep compose \
 in-sample 拟合误差**，不能称为无泄漏泛化误差。训练完成后可由：
 
 ```bash
-zstar qnep score --test cubic_full.xyz --directory qnep_run
+zstar data qnep score --test cubic_full.xyz --directory qnep_run
 ```
 
 计算 E/F/BEC parity 指标。BEC 统计只使用测试集实际带 `bec:R:9` 的原子，不会

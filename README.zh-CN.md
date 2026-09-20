@@ -279,7 +279,7 @@ zstar skill install
 | `zstar config init/show/set/check` / `zstar backend list` | 配置与计算软件可用性 |
 | `zstar response` / `zstar density` | 响应交换与密度导出适配 |
 | `zstar stru convert/wyckoff` | 结构转换与 Wyckoff 分析 |
-| `zstar data db/qnep` | 可追溯 BEC 数据库及 qNEP 导出 |
+| `zstar data db/qnep` | 可追溯 BEC 数据库及带电荷 qNEP 数据接口 |
 | `zstar skill install/path/preflight` / `zstar pot` | agent skill 与静电势分析 |
 
 [CLI 参考](docs/cli_reference.zh-CN.md)列出全部子命令及别名；详细设置与物理约定见长版教程。

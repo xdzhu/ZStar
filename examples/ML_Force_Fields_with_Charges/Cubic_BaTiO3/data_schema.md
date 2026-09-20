@@ -17,6 +17,6 @@ The record must also preserve atom order and the tensor coordinate convention.
 For qNEP output, ZStar writes BEC only on labelled frames as `bec:R:9` and
 transposes the canonical ZStar convention to the qNEP component convention.
 
-`zstar qnep export` supports a sparse parent annotation: phase information is
+`zstar data qnep export` supports a sparse parent annotation: phase information is
 inherited by children such as `PARENT::disp-001`, while BEC is attached only to
 `PARENT::0.no-move`.  All such displaced SCF frames remain valid E/F samples.
