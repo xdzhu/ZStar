@@ -1,6 +1,10 @@
 import json
 from pathlib import Path
+import shutil
 import subprocess
+import sys
+
+import numpy as np
 
 from zstar.abacus_assets import prepare_stru_assets
 
@@ -105,3 +109,35 @@ def test_run_directories_contain_inputs_only():
             assert all(p.is_file() or p.name == "assets" for p in relaxation.iterdir()), record["id"]
             assert all(p.is_file() and p.suffix.lower() in {".upf", ".orb"}
                        for p in (relaxation / "assets").glob("*")), record["id"]
+
+
+def test_convergence_examples_are_self_contained():
+    for relative in ("SiC_Displacement", "hBN_Vacuum"):
+        case = EXAMPLES / "Convergence_Tests" / relative
+        assert (case / "run.sh").is_file()
+        assert (case / "run_pbs.sh").is_file()
+        assert (case / "pbs_job.sh").is_file()
+        assert (case / "analyze.py").is_file()
+        assert (case / "run/STRU").is_file()
+        assert any((case / "run").glob("*.upf"))
+        assert any((case / "run").glob("*.orb"))
+        assert (case / "results").is_dir()
+
+
+def test_hbn_vacuum_helper_sets_and_checks_cell_height(tmp_path):
+    from zstar.shared_response import read_structure
+
+    case = EXAMPLES / "Convergence_Tests/hBN_Vacuum"
+    structure = tmp_path / "STRU"
+    shutil.copy2(case / "run/STRU", structure)
+    command = [sys.executable, str(case / "set_vacuum.py"), str(structure), "18"]
+    subprocess.run(command, check=True)
+    np.testing.assert_allclose(np.linalg.norm(read_structure(structure).cell[2]), 18.0,
+                               atol=1e-8)
+    subprocess.run([*command, "--check"], check=True)
+    failed = subprocess.run(
+        [sys.executable, str(case / "set_vacuum.py"), str(structure), "20", "--check"],
+        capture_output=True, text=True,
+    )
+    assert failed.returncode != 0
+    assert "stale work directory" in failed.stderr

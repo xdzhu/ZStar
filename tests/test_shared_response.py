@@ -203,6 +203,42 @@ def test_joint_post_roundtrip_and_asymmetric_born_convention(tmp_path, monkeypat
     np.testing.assert_allclose(loaded.force_constants.transpose(0,2,1,3).reshape(6,6), hessian, atol=1e-8)
 
 
+def test_joint_post_allows_explicitly_omitted_electronic_dielectric(tmp_path, monkeypatch):
+    from zstar.shared_abacus import collect_shared_abacus
+    from zstar.response_schema import ResponseRecord
+
+    source = tmp_path / 'STRU'
+    make_stru(source)
+    output = tmp_path / 'run'
+    meta = prepare_shared_abacus(source, root=output)
+    forces = {'0.no-move': np.zeros((1, 3))}
+    for stage in meta['stages']:
+        forces[stage['name']] = np.zeros((1, 3))
+    monkeypatch.setattr('zstar.shared_abacus._dipole_changes',
+                        lambda *args: [np.zeros(3) for _ in meta['stages']])
+    monkeypatch.setattr('zstar.shared_abacus.read_forces',
+                        lambda path: forces[Path(path).name])
+    monkeypatch.setattr('zstar.pyatb_compat.read_static_dielectric',
+                        lambda *args: pytest.fail('dielectric output must not be read'))
+    state_dir = output / '.zstar/stages'
+    state_dir.mkdir(parents=True)
+    (state_dir / '0.no-move.json').write_text(
+        json.dumps({'dielectric': 'not-requested'}), encoding='utf-8')
+    (output / 'BORN').write_text('stale output\n', encoding='utf-8')
+
+    result = collect_shared_abacus(output)
+
+    assert result['born_projected_e'] is not None
+    assert (output / 'BEC.dat').is_file()
+    assert not (output / 'BORN').exists()
+    record = ResponseRecord.read(output / 'response.json')
+    assert record.quantity('born_effective_charge') is not None
+    assert all(quantity.name != 'electronic_dielectric'
+               for quantity in record.quantities)
+    with pytest.raises(FileNotFoundError, match='NAC requires the electronic dielectric'):
+        collect_shared_abacus(output, nac=True)
+
+
 def test_nested_relative_basis_files_are_staged_and_referenced(tmp_path):
     source = tmp_path / 'STRU'
     make_stru(source)
@@ -287,6 +323,29 @@ def test_canonical_default_creates_shared_manifest(tmp_path, monkeypatch):
     assert (tmp_path / 'phonopy_disp.yaml').read_bytes() == before
     with pytest.raises(ValueError, match='separate directory'):
         run_phonopy_and_process_files(dim='2 2 2')
+
+
+def test_canonical_custom_displacement_is_recorded_and_written(tmp_path, monkeypatch):
+    from zstar.cli import zstar_cli
+    monkeypatch.chdir(tmp_path)
+    make_stru(tmp_path / 'STRU')
+    zstar_cli(['bec', 'pre', '--stru', 'STRU', '--displacement', '0.005'])
+
+    shared = load_manifest(tmp_path)
+    assert shared['nominal_distance_A'] == pytest.approx(0.005)
+    assert all(stage['distance_A'] == pytest.approx(0.005) for stage in shared['stages'])
+
+    front = json.loads((tmp_path / '.zstar/bec.json').read_text())
+    assert front['options']['displacement_angstrom'] == pytest.approx(0.005)
+
+
+@pytest.mark.parametrize('value', ['0', '-0.01', 'nan', 'inf'])
+def test_canonical_custom_displacement_must_be_finite_and_positive(tmp_path, monkeypatch, value):
+    from zstar.cli import zstar_cli
+    monkeypatch.chdir(tmp_path)
+    make_stru(tmp_path / 'STRU')
+    with pytest.raises(ValueError, match='finite and positive'):
+        zstar_cli(['bec', 'pre', '--stru', 'STRU', '--displacement', value])
 
 
 @pytest.mark.parametrize('parameter', ['nelec_delta 1', 'nelec 3', 'efield_amp 0.001', 'nspin 2'])

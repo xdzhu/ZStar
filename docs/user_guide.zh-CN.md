@@ -407,14 +407,15 @@ zstar bec run --root . \
 默认执行顺序如下：
 
 1. 执行 `0.no-move` SCF，输出电荷密度与稀疏矩阵。
-2. 使用 `pyatb_input --band` 生成常规高对称能带路径。
-3. 如果参考结构为金属，在任何位移计算开始前报错退出。
+2. 在完整 ABACUS SCF k 网格上检查占据数与最小带隙。
+3. 生成 PYATB 高对称能带路径，并要求两类检查同时通过。
 4. 计算参考结构的极化和电子介电张量。
 5. 将参考电荷 cube/restart 文件复制到每个位移任务的 `OUT.<suffix>/`。
-6. 按确定顺序串行执行全部位移及其极化计算。
+6. 按确定顺序串行执行全部位移，复查其 SCF 网格带隙与占据流形后再计算极化。
 7. 在 `.zstar/` 保存阶段状态；中断后再次执行同一命令即可继续。
 
-默认沿常规高对称能带路径检查 band gap。也可显式选择更密的 MP 网格：
+默认门控同时采用完整 SCF k 网格的占据记录和高对称路径诊断。
+`--gap-mode mp` 会以 PYATB MP 网格替代路径诊断，SCF 网格检查仍然保留：
 
 ```bash
 zstar bec run --root . --gap-mode mp --mp-density 0.08
@@ -779,6 +780,10 @@ SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 
 周期体系行列出 BEC 的代表分量。分子行列出原子极化张量的旋转不变量
 `q_GAPT = Tr(A)/3`，不应将其解释为周期晶体 BEC。
+
+数值收敛性模板见公开的 [SiC 位移幅度扫描](../examples/Convergence_Tests/SiC_Displacement)
+与[单层 hBN 胞高扫描](../examples/Convergence_Tests/hBN_Vacuum)。两个案例均保留
+干净输入、一键 shell/PBS 运行脚本、完整张量 JSON、CSV 以及可编辑 PDF/PNG 图。
 
 <div class="print-page-break"></div>
 

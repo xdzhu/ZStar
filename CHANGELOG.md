@@ -1,3 +1,18 @@
+## Unreleased
+
+- Strengthen the ABACUS insulating-state gate by combining the PYATB path/MP
+  diagnostic with occupations and the minimum gap on the complete SCF k mesh.
+- Require every displaced BEC and Raman structure to remain insulating with
+  the same occupied-band count as the reference, while tolerating numerical
+  occupation tails and retaining per-stage diagnostics.
+- Document and persist the user-selected Unified finite-displacement magnitude,
+  while continuing to reconstruct responses from the actual written vectors.
+- Add reproducible SiC displacement-amplitude and monolayer-hBN cell-height
+  convergence examples with self-contained ABACUS inputs, PBS runners, full
+  tensor JSON, compact tables, and editable plots.
+- Allow Unified BEC post-processing to omit `BORN` when the electronic
+  dielectric response was explicitly not requested; NAC still requires it.
+
 ## 0.3.4 - 2026-09-19
 
 - Prefer native VASP response solvers for bulk BEC, dielectric response,

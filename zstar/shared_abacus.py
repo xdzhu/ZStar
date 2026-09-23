@@ -350,7 +350,16 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     write_FORCE_CONSTANTS(projected.force_constants, filename=str(root / "FORCE_CONSTANTS"))
     phonon.force_constants = projected.force_constants
     dielectric = None
-    if not forces_only or nac:
+    dielectric_state = root / ".zstar" / "stages" / "0.no-move.json"
+    dielectric_requested = True
+    if dielectric_state.is_file():
+        try:
+            state = json.loads(dielectric_state.read_text(encoding="utf-8"))
+            dielectric_requested = state.get("dielectric") != "not-requested"
+        except (OSError, ValueError, TypeError):
+            # A malformed state file must not hide a missing default output.
+            dielectric_requested = True
+    if (not forces_only or nac) and dielectric_requested:
         from .pyatb_compat import read_static_dielectric
         dielectric, _ = read_static_dielectric(reference / "pyatb")
     if nac:
@@ -358,6 +367,11 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             raise ValueError("Bulk NAC cannot be applied to a low-dimensional shared ensemble")
         if forces_only:
             raise ValueError("Run zstar bec post first; NAC needs the joint Born response")
+        if dielectric is None:
+            raise FileNotFoundError(
+                "NAC requires the electronic dielectric tensor; rerun the reference "
+                "stage without --no-electronic-dielectric"
+            )
         phonon.nac_params = {"born": projected.born, "dielectric": dielectric, "factor": 14.399652}
     phonon.run_qpoints([[0, 0, 0]], with_eigenvectors=True, nac_q_direction=q_direction)
     with _working_directory(root):
@@ -398,12 +412,16 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     if not forces_only:
         from .deal_polar import _write_born_for_phonopy
         independent = phonon.symmetry.get_independent_atoms()
-        # BORN follows Phonopy's polarization-first convention. Legacy indexed
-        # ZStar tables remain displacement-first for backward compatibility.
-        _write_born_for_phonopy(dielectric, projected.born[independent], root / "BORN")
-        born_lines = (root / "BORN").read_text().splitlines()
-        born_lines[0] = "# ZStar shared response: Z[polarization,displacement]; units e"
-        (root / "BORN").write_text("\n".join(born_lines) + "\n", encoding="utf-8")
+        if dielectric is not None:
+            # BORN follows Phonopy's polarization-first convention. Legacy indexed
+            # ZStar tables remain displacement-first for backward compatibility.
+            _write_born_for_phonopy(dielectric, projected.born[independent], root / "BORN")
+            born_lines = (root / "BORN").read_text().splitlines()
+            born_lines[0] = "# ZStar shared response: Z[polarization,displacement]; units e"
+            (root / "BORN").write_text("\n".join(born_lines) + "\n", encoding="utf-8")
+        else:
+            (root / "BORN").unlink(missing_ok=True)
+            print("[SHARED] Electronic dielectric not requested; BORN was not written.")
         for name, values in (("BEC.raw.dat", raw.born), ("BEC.dat", projected.born)):
             lines = ["# atom species Z[displacement,polarization]; units e"]
             lines.extend(f"{i + 1} {s} " + " ".join(f"{v:.8f}" for v in z.T.ravel())
@@ -419,7 +437,7 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             "backend": "abacus", "method": "shared_finite_displacement",
             "tensor_convention": "rows=displacement; columns=polarization",
             "atoms": [{"label": s, "tensor": z.T.tolist()} for s, z in zip(atoms.symbols, projected.born)],
-            "epsilon_infinity": dielectric.tolist(),
+            "epsilon_infinity": None if dielectric is None else dielectric.tolist(),
         }, dimensionality=manifest["dimension"])
         ResponseRecord(backend="abacus", dimensionality=dimension_spec(manifest["dimension"]),
             quantities=(*base.quantities,

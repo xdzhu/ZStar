@@ -72,7 +72,8 @@ each stage and report the BEC table, optical-mode frequencies, and spectrum path
 - Symmetry reduction, full-cell reconstruction, and acoustic-sum-rule correction.
 - Serial and resumable `0.no-move -> displacements` execution.
 - Reuse of the converged reference charge density.
-- A one-time insulating-state gate using a normal band path by default.
+- A combined insulating-state gate using a PYATB path diagnostic and the
+  complete ABACUS SCF k mesh, followed by displaced-state manifold checks.
 - Shell, Slurm, and Torque/PBS drivers with Specified, Current, or Global headers.
 - Legacy and direct-static-response PYATB compatibility.
 - Hybrid 1D BECs: transverse charge-density dipoles plus longitudinal Berry polarization.
@@ -227,13 +228,17 @@ zstar bec post
 The low-level `zstar polar2d` command is retained only for auditing an existing
 reference/displaced cube pair.
 
-The default insulating gate runs only for `0.no-move` and uses:
+The default insulating gate starts from `0.no-move` and uses:
 
 ```bash
 pyatb_input --band
 ```
 
-The path gate is a lightweight fail-fast check and cannot exclude an off-path metallic pocket. Use `--gap-mode mp` when a stricter MP-grid check is desired.
+ZStar combines this path diagnostic with the occupations and minimum gap on the
+complete ABACUS SCF k mesh. Both checks must pass, and every displaced SCF must
+remain insulating with the same occupied-band count as the reference. Use
+`--gap-mode mp` to replace the path diagnostic with an additional PYATB
+Monkhorst-Pack diagnostic; the ABACUS mesh check remains active.
 
 Generate one environment-specific driver:
 

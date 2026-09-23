@@ -14,6 +14,7 @@ import shutil
 import subprocess
 from typing import Iterable, Optional, Sequence
 
+from .insulation import parse_abacus_occupation_gap
 from .pyatb_compat import (
     DEFAULT_LEGACY_DOMEGA_EV,
     DEFAULT_LEGACY_OMEGA_MAX_EV,
@@ -64,6 +65,15 @@ class StageState:
     started_at: Optional[str] = None
     finished_at: Optional[str] = None
     error: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class InsulationGateResult:
+    gap_eV: float
+    path_gap_eV: float
+    bz_gap_eV: float
+    occupied_band_count: int
+    sampling: str
 
 
 def discover_stages(root: str | Path) -> list[WorkflowStage]:
@@ -195,6 +205,70 @@ def band_is_complete(stage_dir: str | Path) -> bool:
         return True
     except (FileNotFoundError, ValueError):
         return False
+
+
+def _read_abacus_mesh_gap(
+    stage_dir: str | Path,
+    *,
+    min_gap_eV: float,
+) -> dict:
+    stage = Path(stage_dir)
+    log = _find_scf_log(stage)
+    source = log.parent / "istate.info" if log is not None else None
+    record = (
+        parse_abacus_occupation_gap(
+            source,
+            insulating_threshold_eV=min_gap_eV,
+        )
+        if source is not None
+        else None
+    )
+    if record is None:
+        expected = source or stage / "OUT.<suffix>" / "istate.info"
+        raise RuntimeError(
+            "Cannot evaluate the full-SCF-mesh insulating criterion: "
+            f"no parseable ABACUS occupation table was found at {expected}."
+        )
+    return record
+
+
+def _run_displaced_mesh_gate(
+    stage_dir: Path,
+    *,
+    reference_occupied_bands: int,
+    min_gap_eV: float,
+) -> dict:
+    mesh = _read_abacus_mesh_gap(stage_dir, min_gap_eV=min_gap_eV)
+    occupied_bands = mesh.get("occupied_band_count")
+    manifold_consistent = occupied_bands == reference_occupied_bands
+    report = {
+        "schema": 2,
+        "insulating": bool(mesh["insulating"] and manifold_consistent),
+        "gap_eV": float(mesh["gap_eV"]),
+        "threshold_eV": float(min_gap_eV),
+        "sampling": "scf-k-mesh",
+        "scope": "displaced-structure gate",
+        "reference_occupied_band_count": int(reference_occupied_bands),
+        "occupied_manifold_consistent": bool(manifold_consistent),
+        "brillouin_zone": mesh,
+    }
+    (stage_dir / "zstar_insulation.json").write_text(
+        json.dumps(report, indent=2), encoding="utf-8"
+    )
+    if not mesh["insulating"]:
+        raise RuntimeError(
+            f"Full-SCF-mesh insulation check failed in {stage_dir.name}: "
+            f"gap {mesh['gap_eV']:.6f} eV, "
+            f"fractional occupations {mesh['fractional_occupation_count']}, "
+            f"occupied-band counts {mesh['occupied_band_counts']}."
+        )
+    if not manifold_consistent:
+        raise RuntimeError(
+            f"Occupied manifold changed in {stage_dir.name}: reference has "
+            f"{reference_occupied_bands} occupied bands, but the displacement "
+            f"has {occupied_bands}."
+        )
+    return mesh
 
 
 def _reference_charge_files(reference_dir: Path) -> list[Path]:
@@ -440,7 +514,7 @@ def _run_insulation_gate(
     log_path: Path,
     dry_run: bool,
 ):
-    """Run the one-time band-gap gate for the undisplaced reference."""
+    """Combine a full-SCF-mesh occupation gate with a PYATB band diagnostic."""
 
     band_dir = reference_dir / "pyatb-band"
     if not band_is_complete(reference_dir):
@@ -470,22 +544,48 @@ def _run_insulation_gate(
         return None
 
     gap = read_band_gap(band_dir, threshold_eV=min_gap_eV)
+    mesh = _read_abacus_mesh_gap(reference_dir, min_gap_eV=min_gap_eV)
+    occupied_bands = mesh.get("occupied_band_count")
+    if occupied_bands is None:
+        raise RuntimeError(
+            "Full-SCF-mesh insulation check could not establish a constant "
+            "occupied-band count for 0.no-move."
+        )
+    combined_gap = min(float(gap.gap_eV), float(mesh["gap_eV"]))
+    insulating = bool(gap.insulating and mesh["insulating"])
     gap_report = {
-        **gap.to_dict(),
-        "sampling": gap_mode,
+        "schema": 2,
+        "insulating": insulating,
+        "gap_eV": combined_gap,
+        "path_gap_eV": float(gap.gap_eV),
+        "bz_gap_eV": float(mesh["gap_eV"]),
+        "threshold_eV": float(min_gap_eV),
+        "sampling": f"pyatb-{gap_mode}+scf-k-mesh",
         "dimensionality": int(dimensionality),
         "scope": "0.no-move reference gate",
+        "occupied_band_count": int(occupied_bands),
+        "pyatb_band": gap.to_dict(),
+        "brillouin_zone": mesh,
     }
     (reference_dir / "zstar_insulation.json").write_text(
         json.dumps(gap_report, indent=2), encoding="utf-8"
     )
-    if not gap.insulating:
+    if not insulating:
         raise RuntimeError(
-            "Insulating-path check failed in 0.no-move: "
-            f"PYATB gap {gap.gap_eV:.6f} eV is below "
-            f"{min_gap_eV:.6f} eV. Displaced calculations were not started."
+            "Combined insulating-state check failed in 0.no-move: "
+            f"PYATB {gap_mode} gap {gap.gap_eV:.6f} eV; "
+            f"full-SCF-mesh gap {mesh['gap_eV']:.6f} eV; "
+            f"fractional occupations {mesh['fractional_occupation_count']}; "
+            f"occupied-band counts {mesh['occupied_band_counts']}. "
+            "Displaced calculations were not started."
         )
-    return gap
+    return InsulationGateResult(
+        gap_eV=combined_gap,
+        path_gap_eV=float(gap.gap_eV),
+        bz_gap_eV=float(mesh["gap_eV"]),
+        occupied_band_count=int(occupied_bands),
+        sampling=str(gap_report["sampling"]),
+    )
 
 
 def run_serial_workflow(
@@ -525,6 +625,7 @@ def run_serial_workflow(
     env.setdefault("MKL_NUM_THREADS", str(int(omp_threads)))
     env.setdefault("OPENBLAS_NUM_THREADS", "1")
     results: list[StageState] = []
+    reference_gate: Optional[InsulationGateResult] = None
 
     store.event(
         "workflow",
@@ -599,18 +700,42 @@ def run_serial_workflow(
                 if dry_run:
                     state.band = "dry-run"
                 else:
+                    reference_gate = gap
                     state.band_gap_eV = gap.gap_eV
                     state.band = "insulating"
                     store.event(
                         stage.name,
                         "band-gap",
                         gap_eV=gap.gap_eV,
-                        sampling=gap_mode,
+                        path_gap_eV=gap.path_gap_eV,
+                        bz_gap_eV=gap.bz_gap_eV,
+                        occupied_band_count=gap.occupied_band_count,
+                        sampling=gap.sampling,
                         threshold_eV=min_gap_eV,
                         insulating=True,
                     )
             elif check_insulating:
-                state.band = "reference-gated"
+                if dry_run:
+                    state.band = "reference-gated"
+                else:
+                    if reference_gate is None:
+                        raise RuntimeError("Reference insulating-state record is unavailable")
+                    mesh = _run_displaced_mesh_gate(
+                        stage.path,
+                        reference_occupied_bands=reference_gate.occupied_band_count,
+                        min_gap_eV=min_gap_eV,
+                    )
+                    state.band_gap_eV = float(mesh["gap_eV"])
+                    state.band = "insulating"
+                    store.event(
+                        stage.name,
+                        "band-gap",
+                        gap_eV=mesh["gap_eV"],
+                        sampling="scf-k-mesh",
+                        occupied_band_count=mesh["occupied_band_count"],
+                        threshold_eV=min_gap_eV,
+                        insulating=True,
+                    )
             else:
                 state.band = "not-requested"
 
@@ -769,6 +894,7 @@ def run_raman_workflow(
         pyatb=caps.to_dict(),
     )
 
+    reference_gate: Optional[InsulationGateResult] = None
     if check_insulating:
         reference_log = store.state_dir / "logs" / "0.no-move.log"
         gap = _run_insulation_gate(
@@ -784,11 +910,15 @@ def run_raman_workflow(
             dry_run=dry_run,
         )
         if gap is not None:
+            reference_gate = gap
             store.event(
                 "0.no-move",
                 "band-gap",
                 gap_eV=gap.gap_eV,
-                sampling=gap_mode,
+                path_gap_eV=gap.path_gap_eV,
+                bz_gap_eV=gap.bz_gap_eV,
+                occupied_band_count=gap.occupied_band_count,
+                sampling=gap.sampling,
                 threshold_eV=min_gap_eV,
                 insulating=True,
             )
@@ -837,7 +967,18 @@ def run_raman_workflow(
                 state.scf = "dry-run" if dry_run else "completed"
 
             if check_insulating:
-                state.band = "reference-gated"
+                if dry_run:
+                    state.band = "reference-gated"
+                else:
+                    if reference_gate is None:
+                        raise RuntimeError("Reference insulating-state record is unavailable")
+                    mesh = _run_displaced_mesh_gate(
+                        stage.path,
+                        reference_occupied_bands=reference_gate.occupied_band_count,
+                        min_gap_eV=min_gap_eV,
+                    )
+                    state.band_gap_eV = float(mesh["gap_eV"])
+                    state.band = "insulating"
             else:
                 state.band = "not-requested"
 
@@ -966,12 +1107,13 @@ def workflow_status(root: str | Path = ".") -> list[StageState]:
         if state.status == "pending":
             if scf_is_complete(stage.path):
                 state.scf = "completed"
-            if stage.reference and band_is_complete(stage.path):
+            report_path = Path(stage.path) / "zstar_insulation.json"
+            if report_path.is_file():
                 try:
-                    gap = read_band_gap(Path(stage.path) / "pyatb-band")
-                    state.band_gap_eV = gap.gap_eV
-                    state.band = "insulating" if gap.insulating else "metallic"
-                except (FileNotFoundError, ValueError):
+                    report = json.loads(report_path.read_text(encoding="utf-8"))
+                    state.band_gap_eV = float(report["gap_eV"])
+                    state.band = "insulating" if report["insulating"] else "metallic"
+                except (KeyError, TypeError, ValueError, json.JSONDecodeError):
                     pass
             elif not stage.reference and reference_gated:
                 state.band = "reference-gated"
@@ -1009,7 +1151,15 @@ def raman_workflow_status(raman_dir: str | Path = "raman") -> list[StageState]:
         if state.status == "pending":
             if scf_is_complete(stage.path):
                 state.scf = "completed"
-            if reference_gated:
+            report_path = Path(stage.path) / "zstar_insulation.json"
+            if report_path.is_file():
+                try:
+                    report = json.loads(report_path.read_text(encoding="utf-8"))
+                    state.band_gap_eV = float(report["gap_eV"])
+                    state.band = "insulating" if report["insulating"] else "metallic"
+                except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+                    pass
+            elif reference_gated:
                 state.band = "reference-gated"
             if dielectric_is_complete(stage.path):
                 state.pyatb = "completed"
@@ -1035,7 +1185,10 @@ def write_workflow_manifest(root: str | Path = ".") -> Path:
             "0.no-move/OUT.*/SPIN*_CHG.cube or "
             "0.no-move/OUT.*/*-CHARGE-DENSITY.restart"
         ),
-        "insulation_gate": "0.no-move only",
+        "insulation_gate": (
+            "0.no-move PYATB band diagnostic plus full SCF k-mesh occupations; "
+            "displaced-stage SCF-mesh gap and occupied-manifold consistency"
+        ),
         "stages": [
             {
                 "index": index,

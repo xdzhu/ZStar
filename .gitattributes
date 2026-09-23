@@ -2,3 +2,6 @@
 *.sh text eol=lf
 examples/** -text
 examples/**/checksums.json whitespace=cr-at-eol
+examples/Convergence_Tests/**/*.csv text eol=lf
+examples/**/*.upf whitespace=-blank-at-eol
+examples/**/*.orb whitespace=-blank-at-eol

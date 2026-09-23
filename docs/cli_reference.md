@@ -138,6 +138,24 @@ specify `--calculator cp2k`, `vasp`, or `qe` only when changing backends.
 [Unified BEC/phonon tutorial](research/shared_response/USAGE.md) for scope,
 actual displacement units, raw diagnostics, and compatibility.
 
+The finite-displacement magnitude can be selected explicitly in Angstrom:
+
+```bash
+zstar bec pre --stru STRU --displacement 0.005
+```
+
+When omitted, the Unified workflow retains the historical default of `0.02 bohr`
+(`0.0105835 Angstrom`). The requested value is passed to Phonopy, recorded in
+`shared_response.json` and `.zstar/bec.json`, and checked against the actual
+displacement vectors written to every `STRU`. This option is intended for
+finite-difference convergence tests; production calculations should use a value
+within the verified linear-response range of the chosen system and settings.
+
+For a BEC-only convergence scan, `zstar bec run --no-electronic-dielectric`
+skips the reference electronic dielectric calculation. `zstar bec post` then
+writes the BEC and force-constant artifacts but intentionally omits `BORN`;
+standard runs and all NAC calculations retain the electronic dielectric step.
+
 For the Unified Gamma route, `zstar bec post` already generates the phonon
 outputs. Prepare finite-q/supercell phonons in a separate directory. The
 `--spectrum` option enables the complete Phonopy band/DOS route:

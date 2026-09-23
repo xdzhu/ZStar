@@ -19,6 +19,7 @@ directories are intentionally excluded.
 | `IR_Raman_Spectra/` | one-command IR and Raman workflows | HfO2, MoS2, Sb2S3, CH4, BN nanotubes; earlier GaAs example |
 | `Electrostatic_Potential/` | cube-based electrostatic-potential analysis | MoS2, alpha-In2Se3, GeS, SnS, SnSe, SnTe |
 | `Benchmarks/` | matched Unified/Separate BEC/APT and Gamma-Hessian efficiency | cubic BaTiO3, SiC, t-HfO2, alpha-In2Se3, hBN, MoS2, H2O, CH4, BN(9,0), Sb2S3 |
+| `Convergence_Tests/` | compact numerical convergence protocols | SiC displacement magnitude and monolayer hBN vacuum separation |
 
 The machine-readable index is `manifest.json`; `path_migration.json` maps older
 paths to the dimension-based layout. `Benchmarks/` indexes paired comparisons,

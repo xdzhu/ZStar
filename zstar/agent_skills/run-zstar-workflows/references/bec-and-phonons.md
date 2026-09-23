@@ -21,8 +21,10 @@ Check installed help before assuming an older release has this feature.
 
 The workflow executor option is `--dimensionality 0|1|2|3` (with `--dim` as an
 alias); the agent-skill preflight uses the user-facing values
-`molecule|1d|2d|bulk`. Use `--gap-mode path` by default or `--gap-mode mp` when a
-denser insulation check is scientifically required.
+`molecule|1d|2d|bulk`. The default insulating gate combines the ABACUS SCF
+k-mesh occupations with a PYATB path diagnostic and checks every displaced
+SCF against the reference occupied manifold. `--gap-mode mp` replaces the path
+diagnostic with an additional PYATB MP-grid diagnostic.
 
 For shell, Slurm, or Torque, generate one root driver:
 

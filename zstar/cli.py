@@ -187,8 +187,10 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
 
     parser = argparse.ArgumentParser(
         prog="zstar",
-        description="ZStar: A Python toolkit for first-principles Born effective charge, "
-                    "polarization, phonon, and dielectric analyses."
+        description=(
+            "ZStar: A unified toolkit for polarization, Born effective charges, "
+            "dielectric and piezoelectric responses, and infrared and Raman spectra."
+        )
     )
     parser.add_argument('--version', action='store_true', help='Show version and exit')
     subparsers = parser.add_subparsers(dest='command', help='sub-command help')
@@ -289,8 +291,14 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                           help='Use a CP2K input template for Berry-phase BEC.')
     parser_gen.add_argument('--cp2k-root', default='cp2k_bec',
                             help='Output root for --cp2k (default: cp2k_bec).')
-    parser_gen.add_argument('--displacement', type=float, default=None,
-                            help='Displacement in Angstrom; Unified default 0.02 bohr, Separate default 0.01 Angstrom.')
+    parser_gen.add_argument(
+        '--displacement', type=float, default=None,
+        help=(
+            'Finite-displacement magnitude in Angstrom; Unified default is '
+            '0.02 bohr (0.0105835 Angstrom), and Separate default is '
+            '0.01 Angstrom.'
+        ),
+    )
 
     # ---------------- deal ----------------
     parser_deal = subparsers.add_parser(
@@ -905,7 +913,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_workflow_run.add_argument('--mp-density', type=float, default=0.08)
     parser_workflow_run.add_argument(
         '--gap-mode', choices=['path', 'mp'], default='path',
-        help='One-time 0.no-move PYATB band-path gate; use mp for stricter sampling.'
+        help=('PYATB diagnostic used together with the ABACUS SCF k-mesh '
+              'occupation gate; use mp instead of the default path diagnostic.')
     )
     parser_workflow_run.add_argument(
         '--dimensionality', '--dim', type=int, choices=[0, 1, 2, 3], default=3
@@ -913,10 +922,13 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_workflow_run.add_argument('--min-gap', type=float, default=0.01)
     parser_workflow_run.add_argument(
         '--no-insulation-check', action='store_true',
-        help='Disable the PYATB band-gap gate (not recommended).'
+        help='Disable both path/MP and SCF-mesh insulating checks (not recommended).'
     )
     parser_workflow_run.add_argument(
-        '--no-electronic-dielectric', action='store_true'
+        '--no-electronic-dielectric', action='store_true',
+        help=('Skip the reference electronic dielectric response. BEC and '
+              'force-constant post-processing remains available, but BORN and '
+              'NAC outputs require the standard run.')
     )
     parser_workflow_run.add_argument(
         '--legacy-omega-max', type=float, default=30.0,
@@ -1124,12 +1136,13 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_raman_run.add_argument('--mp-density', type=float, default=0.08)
     parser_raman_run.add_argument(
         '--gap-mode', choices=['path', 'mp'], default='path',
-        help='One-time reference PYATB band-path gate; use mp for stricter sampling.'
+        help=('PYATB diagnostic used together with the reference SCF k-mesh '
+              'occupation gate; use mp instead of the default path diagnostic.')
     )
     parser_raman_run.add_argument('--min-gap', type=float, default=0.01)
     parser_raman_run.add_argument(
         '--no-insulation-check', action='store_true',
-        help='Disable the PYATB band-gap gate (not recommended).'
+        help='Disable both path/MP and SCF-mesh insulating checks (not recommended).'
     )
     parser_raman_run.add_argument('--legacy-omega-max', type=float, default=30.0)
     parser_raman_run.add_argument('--legacy-domega', type=float, default=0.10)

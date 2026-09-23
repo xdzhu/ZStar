@@ -5,6 +5,8 @@ import unittest
 from unittest.mock import patch
 
 from zstar.workflow import (
+    _run_insulation_gate,
+    _run_displaced_mesh_gate,
     _prepare_abacus_input,
     _pyatb_band_input_command,
     _pyatb_input_command,
@@ -16,6 +18,7 @@ from zstar.workflow import (
     scf_is_complete,
 )
 from zstar.configuration import launcher_command, normalize_execution_system
+from zstar.pyatb_compat import BandGapResult
 
 
 class WorkflowTests(unittest.TestCase):
@@ -330,6 +333,83 @@ class WorkflowTests(unittest.TestCase):
             self.assertFalse(
                 (root / ".zstar" / "stages" / "1.Hf__x+.json").exists()
             )
+
+    def test_displaced_mesh_gate_checks_reference_manifold(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stage = Path(tmp)
+            output = stage / "OUT.TEST"
+            output.mkdir()
+            (output / "running_scf.log").write_text(
+                "charge density convergence is achieved\nTotal Time : 1 s\n",
+                encoding="utf-8",
+            )
+            (output / "istate.info").write_text(
+                "BAND Energy(ev) Occupation Kpoint = 1\n"
+                "1 -2.0 0.125\n2 1.0 0.125\n3 3.0 0.0\n",
+                encoding="utf-8",
+            )
+            result = _run_displaced_mesh_gate(
+                stage,
+                reference_occupied_bands=2,
+                min_gap_eV=0.01,
+            )
+            self.assertTrue(result["insulating"])
+            report = json.loads(
+                (stage / "zstar_insulation.json").read_text(encoding="utf-8")
+            )
+            self.assertTrue(report["occupied_manifold_consistent"])
+
+            with self.assertRaisesRegex(RuntimeError, "Occupied manifold changed"):
+                _run_displaced_mesh_gate(
+                    stage,
+                    reference_occupied_bands=3,
+                    min_gap_eV=0.01,
+                )
+
+    def test_reference_gate_combines_path_and_full_scf_mesh(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            reference = Path(tmp)
+            output = reference / "OUT.TEST"
+            output.mkdir()
+            (output / "running_scf.log").write_text("completed\n", encoding="utf-8")
+            (output / "istate.info").write_text(
+                "BAND Energy(ev) Occupation Kpoint = 1\n"
+                "1 -2.0 0.125\n2 1.0 0.125\n3 2.5 0.0\n"
+                "BAND Energy(ev) Occupation Kpoint = 2\n"
+                "1 -1.8 0.125\n2 1.2 0.125\n3 2.8 0.0\n",
+                encoding="utf-8",
+            )
+            path_gap = BandGapResult(
+                gap_eV=1.7,
+                vbm_eV=1.1,
+                cbm_eV=2.8,
+                insulating=True,
+                threshold_eV=0.01,
+                source="test",
+            )
+            with patch("zstar.workflow.band_is_complete", return_value=True), patch(
+                "zstar.workflow.read_band_gap", return_value=path_gap
+            ):
+                result = _run_insulation_gate(
+                    reference,
+                    pyatb_input="pyatb_input",
+                    pyatb_command="pyatb",
+                    gap_mode="path",
+                    dimensionality=3,
+                    mp_density=0.08,
+                    min_gap_eV=0.01,
+                    env={},
+                    log_path=reference / "gate.log",
+                    dry_run=False,
+                )
+            self.assertEqual(result.occupied_band_count, 2)
+            self.assertAlmostEqual(result.path_gap_eV, 1.7)
+            self.assertAlmostEqual(result.bz_gap_eV, 1.3)
+            report = json.loads(
+                (reference / "zstar_insulation.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(report["sampling"], "pyatb-path+scf-k-mesh")
+            self.assertTrue(report["insulating"])
 
     def test_displaced_input_reuses_reference_charge(self):
         with tempfile.TemporaryDirectory() as tmp:

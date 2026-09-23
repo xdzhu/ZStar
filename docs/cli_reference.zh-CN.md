@@ -131,6 +131,22 @@ Unified BEC/Gamma 声子位移，自动选择所需正负位移。计算器和 `
 `--ensemble cartesian` 保留旧的原子/笛卡尔方向布局。完整说明见
 [Unified BEC/声子教程](research/shared_response/USAGE.zh-CN.md)。
 
+可以用 Å 为单位显式指定有限位移幅度：
+
+```bash
+zstar bec pre --stru STRU --displacement 0.005
+```
+
+若省略该参数，Unified 工作流保持历史默认值 `0.02 bohr`
+（`0.0105835 Angstrom`）。给定数值会传递给 Phonopy，写入
+`shared_response.json` 与 `.zstar/bec.json`，并与每个 `STRU` 中实际写出的
+位移向量交叉核验。该参数可用于有限差分收敛性测试；正式计算应在当前体系和
+数值设置已验证的线性响应区间内选取位移幅度。
+
+BEC 专用的收敛性扫描可用 `zstar bec run --no-electronic-dielectric` 跳过参考
+结构的电子介电计算。此时 `zstar bec post` 仍输出 BEC 与力常数，但有意不写
+`BORN`；标准流程和所有 NAC 计算仍保留电子介电步骤。
+
 Unified Gamma 流程的 `zstar bec post` 已同时生成声子结果。有限波矢/扩胞声子
 请在另一个独立目录中准备；加入 `--spectrum` 可启用完整的 Phonopy 能带与
 DOS 流程：

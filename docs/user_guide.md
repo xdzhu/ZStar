@@ -456,14 +456,17 @@ rounding.
 The default execution order is:
 
 1. Run `0.no-move` SCF and save charge density and sparse matrices.
-2. Generate a normal PYATB high-symmetry band path with `pyatb_input --band`.
-3. Stop before any displacement if the reference is metallic.
+2. Check occupations and the minimum gap over the complete ABACUS SCF k mesh.
+3. Generate a PYATB high-symmetry band path and require both checks to pass.
 4. Calculate reference polarization and electronic dielectric response.
 5. Copy the reference charge cube/restart into each target `OUT.<suffix>/`.
-6. Run every displacement serially and calculate its polarization.
+6. Run every displacement serially, recheck its SCF-mesh gap and occupied
+   manifold, and then calculate its polarization.
 7. Record stage state under `.zstar/` so an interrupted run can resume.
 
-The default gate checks the band gap along a regular high-symmetry path. A denser MP-grid check can be requested explicitly:
+The default gate combines the complete SCF k-mesh occupation record with a
+high-symmetry-path diagnostic. `--gap-mode mp` replaces the path diagnostic
+with an additional PYATB MP-grid diagnostic; the SCF-mesh check remains active:
 
 ```bash
 zstar bec run --root . --gap-mode mp --mp-density 0.08
@@ -764,7 +767,9 @@ zstar spectra stat
 zstar spectra post
 ```
 
-The reference insulating gate is reused once; it is not repeated for every mode displacement. Each `plus`/`minus` stage reuses the reference charge density and records resumable state.
+The reference path/MP diagnostic is evaluated once. Each `plus`/`minus` SCF
+then checks its complete ABACUS k mesh and occupied-band count against the
+reference, reuses the reference charge density, and records resumable state.
 
 An existing prepared mode tree can be checked and reprocessed with
 `zstar spectra stat --root raman` and `zstar spectra post --root raman`.
@@ -855,6 +860,12 @@ settings behind these representative values:
 Periodic entries are selected BEC components. Molecular entries are the
 rotational invariant `q_GAPT = Tr(A)/3` of the atomic polar tensor; they should
 not be interpreted as periodic-crystal BECs.
+
+For numerical-convergence templates, see the public
+[SiC displacement-amplitude scan](../examples/Convergence_Tests/SiC_Displacement)
+and [monolayer-hBN cell-height scan](../examples/Convergence_Tests/hBN_Vacuum).
+They retain clean inputs, one-command shell/PBS runners, full tensor JSON, CSV,
+and editable PDF/PNG plots.
 
 <div class="print-page-break"></div>
 

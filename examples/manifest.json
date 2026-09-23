@@ -475,6 +475,20 @@
       "dim": 3,
       "calculator": "VASP",
       "features": ["bec", "gamma_modes", "dielectric", "ir", "raman", "piezoelectric", "elastic"]
+    },
+    {
+      "id": "convergence_sic_displacement",
+      "path": "Convergence_Tests/SiC_Displacement",
+      "dim": 3,
+      "calculator": "ABACUS+PYATB",
+      "features": ["bec", "gamma_hessian", "displacement_convergence"]
+    },
+    {
+      "id": "convergence_hbn_vacuum",
+      "path": "Convergence_Tests/hBN_Vacuum",
+      "dim": 2,
+      "calculator": "ABACUS+PYATB",
+      "features": ["bec", "gamma_hessian", "vacuum_convergence"]
     }
   ]
 }

@@ -1,0 +1,23 @@
+{
+  "validation_date": "2026-09-24",
+  "software": {
+    "zstar": "0.3.4 working-tree validation build",
+    "abacus": "3.10.0-LTS (commit e84abb4)",
+    "pyatb": "1.1.2.dev0+284515d"
+  },
+  "execution": {
+    "scheduler": "PBS/Torque",
+    "queue": "gold5120",
+    "processor": "Intel Xeon Gold 5120",
+    "mpi_ranks": 28,
+    "omp_threads_per_rank": 1
+  },
+  "workflow": {
+    "calculator": "ABACUS+PYATB",
+    "ensemble": "Unified Phonopy displacement ensemble",
+    "insulation_gate": "PYATB band path plus complete ABACUS SCF k-mesh occupations",
+    "electronic_dielectric_requested": false,
+    "displacement_magnitudes_angstrom": [0.005, 0.010, 0.015, 0.020, 0.025, 0.030],
+    "input_directory": "../run"
+  }
+}

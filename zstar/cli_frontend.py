@@ -170,7 +170,12 @@ def _run_bec(arguments: Sequence[str], legacy: LegacyRunner) -> None:
                               'elastic': native_data.get('elastic', False)}
         if calculator == 'abacus' and (Path(manifest_root) / MANIFEST).is_file():
             shared_data = load_manifest(manifest_root)
-            shared_options = {'method': shared_data['method'], 'ensemble': 'phonopy', 'gamma_phonons': True}
+            shared_options = {
+                'method': shared_data['method'],
+                'ensemble': 'phonopy',
+                'gamma_phonons': True,
+                'displacement_angstrom': shared_data['nominal_distance_A'],
+            }
         write_manifest(
             "bec",
             root=manifest_root,

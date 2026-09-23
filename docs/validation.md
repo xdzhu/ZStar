@@ -105,7 +105,8 @@ The source test suite covers:
 
 - reference-first ordering, charge restart placement, progress state, and
   resume behavior;
-- default band-path and explicit Monkhorst-Pack insulation gates;
+- combined SCF-k-mesh occupation and PYATB band-path insulation gates,
+  displaced-manifold consistency, and the optional PYATB Monkhorst-Pack diagnostic;
 - shell, Slurm, and Torque single-driver scripts;
 - legacy and direct-static PYATB input/output compatibility;
 - 3D, hybrid 2D, and hybrid 1D BEC assembly, including low-dimensional
@@ -170,9 +171,11 @@ for a separately calculated symmetry-restored reference structure.
 ## Fresh Cross-Dimensional Regression
 
 Every material was run as one deterministic workflow beginning with
-`0.no-move`. The reference SCF was followed by the default
-`pyatb_input --band` path gate. Displacements were started only after that
-gate passed and reused the reference charge density.
+`0.no-move`. These archived runs used the then-current
+`pyatb_input --band` reference gate before starting displacements and reused
+the reference charge density. Current reruns additionally require the complete
+reference SCF k mesh and every displaced SCF to remain insulating with a
+consistent occupied manifold.
 
 | System | Dimension | Band gap (eV) | Displaced stages |
 | --- | ---: | ---: | ---: |
@@ -236,6 +239,18 @@ The corresponding legacy-PYATB electronic dielectric diagonals, evaluated
 with the reference 0-30 eV window, are `(6.465, 6.465, 5.921)` for BaTiO3,
 `(7.380, 7.380, 7.215)` for PbTiO3. The refreshed HfO2 direct-static result
 is `(5.161604, 5.161604, 4.780272)`.
+
+## BEC Numerical-Convergence Examples
+
+The public [SiC displacement scan](../examples/Convergence_Tests/SiC_Displacement)
+uses `zstar bec pre --displacement` at six values from 0.005 to 0.030
+Angstrom. The [monolayer-hBN cell-height scan](../examples/Convergence_Tests/hBN_Vacuum)
+uses 15, 20, 30, and 40 Angstrom cells with fixed in-plane settings. The SiC
+tensors differ from the 0.010-Angstrom result by at most `7.30e-4 e`. For hBN,
+the B in-plane BEC spans only `1.41e-5 e`, while the out-of-plane component
+changes by `0.00520 e` between 30 and 40 Angstrom. The retained CSV, JSON, and
+plots report convergence by component rather than treating workflow completion
+or a sum-rule projection as evidence of convergence.
 
 ## PYATB Static-Response Compatibility
 
