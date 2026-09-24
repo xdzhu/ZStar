@@ -16,3 +16,6 @@ bash run.sh --abacus-command "mpirun -np 40 abacus" --pyatb-command pyatb
 需要预先安装 ZStar、PYATB 和外部 ABACUS。此入口默认只计算 BEC 与 Gamma 模式，
 不重复 Raman 任务。[完整谱学案例](../../IR_Raman_Spectra/Nanowire_Sb2S3/README.zh-CN.md)
 以及新旧框架对照保留在原谱学目录中。
+
+完整谱学归档还包含在公开 B3LYP-D3(BJ) 参考几何上完成的原生
+VASP/PBE-D3(BJ) BEC 交叉验证；仓库不分发受许可限制的 VASP PAW 数据。

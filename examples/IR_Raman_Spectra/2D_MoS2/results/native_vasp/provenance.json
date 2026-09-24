@@ -1,0 +1,15 @@
+{
+  "system": "monolayer MoS2",
+  "calculator": "VASP 6.3.2",
+  "route": "native VASP DFPT and finite-difference Raman post-processing",
+  "exchange_correlation": "PBE+D3(BJ)",
+  "pseudopotential_family": "PAW-PBE",
+  "plane_wave_cutoff_eV": 600.0,
+  "kpoint_mesh": [33, 33, 1],
+  "electronic_convergence_eV": 1e-8,
+  "reference_doi": "10.1107/S1600576723002571",
+  "zstar_frequencies_cm-1": [283.626, 384.260, 406.272, 469.712],
+  "reference_frequencies_cm-1": [281.9, 381.8, 402.3, 467.7],
+  "mean_absolute_difference_cm-1": 2.5423,
+  "distribution_note": "Licensed PAW datasets and large restart files are not redistributed."
+}

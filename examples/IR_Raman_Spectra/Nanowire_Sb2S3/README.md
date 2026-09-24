@@ -85,7 +85,10 @@ Units are e. The 1D dielectric output is a line
 polarizability under the stated source-field convention, not a bulk permittivity.
 Raman line-polarizability derivatives use the Gaussian normalization A/(4*pi).
 
-Raman relative intensities differ substantially from the B3LYP-D3(BJ) reference; this is not quantitative intensity validation. The reference 31.5762 cm^-1 mode has about 98.3% axial-rotation overlap and remains in its original curve.
+The Raman calculations contain corresponding frequency groups across the plotted
+range, while their normalized relative weights differ. This comparison is not
+an absolute-intensity validation. The reference 31.5762 cm^-1 mode has about
+98.3% axial-rotation overlap and remains in its original curve.
 
 See `compute_costs.json` for separate ABACUS/PYATB and optimization core-hours.
 No interrupted call recorded.
@@ -100,6 +103,16 @@ reference. Representative atoms `(7,8,1,2,3)` have axial BECs
 and B3LYP-D3(BJ) structures are compared for tensor patterns, not same-method
 numerical equivalence. The reference is a public computational dataset; no
 associated journal paper has been verified.
+
+The comparison table also includes a native VASP/PBE-D3(BJ) calculation on the
+deposited B3LYP-D3(BJ) geometry. Its axial values for the five sites are
+`(4.619,6.042,-4.120,-3.429,-3.112) e`. This fixed-geometry row helps separate
+geometry effects from the remaining functional, basis, and implementation
+differences. Complete tensors, inputs without `POTCAR`, timing, and provenance
+are under `results/BEC_comparison/vasp_reference_geometry/`. A direct B3LYP
+production calculation could not proceed because the installed ABACUS
+3.10.0-LTS binary rejected the functional during input validation; ABACUS
+documentation requires a LibXC-enabled build for B3LYP.
 
 The unified ensemble uses 20 displacements plus one reference SCF at 18.95
 ABACUS+PYATB core-hours. Separate central Cartesian BEC and independent phonons

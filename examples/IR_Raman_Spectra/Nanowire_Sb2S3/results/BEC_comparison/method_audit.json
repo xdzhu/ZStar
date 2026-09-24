@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "requested_comparison": "B3LYP-D3(BJ) BEC for the isolated Sb2S3 chain",
+  "abacus_trial": {
+    "version": "3.10.0-LTS",
+    "commit": "e84abb4",
+    "job_id": "718571.mu01",
+    "requested_functional": "B3LYP",
+    "dispersion": "D3(BJ)",
+    "result": "not_run",
+    "reason": "The installed production binary rejected B3LYP because it was not built with the required LibXC support.",
+    "diagnostic": "Unrecognized exchange-correlation functional 'B3LYP'."
+  },
+  "fallback": {
+    "calculator": "VASP 6.3.2",
+    "method": "PBE-D3(BJ) native LEPSILON on the deposited B3LYP-D3(BJ) geometry",
+    "job_id": "718573.mu01",
+    "result": "complete",
+    "path": "vasp_reference_geometry"
+  }
+}

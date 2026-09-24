@@ -452,6 +452,9 @@ def draw_spectrum(
     reference_label: str,
     reference_broadening: float,
     sampled_reference: np.ndarray | None = None,
+    primary_label: str = "ZStar",
+    primary_columns: tuple[int, ...] | None = None,
+    secondary_column: int | None = None,
 ) -> None:
     frequency = data[:, 0]
     color = COLORS[kind]
@@ -475,7 +478,12 @@ def draw_spectrum(
         zorder=2,
         label=reference_label,
     )
-    intensity = normalize(data[:, -1])
+    primary_values = (
+        np.sum(data[:, list(primary_columns)], axis=1)
+        if primary_columns is not None
+        else data[:, -1]
+    )
+    intensity = normalize(primary_values)
     ax.fill_between(frequency, intensity, color=color, alpha=0.12, linewidth=0, zorder=3)
     zstar_line, = ax.plot(
         frequency,
@@ -483,8 +491,19 @@ def draw_spectrum(
         color=color,
         linewidth=1.3,
         zorder=4,
-        label="ZStar",
+        label=primary_label,
     )
+    secondary_intensity = None
+    if secondary_column is not None:
+        secondary_intensity = normalize(data[:, secondary_column])
+        ax.plot(
+            frequency,
+            secondary_intensity,
+            color=color,
+            linewidth=1.3,
+            linestyle="--",
+            zorder=4,
+        )
 
     last_peak = -np.inf
     collision_level = 0
@@ -496,7 +515,9 @@ def draw_spectrum(
         else:
             collision_level = 0
         index = int(np.argmin(np.abs(frequency - peak)))
-        y_value = float(intensity[index])
+        annotation_channel = placement[2] if len(placement) > 2 else "primary"
+        values = secondary_intensity if annotation_channel == "secondary" else intensity
+        y_value = float(values[index])
         y_axes = float(placement[0]) if placement else 0.86 - 0.14 * (collision_level % 2)
         x_shift = float(placement[1]) if len(placement) > 1 else 0.0
         label_x = peak + x_shift * (xlim[1] - xlim[0])
@@ -684,24 +705,27 @@ def build_figure(
             "row": "MoS$_2$\n2D, slab",
             "image": data_root / "structure_images" / "MoS2_monolayer.png",
             "stru": data_root / "mos2" / "STRU",
-            "ir": data_root / "mos2" / "ir" / "ir_spectrum.dat",
-            "ir_modes": data_root / "mos2" / "ir" / "ir_modes.csv",
-            "raman": data_root / "mos2" / "raman" / "raman_spectrum.dat",
-            "raman_modes": data_root / "mos2" / "raman" / "raman_modes.csv",
+            "ir": data_root / "mos2" / "vasp" / "ir_spectrum.dat",
+            "ir_modes": data_root / "mos2" / "vasp" / "ir_modes.csv",
+            "raman": data_root / "mos2" / "vasp" / "raman_spectrum.dat",
+            "raman_modes": data_root / "mos2" / "vasp" / "raman_modes.csv",
             "repeats": (4, 4, 1),
             "view": (8, 16),
             "ir_xlim": (245, 480),
             "raman_xlim": (245, 480),
             "ir_labels": [
-                (6, r"$E'$", 0.92, -0.167),
-                (9, r"$A_2''$", 0.55, -0.098),
+                (3, r"$E'$", 0.92, -0.167),
+                (1, r"$A_2''$", 0.55, -0.098, "secondary"),
             ],
             "raman_labels": [
-                (4, r"$E''$", 0.62, 0.189),
-                (6, r"$E'$", 0.92, -0.103),
-                (8, r"$A_1'$", 0.92, 0.143),
+                (5, r"$E''$", 0.62, 0.189),
+                (3, r"$E'$", 0.92, -0.103),
+                (2, r"$A_1'$", 0.92, 0.143),
             ],
             "reference_key": "Ulian2023MoS2",
+            "primary_label": "ZStar (VASP)",
+            "ir_primary_columns": (1, 2),
+            "ir_secondary_column": 3,
             "reference_broadening": {"ir": 5.0, "raman": 5.0},
             "out_of_plane_a": True,
             "b_axis_angle_deg": 0.0,
@@ -732,8 +756,13 @@ def build_figure(
                 (15, r"$B_{1g}$", 0.78, -0.109),
                 (17, r"$E_g$", 0.92, 0.045),
             ],
-            "reference_key": "Fan2022HfO2",
-            "reference_broadening": {"ir": 8.0, "raman": 8.0},
+            "reference_label": "ZStar (VASP)",
+            "primary_label": "ZStar (ABACUS)",
+            "reference_broadening": {"ir": 0.0, "raman": 0.0},
+            "ir_reference": data_root / "hfo2" / "vasp" / "ir_spectrum.dat",
+            "raman_reference": data_root / "hfo2" / "vasp" / "raman_spectrum.dat",
+            "ir_reference_column": -1,
+            "raman_reference_column": -1,
             "out_of_plane_a": False,
             "b_axis_angle_deg": -15.0,
             "image_bounds": (0.20, 0.17, 0.79, 0.78),
@@ -772,10 +801,11 @@ def build_figure(
         })
 
     for system in systems:
-        key = system["reference_key"]
-        if key not in reference_numbers:
-            raise ValueError(f"Missing bibliography key for spectrum: {key}")
-        system["reference_label"] = f"Ref. [{reference_numbers[key]}]"
+        if "reference_label" not in system:
+            key = system["reference_key"]
+            if key not in reference_numbers:
+                raise ValueError(f"Missing bibliography key for spectrum: {key}")
+            system["reference_label"] = f"Ref. [{reference_numbers[key]}]"
 
     reference_path = data_root / "spectroscopy_literature_peaks.csv"
     row_count = len(systems)
@@ -822,6 +852,9 @@ def build_figure(
             system["reference_broadening"]["ir"],
             np.loadtxt(system["ir_reference"])[:, [0, system["ir_reference_column"]]]
             if "ir_reference" in system else None,
+            system.get("primary_label", "ZStar"),
+            system.get("ir_primary_columns"),
+            system.get("ir_secondary_column"),
         )
         draw_spectrum(
             axes[row, 2],
@@ -835,6 +868,7 @@ def build_figure(
             system["reference_broadening"]["raman"],
             np.loadtxt(system["raman_reference"])[:, [0, system["raman_reference_column"]]]
             if "raman_reference" in system else None,
+            system.get("primary_label", "ZStar"),
         )
         axes[row, 1].set_ylabel("IR intensity")
         axes[row, 2].set_ylabel("Raman intensity")
@@ -851,9 +885,10 @@ def build_figure(
                 system["raman"],
             )
         )
+        if "ir_reference" in system:
+            source_files.extend([system["ir_reference"], system["raman_reference"]])
         if system["name"] == "Sb2S3":
-            source_files.extend([system["ir_reference"], system["raman_reference"],
-                                 sb2s3_case / "results/irreps.yaml"])
+            source_files.append(sb2s3_case / "results/irreps.yaml")
 
     source_files.append(reference_path)
     source_files.extend(
@@ -905,7 +940,7 @@ def build_figure(
         "placeholder": False,
         "image_scaling": "Aspect-preserving uniform scaling, centered at the largest size that fits each structure panel.",
         "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all three two-line labels use one common left edge across rows.",
-        "reference_overlay": "Original three rows unchanged. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled IR and Raman curves, DOI 10.17632/6tntvw37tr.1, independently normalized with no peak shifts. Raman relative-intensity agreement is not claimed.",
+        "reference_overlay": "HfO2 compares the ABACUS+PYATB and native VASP PBEsol routes. MoS2 compares the native VASP PBE-D3(BJ) route with literature frequencies. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled curves without peak shifts; its Raman relative-intensity agreement is not claimed.",
         "row_geometry_inches": {"height": row_height, "pitch": row_pitch},
         "layout_revision": {"HfO2_CH4_a_axis_scale": .8,
                             "Sb2S3_image_scale": 1.08,
@@ -913,8 +948,11 @@ def build_figure(
                             "spectrum_panel_label_x": -.20,
                             "intensity_labels": ["IR intensity", "Raman intensity"],
                             "reference_numbers_updated": True},
-        "bibliography_labels": {system["reference_key"]: reference_numbers[system["reference_key"]]
-                                for system in systems},
+        "bibliography_labels": {
+            system["reference_key"]: reference_numbers[system["reference_key"]]
+            for system in systems
+            if "reference_key" in system
+        },
         "systems": [system["name"] for system in systems],
         "display_systems": [system["row"].split("\n", 1)[0] for system in systems],
         "layout": f"{row_count} rows by 3 columns",

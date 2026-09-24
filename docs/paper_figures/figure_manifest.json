@@ -119,6 +119,19 @@
       }
     },
     {
+      "figure": "unified_efficiency_benchmarks",
+      "files": {
+        "pdf": "unified_efficiency_benchmarks.pdf",
+        "svg": "unified_efficiency_benchmarks.svg",
+        "png": "unified_efficiency_benchmarks.png",
+        "tiff": "unified_efficiency_benchmarks.tiff",
+        "metadata": "unified_efficiency_benchmarks.metadata.json"
+      },
+      "source_data": "source_data/unified_efficiency_benchmarks.csv",
+      "layout": "two stacked paired-bar panels normalized to the Separate cost for each case",
+      "placeholder": false
+    },
+    {
       "figure": "spectroscopy_across_dimensions",
       "files": {
         "png": "spectroscopy_across_dimensions.png",
@@ -134,19 +147,6 @@
         "Sb$_2$S$_3$",
         "CH$_4$"
       ],
-      "placeholder": false
-    },
-    {
-      "figure": "unified_efficiency_benchmarks",
-      "files": {
-        "pdf": "unified_efficiency_benchmarks.pdf",
-        "svg": "unified_efficiency_benchmarks.svg",
-        "png": "unified_efficiency_benchmarks.png",
-        "tiff": "unified_efficiency_benchmarks.tiff",
-        "metadata": "unified_efficiency_benchmarks.metadata.json"
-      },
-      "source_data": "source_data/unified_efficiency_benchmarks.csv",
-      "layout": "two stacked paired-bar panels normalized to the Separate cost for each case",
       "placeholder": false
     }
   ],
@@ -342,6 +342,16 @@
       "sha256": "37c5e2d0d332ccf57676a2311ee9f1a9bf936d9b1463810e447bd64891b6d6fb"
     },
     {
+      "path": "hfo2/vasp/ir_spectrum.dat",
+      "size": 250194,
+      "sha256": "7e1d982dc99fdf7c763b4246910cd52f03322397cbf2c2cf2e02f705b722f18e"
+    },
+    {
+      "path": "hfo2/vasp/raman_spectrum.dat",
+      "size": 100088,
+      "sha256": "d12454c4abee66083c4ef1804f1923428a237a017a7ae8e9a8470e734ecb9d82"
+    },
+    {
       "path": "in2se3/Z-BORN-symm.out",
       "size": 821,
       "sha256": "ab8858e9f363e8a3251bfdd8d63babb8360f5af5bea9714584d1fd660b1d8438"
@@ -425,6 +435,26 @@
       "path": "mos2/raman/raman_spectrum.dat",
       "size": 200088,
       "sha256": "36908dea511f79838f10565ae38a1d3c8be2f9e40ef62ab8f36df847e523c874"
+    },
+    {
+      "path": "mos2/vasp/ir_modes.csv",
+      "size": 1130,
+      "sha256": "250a8471844ba76eb8d9203ea4dea8742432c65596aa8cca1e2de9c3e8ddb5a3"
+    },
+    {
+      "path": "mos2/vasp/ir_spectrum.dat",
+      "size": 250194,
+      "sha256": "1aa03074ed66091585c325625fdf9f2b3d3d2a40013ef666ac952e70618b6015"
+    },
+    {
+      "path": "mos2/vasp/raman_modes.csv",
+      "size": 1209,
+      "sha256": "9aa9186d2447ae762a6b17c95c8df5b497aea790ec87010117d87480a9e80f3b"
+    },
+    {
+      "path": "mos2/vasp/raman_spectrum.dat",
+      "size": 100088,
+      "sha256": "606c890887fa11663aba48306c85618bf3ba33d3557b78210978ae451606c686"
     },
     {
       "path": "potential/GeS/a.dat",

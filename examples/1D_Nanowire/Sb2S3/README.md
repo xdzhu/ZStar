@@ -20,3 +20,7 @@ The default entry computes BEC and Gamma modes only; it does not repeat Raman jo
 The complete spectroscopy case and its IR/Raman reproduction instructions remain
 in [the spectroscopy directory](../../IR_Raman_Spectra/Nanowire_Sb2S3/README.md).
 Existing Cartesian/Unified comparisons remain there as well.
+
+The spectroscopy archive also contains a native VASP/PBE-D3(BJ) BEC cross-check
+performed on the deposited B3LYP-D3(BJ) reference geometry. Licensed VASP PAW
+datasets are not redistributed.

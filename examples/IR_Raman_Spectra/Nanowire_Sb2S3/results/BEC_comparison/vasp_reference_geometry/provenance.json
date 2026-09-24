@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "system": "isolated Sb2S3 chain",
+  "purpose": "PBE-D3(BJ) intermediate comparison on the deposited B3LYP-D3(BJ) reference geometry",
+  "calculator": "VASP 6.3.2",
+  "response_method": "native LEPSILON",
+  "exchange_correlation": "PBE-D3(BJ)",
+  "dispersion_setting": "IVDW=12",
+  "pseudopotential_family": "PAW-PBE",
+  "plane_wave_cutoff_eV": 500.0,
+  "kpoint_mesh": [1, 1, 12],
+  "electronic_convergence_eV": 1e-8,
+  "parallel_layout": {
+    "mpi_ranks": 28,
+    "NCORE": 4,
+    "NPAR_present": false
+  },
+  "symmetry_setting": "ISYM=0 to avoid VASP internal k-point redistribution under NCORE=4",
+  "reference_geometry_doi": "10.17632/6tntvw37tr.1",
+  "job_id": "718573.mu01",
+  "queue": "gold5120",
+  "walltime": "00:35:54",
+  "allocated_core_hours": 16.7533,
+  "maximum_acoustic_sum_residual_e": 2e-5,
+  "maximum_symmetry_pair_difference_e": 0.00761,
+  "epsilon_infinity": [
+    [1.222725, 0.035072, -0.000001],
+    [0.035072, 1.119148, 0.0],
+    [0.0, 0.0, 2.011625]
+  ],
+  "distribution_note": "POTCAR and large VASP restart files are not redistributed."
+}

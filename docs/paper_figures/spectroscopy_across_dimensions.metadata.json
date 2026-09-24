@@ -6,7 +6,7 @@
   "placeholder": false,
   "image_scaling": "Aspect-preserving uniform scaling, centered at the largest size that fits each structure panel.",
   "structure_label_layout": "The chemical-formula line shares the panel-label top baseline; all three two-line labels use one common left edge across rows.",
-  "reference_overlay": "Original three rows unchanged. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled IR and Raman curves, DOI 10.17632/6tntvw37tr.1, independently normalized with no peak shifts. Raman relative-intensity agreement is not claimed.",
+  "reference_overlay": "HfO2 compares the ABACUS+PYATB and native VASP PBEsol routes. MoS2 compares the native VASP PBE-D3(BJ) route with literature frequencies. Sb2S3 uses the original CRYSTAL/B3LYP-D3(BJ) sampled curves without peak shifts; its Raman relative-intensity agreement is not claimed.",
   "row_geometry_inches": {
     "height": 1.3961538461538459,
     "pitch": 2.2059230769230767
@@ -23,10 +23,9 @@
     "reference_numbers_updated": true
   },
   "bibliography_labels": {
-    "Fan2022HfO2": 55,
-    "Ulian2023MoS2": 70,
-    "Ulian2026Sb2S3Data": 62,
-    "Shimanouchi1972": 71
+    "Ulian2023MoS2": 83,
+    "Ulian2026Sb2S3Data": 66,
+    "Shimanouchi1972": 84
   },
   "systems": [
     "HfO2",
@@ -66,6 +65,14 @@
       "bytes": 250088,
       "sha256": "4de237e40795b153dbfd20d08b48726d56fc86115a4eb62c5ef0e56338a38d2c"
     },
+    "hfo2/vasp/ir_spectrum.dat": {
+      "bytes": 250194,
+      "sha256": "7e1d982dc99fdf7c763b4246910cd52f03322397cbf2c2cf2e02f705b722f18e"
+    },
+    "hfo2/vasp/raman_spectrum.dat": {
+      "bytes": 100088,
+      "sha256": "d12454c4abee66083c4ef1804f1923428a237a017a7ae8e9a8470e734ecb9d82"
+    },
     "structure_images/MoS2_monolayer.png": {
       "bytes": 130384,
       "sha256": "03afc00aaca07641a88266e9e128d0df738238a8c74c5d5731ea1da265dddec9"
@@ -74,21 +81,21 @@
       "bytes": 499,
       "sha256": "8ffcbed823b884d0c825f760251952b5796ae8bfbfe8fe374f0fa1073188484f"
     },
-    "mos2/ir/ir_modes.csv": {
-      "bytes": 624,
-      "sha256": "6b57a49313b3476dc363638010bcd172768b74d84309597615ce76997d579721"
+    "mos2/vasp/ir_modes.csv": {
+      "bytes": 1130,
+      "sha256": "250a8471844ba76eb8d9203ea4dea8742432c65596aa8cca1e2de9c3e8ddb5a3"
     },
-    "mos2/ir/ir_spectrum.dat": {
+    "mos2/vasp/ir_spectrum.dat": {
       "bytes": 250194,
-      "sha256": "aecf5b4fda804375d1be4387626bbea24a5ebf76574cba20631d90f4a2dd33ec"
+      "sha256": "1aa03074ed66091585c325625fdf9f2b3d3d2a40013ef666ac952e70618b6015"
     },
-    "mos2/raman/raman_modes.csv": {
-      "bytes": 1383,
-      "sha256": "b8ae8777ea209b8aa1cf1873ae60aa9aa52b13305983ee0781c5c879636fe527"
+    "mos2/vasp/raman_modes.csv": {
+      "bytes": 1209,
+      "sha256": "9aa9186d2447ae762a6b17c95c8df5b497aea790ec87010117d87480a9e80f3b"
     },
-    "mos2/raman/raman_spectrum.dat": {
-      "bytes": 200088,
-      "sha256": "36908dea511f79838f10565ae38a1d3c8be2f9e40ef62ab8f36df847e523c874"
+    "mos2/vasp/raman_spectrum.dat": {
+      "bytes": 100088,
+      "sha256": "606c890887fa11663aba48306c85618bf3ba33d3557b78210978ae451606c686"
     },
     "structure_images/Sb2S3.png": {
       "bytes": 222151,

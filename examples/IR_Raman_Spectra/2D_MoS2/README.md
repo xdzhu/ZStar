@@ -34,6 +34,15 @@ The out-of-plane BEC convention remains the cube-integrated 2D route. The
 spectral response is reported as a sheet response and must not be interpreted
 as a vacuum-dependent bulk dielectric tensor.
 
+## Native VASP cross-check
+
+`results/native_vasp/` contains a compact native VASP/PBE-D3(BJ) validation
+archive. Its four optical frequencies (283.626, 384.260, 406.272, and
+469.712 cm^-1) agree with the matching literature calculation to a mean
+absolute difference of 2.542 cm^-1. The archive contains the relaxed structure,
+mode tables, spectra, and provenance metadata, but excludes licensed PAW data
+and large restart files.
+
 ## Validated result archive
 
 `results/bec/` contains the original seven-stage forward BEC evidence, including

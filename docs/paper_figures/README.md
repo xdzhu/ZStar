@@ -76,56 +76,30 @@ it is a direct comparison or contextual evidence.
 ![Validated IR/Raman spectroscopy across dimensionalities](spectroscopy_across_dimensions.png)
 
 The manuscript uses the twelve-panel `spectroscopy_across_dimensions` figure.
-Its completed rows follow the manuscript order: tetragonal P42/nmc HfO2
-(`3D, bulk`), 2H-MoS2 (`2D, slab`), Sb2S3 (`1D, nanowire`), and
-CH4 (`0D, molecule`). Each row contains
-an author-supplied VESTA view of the retained calculation structure, followed
-by calculated IR and Raman spectra. Every spectral panel shows total response
-only; IR is red and Raman is blue. Different panels are normalized
-independently because molecular, sheet, and bulk response conventions do not
-share an absolute intensity scale. The completed GaAs nanowire calculation is
-retained as a machine-readable one-dimensional coverage test but is not used
-in this main figure.
+Its rows follow the manuscript order: tetragonal P42/nmc HfO2 (`3D, bulk`),
+2H-MoS2 (`2D, slab`), Sb2S3 (`1D, nanowire`), and CH4 (`0D, molecule`). Each
+row contains an author-supplied VESTA view followed by IR and Raman spectra.
+Different panels are normalized independently because molecular, sheet, and
+bulk response conventions do not share an absolute intensity scale. The MoS2
+IR panel additionally normalizes its in-plane solid and out-of-plane dashed
+curves separately so that both symmetry channels remain visible.
 
-The gray HfO2, MoS2, and CH4 curves are broadened reference envelopes. Unit-weight
-published modes are used when a source does not provide comparable intensity
-data; they therefore validate frequency rather than absolute intensity. The
-HfO2 row retains digitized relative bar heights from the VASP/PBEsol
-lattice-dynamics analysis of Fan et al.
-([doi:10.1038/s41535-022-00436-8](https://doi.org/10.1038/s41535-022-00436-8)).
-All three tetragonal IR and six Raman entries visible in that source figure are
-included before broadening.
+The HfO2 row directly compares ZStar's ABACUS+PYATB and native VASP PBEsol
+routes; the 15 optical frequencies have a 4.31 cm-1 mean absolute difference.
+The MoS2 row uses the native VASP/PBE-D3(BJ) route and unit-weight literature
+frequencies from Ulian and Valdre
+([doi:10.1107/S1600576723002571](https://doi.org/10.1107/S1600576723002571)).
+Its E'', E', A1', and A2'' groups differ by 2.5 cm-1 on average. The CH4 gray
+curves are likewise frequency-only reference envelopes and are not relative-
+intensity measurements.
 
 Sb2S3 uses the original sampled CRYSTAL/B3LYP-D3(BJ) IR and Raman curves,
-not a frequency-only envelope. Relative Raman intensities differ substantially;
-the comparison is retained without adjusting peak positions or intensities.
-Bibliography numbers are exported from the compiled manuscript. The Unified
-examples retain offline-reproducible tensors and spectra in `results/Unified/`.
-
-The refreshed MoS2 row uses ABACUS/PBE-D3(BJ), `scf_thr = 1e-8`, a 33x33x1
-primitive-cell k mesh for electronic response, and the retained 3x3x1 phonon
-supercell. Its band gap is 1.820 eV. Seven symmetry-reduced BEC
-stages give `Zxx = Zyy = -0.80585922` and `Zzz = 0.00273336` for Mo, with the
-two symmetry-equivalent S atoms carrying the compensating tensor. Contracting
-these BECs with all six optical modes makes the E' pair at 369.15 cm-1 the
-dominant IR feature. Twelve completed central-difference response stages with
-the PYATB `static_dielectric_only` kernel give Raman-active E'', E', and A1'
-families at 270.63, 369.15, and 401.50 cm-1, respectively. A1' is the strongest
-Raman line, while the A2'' normalized Raman activity is `3.02e-14`, recovering
-the expected selection rule to numerical precision.
-
-The HfO2 row uses one PBEsol P42/nmc structure and the ONCV pseudopotentials
-and TZDP 9-au numerical atomic orbitals distributed together in the
-`ABACUS-orbitals/TZDP_9au` set. Four symmetry-reduced force
-displacements give a stable Gamma eigensystem with optical branches from
-96.13 to 670.45 cm-1. The archived Separate Raman calculation covers all 15 optical
-modes with 30 positive/negative direct-static electronic-response stages.
-The gerade A1g, B1g, and Eg branches are Raman active, whereas Eu and A2u are
-infrared active and B2u is silent. The strongest Raman line is A1g at
-286.16 cm-1; the largest normalized Raman residual among Eu, A2u, and B2u is
-`5.86e-9`. The Fan-reference frequency MAEs are 14.62 cm-1 for three IR modes
-and 9.46 cm-1 for six Raman modes, providing a centrosymmetric bulk closure without
-the soft-mode ambiguity of the archived BTO case.
+not a frequency-only envelope. Several frequency groups correspond, whereas
+their normalized Raman intensity ordering is not identical. The curves are
+therefore retained without shifting individual peaks and without claiming
+quantitative cross-functional intensity agreement. Bibliography numbers are
+exported from the compiled manuscript; all plotted arrays and their hashes are
+listed in the figure metadata.
 
 ### Static and frequency-dependent dielectric response
 
