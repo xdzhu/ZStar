@@ -96,7 +96,7 @@ Raman，使用 `--no-raman`。`zstar bec job --root qe_work --system SYSTEM` 可
 和离子价电荷 sidecar：
 
 ```bash
-zstar density vasp-cube --chgcar CHGCAR --output charge.cube
+zstar density vasp-cube --chgcar CHGCAR --potcar POTCAR --output charge.cube
 zstar density qe-input --prefix sample --outdir ./tmp --output pp.in
 zstar density qe-sidecar --cube charge.cube --pw-input scf.in \
   --pseudo-dir pseudo
@@ -105,7 +105,10 @@ zstar density sidecar --cube charge.cube --backend generic \
   --charges 4 4 6
 ```
 
-规范 BEC 工作流在 `zstar bec post` 阶段使用参考态和位移态 cube。保留的专家命令
+VASP 的 `--potcar` 用于记录离子价电荷；有许可的 POTCAR 只留在授权计算目录，
+不随案例分发。导出器先将 CHGCAR 网格值按体积归一化，再写入 bohr 单位的
+电子密度 cube。规范 BEC 工作流在 `zstar bec post` 阶段使用参考态和位移态 cube。
+保留的专家命令
 `zstar polar2d` 仅用于审计一对已有 cube，不负责准备或执行工作流。两条路径在
 ABACUS、VASP、QE 和 CP2K 间共用同一套积分物理。
 

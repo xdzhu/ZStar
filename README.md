@@ -88,7 +88,10 @@ zstar spectra post --root spectra
 
 IR uses the completed BEC and phonon data. Raman adds PYATB dielectric-response
 calculations using the existing electronic matrices, without additional SCFs
-in the Unified route. Plots and tables are written to `spectra/ir/` and
+in the zero-field Unified route. An isolated wire may need extra finite-field
+SCFs for transverse local-field screening, as shown in the
+[Sb2S3 audit](examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/README.md).
+Plots and tables are written to `spectra/ir/` and
 `spectra/raman/`.
 [Archived SiC spectra](examples/3D_Bulk/SiC/results/spectra) are available
 without running DFT. See the [case tutorial](examples/3D_Bulk/SiC/README.md)
@@ -168,12 +171,13 @@ see the [molecular guide](docs/molecular_spectroscopy.md).
 
 ## IR, Raman, and Dielectric Response
 
-![IR and Raman spectra for bulk crystals, slabs, nanowires, and molecules](docs/paper_figures/spectroscopy_across_dimensions.png)
+![IR and Raman spectra for bulk crystals, slabs, nanowires, and molecules](docs/paper_figures/Figure_10_Spectroscopy_four_dimensions.png)
 
 Rows show tetragonal HfO2 (PBEsol), MoS2 (PBE-D3(BJ)), Sb2S3, and CH4.
 [Spectroscopy examples](examples/IR_Raman_Spectra) retain mode assignments and
-reference data, including the Sb2S3 computational-dataset reference and its
-observed Raman-intensity differences.
+reference data. The Sb2S3 Raman row compares axial and crossed polarizations
+using the [transverse finite-field response](examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/README.md);
+its axial component remains from the zero-field route.
 
 Continue from the Quick Start's completed BEC/Gamma outputs to calculate static
 and frequency-dependent dielectric response:

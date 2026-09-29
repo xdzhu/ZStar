@@ -1,3 +1,4 @@
+import csv
 import json
 import tempfile
 from pathlib import Path
@@ -409,6 +410,33 @@ class SpectraTests(unittest.TestCase):
             self.assertAlmostEqual(result.depolarization_ratios[0], 0.0)
             self.assertAlmostEqual(float(np.max(result.spectrum)), 1.0)
 
+    def test_raman_csv_distinguishes_placzek_and_stokes_weights(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            qpoints = Path(tmp) / "qpoints.yaml"
+            write_qpoints(qpoints)
+            modes = load_gamma_modes(qpoints)
+            result = calculate_raman_spectrum(
+                modes, [1, 2], np.asarray([np.eye(3), np.eye(3)]), points=101
+            )
+            self.assertAlmostEqual(result.placzek_activities[0], 45.0)
+            self.assertAlmostEqual(result.placzek_activities[1], 45.0)
+            self.assertNotAlmostEqual(result.activities[0], result.activities[1])
+            write_raman_outputs(Path(tmp) / "raman", result, plot=False)
+            with (Path(tmp) / "raman" / "raman_modes.csv").open(
+                newline="", encoding="utf-8"
+            ) as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), 2)
+            for index, row in enumerate(rows):
+                self.assertAlmostEqual(float(row["placzek_activity"]), 45.0)
+                self.assertAlmostEqual(
+                    float(row["stokes_intensity_normalized"]),
+                    result.activities[index],
+                )
+                self.assertEqual(
+                    row["activity_normalized"], row["stokes_intensity_normalized"]
+                )
+
     def test_spectrum_writers_export_raster_and_vector_plots(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -559,16 +587,24 @@ X
             )
             self.assertIn("molecular polarizability derivative", kind)
 
-            numbers, tensors, kind = collect_raman_tensors(
-                root / "raman",
-                dimensionality=1,
-                cell_cross_section_angstrom2=25.0,
-            )
+            with self.assertWarnsRegex(UserWarning, "does not include transverse"):
+                numbers, tensors, kind = collect_raman_tensors(
+                    root / "raman",
+                    dimensionality=1,
+                    cell_cross_section_angstrom2=25.0,
+                )
             np.testing.assert_array_equal(numbers, [1])
             np.testing.assert_allclose(
                 tensors[0], np.eye(3) * 50.0 / (4.0 * np.pi)
             )
             self.assertIn("1D line polarizability derivative", kind)
+            metadata = json.loads(
+                (root / "raman" / "raman_tensors.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(
+                metadata["transverse_local_field_screening"],
+                "not included (zero-field PYATB)",
+            )
 
 
 if __name__ == "__main__":

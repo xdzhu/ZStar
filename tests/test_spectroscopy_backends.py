@@ -266,6 +266,31 @@ class SpectroscopyBackendTests(unittest.TestCase):
             self.assertEqual(wire_manifest["periodic_axes"], "z")
             self.assertEqual(wire_manifest["nac_model"], "none")
 
+            sheet = prepare_vasp_spectra(
+                source,
+                modes_xml,
+                Path(tmp) / "sheet-spectra",
+                mode_numbers=[4],
+                dimensionality=2,
+            )
+            sheet_manifest = json.loads((sheet / "spectra_manifest.json").read_text())
+            self.assertEqual(sheet_manifest["periodic_axes"], "xy")
+            self.assertEqual(sheet_manifest["nac_model"], "none")
+            self.assertIn("in-plane", sheet_manifest["response_scope"])
+
+            molecule = prepare_vasp_spectra(
+                source,
+                modes_xml,
+                Path(tmp) / "molecule-spectra",
+                mode_numbers=[4],
+                dimensionality=0,
+            )
+            molecule_manifest = json.loads(
+                (molecule / "spectra_manifest.json").read_text()
+            )
+            self.assertEqual(molecule_manifest["periodic_axes"], "")
+            self.assertEqual(molecule_manifest["nac_model"], "none")
+
     @patch("zstar.spectroscopy_backends.parse_vasp_gap", return_value=1.5)
     @patch("zstar.spectroscopy_backends.vasp_output_complete")
     @patch("zstar.spectroscopy_backends.subprocess.run")
@@ -330,19 +355,12 @@ class SpectroscopyBackendTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "imaginary Gamma modes"):
                 prepare_vasp_spectra(source, modes_xml, Path(tmp) / "spectra")
 
-    def test_two_dimensional_native_backends_are_rejected(self):
+    def test_two_dimensional_cp2k_backend_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "input.inp"
             source.write_text(CP2K_INPUT)
             with self.assertRaisesRegex(ValueError, "real-space"):
                 prepare_cp2k_spectra(source, Path(tmp) / "spectra", dimensionality=2)
-            with self.assertRaisesRegex(ValueError, "real-space"):
-                prepare_vasp_spectra(
-                    Path(tmp) / "vasp",
-                    Path(tmp) / "vasprun.xml",
-                    Path(tmp) / "vasp-spectra",
-                    dimensionality=2,
-                )
 
     def test_native_line_spectrum_preserves_tabulated_activities(self):
         result = calculate_native_line_spectrum(
@@ -390,6 +408,31 @@ class SpectroscopyBackendTests(unittest.TestCase):
                     self.assertEqual(result["mode_numbers"], [4])
                     self.assertTrue((root / "ir_spectrum" / "ir_modes.csv").is_file())
                     self.assertTrue((root / "raman_spectrum" / "raman_modes.csv").is_file())
+                    polarized_result = collect_calculator_spectra(
+                        root, points=101, plot=False,
+                        incident_polarization=(1, 0, 0),
+                        scattered_polarization=(1, 0, 0),
+                    )
+                    self.assertIsNotNone(polarized_result["polarized_raman"])
+                    self.assertTrue((root / "raman_spectrum" / "polarized" / "raman_polarized_modes.csv").is_file())
+
+
+def test_vasp_raman_uses_xml_dielectric_precision(tmp_path):
+    from zstar.spectroscopy_backends import _read_vasp_dielectric_for_raman
+
+    (tmp_path / "vasprun.xml").write_text(
+        '<modeling><calculation><varray name="dielectric_dft">'
+        '<v>1.00413205 0 0</v><v>0 1.00413205 0</v>'
+        '<v>0 0 1.00413204</v></varray></calculation></modeling>',
+        encoding="utf-8",
+    )
+    (tmp_path / "OUTCAR").write_text("No OUTCAR response needed when XML is present", encoding="utf-8")
+    np.testing.assert_allclose(
+        np.diag(_read_vasp_dielectric_for_raman(tmp_path)),
+        [1.00413205, 1.00413205, 1.00413204],
+        atol=0,
+        rtol=0,
+    )
 
 
 if __name__ == "__main__":

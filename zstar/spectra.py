@@ -124,6 +124,7 @@ class RamanSpectrumResult:
     frequencies_cm1: np.ndarray
     tensors: np.ndarray
     activities: np.ndarray
+    placzek_activities: np.ndarray
     depolarization_ratios: np.ndarray
     frequency_grid_cm1: np.ndarray
     spectrum: np.ndarray
@@ -1482,6 +1483,14 @@ def collect_raman_tensors(
     from .response_units import raman_convention
 
     convention = raman_convention(dimensionality)
+    if dimensionality == 1:
+        warnings.warn(
+            "The zero-field PYATB 1D Raman tensor does not include transverse "
+            "self-consistent local-field screening. For a z-periodic wire, "
+            "finite-field x/y probes can be collected with zstar raman screen-1d.",
+            UserWarning,
+            stacklevel=2,
+        )
     root = Path(raman_dir)
     manifest_path = root / "raman_manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -1543,6 +1552,9 @@ def collect_raman_tensors(
                 "mode_numbers": mode_numbers,
                 "tensors": tensor_array.tolist(),
                 "tensor_kind": kind,
+                "transverse_local_field_screening": (
+                    "not included (zero-field PYATB)" if dimensionality == 1 else None
+                ),
                 **convention,
                 "cell_volume_A3": (
                     float(cell_volume_angstrom3)
@@ -1681,6 +1693,7 @@ def calculate_raman_spectrum(
         frequencies_cm1=frequencies,
         tensors=symmetric,
         activities=activities,
+        placzek_activities=placzek,
         depolarization_ratios=depolarization,
         frequency_grid_cm1=grid,
         spectrum=spectrum,
@@ -1714,12 +1727,15 @@ def write_raman_outputs(
                 "Rzx",
                 "Rzy",
                 "Rzz",
+                "placzek_activity",
+                "stokes_intensity_normalized",
             ]
         )
-        for number, frequency, activity, ratio, tensor in zip(
+        for number, frequency, activity, placzek_activity, ratio, tensor in zip(
             result.mode_numbers,
             result.frequencies_cm1,
             result.activities,
+            result.placzek_activities,
             result.depolarization_ratios,
             result.tensors,
         ):
@@ -1730,6 +1746,8 @@ def write_raman_outputs(
                     float(activity),
                     float(ratio),
                     *tensor.reshape(9).tolist(),
+                    float(placzek_activity),
+                    float(activity),
                 ]
             )
     tensor_path = output / "raman_tensors.npy"

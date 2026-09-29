@@ -51,6 +51,7 @@ def vasp_chgcar_to_cube(
 ) -> Path:
     """Convert VASP CHGCAR to cube and record valence ionic charges."""
 
+    from pymatgen.core.units import ang_to_bohr
     from pymatgen.io.vasp.inputs import Potcar
     from pymatgen.io.vasp.outputs import Chgcar
 
@@ -58,6 +59,11 @@ def vasp_chgcar_to_cube(
     target = Path(output_path).resolve()
     target.parent.mkdir(parents=True, exist_ok=True)
     charge = Chgcar.from_file(source)
+    # CHGCAR grid values integrate to the electron count after division by the
+    # cell volume; pymatgen's to_cube writes them unchanged as e/bohr^3.
+    charge.data["total"] = charge.data["total"] / (
+        charge.structure.volume * ang_to_bohr**3
+    )
     charge.to_cube(target, comment="ZStar electron density converted from VASP CHGCAR")
     if potcar_path is not None:
         potcar = Potcar.from_file(Path(potcar_path).resolve())

@@ -82,7 +82,9 @@ zstar spectra post --root spectra
 ```
 
 IR 复用已完成的 BEC 和声子数据；Raman 在 Unified 路线中复用电子矩阵，
-补充 PYATB 介电响应，不增加 SCF。谱图和数据分别写入 `spectra/ir/`、`spectra/raman/`。
+补充 PYATB 零场介电响应，不增加 SCF。孤立一维链若需横向自洽局域场修正，
+则需额外有限场 SCF，见 [Sb2S3 核查案例](examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/README.md)。
+谱图和数据分别写入 `spectra/ir/`、`spectra/raman/`。
 无需运行 DFT 也可直接查看[已有 SiC 谱学结果](examples/3D_Bulk/SiC/results/spectra)。
 命令预览、进度检查及可选的 `run.sh` 用法见[案例教程](examples/3D_Bulk/SiC/README.zh-CN.md)。
 
@@ -152,11 +154,11 @@ H2O/CH4 另附 HSE cube 偶极 APT 摘要，见[分子教程](docs/molecular_spe
 
 ## IR、Raman 与介电响应
 
-![体材料、二维片层、一维纳米线与分子的 IR 和 Raman 谱](docs/paper_figures/spectroscopy_across_dimensions.png)
+![体材料、二维片层、一维纳米线与分子的 IR 和 Raman 谱](docs/paper_figures/Figure_10_Spectroscopy_four_dimensions.png)
 
 四行展示四方 HfO2（PBEsol）、MoS2（PBE-D3(BJ)）、Sb2S3 和 CH4。
-[谱学案例](examples/IR_Raman_Spectra)保留模式归属与参考数据，包括 Sb2S3
-公开计算数据集参考及实际存在的 Raman 强度差异。
+[谱学案例](examples/IR_Raman_Spectra)保留模式归属与参考数据；Sb2S3 案例还
+给出横向自洽局域场修正前后的偏振 Raman 对照。
 
 从快速上手已完成的 BEC/Gamma 结果继续计算静态及频率相关介电响应：
 

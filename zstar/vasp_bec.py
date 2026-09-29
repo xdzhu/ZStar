@@ -153,6 +153,14 @@ def prepare_vasp_bec(
         raise FileNotFoundError(f"Missing VASP input files in {source}: {', '.join(missing)}")
     original = (source / "INCAR").read_text(encoding="utf-8", errors="ignore")
     method_key = resolve_vasp_response_method(original, method)
+    ivdw = _incar_value(original, "IVDW")
+    try:
+        has_dispersion = (
+            float(ivdw) != 0.0 if ivdw is not None
+            else (_incar_value(original, "LVDW") or "").upper() in {"T", ".TRUE.", "TRUE"}
+        )
+    except ValueError as exc:
+        raise ValueError(f"Invalid VASP IVDW value: {ivdw}") from exc
 
     target = Path(root).resolve()
     if force and (target == source or target in source.parents):
@@ -215,13 +223,16 @@ def prepare_vasp_bec(
         response_updates["EFIELD_PEAD"] = f"{value} {value} {value}"
     ionic_response = phonons or piezo or elastic
     if ionic_response:
+        # VASP does not include IVDW corrections in DFPT phonons. With NCORE=4,
+        # its symmetry-reduced finite differences are also unavailable.
+        finite_difference = elastic or method_key == "finite-field" or has_dispersion
         response_updates.update({
-            "IBRION": "6" if elastic or method_key == "finite-field" else "8",
+            "IBRION": "5" if has_dispersion else "6" if finite_difference else "8",
             "NSW": "1",
             "ISIF": "3" if elastic else "2",
             "PREC": "Accurate",
         })
-        if elastic or method_key == "finite-field":
+        if finite_difference:
             response_updates.update({"NFREE": "2", "POTIM": "0.01"})
     response_incar = render_incar(
         original,
@@ -251,9 +262,10 @@ def prepare_vasp_bec(
         "piezo": bool(piezo),
         "elastic": bool(elastic),
         "ionic_response_method": (
-            "native-finite-difference" if elastic or (ionic_response and method_key == "finite-field")
+            "native-finite-difference" if ionic_response and (elastic or method_key == "finite-field" or has_dispersion)
             else "dfpt" if ionic_response else None
         ),
+        "dispersion_correction": ivdw,
         "field_strength_eV_per_angstrom": field_strength if method_key == "finite-field" else None,
         "occupation_override": occupation_override,
         "convergence_override": convergence_override,

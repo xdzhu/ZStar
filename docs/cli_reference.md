@@ -202,6 +202,14 @@ For scheduled execution, use `zstar spectra job --system slurm` or
 The spectroscopy example uses the Unified calculations;
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` explicitly
 selects the independent mode-displacement route.
+For VASP slab spectra, `--dim 2 --modes-phonopy qpoints.yaml` supplies the
+mode archive; only in-plane sheet response is reported. `zstar spectra post`
+accepts `--incident-polarization EX EY EZ` together with
+`--scattered-polarization EX EY EZ` for VASP Raman. For a z-periodic ABACUS
+wire, zero-field PYATB Raman omits transverse self-consistent local-field
+screening; `zstar raman screen-1d` collects separately computed x/y finite-field
+probes while retaining the zero-field axial component. See the
+[Sb2S3 example](../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/README.md).
 
 Proper bulk piezoelectric response:
 

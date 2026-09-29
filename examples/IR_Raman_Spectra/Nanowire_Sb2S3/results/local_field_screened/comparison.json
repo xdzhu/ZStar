@@ -1,0 +1,51 @@
+{
+  "crossed_to_axial_peak_height": {
+    "ZStar (ABACUS), zero-field": 0.3973683672919642,
+    "ZStar (ABACUS), screened": 0.006416170293173397,
+    "ZStar (VASP)": 0.0075640742332257005,
+    "CRYSTAL reference": 0.018355636704260558
+  },
+  "all_channel_peak_height_relative_to_axial": {
+    "xx": {
+      "ZStar (ABACUS), screened transverse": 0.014521470821510117,
+      "ZStar (VASP)": 0.01986231171640404,
+      "CRYSTAL reference": 0.05198325932270887
+    },
+    "yy": {
+      "ZStar (ABACUS), screened transverse": 0.0016916847721419508,
+      "ZStar (VASP)": 0.0018894734221551915,
+      "CRYSTAL reference": 0.01874747975665407
+    },
+    "zz": {
+      "ZStar (ABACUS), screened transverse": 1.0,
+      "ZStar (VASP)": 1.0,
+      "CRYSTAL reference": 1.0
+    },
+    "xy": {
+      "ZStar (ABACUS), screened transverse": 0.0016928977127179596,
+      "ZStar (VASP)": 0.002147152632795474,
+      "CRYSTAL reference": 0.027079999098347726
+    },
+    "xz": {
+      "ZStar (ABACUS), screened transverse": 0.028745218384154086,
+      "ZStar (VASP)": 0.03698851512948019,
+      "CRYSTAL reference": 0.06145937430341101
+    },
+    "yz": {
+      "ZStar (ABACUS), screened transverse": 0.006416170293173397,
+      "ZStar (VASP)": 0.0075640742332257005,
+      "CRYSTAL reference": 0.018355636704260558
+    }
+  },
+  "temperature_K": 298.0,
+  "laser_nm": 532.0,
+  "fwhm_cm-1": 8.0,
+  "normalization": "one axial-zz maximum per route; no peak shifts or per-channel scaling",
+  "axial_caveat": "ABACUS zz is the zero-field PYATB tensor, not a finite-field axial response",
+  "inputs": {
+    "abacus": "examples\\IR_Raman_Spectra\\Nanowire_Sb2S3\\results\\Raman\\raman_modes.csv",
+    "screened": "examples\\IR_Raman_Spectra\\Nanowire_Sb2S3\\results\\local_field_screened\\raman_tensors.csv",
+    "vasp": "examples\\Benchmarks\\figure10_vasp_cross_backend\\results\\sb2s3_vasp_full\\raman_spectrum\\raman_modes.csv",
+    "reference": "examples\\IR_Raman_Spectra\\Nanowire_Sb2S3\\results\\reference\\B3LYP-D3\\gamma-point\\sb2s3_fc_b3lyp-d3_freq.ramspec.dat"
+  }
+}

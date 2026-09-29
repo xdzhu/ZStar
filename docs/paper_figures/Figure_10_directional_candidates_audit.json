@@ -1,0 +1,76 @@
+[
+  {
+    "name": "Spectroscopy_four_dimensions",
+    "products": {
+      "pdf": "Figure_10_Spectroscopy_four_dimensions.pdf",
+      "svg": "Figure_10_Spectroscopy_four_dimensions.svg",
+      "png": "Figure_10_Spectroscopy_four_dimensions.png"
+    },
+    "mos2_ir_z_to_xy_peak_ratio": 0.0034912027632242825,
+    "mos2_raman_tilted_to_inplane_peak_ratio": 0.0001815758587345223,
+    "sb2s3_screened_abacus_yz_to_zz_peak_ratio": 0.006416170293173397,
+    "sb2s3_crystal_yz_to_zz_peak_ratio": 0.018355636704260558,
+    "normalization": {
+      "MoS2_IR": "Both channels share in-plane peak normalization",
+      "MoS2_Raman": "Both channels share in-plane peak normalization",
+      "Sb2S3_Raman": "Each route uses its own axial peak; axial and crossed share that scale",
+      "other_panels": "Each spectrum independently normalized; no cross-material intensity claim"
+    },
+    "source_files": {
+      "docs/paper_figures/source_data/hfo2/ir/ir_spectrum.dat": "d33c01dade46ccfbd6459692e520e4d9886391a34c8632648e265fbd0cabc604",
+      "docs/paper_figures/source_data/hfo2/raman/raman_spectrum.dat": "4de237e40795b153dbfd20d08b48726d56fc86115a4eb62c5ef0e56338a38d2c",
+      "docs/paper_figures/source_data/hfo2/vasp/ir_spectrum.dat": "7e1d982dc99fdf7c763b4246910cd52f03322397cbf2c2cf2e02f705b722f18e",
+      "docs/paper_figures/source_data/hfo2/vasp/raman_spectrum.dat": "d12454c4abee66083c4ef1804f1923428a237a017a7ae8e9a8470e734ecb9d82",
+      "docs/paper_figures/source_data/molecular/ch4/ir_spectrum.dat": "e6f12baf91af8c6bc9e0f47bd91387787b4ac4a92304f6aba90f942228250730",
+      "docs/paper_figures/source_data/molecular/ch4/raman_spectrum.dat": "efe98b16e022c9547966e3e300b6df04b49fbafd8ae820e92314ecbbf5a1b03e",
+      "docs/paper_figures/source_data/mos2/vasp/ir_spectrum.dat": "1aa03074ed66091585c325625fdf9f2b3d3d2a40013ef666ac952e70618b6015",
+      "docs/paper_figures/source_data/mos2/vasp/raman_modes.csv": "ad1272f4986161e18eda3f5e5378b08ae88cd37c415eb01ef9d546e47d5da4d1",
+      "docs/paper_figures/source_data/structure_images/CH4_molecule.png": "965ef14cab91d43df5d4f55d8af01726208fa86b952d8e8728551e6a64ed04b9",
+      "docs/paper_figures/source_data/structure_images/HfO2_tetragonal.png": "a01fef0248b459d41882aa38493fc8fc2bc1ad0c2c7502759b550ddadd44f49d",
+      "docs/paper_figures/source_data/structure_images/MoS2_monolayer.png": "03afc00aaca07641a88266e9e128d0df738238a8c74c5d5731ea1da265dddec9",
+      "docs/paper_figures/source_data/structure_images/Sb2S3.png": "c895fab75a84bc45d3443606a057bfd1e2bc6cacb03adc37a4845d83244d42a1",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_spectrum.dat": "e8e9609cde7cebcdb6b1419002aed334eafff8582119cae6dff9c0d905c0f4e7",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/raman_tensors.csv": "fde263da800030f6ed4a59bc1b3f1a8f385b2f418337167655881e542445b180",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_modes.csv": "56c9242dbf55ec40abd2b292d7873b531d56b91f9b9380e05d83c7d3f975a298",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.irspec.dat": "c0dde1745862a27750f62ae021e6541ed45a7ca070fc605364342a78d4ee386e",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.ramspec.dat": "9d34986a164f08b5a17600c769d01dfe26c1eb47fd27843bb0836cebc004c953"
+    }
+  },
+  {
+    "name": "directional_focus",
+    "products": {
+      "pdf": "Figure_10_directional_focus.pdf",
+      "svg": "Figure_10_directional_focus.svg",
+      "png": "Figure_10_directional_focus.png"
+    },
+    "mos2_ir_z_to_xy_peak_ratio": 0.0034912027632242825,
+    "mos2_raman_tilted_to_inplane_peak_ratio": 0.0001815758587345223,
+    "sb2s3_screened_abacus_yz_to_zz_peak_ratio": 0.006416170293173397,
+    "sb2s3_crystal_yz_to_zz_peak_ratio": 0.018355636704260558,
+    "normalization": {
+      "MoS2_IR": "Both channels share in-plane peak normalization",
+      "MoS2_Raman": "Both channels share in-plane peak normalization",
+      "Sb2S3_Raman": "Each route uses its own axial peak; axial and crossed share that scale",
+      "other_panels": "Each spectrum independently normalized; no cross-material intensity claim"
+    },
+    "source_files": {
+      "docs/paper_figures/source_data/hfo2/ir/ir_spectrum.dat": "d33c01dade46ccfbd6459692e520e4d9886391a34c8632648e265fbd0cabc604",
+      "docs/paper_figures/source_data/hfo2/raman/raman_spectrum.dat": "4de237e40795b153dbfd20d08b48726d56fc86115a4eb62c5ef0e56338a38d2c",
+      "docs/paper_figures/source_data/hfo2/vasp/ir_spectrum.dat": "7e1d982dc99fdf7c763b4246910cd52f03322397cbf2c2cf2e02f705b722f18e",
+      "docs/paper_figures/source_data/hfo2/vasp/raman_spectrum.dat": "d12454c4abee66083c4ef1804f1923428a237a017a7ae8e9a8470e734ecb9d82",
+      "docs/paper_figures/source_data/molecular/ch4/ir_spectrum.dat": "e6f12baf91af8c6bc9e0f47bd91387787b4ac4a92304f6aba90f942228250730",
+      "docs/paper_figures/source_data/molecular/ch4/raman_spectrum.dat": "efe98b16e022c9547966e3e300b6df04b49fbafd8ae820e92314ecbbf5a1b03e",
+      "docs/paper_figures/source_data/mos2/vasp/ir_spectrum.dat": "1aa03074ed66091585c325625fdf9f2b3d3d2a40013ef666ac952e70618b6015",
+      "docs/paper_figures/source_data/mos2/vasp/raman_modes.csv": "ad1272f4986161e18eda3f5e5378b08ae88cd37c415eb01ef9d546e47d5da4d1",
+      "docs/paper_figures/source_data/structure_images/CH4_molecule.png": "965ef14cab91d43df5d4f55d8af01726208fa86b952d8e8728551e6a64ed04b9",
+      "docs/paper_figures/source_data/structure_images/HfO2_tetragonal.png": "a01fef0248b459d41882aa38493fc8fc2bc1ad0c2c7502759b550ddadd44f49d",
+      "docs/paper_figures/source_data/structure_images/MoS2_monolayer.png": "03afc00aaca07641a88266e9e128d0df738238a8c74c5d5731ea1da265dddec9",
+      "docs/paper_figures/source_data/structure_images/Sb2S3.png": "c895fab75a84bc45d3443606a057bfd1e2bc6cacb03adc37a4845d83244d42a1",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/IR/ir_spectrum.dat": "e8e9609cde7cebcdb6b1419002aed334eafff8582119cae6dff9c0d905c0f4e7",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/raman_tensors.csv": "fde263da800030f6ed4a59bc1b3f1a8f385b2f418337167655881e542445b180",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/Raman/raman_modes.csv": "56c9242dbf55ec40abd2b292d7873b531d56b91f9b9380e05d83c7d3f975a298",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.irspec.dat": "c0dde1745862a27750f62ae021e6541ed45a7ca070fc605364342a78d4ee386e",
+      "examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/reference/B3LYP-D3/gamma-point/sb2s3_fc_b3lyp-d3_freq.ramspec.dat": "9d34986a164f08b5a17600c769d01dfe26c1eb47fd27843bb0836cebc004c953"
+    }
+  }
+]

@@ -835,6 +835,15 @@ vibrational dipole and `LINRES/POLAR` intensities. See the
 SiC/HfO2 ABACUS-VASP comparison, including CPU core-hours, is available in the
 [backend benchmark](spectroscopy_backend_benchmark.md).
 
+For a VASP slab, `--dim 2 --modes-phonopy qpoints.yaml` uses an archived
+Phonopy eigensystem for in-plane IR and Raman analysis. VASP Raman can also
+project a chosen incident/scattered polarization pair during `spectra post`.
+For an isolated ABACUS wire, the default zero-field PYATB route omits
+transverse self-consistent local-field screening; the
+[Sb2S3 case](../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/README.md)
+documents finite-field x/y probes and `zstar raman screen-1d`. Its axial
+component remains a zero-field response.
+
 The molecular APT examples also include compact HSE reference records in
 `examples/0D_Molecules/{H2O,CH4}/results/hse_apt_summary.json`. The associated
 solver scratch directories and cube files are intentionally excluded; the JSON

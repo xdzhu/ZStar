@@ -19,7 +19,13 @@ zstar bec post --root response
 ```
 
 The reference SCF is checked for an insulating gap before the native response
-stage. For LDA/GGA, `--phonons` selects `LEPSILON = .TRUE.` and `IBRION = 8`.
+stage. For LDA/GGA without an `IVDW` correction, `--phonons` selects
+`LEPSILON = .TRUE.` and DFPT `IBRION = 8`. When `IVDW` is active, ZStar keeps
+native VASP electric response but selects finite-difference `IBRION = 5`,
+`ISYM = 0` for the vibrational response: VASP's dispersion forces enter that
+route but are absent from DFPT phonons. This choice preserves the documented
+`NCORE = 4` setting; symmetry-reduced `IBRION = 6` is incompatible with it in
+VASP 6.3.2 when the irreducible k-point set changes.
 Reference, native response and Raman inputs use `NCORE = 4` and remove `NPAR`;
 the two parallelization tags must not be specified together. On hf, use
 `mpirun -np 64 vasp_std` inside the Slurm allocation.
@@ -90,7 +96,7 @@ reconstructing them from another external displacement ensemble. The lower-level
 | --- | --- | --- |
 | BEC and electronic dielectric tensor | no extra option | `LEPSILON` DFPT for LDA/GGA |
 | Relaxed-ion piezoelectric `e` | `--piezo` | electric DFPT plus native Gamma ionic response |
-| Gamma phonons, phonon dielectric and IR | `--phonons` | same native ionic response; IR is post-processing |
+| Gamma phonons, phonon dielectric and IR | `--phonons` | DFPT without `IVDW`; finite differences with `IVDW`; IR is post-processing |
 | Complete elastic `C` and derived `d` | `--elastic` | native ionic/strain finite differences; `d = e C^-1` |
 | Raman | subsequent `zstar spectra pre --response ...` | additional mode-displaced native dielectric calculations |
 
@@ -106,6 +112,9 @@ clamped-ion electric response; the [phonon DFPT documentation](https://vasp.at/w
 describes internal strain and the missing clamped elastic strain perturbation.
 The [native finite-difference documentation](https://vasp.at/wiki/Phonons_from_finite_differences)
 describes the complete elastic route.
+The [IVDW documentation](https://vasp.at/wiki/IVDW) excludes dispersion
+corrections from DFPT phonons, and the [VASP support forum](https://vasp.at/forum/viewtopic.php?p=29756)
+documents the `NCORE` limitation of symmetry-reduced finite differences.
 
 `--method auto` is the default: native electric-field DFPT for LDA/GGA,
 native finite electric fields for hybrid or meta-GGA functionals. An explicit
@@ -136,8 +145,11 @@ and its reason; it does not silently switch solvers or launch another job.
 
 Low-dimensional native dielectric and piezoelectric outputs remain explicitly
 labelled as periodic-supercell responses; they are not intrinsic bulk constants.
-The existing 2D spectroscopy guard is retained until its boundary conditions
-and conversion are validated. `LOPTICS` electronic optical spectra are a
+For a 2D slab, `zstar spectra pre --calculator vasp --dim 2` accepts an
+explicit Phonopy mode archive through `--modes-phonopy`. The current route
+reports in-plane IR and polarization-resolved Raman responses; it does not
+relabel out-of-plane supercell responses as intrinsic sheet quantities.
+`LOPTICS` electronic optical spectra are a
 separate approximation and must not be conflated with local-field-inclusive
 DFPT electronic dielectric data.
 

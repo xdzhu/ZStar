@@ -29,6 +29,7 @@ from .cp2k_bec import (
 from .spectra import (
     BornData,
     GammaModes,
+    load_gamma_modes,
     calculate_ir_spectrum,
     calculate_molecular_ir_spectrum,
     calculate_native_line_spectrum,
@@ -185,6 +186,14 @@ def load_vasp_gamma_modes(path: str | Path) -> GammaModes:
     )
 
 
+def _load_vasp_spectra_modes(path: str | Path) -> GammaModes:
+    """Load VASP native modes or archived Phonopy modes for VASP Raman."""
+    source = Path(path)
+    if source.suffix.lower() in {".yaml", ".yml"}:
+        return load_gamma_modes(source)
+    return load_vasp_gamma_modes(source)
+
+
 def _write_vasp_poscar(
     destination: Path,
     modes: GammaModes,
@@ -222,6 +231,7 @@ def prepare_vasp_spectra(
     dimensionality: int = 3,
     kind: str = "all",
     native_response_root: str | Path | None = None,
+    modes_phonopy: str | Path | None = None,
     force: bool = False,
 ) -> Path:
     """Prepare one reference and +/- VASP dielectric calculations per mode."""
@@ -229,16 +239,13 @@ def prepare_vasp_spectra(
     if kind not in {"ir", "raman", "all"}:
         raise ValueError("kind must be ir, raman, or all")
 
-    if dimensionality == 2:
-        raise ValueError(
-            "VASP 2D out-of-plane IR/Raman is not enabled: use the ZStar real-space "
-            "slab polarization workflow for the vacuum direction"
-        )
-    if dimensionality not in {0, 1, 3}:
-        raise ValueError("VASP spectroscopy dimensionality must be 0, 1, or 3")
+    if dimensionality not in {0, 1, 2, 3}:
+        raise ValueError("VASP spectroscopy dimensionality must be 0, 1, 2, or 3")
     if amplitude <= 0.0:
         raise ValueError("amplitude must be positive")
     cache = None
+    if modes_phonopy is not None and modes_xml is not None:
+        raise ValueError("Choose either VASP XML modes or Phonopy YAML modes")
     if native_response_root is not None:
         native_root = Path(native_response_root).resolve()
         manifest = json.loads((native_root / "vasp_bec_manifest.json").read_text())
@@ -251,7 +258,8 @@ def prepare_vasp_spectra(
             raise ValueError("Native VASP response is not complete; run zstar bec run first")
         if modes_xml is not None and Path(modes_xml).resolve() != cache / "vasprun.xml":
             raise ValueError("--response and --modes-xml must refer to the same native response")
-        modes_xml = cache / "vasprun.xml"
+        if modes_phonopy is None:
+            modes_xml = cache / "vasprun.xml"
     source = cache or Path(input_dir).resolve()
     required = ("INCAR", "POSCAR", "KPOINTS", "POTCAR")
     missing = [name for name in required if not (source / name).is_file()]
@@ -263,10 +271,10 @@ def prepare_vasp_spectra(
         raise ValueError("Reused native response and Raman must use the same electronic-response method")
     if dimensionality == 1 and method_key != "dfpt":
         raise ValueError("VASP 1D spectroscopy currently requires method=dfpt")
-    if modes_xml is None:
-        raise ValueError("VASP spectra requires --response from a completed native workflow or --modes-xml")
-    modes_source = Path(modes_xml).resolve()
-    modes = load_vasp_gamma_modes(modes_source)
+    if modes_xml is None and modes_phonopy is None:
+        raise ValueError("VASP spectra requires --response, --modes-xml, or --modes-phonopy")
+    modes_source = Path(modes_phonopy or modes_xml).resolve()
+    modes = _load_vasp_spectra_modes(modes_source)
     validate_gamma_stability(
         modes,
         imaginary_tolerance_cm1=imaginary_tolerance_cm1,
@@ -361,11 +369,19 @@ def prepare_vasp_spectra(
         "reused_native_response": None if cache is None else str(cache.parent),
         "created_at": _utc_now(),
         "source_directory": str(source),
-        "modes_source": "reference/vasprun.xml" if cache is not None else str(modes_source),
+        "modes_source": (
+            str(modes_source) if modes_phonopy is not None else
+            "reference/vasprun.xml" if cache is not None else str(modes_source)
+        ),
+        "modes_format": "phonopy-yaml" if modes_phonopy is not None else "vasp-xml",
         "mode_geometry": "initial-equilibrium",
         "dimensionality": dimensionality,
-        "periodic_axes": "z" if dimensionality == 1 else ("xyz" if dimensionality == 3 else ""),
-        "nac_model": "none" if dimensionality == 1 else "bulk",
+        "periodic_axes": {0: "", 1: "z", 2: "xy", 3: "xyz"}[dimensionality],
+        "nac_model": "bulk" if dimensionality == 3 else "none",
+        "response_scope": (
+            "in-plane IR and Raman only; out-of-plane slab response requires real-space polarization"
+            if dimensionality == 2 else None
+        ),
         "method": method_key,
         "field_strength_eV_per_angstrom": (
             field_strength if method_key == "finite-field" else None
@@ -703,13 +719,31 @@ def _validate_vasp_mode_geometry(root: Path, modes: GammaModes) -> None:
 
     reference = read_structure(root / "reference" / "POSCAR")
     if reference.symbols != modes.symbols or reference.positions_fractional.shape != modes.positions_fractional.shape:
-        raise ValueError("Spectra reference atom order does not match XML equilibrium modes")
+        raise ValueError("Spectra reference atom order does not match the mode source")
     delta = reference.positions_fractional - modes.positions_fractional
     delta -= np.rint(delta)
     if (not np.allclose(reference.lattice_angstrom, modes.lattice_angstrom, atol=1e-6, rtol=0)
             or np.max(np.linalg.norm(delta @ modes.lattice_angstrom, axis=1)) > 1e-5):
-        raise ValueError("Spectra reference differs from the XML initial equilibrium structure. "
+        raise ValueError("Spectra reference differs from the mode-source initial equilibrium structure. "
                          "Regenerate spectra inputs in a new root; old last-displacement jobs are not reusable.")
+
+
+def _read_vasp_dielectric_for_raman(directory: Path) -> np.ndarray:
+    """Prefer XML precision before taking small displaced-dielectric differences."""
+
+    xml_path = directory / "vasprun.xml"
+    if not xml_path.is_file():
+        return parse_vasp_outcar(directory / "OUTCAR")[0]
+    tree = ET.parse(xml_path)
+    for name in ("dielectric_dft", "epsilon"):
+        blocks = tree.findall(f".//varray[@name='{name}']")
+        if blocks:
+            rows = [np.fromstring(row.text or "", sep=" ") for row in blocks[-1].findall("v")]
+            tensor = np.asarray(rows, dtype=float)
+            if tensor.shape != (3, 3) or not np.all(np.isfinite(tensor)):
+                raise ValueError(f"Invalid {name} dielectric tensor in {xml_path}")
+            return tensor
+    raise ValueError(f"No static electronic dielectric tensor in {xml_path}")
 
 
 def _collect_vasp_spectra(
@@ -723,11 +757,13 @@ def _collect_vasp_spectra(
     plot: bool,
     imaginary_tolerance_cm1: float,
     allow_imaginary: bool,
+    incident_polarization: Sequence[float] | None = None,
+    scattered_polarization: Sequence[float] | None = None,
 ) -> dict:
     modes_source = Path(manifest["modes_source"])
     if not modes_source.is_absolute():
         modes_source = root / modes_source
-    native_modes = load_vasp_gamma_modes(modes_source)
+    native_modes = _load_vasp_spectra_modes(modes_source)
     _validate_vasp_mode_geometry(root, native_modes)
     # VASP source IDs stay unchanged; exported IDs match ascending qpoints.yaml.
     order = np.argsort(native_modes.frequencies_thz, kind="stable")
@@ -737,11 +773,21 @@ def _collect_vasp_spectra(
                        native_modes.masses_amu, native_modes.lattice_angstrom,
                        native_modes.symbols, native_modes.positions_fractional)
     epsilon, tensors = parse_vasp_outcar(root / "reference" / "OUTCAR")
+    if manifest.get("kind") != "ir" and (root / "reference" / "vasprun.xml").is_file():
+        epsilon = _read_vasp_dielectric_for_raman(root / "reference")
     native_selected = [int(entry["mode"]) for entry in manifest["modes"]]
     selected = [int(canonical_ids[number - 1]) for number in native_selected]
     dimensionality = int(manifest["dimensionality"])
+    if dimensionality == 2:
+        # The supercell's normal-field response is not an intrinsic sheet response.
+        tensors = np.array(tensors, copy=True)
+        tensors[:, 2, :] = 0.0
+        epsilon = np.array(epsilon, copy=True)
+        epsilon[2, :] = 0.0
+        epsilon[:, 2] = 0.0
+        epsilon[2, 2] = 1.0
     born = BornData(tensors=tensors, electronic_dielectric=epsilon, source="VASP OUTCAR")
-    if dimensionality in {1, 3}:
+    if dimensionality in {1, 2, 3}:
         ir = calculate_ir_spectrum(
             modes,
             born,
@@ -772,13 +818,17 @@ def _collect_vasp_spectra(
     sources: list[dict] = []
     amplitude = float(manifest["amplitude_A_sqrt_amu"])
     for entry in ([] if manifest.get("kind") == "ir" else manifest["modes"]):
-        plus, _plus_bec = parse_vasp_outcar(root / entry["plus"] / "OUTCAR")
-        minus, _minus_bec = parse_vasp_outcar(root / entry["minus"] / "OUTCAR")
+        plus = _read_vasp_dielectric_for_raman(root / entry["plus"])
+        minus = _read_vasp_dielectric_for_raman(root / entry["minus"])
         derivative = (plus - minus) / (2.0 * amplitude)
         if dimensionality == 0:
             derivative *= modes.volume_angstrom3 / (4.0 * math.pi)
         elif dimensionality == 1:
             derivative *= modes.cross_section_angstrom2(2) / (4.0 * math.pi)
+        elif dimensionality == 2:
+            derivative *= modes.cell_height_angstrom / (4.0 * math.pi)
+            derivative[2, :] = 0.0
+            derivative[:, 2] = 0.0
         raman_tensors.append(0.5 * (derivative + derivative.T))
         sources.append({"mode": int(canonical_ids[int(entry["mode"]) - 1]),
                         "native_mode": int(entry["mode"]),
@@ -786,6 +836,7 @@ def _collect_vasp_spectra(
     tensor_kind = {
         0: "molecular polarizability derivative (Angstrom^3 per Angstrom sqrt(amu))",
         1: "1D line polarizability derivative (Angstrom^2 per Angstrom sqrt(amu))",
+        2: "2D in-plane sheet polarizability derivative (Angstrom per Angstrom sqrt(amu))",
         3: "dielectric tensor derivative",
     }[dimensionality]
     raman = None if manifest.get("kind") == "ir" else calculate_raman_spectrum(
@@ -801,12 +852,35 @@ def _collect_vasp_spectra(
         allow_imaginary=allow_imaginary,
     )
     raman_summary = None if raman is None else write_raman_outputs(root / "raman_spectrum", raman, plot=plot)
+    polarized_summary = None
+    if incident_polarization is not None:
+        if raman is None:
+            raise ValueError("Polarized Raman output requires kind=raman or kind=all")
+        from .spectroscopy_analysis import calculate_polarized_raman_spectrum
+        from .spectra import write_native_line_spectrum_outputs
+
+        polarized = calculate_polarized_raman_spectrum(
+            raman.frequencies_cm1,
+            raman.tensors,
+            mode_numbers=selected,
+            incident_polarization=incident_polarization,
+            scattered_polarization=scattered_polarization,
+            temperature_K=temperature_K,
+            laser_nm=laser_nm,
+            broadening_cm1=broadening_cm1,
+            points=points,
+        )
+        polarized_summary = write_native_line_spectrum_outputs(
+            root / "raman_spectrum" / "polarized", polarized,
+            stem="raman_polarized", plot=plot,
+        )
     result = {
         "schema_version": 1,
         "calculator": "vasp",
         "dimensionality": dimensionality,
         "periodic_axes": manifest.get("periodic_axes"),
         "nac_model": manifest.get("nac_model"),
+        "response_scope": manifest.get("response_scope"),
         "mode_numbers": selected,
         "native_mode_numbers": native_selected,
         "mode_index_convention": "frequency-ascending",
@@ -816,6 +890,7 @@ def _collect_vasp_spectra(
         "born_tensors": tensors.tolist(),
         "raman_tensors": np.asarray(raman_tensors).tolist(),
         "raman_sources": sources,
+        "polarized_raman": polarized_summary,
         "ir_summary": ir_summary,
         "raman_summary": raman_summary,
     }
@@ -1084,7 +1159,11 @@ def collect_calculator_spectra(
     plot: bool = True,
     imaginary_tolerance_cm1: float | None = None,
     allow_imaginary: bool | None = None,
+    incident_polarization: Sequence[float] | None = None,
+    scattered_polarization: Sequence[float] | None = None,
 ) -> dict:
+    if (incident_polarization is None) != (scattered_polarization is None):
+        raise ValueError("Specify both incident and scattered Raman polarizations")
     root_path, manifest = _load_manifest(root)
     if imaginary_tolerance_cm1 is None:
         imaginary_tolerance_cm1 = float(
@@ -1103,8 +1182,12 @@ def collect_calculator_spectra(
             plot=plot,
             imaginary_tolerance_cm1=imaginary_tolerance_cm1,
             allow_imaginary=allow_imaginary,
+            incident_polarization=incident_polarization,
+            scattered_polarization=scattered_polarization,
         )
     if manifest["calculator"] == "cp2k":
+        if incident_polarization is not None:
+            raise ValueError("Polarized Raman post-processing is currently available for VASP only")
         return _collect_cp2k_spectra(
             root_path,
             manifest,

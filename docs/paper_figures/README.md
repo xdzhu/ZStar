@@ -73,33 +73,32 @@ it is a direct comparison or contextual evidence.
 
 ### IR/Raman spectroscopy across dimensionalities
 
-![Validated IR/Raman spectroscopy across dimensionalities](spectroscopy_across_dimensions.png)
+![IR/Raman spectroscopy across dimensionalities](Figure_10_Spectroscopy_four_dimensions.png)
 
-The manuscript uses the twelve-panel `spectroscopy_across_dimensions` figure.
-Its rows follow the manuscript order: tetragonal P42/nmc HfO2 (`3D, bulk`),
-2H-MoS2 (`2D, slab`), Sb2S3 (`1D, nanowire`), and CH4 (`0D, molecule`). Each
-row contains an author-supplied VESTA view followed by IR and Raman spectra.
-Different panels are normalized independently because molecular, sheet, and
-bulk response conventions do not share an absolute intensity scale. The MoS2
-IR panel additionally normalizes its in-plane solid and out-of-plane dashed
-curves separately so that both symmetry channels remain visible.
-
-The HfO2 row directly compares ZStar's ABACUS+PYATB and native VASP PBEsol
-routes; the 15 optical frequencies have a 4.31 cm-1 mean absolute difference.
-The MoS2 row uses the native VASP/PBE-D3(BJ) route and unit-weight literature
-frequencies from Ulian and Valdre
+The current manuscript Figure 10 follows the order tetragonal HfO2 (`3D,
+bulk`), monolayer MoS2 (`2D, slab`), isolated Sb2S3 (`1D, nanowire`), and
+CH4 (`0D, molecule`). Each row pairs an author-supplied VESTA structure view
+with IR and Raman spectra. HfO2 compares ZStar (ABACUS) with ZStar (VASP,
+DFPT) at PBEsol; their 15 optical frequencies differ by 4.31 cm-1 on average.
+The MoS2 row separates in-plane and out-of-plane IR as well as ordinary and
+tilted-optics Raman. Its VASP/PBE-D3(BJ) mode frequencies are compared with
+frequency-only literature markers from Ulian and Valdre
 ([doi:10.1107/S1600576723002571](https://doi.org/10.1107/S1600576723002571)).
-Its E'', E', A1', and A2'' groups differ by 2.5 cm-1 on average. The CH4 gray
-curves are likewise frequency-only reference envelopes and are not relative-
-intensity measurements.
+Dashed reference markers in the MoS2 and CH4 rows do not encode intensity.
 
-Sb2S3 uses the original sampled CRYSTAL/B3LYP-D3(BJ) IR and Raman curves,
-not a frequency-only envelope. Several frequency groups correspond, whereas
-their normalized Raman intensity ordering is not identical. The curves are
-therefore retained without shifting individual peaks and without claiming
-quantitative cross-functional intensity agreement. Bibliography numbers are
-exported from the compiled manuscript; all plotted arrays and their hashes are
-listed in the figure metadata.
+Sb2S3 compares original sampled CRYSTAL/B3LYP-D3(BJ) IR and Raman curves
+with ZStar (ABACUS). Its Raman panel separates axial `zz` and crossed `yz`
+channels. The ZStar transverse response is from self-consistent finite fields;
+the axial component remains zero-field. Each route uses its own axial maximum
+to normalize both channels, preserving their within-route intensity ratio.
+The [finite-field audit](../../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/README.md)
+records the tensor provenance and the limits of this cross-method comparison.
+No peak positions are shifted.
+
+Rebuild the PDF, PNG, and SVG from the retained compact data with
+`python docs/paper_figures/plot_figure10_directional.py --repo . --out docs/paper_figures`.
+The script reads reference indices from `reference_numbers.json`, which must
+match the compiled manuscript before a submission figure is released.
 
 ### Static and frequency-dependent dielectric response
 

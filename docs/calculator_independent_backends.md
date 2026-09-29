@@ -109,7 +109,7 @@ Open-direction dipoles are evaluated by one cube integrator. Calculator-
 specific commands only produce the cube and its ionic-valence sidecar:
 
 ```bash
-zstar density vasp-cube --chgcar CHGCAR --output charge.cube
+zstar density vasp-cube --chgcar CHGCAR --potcar POTCAR --output charge.cube
 zstar density qe-input --prefix sample --outdir ./tmp --output pp.in
 zstar density qe-sidecar --cube charge.cube --pw-input scf.in \
   --pseudo-dir pseudo
@@ -118,8 +118,11 @@ zstar density sidecar --cube charge.cube --backend generic \
   --charges 4 4 6
 ```
 
-The canonical BEC workflow consumes the resulting reference/displaced cubes
-during `zstar bec post`. The retained expert command `zstar polar2d` audits one
+For VASP, `--potcar` supplies the ionic valence charges in the sidecar; keep
+the licensed POTCAR in the authorized calculation directory. The exporter
+normalizes CHGCAR grid values to electron density in bohr units before writing
+the cube. The canonical BEC workflow consumes the resulting reference/displaced
+cubes during `zstar bec post`. The retained expert command `zstar polar2d` audits one
 existing cube pair without preparing or running a workflow. Both routes use the
 same integration formula across ABACUS, VASP, QE, and CP2K.
 

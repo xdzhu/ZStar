@@ -54,7 +54,7 @@ class DocumentationLayoutTests(unittest.TestCase):
                 ):
                     self.assertIn(snippet, text)
                 for image in (
-                    "unified_workflow.png", "spectroscopy_across_dimensions.png",
+                    "unified_workflow.png", "Figure_10_Spectroscopy_four_dimensions.png",
                     "dielectric_response_examples.png", "unified_efficiency_benchmarks.png",
                     "potential_examples_2d.png",
                 ):

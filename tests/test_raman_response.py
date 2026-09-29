@@ -76,6 +76,27 @@ def test_canonical_mode_post_forwards_spectrum_options(monkeypatch):
     assert '--no-plot' in command
 
 
+def test_canonical_vasp_post_forwards_polarization_vectors(monkeypatch):
+    from zstar import spectra_frontend
+    monkeypatch.setattr(
+        spectra_frontend,
+        '_saved',
+        lambda *args, **kwargs: ('vasp', 'all', 2, {}),
+    )
+    calls = []
+    spectra_frontend.run_spectra_cli([
+        'post', '--root', 'vasp-spectra',
+        '--incident-polarization', '1', '0', '0',
+        '--scattered-polarization', '0', '1', '0',
+    ], calls.append)
+    command = calls[0]
+    assert command[:2] == ['spectra', 'collect']
+    assert command[command.index('--incident-polarization') + 1:
+                   command.index('--incident-polarization') + 4] == ['1', '0', '0']
+    assert command[command.index('--scattered-polarization') + 1:
+                   command.index('--scattered-polarization') + 4] == ['0', '1', '0']
+
+
 def test_unified_post_accepts_polarized_geometry(tmp_path, monkeypatch, capsys):
     received = {}
     monkeypatch.setattr(

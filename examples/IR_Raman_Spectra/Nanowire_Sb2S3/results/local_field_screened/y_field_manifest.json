@@ -1,0 +1,651 @@
+{
+  "schema": 1,
+  "purpose": "Sb2S3 transverse finite-field SCF and periodic-z polarization probe",
+  "case": "examples/IR_Raman_Spectra/Nanowire_Sb2S3",
+  "field_axis": "y",
+  "field_au": 0.0005,
+  "mode_amplitude_A_sqrt_amu": 0.02,
+  "ramp_start_fractional": 0.85,
+  "ramp_width_fractional": 0.1,
+  "dipole_correction": false,
+  "cube_digits": 12,
+  "out_dipole": true,
+  "stages": [
+    {
+      "geometry": "reference",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/reference/field_plus"
+    },
+    {
+      "geometry": "reference",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/reference/field_minus"
+    },
+    {
+      "geometry": "mode-0005/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0005/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0005/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0005/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0005/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0005/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0005/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0005/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0006/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0006/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0006/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0006/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0006/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0006/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0006/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0006/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0007/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0007/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0007/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0007/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0007/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0007/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0007/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0007/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0008/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0008/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0008/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0008/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0008/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0008/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0008/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0008/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0009/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0009/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0009/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0009/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0009/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0009/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0009/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0009/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0010/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0010/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0010/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0010/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0010/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0010/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0010/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0010/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0011/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0011/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0011/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0011/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0011/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0011/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0011/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0011/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0012/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0012/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0012/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0012/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0012/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0012/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0012/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0012/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0013/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0013/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0013/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0013/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0013/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0013/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0013/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0013/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0014/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0014/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0014/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0014/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0014/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0014/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0014/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0014/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0015/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0015/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0015/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0015/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0015/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0015/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0015/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0015/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0016/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0016/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0016/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0016/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0016/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0016/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0016/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0016/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0017/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0017/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0017/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0017/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0017/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0017/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0017/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0017/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0018/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0018/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0018/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0018/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0018/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0018/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0018/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0018/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0019/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0019/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0019/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0019/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0019/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0019/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0019/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0019/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0020/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0020/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0020/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0020/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0020/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0020/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0020/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0020/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0021/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0021/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0021/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0021/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0021/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0021/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0021/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0021/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0022/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0022/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0022/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0022/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0022/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0022/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0022/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0022/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0023/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0023/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0023/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0023/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0023/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0023/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0023/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0023/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0024/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0024/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0024/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0024/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0024/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0024/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0024/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0024/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0025/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0025/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0025/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0025/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0025/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0025/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0025/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0025/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0026/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0026/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0026/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0026/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0026/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0026/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0026/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0026/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0027/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0027/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0027/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0027/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0027/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0027/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0027/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0027/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0028/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0028/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0028/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0028/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0028/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0028/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0028/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0028/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0029/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0029/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0029/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0029/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0029/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0029/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0029/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0029/minus/field_minus"
+    },
+    {
+      "geometry": "mode-0030/plus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0030/plus/field_plus"
+    },
+    {
+      "geometry": "mode-0030/plus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0030/plus/field_minus"
+    },
+    {
+      "geometry": "mode-0030/minus",
+      "field_sign": "plus",
+      "field_au": 0.0005,
+      "relative_path": "states/mode-0030/minus/field_plus"
+    },
+    {
+      "geometry": "mode-0030/minus",
+      "field_sign": "minus",
+      "field_au": -0.0005,
+      "relative_path": "states/mode-0030/minus/field_minus"
+    }
+  ]
+}

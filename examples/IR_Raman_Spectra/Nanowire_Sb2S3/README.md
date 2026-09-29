@@ -4,7 +4,12 @@
 
 `bash run.sh` now uses the Unified BEC/force/dielectric response ensemble.
 `bash run.sh --method mode --work mode_control` retains the independent mode-FD route.
-The additional Raman step reuses electronic matrices and does not add SCFs.
+The additional zero-field PYATB Raman step reuses electronic matrices and does
+not add SCFs. For this isolated wire, that route omits the transverse
+self-consistent local-field response. The separately validated finite-field
+correction is documented in
+[`results/local_field_screened/README.md`](results/local_field_screened/README.md);
+the default `run.sh` does not silently substitute its tensors.
 
 `results/Unified/` contains the four-dimensional efficiency-benchmark results,
 including hash-checked displacement observations, IR/Raman tables and plots,
@@ -85,9 +90,11 @@ Units are e. The 1D dielectric output is a line
 polarizability under the stated source-field convention, not a bulk permittivity.
 Raman line-polarizability derivatives use the Gaussian normalization A/(4*pi).
 
-The Raman calculations contain corresponding frequency groups across the plotted
-range, while their normalized relative weights differ. This comparison is not
-an absolute-intensity validation. The reference 31.5762 cm^-1 mode has about
+The archived zero-field Raman calculation contains corresponding frequency groups
+across the plotted range, but overestimates the transverse relative weights.
+The separately archived finite-field calculation corrects the transverse response;
+neither comparison validates absolute Raman cross sections. The reference
+31.5762 cm^-1 mode has about
 98.3% axial-rotation overlap and remains in its original curve.
 
 See `compute_costs.json` for separate ABACUS/PYATB and optimization core-hours.
@@ -132,9 +139,11 @@ python tools/shared_response/plot_sb2s3_comparison.py examples/IR_Raman_Spectra/
 python -m tools.shared_response.verify_one_dimensional_example --case examples/IR_Raman_Spectra/Nanowire_Sb2S3 --verify-archive
 ```
 
-The structure panel repeats the original geometry only for visualization. Gray
-curves are unshifted original samples; the mismatch in relative Raman intensities
-is retained. The reference index in the standalone plot is local to that plot.
+The structure panel repeats the original geometry only for visualization. This
+legacy figure uses the zero-field ABACUS+PYATB Raman tensor, so its relative
+transverse-intensity mismatch is retained. For the corrected same-geometry
+comparison, see `results/local_field_screened/`. Gray curves are unshifted
+original samples; the reference index in the standalone plot is local to that plot.
 The verifier performs read-only tensor reconstruction, spectrum recalculation and
 evidence/timing checks; it does not need ABACUS or PYATB and does not validate the
 electronic-structure approximation against experiment.

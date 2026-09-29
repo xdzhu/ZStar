@@ -123,7 +123,9 @@ def read_irreps_yaml(file_path: Union[str, Path] = "irreps.yaml",
     #   - 'irrep' 或 'ir_label' 或类似字段
     #   - 'band_indices': [int, ...]（注意 phonopy 通常是从 1 开始的索引）
     #   - 'frequency': float (THz)
-    irreps_section = data.get("irreps", []) or data.get("normal_modes", [])
+    # Phonopy's ``irreps`` block contains representation matrices, whereas
+    # ``normal_modes`` contains the frequency-labelled mode records.
+    irreps_section = data.get("normal_modes", []) or data.get("irreps", [])
     results: List[Tuple[str, List[int], float]] = []
 
     def _guess_label(block: dict) -> Optional[str]:

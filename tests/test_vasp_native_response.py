@@ -6,7 +6,7 @@ import pytest
 
 from zstar.spectra import GammaModes, load_gamma_modes, read_born_data
 from zstar.vasp_bec import prepare_vasp_bec, render_incar, resolve_vasp_response_method
-from zstar.vasp_response import parse_native_tensors, write_native_qpoints, write_vasp_born_for_phonopy
+from zstar.vasp_response import parse_native_tensors, write_native_phonopy, write_native_qpoints, write_vasp_born_for_phonopy
 
 
 POSCAR = """SiC
@@ -68,6 +68,32 @@ def test_native_gamma_dfpt_preparation(tmp_path):
     assert "POTIM" not in incar
     data = json.loads((root / "vasp_bec_manifest.json").read_text())
     assert data["ionic_response_method"] == "dfpt"
+
+
+def test_vasp_dispersion_phonons_use_native_finite_differences(tmp_path):
+    root = prepare_vasp_bec(
+        inputs(tmp_path, "GGA=PE; IVDW=12; NCORE=1\n"),
+        tmp_path / "response", phonons=True,
+    )
+    incar = (root / "response/INCAR").read_text()
+    manifest = json.loads((root / "vasp_bec_manifest.json").read_text())
+    assert "IBRION = 5" in incar
+    assert "LEPSILON = .TRUE." in incar
+    assert "NCORE = 4" in incar
+    assert "ISYM = 0" in incar
+    assert "NFREE = 2" in incar
+    assert "POTIM = 0.01" in incar
+    assert manifest["ionic_response_method"] == "native-finite-difference"
+    assert manifest["dispersion_correction"] == "12"
+
+
+@pytest.mark.parametrize(
+    "incar, expected_ibrion",
+    [("IVDW=0\n", 8), ("LVDW=.TRUE.\n", 5), ("IVDW=0; LVDW=.TRUE.\n", 8)],
+)
+def test_vasp_dispersion_routing_respects_explicit_ivdw(tmp_path, incar, expected_ibrion):
+    root = prepare_vasp_bec(inputs(tmp_path, incar), tmp_path / "response", phonons=True)
+    assert f"IBRION = {expected_ibrion}" in (root / "response/INCAR").read_text()
 
 
 def test_native_hybrid_uses_field_and_finite_difference_phonons(tmp_path):
@@ -437,6 +463,27 @@ def test_raman_cache_requires_restart_files_before_creating_target(tmp_path, mon
     assert "NPAR" not in (root / "mode-0004/plus/INCAR").read_text()
 
 
+def test_raman_can_use_archived_primitive_phonopy_modes_with_native_vasp_response(tmp_path, monkeypatch):
+    from zstar.spectroscopy_backends import prepare_vasp_spectra, _load_vasp_spectra_modes
+
+    cache = native_cache(tmp_path)
+    (cache / "response/CHGCAR").write_bytes(b"charge density")
+    archived = tmp_path / "archived_qpoints.yaml"
+    archived.write_text("archived Phonopy fixture")
+    monkeypatch.setattr("zstar.spectroscopy_backends.load_gamma_modes", lambda _: mock_gamma_modes())
+    assert _load_vasp_spectra_modes(archived).frequencies_thz[-1] == 10.
+    root = prepare_vasp_spectra(
+        tmp_path / "unused", None, tmp_path / "raman",
+        native_response_root=cache, modes_phonopy=archived,
+        mode_numbers=[4], kind="raman",
+    )
+    manifest = json.loads((root / "spectra_manifest.json").read_text())
+    assert manifest["modes_source"] == str(archived)
+    assert manifest["modes_format"] == "phonopy-yaml"
+    assert [entry["mode"] for entry in manifest["modes"]] == [4]
+    assert (root / "mode-0004/plus/POSCAR").is_file()
+
+
 def test_raman_preserves_tighter_native_convergence_setting(tmp_path, monkeypatch):
     from zstar.spectroscopy_backends import prepare_vasp_spectra
 
@@ -558,6 +605,41 @@ def test_native_raman_export_matches_ascending_gamma_ids(tmp_path, monkeypatch):
     np.testing.assert_allclose(roundtrip.frequencies_cm1, result["frequencies_cm-1"])
 
 
+def test_native_2d_spectra_exports_only_in_plane_sheet_response(tmp_path, monkeypatch):
+    from zstar.spectroscopy_backends import _collect_vasp_spectra, _write_vasp_poscar
+
+    modes = mock_gamma_modes()
+    monkeypatch.setattr("zstar.spectroscopy_backends.load_vasp_gamma_modes", lambda _: modes)
+    born = np.repeat(np.diag([1., 2., 100.])[None, :, :], 2, axis=0)
+
+    def response(path):
+        if path.parent.name == "reference":
+            return np.diag([4., 5., 100.]), born
+        sign = 1. if path.parent.name == "plus" else -1.
+        return np.diag([4. + sign, 5. + 2. * sign, 100. + 50. * sign]), born
+
+    monkeypatch.setattr("zstar.spectroscopy_backends.parse_vasp_outcar", response)
+    (tmp_path / "reference").mkdir()
+    _write_vasp_poscar(tmp_path / "reference/POSCAR", modes)
+    manifest = {
+        "modes_source": "native.xml", "dimensionality": 2,
+        "periodic_axes": "xy", "response_scope": "in-plane IR and Raman only",
+        "amplitude_A_sqrt_amu": 0.01,
+        "modes": [{"mode": 4, "plus": "mode-4/plus", "minus": "mode-4/minus"}],
+    }
+    result = _collect_vasp_spectra(
+        tmp_path, manifest, broadening_cm1=5., laser_nm=532.,
+        temperature_K=300., points=101, plot=False,
+        imaginary_tolerance_cm1=5., allow_imaginary=False,
+    )
+    np.testing.assert_allclose(np.asarray(result["born_tensors"])[:, 2, :], 0.)
+    np.testing.assert_allclose(result["electronic_dielectric"], np.diag([4., 5., 1.]))
+    raman = np.asarray(result["raman_tensors"])[0]
+    np.testing.assert_allclose(raman, np.diag([100., 200., 0.]) / np.pi)
+    assert "sheet polarizability" in result["tensor_kind"]
+    assert result["response_scope"] == "in-plane IR and Raman only"
+
+
 def test_legacy_native_raman_ids_are_rejected_with_regeneration_guidance(tmp_path):
     from zstar.spectra import load_raman_tensors
 
@@ -588,13 +670,13 @@ def test_native_cache_rejects_competing_mode_source(tmp_path):
         prepare_vasp_spectra(tmp_path / "unused", tmp_path / "different.xml", tmp_path / "ir", native_response_root=cache)
 
 
-def test_vasp_spectra_cli_explains_both_mode_source_options(capsys):
+def test_vasp_spectra_cli_explains_mode_source_options(capsys):
     from zstar.cli import zstar_cli
 
     with pytest.raises(SystemExit) as error:
         zstar_cli(["spectra", "prepare", "--calculator", "vasp"], _canonical=False)
     assert error.value.code == 2
-    assert "--response or --modes-xml" in capsys.readouterr().err
+    assert "--response, --modes-xml, or --modes-phonopy" in capsys.readouterr().err
 
 
 def test_force_cannot_delete_reused_native_cache(tmp_path, monkeypatch):
@@ -685,3 +767,14 @@ def test_spectra_restart_only_requires_wavefunctions_when_istart_requests_them(t
     (target / "INCAR").write_text("ISTART=1\n")
     with pytest.raises(FileNotFoundError, match="WAVECAR"):
         _copy_vasp_restart(reference, target)
+
+
+def test_native_conventional_cell_retains_modes_without_invalid_irreps(tmp_path):
+    modes = GammaModes(
+        np.zeros(6), np.zeros((6, 2, 3), dtype=complex), np.array([132.9, 132.9]),
+        np.eye(3) * 4.0, ["Cs", "Cs"], np.array([[0, 0, 0], [0.5, 0.5, 0.5]]),
+    )
+    warning = write_native_phonopy(modes, np.zeros((2, 2, 3, 3)), tmp_path)
+    assert "primitive cell" in warning
+    assert (tmp_path / "phonopy.yaml").is_file()
+    assert not (tmp_path / "irreps.yaml").exists()

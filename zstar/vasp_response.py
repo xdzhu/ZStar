@@ -237,7 +237,7 @@ def write_native_qpoints(modes, destination: str | Path) -> Path:
     return target
 
 
-def write_native_phonopy(modes, force_constants: np.ndarray, root: Path) -> None:
+def write_native_phonopy(modes, force_constants: np.ndarray, root: Path) -> str | None:
     """Keep native force constants reusable by the existing phonon/irrep tools."""
     from phonopy import Phonopy
     from phonopy.structure.atoms import PhonopyAtoms
@@ -248,13 +248,19 @@ def write_native_phonopy(modes, force_constants: np.ndarray, root: Path) -> None
     phonon.force_constants = force_constants
     phonon.save(filename=str(root / "phonopy.yaml"), settings={"force_constants": True})
     run_irreps = getattr(phonon, "run_irreps", None) or phonon.set_irreps
-    run_irreps([0, 0, 0], degeneracy_tolerance=0.02)
+    try:
+        run_irreps([0, 0, 0], degeneracy_tolerance=0.02)
+    except RuntimeError as exc:
+        if "non-primit" not in str(exc).lower():
+            raise
+        return "Irreducible representations require a primitive cell; native conventional-cell modes and force constants were retained."
     previous = Path.cwd()
     try:
         os.chdir(root)
         phonon.write_yaml_irreps()
     finally:
         os.chdir(previous)
+    return None
 
 
 def collect_native_response(root: Path, manifest: dict, epsilon: np.ndarray, born: np.ndarray) -> dict:
@@ -287,10 +293,12 @@ def collect_native_response(root: Path, manifest: dict, epsilon: np.ndarray, bor
     if np.shape(force_constants) != (len(born), len(born), 3, 3):
         raise ValueError("Native force-constant atom count does not match BEC data")
     write_FORCE_CONSTANTS(force_constants, filename=str(root / "FORCE_CONSTANTS"))
-    write_native_phonopy(modes, force_constants, root)
+    irrep_warning = write_native_phonopy(modes, force_constants, root)
     native["epsilon_static"] = epsilon + native["epsilon_ph"]
     native["frequencies_thz"] = modes.frequencies_thz
     diagnostics = {"irreps_degeneracy_tolerance_thz": 0.02}
+    if irrep_warning:
+        diagnostics["irrep_warning"] = irrep_warning
     for key in ("internal_strain_translation_max_eV_per_A", "internal_strain_translation_relative",
                 "electromechanical_warning", "d_rejected_reason", "internal_strain_source",
                 "strained_cell_internal_strain_translation_max_eV_per_A",
@@ -334,7 +342,7 @@ def collect_native_response(root: Path, manifest: dict, epsilon: np.ndarray, bor
         "tensors": {key: value.tolist() if isinstance(value, np.ndarray) else value for key, value in native.items()},
         "diagnostics": diagnostics,
         "files": {"qpoints": "qpoints.yaml", "force_constants": "FORCE_CONSTANTS", "modes_source": "response/vasprun.xml",
-                  "phonopy": "phonopy.yaml", "irreps": "irreps.yaml"},
+                  "phonopy": "phonopy.yaml", "irreps": "irreps.yaml" if irrep_warning is None else None},
         "source": str(source / "OUTCAR"),
     }
     (root / "vasp_native_response.json").write_text(json.dumps(result, indent=2), encoding="utf-8")

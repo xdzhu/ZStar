@@ -97,6 +97,40 @@ normal_modes:
         self.assertNotIn(UNRESOLVED_IRREP, result["Silent"])
         self.assertEqual(result["Silent"]["Au"], [5])
 
+    def test_phonopy_normal_modes_take_precedence_over_irrep_matrices(self):
+        content = """\
+point_group: -6m2
+normal_modes:
+- band_indices: [1, 2, 3]
+  frequency: 0.0
+  ir_label: null
+- band_indices: [4, 5]
+  frequency: 8.0
+  ir_label: E''
+- band_indices: [6, 7]
+  frequency: 11.0
+  ir_label: E'
+- band_indices: [8]
+  frequency: 12.0
+  ir_label: A1'
+- band_indices: [9]
+  frequency: 13.0
+  ir_label: A2''
+irreps:
+- - [1, 0]
+  - [0, 1]
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "irreps.yaml"
+            path.write_text(content, encoding="utf-8")
+            result = analyze_irreps(path)
+
+        self.assertEqual(result["Raman"]["E''"], [4, 5])
+        self.assertEqual(result["IR"]["E'"], [6, 7])
+        self.assertEqual(result["Raman"]["A1'"], [8])
+        self.assertEqual(result["IR"]["A2''"], [9])
+        self.assertEqual(result["Acoustic"][UNRESOLVED_IRREP], [1, 2, 3])
+
     def test_reference_metadata_is_exposed(self):
         self.assertEqual(
             group_modesDB.ACTIVITY_REFERENCE_DOI,

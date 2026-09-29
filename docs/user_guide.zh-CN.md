@@ -758,6 +758,12 @@ VASP 对原生介电响应做模式中心差分；CP2K 使用原生振动偶极�
 SiC/HfO2 的 ABACUS-VASP 全流程数值与核时对照见
 [后端基准](spectroscopy_backend_benchmark.zh-CN.md)。
 
+VASP 薄层可使用 `--dim 2 --modes-phonopy qpoints.yaml` 提供已归档的 Phonopy
+本征模式，用于面内 IR 与 Raman 分析；`spectra post` 还可指定入射与散射偏振方向。
+孤立 ABACUS 纳米线的默认零场 PYATB 路线不包含横向自洽局域场屏蔽；
+[Sb2S3 案例](../examples/IR_Raman_Spectra/Nanowire_Sb2S3/results/local_field_screened/README.md)
+记录了 x/y 有限场探针及 `zstar raman screen-1d` 的用法，其中轴向分量仍沿用零场响应。
+
 分子 APT 案例还包含紧凑的 HSE 参考记录：
 `examples/0D_Molecules/{H2O,CH4}/results/hse_apt_summary.json`。完整求解器
 临时目录和 cube 文件有意不纳入仓库；JSON 保留泛函、收敛阈值、位移、张量约定

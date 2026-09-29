@@ -18,8 +18,12 @@ sbatch response/run_vasp_bec.slurm
 zstar bec post --root response
 ```
 
-工作流先完成参考 SCF 并检查带隙，再进行原生响应计算。LDA/GGA 的
-`--phonons` 采用 `LEPSILON=.TRUE.`、`IBRION=8`，输出 BEC、电子介电、
+工作流先完成参考 SCF 并检查带隙，再进行原生响应计算。未启用 `IVDW` 的
+LDA/GGA 输入采用 `LEPSILON=.TRUE.`、DFPT `IBRION=8`；启用 `IVDW` 时，
+保留 VASP 原生电场响应，声子改用 `IBRION=5`、`ISYM=0` 有限差分。
+这是因为色散修正作用于有限差分的力，却不进入 VASP 的 DFPT 声子；
+当前 VASP 6.3.2 中，对称性约化的 `IBRION=6` 与 `NCORE=4` 也不能同时使用。
+两条路线均输出 BEC、电子介电、
 Γ 点模式以及相应离子响应。`BORN` 按 Phonopy 格式输出；`BEC.raw.dat`
 保存完整原子张量。`qpoints.yaml` 与 `FORCE_CONSTANTS` 可被现有后处理复用。
 同时导出 `phonopy.yaml` 和 `irreps.yaml`，供现有声子与模式分类入口使用。
@@ -32,7 +36,9 @@ zstar bec post --root response
 
 `vasp_native_response.json` 分别保存电子/声子/总介电响应、钳制/离子/总压电
 贡献和适用的弹性及 d 张量。低维结果明确标记为周期超胞响应，不直接称为本征
-Bulk 常数。二维谱学的现有保护仍保留，待边界条件与转换完成验证后再开放。
+Bulk 常数。二维薄层谱学可通过 `zstar spectra pre --calculator vasp --dim 2`
+配合 `--modes-phonopy` 显式提供 Phonopy 模式档案；目前报告面内 IR 和偏振分辨
+Raman 响应，不将面外超胞响应直接解释为本征二维响应。
 
 ## 具有压电响应的 AlN 案例
 

@@ -3,9 +3,13 @@ from pathlib import Path
 import tempfile
 import unittest
 
+import numpy as np
+import pytest
+
 from zstar.density_adapters import (
     cp2k_density_cube_block,
     qe_pp_cube_input,
+    vasp_chgcar_to_cube,
     write_cube_sidecar,
     write_qe_cube_sidecar,
 )
@@ -26,6 +30,21 @@ def write_nuclear_charge_cube(path: Path) -> None:
 
 
 class DensityAdapterTests(unittest.TestCase):
+    def test_vasp_chgcar_cube_has_physical_electron_density(self):
+        pytest.importorskip("pymatgen")
+        from pymatgen.core import Structure
+        from pymatgen.io.vasp.outputs import Chgcar
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            structure = Structure(np.eye(3) * 10.0, ["H"], [[0.5, 0.5, 0.5]])
+            source = root / "CHGCAR"
+            Chgcar(structure, {"total": np.ones((4, 4, 4))}).write_file(source)
+            cube = vasp_chgcar_to_cube(source, root / "density.cube")
+            dipole = integrate_slab_dipole(cube, ionic_valence_charges=[1.0])
+            self.assertAlmostEqual(dipole.electron_count_raw, 1.0, places=5)
+            self.assertAlmostEqual(dipole.ionic_charge, 1.0)
+
     def test_sidecar_overrides_nuclear_charge_with_valence_charge(self):
         with tempfile.TemporaryDirectory() as tmp:
             cube = Path(tmp) / "charge-density.cube"

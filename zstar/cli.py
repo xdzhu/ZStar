@@ -623,6 +623,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_spectra_prepare.add_argument('--dim', type=int, choices=[0, 1, 2, 3], default=3)
     parser_spectra_prepare.add_argument('--input-dir', default='.')
     parser_spectra_prepare.add_argument('--modes-xml', default=None)
+    parser_spectra_prepare.add_argument('--modes-phonopy', default=None,
+        help='Use a Phonopy qpoints.yaml eigensystem with primitive-cell metadata.')
     parser_spectra_prepare.add_argument('--response', default=None,
         help='Reuse a completed native VASP BEC/phonon response workspace.')
     parser_spectra_prepare.add_argument('--kind', choices=['ir', 'raman', 'all'], default='all')
@@ -685,6 +687,14 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         '--allow-imaginary', action='store_true', default=None
     )
     parser_spectra_collect.add_argument('--no-plot', action='store_true')
+    parser_spectra_collect.add_argument(
+        '--incident-polarization', type=float, nargs=3, default=None,
+        metavar=('EX', 'EY', 'EZ'),
+    )
+    parser_spectra_collect.add_argument(
+        '--scattered-polarization', type=float, nargs=3, default=None,
+        metavar=('EX', 'EY', 'EZ'),
+    )
 
     # ---------------- qNEP data bridge ----------------
     parser_qnep = subparsers.add_parser(
@@ -1190,6 +1200,17 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_raman_collect.add_argument(
         '--periodic-axis', choices=['x', 'y', 'z'], default='z'
     )
+
+    parser_raman_screen = raman_actions.add_parser(
+        'screen-1d',
+        help='Collect transverse self-consistent finite-field Raman tensors for a z-periodic wire.',
+    )
+    parser_raman_screen.add_argument('--x-probe', required=True)
+    parser_raman_screen.add_argument('--y-probe', required=True)
+    parser_raman_screen.add_argument('--stru', required=True)
+    parser_raman_screen.add_argument('--bare-csv', required=True)
+    parser_raman_screen.add_argument('--mode', type=int, action='append', default=[])
+    parser_raman_screen.add_argument('--outdir', required=True)
 
     parser_raman_spectrum = raman_actions.add_parser(
         'spectrum', help='Calculate Placzek Raman activities and spectrum.'
@@ -1759,9 +1780,9 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
 
         if args.spectra_action == 'prepare':
             if args.calculator == 'vasp':
-                if not args.modes_xml and not args.response:
+                if not args.modes_xml and not args.modes_phonopy and not args.response:
                     parser_spectra_prepare.error(
-                        '--response or --modes-xml is required for --calculator vasp'
+                        '--response, --modes-xml, or --modes-phonopy is required for --calculator vasp'
                     )
                 root = prepare_vasp_spectra(
                     args.input_dir,
@@ -1777,6 +1798,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                     dimensionality=args.dim,
                     kind=args.kind,
                     native_response_root=args.response,
+                    modes_phonopy=args.modes_phonopy,
                     force=args.force,
                 )
             else:
@@ -1846,6 +1868,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 plot=not args.no_plot,
                 imaginary_tolerance_cm1=args.imaginary_tolerance,
                 allow_imaginary=args.allow_imaginary,
+                incident_polarization=args.incident_polarization,
+                scattered_polarization=args.scattered_polarization,
             )
             print(
                 f"Collected {len(result['frequencies_cm-1'])} "
@@ -2266,6 +2290,30 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             from .workflow import format_status_table, raman_workflow_status
 
             print(format_status_table(raman_workflow_status(args.raman_dir)))
+            return
+
+        if args.raman_action == 'screen-1d':
+            from .raman_local_field import (
+                collect_screened_1d_raman_tensors,
+                load_bare_raman_csv,
+                write_screened_1d_raman_outputs,
+            )
+
+            numbers, bare = load_bare_raman_csv(args.bare_csv, args.mode or None)
+            tensors, metadata = collect_screened_1d_raman_tensors(
+                args.x_probe, args.y_probe, args.stru, numbers, bare
+            )
+            metadata['inputs'] = {
+                'x_probe': os.path.abspath(args.x_probe),
+                'y_probe': os.path.abspath(args.y_probe),
+                'structure': os.path.abspath(args.stru),
+                'zero_field_tensors': os.path.abspath(args.bare_csv),
+            }
+            output = write_screened_1d_raman_outputs(
+                args.outdir, numbers, tensors, metadata
+            )
+            print(f"Collected {len(numbers)} transverse-screened 1D Raman tensors.")
+            print(f"Axial zz remains from zero-field PYATB: {output}")
             return
 
         modes = load_gamma_modes(args.qpoints)
