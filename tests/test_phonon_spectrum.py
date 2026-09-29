@@ -7,6 +7,7 @@ from unittest.mock import patch
 import numpy as np
 
 from zstar.phonon_spectrum import (
+    _load_phonon,
     _axis_ticks,
     _continuous_distances,
     infer_supercell,
@@ -21,6 +22,29 @@ EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
 
 
 class PhononSpectrumTests(unittest.TestCase):
+    def test_load_uses_c_backend_when_phonopy_supports_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "phonopy.yaml").write_text("placeholder", encoding="utf-8")
+
+            def newer_load(*, phonopy_yaml, calculator, produce_fc, is_nac, lang):
+                self.assertEqual(lang, "C")
+                return "newer"
+
+            def older_load(*, phonopy_yaml, calculator, produce_fc, is_nac):
+                return "older"
+
+            with patch("phonopy.load", newer_load):
+                self.assertEqual(
+                    _load_phonon(root, nac=False, born=None, calculator="abacus"),
+                    "newer",
+                )
+            with patch("phonopy.load", older_load):
+                self.assertEqual(
+                    _load_phonon(root, nac=False, born=None, calculator="abacus"),
+                    "older",
+                )
+
     def test_auto_supercell_exceeds_threshold_only_on_periodic_axes(self):
         repeats = infer_supercell(
             np.diag([3.0, 5.0, 12.0]), dimensionality=2, minimum_length=10.0

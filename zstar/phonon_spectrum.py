@@ -9,6 +9,7 @@ constants and the primitive-to-supercell mapping.
 from __future__ import annotations
 
 import json
+import inspect
 import math
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -174,6 +175,11 @@ def _load_phonon(root: Path, *, nac: bool, born: Path | None, calculator: str):
         kwargs["force_sets_filename"] = str(force_sets)
     if born is not None:
         kwargs["born_filename"] = str(born)
+    # Phonopy 4 selects its experimental Rust kernels by default. Its C
+    # backend remains available and avoids phonors API mismatches; older
+    # Phonopy releases do not expose the lang argument.
+    if "lang" in inspect.signature(load).parameters:
+        kwargs["lang"] = "C"
     return load(**kwargs)
 
 
