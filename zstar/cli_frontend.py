@@ -37,7 +37,7 @@ ACTION_ALIASES = {
 
 FAMILY_HELP = {
     "bec": "pre, job, run, stat, post",
-    "phonon": "pre, job, run, stat, post, irrep, spectrum",
+    "phonon": "pre, job, run, stat, post, irrep, spectrum, inspect",
     "spectra": "pre, job, run, stat, post",
     "piezo": "pre, job, run, stat, post",
     "dielectric": "static, freq, optics",
@@ -562,11 +562,66 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         _print_family_help("phonon")
         return
     action = ACTION_ALIASES.get(arguments[0], arguments[0])
-    if action not in {"pre", "run", "stat", "post", "irrep", "job", "spectrum"}:
+    if action not in {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "inspect"}:
         raise SystemExit(f"Unknown zstar phonon action: {arguments[0]}")
     rest = list(arguments[1:])
     root = str(_option(rest, "--root", default="."))
     root_path = Path(root).resolve()
+    if action == "inspect":
+        from .spectra import assess_gamma_modes, load_gamma_modes, validate_gamma_stability
+
+        parser = argparse.ArgumentParser(prog="zstar phonon inspect")
+        parser.add_argument("--qpoints", default="qpoints.yaml")
+        parser.add_argument("--dim", type=int, choices=(0, 1, 2, 3), default=3)
+        parser.add_argument("--imaginary-tolerance", type=float, default=20.0)
+        parser.add_argument("--json", default=None, help="Optional audit JSON path.")
+        args = parser.parse_args(rest)
+        modes = load_gamma_modes(args.qpoints)
+        rows = assess_gamma_modes(modes, dimensionality=args.dim)
+        flagged = validate_gamma_stability(
+            modes,
+            dimensionality=args.dim,
+            imaginary_tolerance_cm1=args.imaginary_tolerance,
+            allow_imaginary=True,
+        )
+        report = {
+            "source": str(Path(args.qpoints).resolve()),
+            "dimensionality": args.dim,
+            "imaginary_tolerance_cm-1": args.imaginary_tolerance,
+            "flagged_mode_numbers": flagged.tolist(),
+            "modes": rows,
+        }
+        if args.dim == 0:
+            print("Mode  Frequency(cm-1)  Translation  Rotation  Classification  Assessment")
+        else:
+            print("Mode  Frequency(cm-1)  Translation overlap  Classification  Assessment")
+        review = []
+        for row in rows:
+            status = "REVIEW" if row["mode"] in flagged else "ok"
+            if row["classification"] == "mixed" and status == "ok":
+                status = "CHECK"
+            if row["classification"] == "translation" and row["frequency_cm-1"] > args.imaginary_tolerance:
+                status = "CHECK"
+            if row["classification"] == "rotation" and row["frequency_cm-1"] < -args.imaginary_tolerance:
+                status = "CHECK"
+            if status == "CHECK":
+                review.append(row["mode"])
+            row["assessment"] = status
+            prefix = f"{row['mode']:4d}  {row['frequency_cm-1']:16.3f}  "
+            if args.dim == 0:
+                prefix += (
+                    f"{row['translation_overlap']:11.3f}  "
+                    f"{row['rotation_overlap']:8.3f}  "
+                )
+            else:
+                prefix += f"{row['translation_overlap']:19.3f}  "
+            print(f"{prefix}{row['classification']:15s}  {status}")
+        report["review_mode_numbers"] = review
+        if args.json is not None:
+            destination = Path(args.json)
+            destination.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            print(f"[AUDIT] {destination.resolve()}")
+        return
     if action == "spectrum":
         from .phonon_spectrum import run_phonon_spectrum
 
@@ -777,7 +832,7 @@ def handle_canonical_cli(arguments: Sequence[str], legacy: LegacyRunner) -> bool
     if family == "piezo":
         _run_piezo(rest, legacy)
         return True
-    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum"}
+    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "inspect"}
     if family == "phonon" or (
         family == "ph" and rest and rest[0] in phonon_actions | {"-h", "--help"}
     ):

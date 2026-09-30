@@ -24,7 +24,7 @@ aliases. New documentation and automation should use the short canonical verbs.
 | Family | Canonical actions | Purpose |
 | --- | --- | --- |
 | `zstar bec` | `pre/job/run/stat/post` | Polarization, APT/BEC, and `BORN`; calculators: ABACUS + PYATB, VASP, CP2K, QE. |
-| `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep/spectrum` | Displacements, serial force calculations, force constants, frequencies, Gamma irreps, finite-q bands, and DOS. |
+| `zstar phonon` (`ph`) | `pre/job/run/stat/post/irrep/spectrum/inspect` | Displacements, serial force calculations, force constants, frequencies, Gamma irreps, finite-q bands and DOS, and a Gamma-mode stability audit. |
 | `zstar spectra` | `pre/job/run/stat/post` | IR and Raman workflows for ABACUS + PYATB, VASP, CP2K, and QE. |
 | `zstar piezo` | `pre/job/run/stat/post` | Proper bulk piezoelectric `e`, elastic `C`, and strain coefficients `d`; ABACUS + PYATB or native VASP. |
 | `zstar dielectric` (`diel`) | `static` (`zero`), `freq`, `optics` | Ionic static response, frequency-dependent vibrational response, and electronic optics. |
@@ -168,6 +168,21 @@ zstar phonon post --root . --stru STRU --physical-dim 3
 cp path/to/BORN .
 zstar phonon spectrum --root . --nac
 ```
+
+Inspect a Gamma eigensystem before preparing spectra:
+
+```bash
+zstar phonon inspect --qpoints qpoints.yaml --json gamma_mode_audit.json
+```
+
+The audit reports each mode's mass-weighted overlap with rigid translation.
+For `--dim 0`, it also recognizes molecular rotations. By default, a small
+imaginary crystal translation is tolerated, while an imaginary internal or
+translation/optical-mixed mode stops spectroscopy. Pure molecular rotations
+are excluded from the internal spectrum; large rotational drift is marked
+`CHECK` and warned about. The default `--imaginary-tolerance 20` is the
+maximum tolerated crystal-translation drift, not a blanket optical-mode
+allowance.
 
 `--input` defaults to `INPUT` and accepts a user-provided ABACUS CPU or GPU
 input file. ZStar stages it as `INPUT` in each displacement directory without

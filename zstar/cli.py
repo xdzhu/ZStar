@@ -1116,6 +1116,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         help='Normal-coordinate step in Angstrom sqrt(amu).'
     )
     parser_raman_prepare.add_argument('--modes', default=None)
+    parser_raman_prepare.add_argument('--dim', type=int, choices=[0, 1, 2, 3], default=3)
     parser_raman_prepare.add_argument('--acoustic-cutoff', type=float, default=5.0)
     parser_raman_prepare.add_argument('--imaginary-tolerance', type=float, default=20.0)
     parser_raman_prepare.add_argument('--allow-imaginary', action='store_true')
@@ -2323,6 +2324,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 modes,
                 args.outdir,
                 amplitude=args.amplitude,
+                dimensionality=args.dim,
                 mode_numbers=_parse_modes(args.modes),
                 acoustic_cutoff_cm1=args.acoustic_cutoff,
                 copy_files=args.copy,
@@ -2372,6 +2374,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                     mode_numbers,
                     tensors,
                     tensor_kind=tensor_kind,
+                    dimensionality=args.dim,
                     temperature_K=args.temperature,
                     laser_nm=args.laser_nm,
                     broadening_cm1=args.broadening,
@@ -2471,6 +2474,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 mode_numbers,
                 tensors,
                 tensor_kind=tensor_kind,
+                dimensionality=args.dim,
                 temperature_K=args.temperature,
                 laser_nm=args.laser_nm,
                 broadening_cm1=args.broadening,

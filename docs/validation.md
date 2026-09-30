@@ -384,9 +384,16 @@ LDA-DFPT value reported by Serrano et al. alongside their 793(2) cm-1 IXS and
 ([doi:10.1063/1.1484241](https://doi.org/10.1063/1.1484241)). The old BTO
 classification remains useful as a selection-rule regression, but its two
 -167.01 cm-1 modes make it unsuitable as a physical spectrum benchmark. ZStar
-now rejects any Gamma eigensystem below -20 cm-1 by default in the ABACUS,
-VASP, and CP2K spectroscopy paths. `--allow-imaginary` is an explicit opt-in
-for intentionally studying the stable branches of an unstable phase.
+now projects ABACUS/Phonopy and VASP Gamma eigenvectors onto the mass-weighted
+rigid-translation subspace. The default 20 cm-1 tolerance applies only to
+identified rigid-mode drift; imaginary internal or mixed modes require review.
+CP2K-native collection remains frequency-only until eigenvectors are available
+from its parser. `--allow-imaginary` is an explicit opt-in for intentionally
+studying stable branches of an unstable phase. The
+[Cs2SnO3 audit](../examples/Benchmarks/cs2sno3_gamma_modes/README.md) records
+both harmless acoustic drift and a non-translational imaginary mode in one
+DFPT control. An independent finite-displacement result differs, so the
+physical origin of that latter mode remains unresolved.
 
 The current publication-quality validation figures, plotting code, compact source data, and
 hashes are archived in [docs/paper_figures](paper_figures/README.md):

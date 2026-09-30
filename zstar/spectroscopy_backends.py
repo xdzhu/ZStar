@@ -29,6 +29,7 @@ from .cp2k_bec import (
 from .spectra import (
     BornData,
     GammaModes,
+    assess_gamma_modes,
     load_gamma_modes,
     calculate_ir_spectrum,
     calculate_molecular_ir_spectrum,
@@ -78,16 +79,26 @@ class SpectraStageState:
 
 
 def _mode_indices(
-    frequencies_cm1: np.ndarray,
+    modes: GammaModes,
     mode_numbers: Sequence[int] | None,
     acoustic_cutoff_cm1: float,
+    *,
+    dimensionality: int = 3,
 ) -> np.ndarray:
+    frequencies_cm1 = modes.frequencies_cm1
     if mode_numbers:
         indices = np.asarray([int(number) - 1 for number in mode_numbers], dtype=int)
         if np.any(indices < 0) or np.any(indices >= len(frequencies_cm1)):
             raise IndexError("Requested mode number is outside the eigensystem")
         return indices
-    return np.flatnonzero(frequencies_cm1 > float(acoustic_cutoff_cm1))
+    indices = np.flatnonzero(frequencies_cm1 > float(acoustic_cutoff_cm1))
+    if len(modes.masses_amu) > 1 and len(frequencies_cm1) == 3 * len(modes.masses_amu):
+        audit = assess_gamma_modes(modes, dimensionality=dimensionality)
+        indices = np.asarray([
+            index for index in indices
+            if audit[index]["classification"] not in {"translation", "rotation"}
+        ], dtype=int)
+    return indices
 
 
 def _real_modes(eigenvectors: np.ndarray) -> np.ndarray:
@@ -277,10 +288,13 @@ def prepare_vasp_spectra(
     modes = _load_vasp_spectra_modes(modes_source)
     validate_gamma_stability(
         modes,
+        dimensionality=dimensionality,
         imaginary_tolerance_cm1=imaginary_tolerance_cm1,
         allow_imaginary=allow_imaginary,
     )
-    indices = _mode_indices(modes.frequencies_cm1, mode_numbers, acoustic_cutoff_cm1)
+    indices = _mode_indices(
+        modes, mode_numbers, acoustic_cutoff_cm1, dimensionality=dimensionality
+    )
     if not len(indices):
         raise ValueError("No optical modes selected")
 
@@ -844,6 +858,7 @@ def _collect_vasp_spectra(
         selected,
         np.asarray(raman_tensors),
         tensor_kind=tensor_kind,
+        dimensionality=dimensionality,
         temperature_K=temperature_K,
         laser_nm=laser_nm,
         broadening_cm1=broadening_cm1,

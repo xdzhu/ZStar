@@ -34,10 +34,15 @@ The reference response supplies BECs and the ion-clamped dielectric tensor for
 IR. For Raman, ZStar differentiates the dielectric tensor along each normal
 coordinate using the generated central pair. The normal-coordinate amplitude
 defaults to `0.02 Angstrom sqrt(amu)`. The reference `vasprun.xml` is checked
-for a finite band gap before any displaced response is run. ZStar also rejects
-Gamma modes below -20 cm-1 before preparing the response tree. Change the
-tolerance with `--imaginary-tolerance`; use `--allow-imaginary` only when an
-unstable phase is intentional.
+for a finite band gap before any displaced response is run. ZStar checks
+Gamma-mode eigenvectors against the mass-weighted rigid-translation subspace.
+Only small imaginary translations are treated as numerical drift; imaginary
+non-translational or mixed modes stop preparation. `--imaginary-tolerance`
+sets the maximum tolerated rigid-mode drift (20 cm-1 by default), not a
+blanket optical-mode threshold. Use `zstar phonon inspect --qpoints phonon/qpoints.yaml`
+to review the overlaps and `--allow-imaginary` only when an unstable phase is
+intentional. For `--dim 0`, pure molecular rotations are identified separately
+and excluded from internal spectra; large rotational drift produces a warning.
 
 Use `--method finite-field` for functionals unsupported by VASP DFPT. The same
 PEAD occupation, field-size, and convergence restrictions documented in the
@@ -103,7 +108,10 @@ CP2K activities are retained in their native units: IR in `km/mol` and Raman
 in `Angstrom^4/amu`. ZStar broadens those unmodified line activities for
 display. CP2K can also be used with `--dim 3`; periodic calculations keep the
 full Gamma-point modes and use the Berry-phase dipole operator. Collection
-applies the same -20 cm-1 stability gate as the other calculators.
+retains a frequency-only -20 cm-1 gate because this CP2K-native output parser
+does not currently provide the eigenvectors needed for rigid-motion projection.
+Do not interpret a tolerated CP2K-native negative frequency as a confirmed
+acoustic mode.
 
 ### H2O validation
 

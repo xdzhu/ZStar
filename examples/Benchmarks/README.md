@@ -48,6 +48,10 @@ include reference and band-gate work, but exclude relaxation, setup, transfer
 and unmeasured interrupted attempts. Historical force-output overhead is not
 subtracted from the Cartesian BEC timings.
 
+The [Cs2SnO3 Gamma-mode audit](cs2sno3_gamma_modes/README.md) is a separate
+post-processing regression: it distinguishes small acoustic drift from an
+imaginary internal mode using the mass-weighted eigenvectors.
+
 The default step is 0.02 bohr; derivatives use actual written STRU differences.
 The unstable cubic BaTiO3 reference does not support a stable static phonon
 dielectric constant. Raman adds PYATB dielectric derivatives, not new SCFs,

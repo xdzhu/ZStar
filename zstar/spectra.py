@@ -83,6 +83,80 @@ class GammaModes:
         return self.volume_angstrom3 / self.periodic_length_angstrom(axis)
 
 
+def assess_gamma_modes(modes: GammaModes, *, dimensionality: int = 3) -> list[dict]:
+    """Classify Gamma eigenvectors by their mass-weighted rigid-motion content.
+
+    Phonopy and VASP dynamical-matrix eigenvectors are expressed in mass-weighted
+    coordinates. A rigid translation therefore has components proportional to
+    ``sqrt(mass)`` on every atom, independent of the atomic species.
+    """
+
+    if dimensionality not in (0, 1, 2, 3):
+        raise ValueError("dimensionality must be 0, 1, 2, or 3")
+    masses = np.asarray(modes.masses_amu, dtype=float)
+    vectors = np.asarray(modes.eigenvectors, dtype=complex)
+    frequencies = np.asarray(modes.frequencies_cm1, dtype=float)
+    if (
+        masses.ndim != 1
+        or not len(masses)
+        or not np.all(np.isfinite(masses))
+        or np.any(masses <= 0)
+        or vectors.shape != (len(frequencies), len(masses), 3)
+        or not np.all(np.isfinite(vectors))
+        or not np.all(np.isfinite(frequencies))
+    ):
+        raise ValueError("Gamma eigensystem has invalid masses, vectors, or frequencies")
+    flat = vectors.reshape(len(frequencies), -1)
+    norms = np.sum(np.abs(flat) ** 2, axis=1)
+    if np.any(norms <= 0):
+        raise ValueError("Gamma eigensystem contains a zero-norm eigenvector")
+    translations = np.zeros((3, 3 * len(masses)), dtype=float)
+    weights = np.sqrt(masses / masses.sum())
+    for axis in range(3):
+        translations[axis, axis::3] = weights
+    overlap = np.sum(np.abs(flat @ translations.T) ** 2, axis=1) / norms
+    overlap = np.clip(overlap, 0.0, 1.0)
+    rotation_overlap = np.zeros_like(overlap)
+    if dimensionality == 0:
+        positions = np.asarray(modes.positions_fractional, dtype=float)
+        if positions.shape != (len(masses), 3) or not np.all(np.isfinite(positions)):
+            raise ValueError("Molecular Gamma modes require finite atomic positions")
+        cartesian = positions @ np.asarray(modes.lattice_angstrom, dtype=float)
+        cartesian -= np.average(cartesian, axis=0, weights=masses)
+        rotations = np.column_stack([
+            (np.cross(axis, cartesian) * np.sqrt(masses)[:, None]).reshape(-1)
+            for axis in np.eye(3)
+        ])
+        basis, singular, _ = np.linalg.svd(rotations, full_matrices=False)
+        if singular[0] > 0:
+            rank = int(np.count_nonzero(singular > singular[0] * 1e-10))
+            rotation_overlap = np.sum(np.abs(flat @ basis[:, :rank]) ** 2, axis=1) / norms
+            rotation_overlap = np.clip(rotation_overlap, 0.0, 1.0)
+    labels = np.where(
+        overlap >= 0.9,
+        "translation",
+        np.where(
+            rotation_overlap >= 0.9,
+            "rotation",
+            np.where(
+                overlap + rotation_overlap <= 0.1,
+                "internal" if dimensionality == 0 else "non-translation",
+                "mixed",
+            ),
+        ),
+    )
+    return [
+        {
+            "mode": index + 1,
+            "frequency_cm-1": float(frequency),
+            "translation_overlap": float(overlap[index]),
+            "rotation_overlap": float(rotation_overlap[index]),
+            "classification": str(labels[index]),
+        }
+        for index, frequency in enumerate(frequencies)
+    ]
+
+
 @dataclass(frozen=True)
 class BornData:
     tensors: np.ndarray
@@ -362,16 +436,26 @@ def mode_effective_charges(
 
 
 def _selected_mode_indices(
-    frequencies_cm1: np.ndarray,
+    modes: GammaModes,
     mode_numbers: Optional[Sequence[int]],
     acoustic_cutoff_cm1: float,
+    *,
+    dimensionality: int = 3,
 ) -> np.ndarray:
+    frequencies_cm1 = modes.frequencies_cm1
     if mode_numbers:
         indices = np.asarray([int(number) - 1 for number in mode_numbers], dtype=int)
         if np.any(indices < 0) or np.any(indices >= len(frequencies_cm1)):
             raise IndexError("Requested mode number is outside qpoints.yaml")
         return indices
-    return np.flatnonzero(frequencies_cm1 > float(acoustic_cutoff_cm1))
+    indices = np.flatnonzero(frequencies_cm1 > float(acoustic_cutoff_cm1))
+    if len(modes.masses_amu) > 1 and len(frequencies_cm1) == 3 * len(modes.masses_amu):
+        audit = assess_gamma_modes(modes, dimensionality=dimensionality)
+        indices = np.asarray([
+            index for index in indices
+            if audit[index]["classification"] not in {"translation", "rotation"}
+        ], dtype=int)
+    return indices
 
 
 def validate_frequencies_stable(
@@ -402,16 +486,66 @@ def validate_frequencies_stable(
 def validate_gamma_stability(
     modes: GammaModes,
     *,
+    dimensionality: int = 3,
     imaginary_tolerance_cm1: float = 20.0,
     allow_imaginary: bool = False,
 ) -> np.ndarray:
-    """Reject structures with substantive imaginary Gamma modes by default."""
+    """Distinguish acoustic drift, molecular rotations, and unstable modes."""
 
-    return validate_frequencies_stable(
-        modes.frequencies_cm1,
-        imaginary_tolerance_cm1=imaginary_tolerance_cm1,
-        allow_imaginary=allow_imaginary,
-    )
+    tolerance = float(imaginary_tolerance_cm1)
+    if not np.isfinite(tolerance) or tolerance < 0:
+        raise ValueError("imaginary_tolerance_cm1 must be finite and nonnegative")
+    audit = assess_gamma_modes(modes, dimensionality=dimensionality)
+    unstable = [
+        row for row in audit
+        if row["frequency_cm-1"] < 0
+        and not (
+            row["classification"] == "translation"
+            and row["frequency_cm-1"] >= -tolerance
+        )
+        and row["classification"] != "rotation"
+    ]
+    large_rotations = [
+        row for row in audit
+        if row["classification"] == "rotation"
+        and row["frequency_cm-1"] < -tolerance
+    ]
+    if large_rotations:
+        warnings.warn(
+            "Molecular rigid-rotation frequencies exceed the acoustic drift "
+            "tolerance; inspect rotational invariance before quantitative use "
+            f"(modes {[row['mode'] for row in large_rotations]}).",
+            UserWarning,
+            stacklevel=2,
+        )
+    mixed_positive = [
+        row["mode"] for row in audit
+        if row["classification"] == "mixed" and row["frequency_cm-1"] >= 0
+    ]
+    if mixed_positive:
+        warnings.warn(
+            "Gamma modes mix rigid translation with internal motion; inspect "
+            f"the force constants and acoustic sum rule (modes {mixed_positive}).",
+            UserWarning,
+            stacklevel=2,
+        )
+    if unstable and not allow_imaginary:
+        details = ", ".join(
+            f"{row['mode']}:{row['frequency_cm-1']:.2f} cm-1 "
+            f"({row['classification']}, translation overlap "
+            f"{row['translation_overlap']:.3f})"
+            for row in unstable
+        )
+        raise ValueError(
+            f"Substantive imaginary Gamma modes were found ({details}). "
+            "Only small rigid translations and pure molecular rotations are "
+            "exempt; large rotational drift is separately warned about. "
+            "For mixed modes, inspect the acoustic sum rule and force constants; "
+            "for non-translational modes, check the structure and restoring forces. "
+            "Set allow_imaginary=True (CLI: --allow-imaginary) only when "
+            "intentionally analyzing stable modes of an unstable phase."
+        )
+    return np.asarray([row["mode"] for row in unstable], dtype=int)
 
 
 def _lorentzian(grid: np.ndarray, centers: np.ndarray, gamma: float) -> np.ndarray:
@@ -586,14 +720,17 @@ def calculate_ir_spectrum(
         raise ValueError("macroscopic slab conversion requires dim=2 and an explicit thickness")
     validate_gamma_stability(
         modes,
+        dimensionality=dimensionality,
         imaginary_tolerance_cm1=imaginary_tolerance_cm1,
         allow_imaginary=allow_imaginary,
     )
     effective_all = mode_effective_charges(modes, born.tensors)
     frequencies_all = modes.frequencies_cm1
     indices = _selected_mode_indices(
-        frequencies_all, mode_numbers, acoustic_cutoff_cm1
+        modes, mode_numbers, acoustic_cutoff_cm1, dimensionality=dimensionality
     )
+    if not len(indices):
+        raise ValueError("No positive non-rigid Gamma modes were selected for IR")
     frequencies = frequencies_all[indices]
     effective = effective_all[indices]
     intensities = effective * effective
@@ -927,6 +1064,7 @@ def calculate_molecular_ir_spectrum(
 
     validate_gamma_stability(
         modes,
+        dimensionality=0,
         imaginary_tolerance_cm1=imaginary_tolerance_cm1,
         allow_imaginary=allow_imaginary,
     )
@@ -1401,6 +1539,7 @@ def prepare_raman_displacements(
     outdir: str | Path,
     *,
     amplitude: float = 0.02,
+    dimensionality: int = 3,
     mode_numbers: Optional[Sequence[int]] = None,
     acoustic_cutoff_cm1: float = 5.0,
     copy_files: Optional[Sequence[str | Path]] = None,
@@ -1418,12 +1557,15 @@ def prepare_raman_displacements(
     output.mkdir(parents=True, exist_ok=True)
     validate_gamma_stability(
         modes,
+        dimensionality=dimensionality,
         imaginary_tolerance_cm1=imaginary_tolerance_cm1,
         allow_imaginary=allow_imaginary,
     )
     indices = _selected_mode_indices(
-        modes.frequencies_cm1, mode_numbers, acoustic_cutoff_cm1
+        modes, mode_numbers, acoustic_cutoff_cm1, dimensionality=dimensionality
     )
+    if not len(indices):
+        raise ValueError("No positive non-rigid Gamma modes were selected for Raman")
     eigenvectors = _mode_phase_real(modes.eigenvectors)
     mass_weighted = eigenvectors / np.sqrt(modes.masses_amu)[None, :, None]
     copied_files = [Path(path).resolve() for path in (copy_files or [])]
@@ -1617,6 +1759,7 @@ def calculate_raman_spectrum(
     tensors: np.ndarray,
     *,
     tensor_kind: str = "Raman tensor",
+    dimensionality: int = 3,
     temperature_K: float = 300.0,
     laser_nm: float = 532.0,
     broadening_cm1: float = 8.0,
@@ -1629,6 +1772,7 @@ def calculate_raman_spectrum(
 
     validate_gamma_stability(
         modes,
+        dimensionality=dimensionality,
         imaginary_tolerance_cm1=imaginary_tolerance_cm1,
         allow_imaginary=allow_imaginary,
     )

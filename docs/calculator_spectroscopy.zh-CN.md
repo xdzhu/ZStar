@@ -30,9 +30,13 @@ zstar spectra post --root vasp_spectra
 参考响应提供 IR 所需的 BEC 和冻结离子电子介电张量；Raman 张量则由每个模式
 正负位移的介电张量中心差分得到。默认简正坐标步长为
 `0.02 Angstrom sqrt(amu)`。任何位移响应开始前，程序都会先检查参考
-`vasprun.xml` 的带隙，并拒绝低于 -20 cm-1 的 Gamma 点模式。可用
-`--imaginary-tolerance` 修改阈值；只有确实研究不稳定相时才应使用
-`--allow-imaginary`。
+`vasprun.xml` 的带隙，并将 Gamma 点本征矢投影到质量加权的整体平移子空间。
+只有确认为刚体模式的小虚频才按数值漂移容忍；非平移或混合模式的虚频会阻止
+准备计算。`--imaginary-tolerance` 设置刚体模式可容忍的最大漂移幅度，
+默认为 20 cm-1，并非所有光学模通用的虚频阈值。可用
+`zstar phonon inspect --qpoints phonon/qpoints.yaml` 查看逐模投影；
+只有确实研究不稳定相时才应使用 `--allow-imaginary`。对于 `--dim 0`，
+纯分子转动模单独识别并排除在内部谱之外，较大的转动漂移会给出警告。
 
 VASP DFPT 不支持的泛函可使用 `--method finite-field`。此时仍须遵守
 [VASP BEC 文档](vasp_bec_zh.md)中的 PEAD 占据、场强和收敛限制。`POTCAR` 只在
@@ -88,8 +92,9 @@ shell|slurm|torque`，生成一个能够续算全部阶段并在成功后汇总�
 
 CP2K 活动度保持原生单位：IR 为 `km/mol`，Raman 为 `Angstrom^4/amu`。ZStar
 只对未改动的离散活动度做展宽并绘图。CP2K 同样支持 `--dim 3`，周期晶体保留
-完整 Gamma 点模式并使用 Berry 相位偶极算符；收集结果时执行与其他计算器相同
-的 -20 cm-1 稳定性门控。
+完整 Gamma 点模式并使用 Berry 相位偶极算符。当前 CP2K 原生输出解析器尚未
+提供模式本征矢，因此收集阶段仍使用仅基于频率的 -20 cm-1 门控；容忍某个小
+虚频不等于确认它是声学模。
 
 ### H2O 实机验证
 

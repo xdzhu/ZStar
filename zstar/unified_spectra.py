@@ -239,7 +239,8 @@ def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
         from .response_units import raman_convention
         convention = raman_convention(data['dimension'])
         raman = spectra.calculate_raman_spectrum(modes, numbers, tensors,
-            tensor_kind=convention['tensor_unit'], temperature_K=temperature, laser_nm=laser, **common)
+            tensor_kind=convention['tensor_unit'], dimensionality=data['dimension'],
+            temperature_K=temperature, laser_nm=laser, **common)
         spectra.write_raman_outputs(root/'raman', raman, plot=plot)
         if bool(incident_polarization) != bool(scattered_polarization):
             raise ValueError('Specify both incident and scattered polarizations')

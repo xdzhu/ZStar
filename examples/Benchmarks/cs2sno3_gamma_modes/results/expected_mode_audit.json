@@ -1,0 +1,1170 @@
+{
+  "raw_primitive_dfpt": {
+    "atom_count": 12,
+    "flagged_mode_numbers": [
+      1
+    ],
+    "negative_modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -23.166736178925003,
+        "translation_overlap": 0.6681414867700426,
+        "rotation_overlap": 0.0,
+        "classification": "mixed"
+      },
+      {
+        "mode": 2,
+        "frequency_cm-1": -5.364247583277494,
+        "translation_overlap": 0.995318995412531,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": -1.2734648415751106,
+        "translation_overlap": 0.9998265745773254,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      }
+    ],
+    "translation_modes": [
+      {
+        "mode": 2,
+        "frequency_cm-1": -5.364247583277494,
+        "translation_overlap": 0.995318995412531,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": -1.2734648415751106,
+        "translation_overlap": 0.9998265745773254,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      }
+    ],
+    "mixed_modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -23.166736178925003,
+        "translation_overlap": 0.6681414867700426,
+        "rotation_overlap": 0.0,
+        "classification": "mixed"
+      },
+      {
+        "mode": 5,
+        "frequency_cm-1": 32.63577303209012,
+        "translation_overlap": 0.33163217588705746,
+        "rotation_overlap": 0.0,
+        "classification": "mixed"
+      }
+    ],
+    "translation_subspace_weight": 3.000000000072914,
+    "modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -23.166736178925003,
+        "translation_overlap": 0.6681414867700426,
+        "rotation_overlap": 0.0,
+        "classification": "mixed"
+      },
+      {
+        "mode": 2,
+        "frequency_cm-1": -5.364247583277494,
+        "translation_overlap": 0.995318995412531,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": -1.2734648415751106,
+        "translation_overlap": 0.9998265745773254,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 4,
+        "frequency_cm-1": 25.34625841397086,
+        "translation_overlap": 1.898080569977905e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 5,
+        "frequency_cm-1": 32.63577303209012,
+        "translation_overlap": 0.33163217588705746,
+        "rotation_overlap": 0.0,
+        "classification": "mixed"
+      },
+      {
+        "mode": 6,
+        "frequency_cm-1": 40.433909030352574,
+        "translation_overlap": 7.27500244794509e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 7,
+        "frequency_cm-1": 54.4044355321133,
+        "translation_overlap": 6.294215454726448e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 8,
+        "frequency_cm-1": 62.93026249124312,
+        "translation_overlap": 4.886396961225164e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 9,
+        "frequency_cm-1": 67.18306972169431,
+        "translation_overlap": 0.003162352131920893,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 10,
+        "frequency_cm-1": 71.63642661148486,
+        "translation_overlap": 3.694506664483753e-05,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 11,
+        "frequency_cm-1": 73.3414441198406,
+        "translation_overlap": 3.3350671935670455e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 12,
+        "frequency_cm-1": 74.68445609648954,
+        "translation_overlap": 1.3012277271193984e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 13,
+        "frequency_cm-1": 80.87254588410602,
+        "translation_overlap": 1.35044395123949e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 14,
+        "frequency_cm-1": 91.45955227903707,
+        "translation_overlap": 5.900086350003236e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 15,
+        "frequency_cm-1": 95.5217007997694,
+        "translation_overlap": 0.0015106280806382706,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 16,
+        "frequency_cm-1": 98.27122422503062,
+        "translation_overlap": 0.00017019707507513995,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 17,
+        "frequency_cm-1": 99.46201029493754,
+        "translation_overlap": 3.211990579225918e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 18,
+        "frequency_cm-1": 100.9146491346161,
+        "translation_overlap": 0.00013606834050078676,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 19,
+        "frequency_cm-1": 157.42091681309856,
+        "translation_overlap": 4.025630745462049e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 20,
+        "frequency_cm-1": 160.82511187692396,
+        "translation_overlap": 5.953145293199257e-13,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 21,
+        "frequency_cm-1": 170.32157613327053,
+        "translation_overlap": 1.127638756257182e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 22,
+        "frequency_cm-1": 189.23134690256245,
+        "translation_overlap": 6.335692172877021e-06,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 23,
+        "frequency_cm-1": 232.2980978798772,
+        "translation_overlap": 5.067628647730076e-05,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 24,
+        "frequency_cm-1": 233.9105787078818,
+        "translation_overlap": 2.43461671097005e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 25,
+        "frequency_cm-1": 270.0096256320931,
+        "translation_overlap": 3.0301011252018394e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 26,
+        "frequency_cm-1": 298.1806817990935,
+        "translation_overlap": 3.614989991094525e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 27,
+        "frequency_cm-1": 362.8376038976441,
+        "translation_overlap": 5.0017873209287866e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 28,
+        "frequency_cm-1": 371.692036868948,
+        "translation_overlap": 5.056692437319209e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 29,
+        "frequency_cm-1": 431.2115287527051,
+        "translation_overlap": 5.335148788544282e-06,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 30,
+        "frequency_cm-1": 459.75606199481837,
+        "translation_overlap": 1.686685397285306e-06,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 31,
+        "frequency_cm-1": 515.2201007395828,
+        "translation_overlap": 5.466923227631386e-13,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 32,
+        "frequency_cm-1": 523.3967429775332,
+        "translation_overlap": 1.0117796348855281e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 33,
+        "frequency_cm-1": 540.0851675525342,
+        "translation_overlap": 2.646720031308373e-13,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 34,
+        "frequency_cm-1": 555.0762364222546,
+        "translation_overlap": 1.6501749359046907e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 35,
+        "frequency_cm-1": 616.6732106956026,
+        "translation_overlap": 2.3356498193097678e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 36,
+        "frequency_cm-1": 635.5936568965371,
+        "translation_overlap": 1.599073605663071e-13,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      }
+    ]
+  },
+  "asr_corrected_primitive_dfpt": {
+    "atom_count": 12,
+    "flagged_mode_numbers": [
+      1
+    ],
+    "negative_modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -21.536388761364623,
+        "translation_overlap": 4.894110473365416e-27,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      }
+    ],
+    "translation_modes": [
+      {
+        "mode": 2,
+        "frequency_cm-1": 7.433264496568488e-07,
+        "translation_overlap": 0.9999999999999996,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": 3.9802260640386655e-06,
+        "translation_overlap": 1.0,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 4,
+        "frequency_cm-1": 5.765351158020973e-06,
+        "translation_overlap": 1.0,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      }
+    ],
+    "mixed_modes": [],
+    "translation_subspace_weight": 2.9999999999999996,
+    "modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -21.536388761364623,
+        "translation_overlap": 4.894110473365416e-27,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 2,
+        "frequency_cm-1": 7.433264496568488e-07,
+        "translation_overlap": 0.9999999999999996,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": 3.9802260640386655e-06,
+        "translation_overlap": 1.0,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 4,
+        "frequency_cm-1": 5.765351158020973e-06,
+        "translation_overlap": 1.0,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 5,
+        "frequency_cm-1": 25.346258363801468,
+        "translation_overlap": 2.810352833034183e-26,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 6,
+        "frequency_cm-1": 40.43390739900384,
+        "translation_overlap": 1.9813603883369711e-28,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 7,
+        "frequency_cm-1": 54.40443567106177,
+        "translation_overlap": 2.6031462862007025e-28,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 8,
+        "frequency_cm-1": 62.93026187849763,
+        "translation_overlap": 5.98993291146674e-29,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 9,
+        "frequency_cm-1": 65.41153722731515,
+        "translation_overlap": 6.655615535244972e-30,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 10,
+        "frequency_cm-1": 71.51245295004378,
+        "translation_overlap": 1.006526100480362e-29,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 11,
+        "frequency_cm-1": 73.34144002824831,
+        "translation_overlap": 6.230964732536115e-29,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 12,
+        "frequency_cm-1": 74.68445606300524,
+        "translation_overlap": 3.1824358572163436e-30,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 13,
+        "frequency_cm-1": 80.87254588131047,
+        "translation_overlap": 7.755048591273778e-30,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 14,
+        "frequency_cm-1": 91.45955216911476,
+        "translation_overlap": 2.6806760878774664e-29,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 15,
+        "frequency_cm-1": 93.53194799118366,
+        "translation_overlap": 3.735573043477644e-29,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 16,
+        "frequency_cm-1": 98.34757076933722,
+        "translation_overlap": 1.64296788708319e-29,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 17,
+        "frequency_cm-1": 99.46200545227401,
+        "translation_overlap": 3.60053607281009e-30,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 18,
+        "frequency_cm-1": 100.28315102841138,
+        "translation_overlap": 1.1894924313017765e-29,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 19,
+        "frequency_cm-1": 157.4209167908078,
+        "translation_overlap": 5.967019303479054e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 20,
+        "frequency_cm-1": 160.82511187998057,
+        "translation_overlap": 3.1077403139366436e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 21,
+        "frequency_cm-1": 170.32157623950545,
+        "translation_overlap": 6.426147354458921e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 22,
+        "frequency_cm-1": 189.03946358936986,
+        "translation_overlap": 1.3378931478109459e-30,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 23,
+        "frequency_cm-1": 231.12095745868737,
+        "translation_overlap": 3.8739095212725835e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 24,
+        "frequency_cm-1": 233.91057853132116,
+        "translation_overlap": 9.170366462981461e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 25,
+        "frequency_cm-1": 270.00962567349353,
+        "translation_overlap": 4.4468564361263624e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 26,
+        "frequency_cm-1": 298.03817923214547,
+        "translation_overlap": 3.5283549982080667e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 27,
+        "frequency_cm-1": 362.83760374954596,
+        "translation_overlap": 2.6361436550969416e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 28,
+        "frequency_cm-1": 371.69203708054914,
+        "translation_overlap": 7.030198063566789e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 29,
+        "frequency_cm-1": 430.4521161208692,
+        "translation_overlap": 1.7223718609294307e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 30,
+        "frequency_cm-1": 459.18277211009865,
+        "translation_overlap": 1.146182160438485e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 31,
+        "frequency_cm-1": 515.220100910721,
+        "translation_overlap": 3.3699440988905513e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 32,
+        "frequency_cm-1": 523.3967434582139,
+        "translation_overlap": 2.393075617397589e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 33,
+        "frequency_cm-1": 540.0851679923516,
+        "translation_overlap": 1.6989304689448846e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 34,
+        "frequency_cm-1": 555.0406250124247,
+        "translation_overlap": 1.7364731934496802e-31,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 35,
+        "frequency_cm-1": 616.6219772924246,
+        "translation_overlap": 1.2679549723505701e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 36,
+        "frequency_cm-1": 635.593657269231,
+        "translation_overlap": 9.156092268041283e-32,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      }
+    ]
+  },
+  "conventional_cell": {
+    "atom_count": 24,
+    "flagged_mode_numbers": [],
+    "negative_modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -3.0295650326855514,
+        "translation_overlap": 0.9947650143555422,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 2,
+        "frequency_cm-1": -1.4712351298080715,
+        "translation_overlap": 0.9996845745585135,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": -1.096074644103986,
+        "translation_overlap": 0.9998786259753033,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      }
+    ],
+    "translation_modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -3.0295650326855514,
+        "translation_overlap": 0.9947650143555422,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 2,
+        "frequency_cm-1": -1.4712351298080715,
+        "translation_overlap": 0.9996845745585135,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": -1.096074644103986,
+        "translation_overlap": 0.9998786259753033,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      }
+    ],
+    "mixed_modes": [],
+    "translation_subspace_weight": 2.9999999999197327,
+    "modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -3.0295650326855514,
+        "translation_overlap": 0.9947650143555422,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 2,
+        "frequency_cm-1": -1.4712351298080715,
+        "translation_overlap": 0.9996845745585135,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": -1.096074644103986,
+        "translation_overlap": 0.9998786259753033,
+        "rotation_overlap": 0.0,
+        "classification": "translation"
+      },
+      {
+        "mode": 4,
+        "frequency_cm-1": 20.721372312626244,
+        "translation_overlap": 2.089518421661833e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 5,
+        "frequency_cm-1": 29.461178511490473,
+        "translation_overlap": 5.927348532405208e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 6,
+        "frequency_cm-1": 40.59379846968628,
+        "translation_overlap": 7.952945168955586e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 7,
+        "frequency_cm-1": 41.28399735802592,
+        "translation_overlap": 0.005219673719395482,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 8,
+        "frequency_cm-1": 44.06647972653574,
+        "translation_overlap": 1.694232437830435e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 9,
+        "frequency_cm-1": 51.437559841297094,
+        "translation_overlap": 4.437571541256068e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 10,
+        "frequency_cm-1": 51.50146540619915,
+        "translation_overlap": 1.889571298106845e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 11,
+        "frequency_cm-1": 51.75439052592652,
+        "translation_overlap": 1.7409908195628866e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 12,
+        "frequency_cm-1": 54.456257037208985,
+        "translation_overlap": 5.9941541725505425e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 13,
+        "frequency_cm-1": 56.41029755004802,
+        "translation_overlap": 3.368317379789154e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 14,
+        "frequency_cm-1": 66.50987383402855,
+        "translation_overlap": 5.3170998046114576e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 15,
+        "frequency_cm-1": 70.8615364433086,
+        "translation_overlap": 3.985265651438507e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 16,
+        "frequency_cm-1": 71.18396897651317,
+        "translation_overlap": 5.88750293819516e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 17,
+        "frequency_cm-1": 72.90076923983071,
+        "translation_overlap": 2.826735794268425e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 18,
+        "frequency_cm-1": 73.88720003068975,
+        "translation_overlap": 1.07939702096741e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 19,
+        "frequency_cm-1": 77.25171806157842,
+        "translation_overlap": 0.00026873926160838826,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 20,
+        "frequency_cm-1": 78.24724753543974,
+        "translation_overlap": 4.11993646951827e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 21,
+        "frequency_cm-1": 82.11397283976831,
+        "translation_overlap": 2.8274362195724333e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 22,
+        "frequency_cm-1": 84.68473443027665,
+        "translation_overlap": 2.011326912126249e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 23,
+        "frequency_cm-1": 85.92282319493054,
+        "translation_overlap": 3.02127107609266e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 24,
+        "frequency_cm-1": 86.36245091790198,
+        "translation_overlap": 5.365714650559121e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 25,
+        "frequency_cm-1": 87.15432550317689,
+        "translation_overlap": 8.591489360065798e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 26,
+        "frequency_cm-1": 89.6134384902891,
+        "translation_overlap": 3.803646889564698e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 27,
+        "frequency_cm-1": 93.54446121081529,
+        "translation_overlap": 4.512563466232264e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 28,
+        "frequency_cm-1": 93.79575674064596,
+        "translation_overlap": 1.0459845860249168e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 29,
+        "frequency_cm-1": 96.79576381402048,
+        "translation_overlap": 1.0287056610013401e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 30,
+        "frequency_cm-1": 97.7171333083041,
+        "translation_overlap": 3.2045944088471483e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 31,
+        "frequency_cm-1": 98.67143126861984,
+        "translation_overlap": 1.3489533587820903e-05,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 32,
+        "frequency_cm-1": 99.21476315033492,
+        "translation_overlap": 0.00011967387705590343,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 33,
+        "frequency_cm-1": 99.77777356410196,
+        "translation_overlap": 1.914307450158296e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 34,
+        "frequency_cm-1": 102.78892876272984,
+        "translation_overlap": 2.4293729794789903e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 35,
+        "frequency_cm-1": 104.18083893360502,
+        "translation_overlap": 4.6010412463387435e-05,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 36,
+        "frequency_cm-1": 107.60567913154735,
+        "translation_overlap": 5.148775363493228e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 37,
+        "frequency_cm-1": 157.3728230778548,
+        "translation_overlap": 1.0974583007953471e-09,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 38,
+        "frequency_cm-1": 158.7028695260349,
+        "translation_overlap": 4.758595302348983e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 39,
+        "frequency_cm-1": 160.80673559626584,
+        "translation_overlap": 2.980949021317411e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 40,
+        "frequency_cm-1": 168.49123947395506,
+        "translation_overlap": 1.0119046849447258e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 41,
+        "frequency_cm-1": 170.23422764966463,
+        "translation_overlap": 1.2123098269015257e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 42,
+        "frequency_cm-1": 171.65195925848457,
+        "translation_overlap": 6.915464043187714e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 43,
+        "frequency_cm-1": 189.18007421874663,
+        "translation_overlap": 1.838664541079248e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 44,
+        "frequency_cm-1": 200.7922026818766,
+        "translation_overlap": 2.049435772284956e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 45,
+        "frequency_cm-1": 220.1225870873126,
+        "translation_overlap": 1.2593773780237115e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 46,
+        "frequency_cm-1": 232.20930287357373,
+        "translation_overlap": 1.3454111368456667e-06,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 47,
+        "frequency_cm-1": 232.5751136858297,
+        "translation_overlap": 3.813050746378567e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 48,
+        "frequency_cm-1": 233.98384755120009,
+        "translation_overlap": 1.8639927073247505e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 49,
+        "frequency_cm-1": 270.0151208413106,
+        "translation_overlap": 4.850205066449205e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 50,
+        "frequency_cm-1": 270.23061109164246,
+        "translation_overlap": 4.0048463201297664e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 51,
+        "frequency_cm-1": 298.16159979489976,
+        "translation_overlap": 5.679317318735027e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 52,
+        "frequency_cm-1": 306.4684835384293,
+        "translation_overlap": 3.899532992344571e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 53,
+        "frequency_cm-1": 362.7875501810997,
+        "translation_overlap": 2.010198560736295e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 54,
+        "frequency_cm-1": 363.3025221927192,
+        "translation_overlap": 9.694145557008677e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 55,
+        "frequency_cm-1": 371.78604248284853,
+        "translation_overlap": 5.680395519552487e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 56,
+        "frequency_cm-1": 372.11206667934954,
+        "translation_overlap": 1.8934871071978593e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 57,
+        "frequency_cm-1": 430.74393858015037,
+        "translation_overlap": 2.7187225381365957e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 58,
+        "frequency_cm-1": 431.2080285774407,
+        "translation_overlap": 1.593002217984917e-07,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 59,
+        "frequency_cm-1": 459.6891453263104,
+        "translation_overlap": 3.824955607195595e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 60,
+        "frequency_cm-1": 503.3927901552857,
+        "translation_overlap": 1.1847383928814982e-10,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 61,
+        "frequency_cm-1": 515.1722793257837,
+        "translation_overlap": 2.5821340475843216e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 62,
+        "frequency_cm-1": 516.4926958469019,
+        "translation_overlap": 1.3611768932147183e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 63,
+        "frequency_cm-1": 523.0007208981297,
+        "translation_overlap": 1.3426337388951855e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 64,
+        "frequency_cm-1": 523.4676929037568,
+        "translation_overlap": 2.2808691370716506e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 65,
+        "frequency_cm-1": 540.1411509652785,
+        "translation_overlap": 1.747947065837595e-11,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 66,
+        "frequency_cm-1": 550.3172236010106,
+        "translation_overlap": 1.2576758098009611e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 67,
+        "frequency_cm-1": 552.8826558307422,
+        "translation_overlap": 2.9600440458014006e-13,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 68,
+        "frequency_cm-1": 555.0411856390339,
+        "translation_overlap": 1.8700282438436684e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 69,
+        "frequency_cm-1": 616.6540426478059,
+        "translation_overlap": 1.0479326988446835e-08,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 70,
+        "frequency_cm-1": 617.9918496190651,
+        "translation_overlap": 1.5806628853054956e-13,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 71,
+        "frequency_cm-1": 635.5794858888269,
+        "translation_overlap": 6.181135866808251e-12,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      },
+      {
+        "mode": 72,
+        "frequency_cm-1": 639.5676405136163,
+        "translation_overlap": 1.8738452081966859e-13,
+        "rotation_overlap": 0.0,
+        "classification": "non-translation"
+      }
+    ]
+  }
+}

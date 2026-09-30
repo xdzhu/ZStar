@@ -310,9 +310,12 @@ PBE/VASP 3C-SiC 的三重简并峰为 774.964 cm-1，比 Serrano 等报道的
 796(1) cm-1 的 Raman 测量
 （[doi:10.1063/1.1484241](https://doi.org/10.1063/1.1484241)）。旧 BTO 数据仍可
 用于选择定则的软件回归，但两个 -167.01 cm-1 模式使其不适合作为物理谱学
-benchmark。现在 ABACUS、VASP 和 CP2K 谱学路径默认拒绝低于 -20 cm-1 的
-Gamma 点本征谱；只有明确使用 `--allow-imaginary` 才会继续分析不稳定相的
-正频支。
+benchmark。现在 ABACUS/Phonopy 与 VASP 路径使用质量加权的刚体平移投影：
+默认 20 cm-1 容忍限只适用于已识别的刚体模式数值漂移，内部振动及混合模式的
+虚频需要核查。CP2K 原生收集尚无模式本征矢，暂保留频率门控。
+只有明确使用 `--allow-imaginary` 才会继续分析不稳定相的正频支。
+[Cs2SnO3 案例](../examples/Benchmarks/cs2sno3_gamma_modes/README.md)展示了
+声学漂移与真实非平移虚频的区别。
 
 当前高质量验证图、绘图脚本、紧凑源数据和哈希已归档于
 [docs/paper_figures](paper_figures/README.md)：

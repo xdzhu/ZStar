@@ -46,12 +46,12 @@ CP2K_INPUT = """&GLOBAL
 
 def fake_modes() -> GammaModes:
     eigenvectors = np.zeros((6, 2, 3), dtype=complex)
-    eigenvectors[3, 0, 0] = 1.0
-    eigenvectors[3, 1, 0] = -1.0
-    eigenvectors[4, 0, 1] = 1.0
-    eigenvectors[4, 1, 1] = -1.0
-    eigenvectors[5, 0, 2] = 1.0
-    eigenvectors[5, 1, 2] = -1.0
+    heavy, light = np.sqrt(np.asarray([28.0, 12.0]) / 40.0)
+    for axis in range(3):
+        eigenvectors[axis, 0, axis] = heavy
+        eigenvectors[axis, 1, axis] = light
+        eigenvectors[axis + 3, 0, axis] = light
+        eigenvectors[axis + 3, 1, axis] = -heavy
     return GammaModes(
         frequencies_thz=np.asarray([0, 0, 0, 10, 11, 12], dtype=float),
         eigenvectors=eigenvectors,
