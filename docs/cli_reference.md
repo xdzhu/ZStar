@@ -183,6 +183,10 @@ are excluded from the internal spectrum; large rotational drift is marked
 `CHECK` and warned about. The default `--imaginary-tolerance 20` is the
 maximum tolerated crystal-translation drift, not a blanket optical-mode
 allowance.
+An overlap of at least 0.9 identifies a rigid mode; at most 0.1 identifies
+an internal mode. Intermediate overlap is reported as mixed and requires
+inspection. These classification thresholds do not establish whether a
+non-rigid imaginary mode is a physical instability.
 
 `--input` defaults to `INPUT` and accepts a user-provided ABACUS CPU or GPU
 input file. ZStar stages it as `INPUT` in each displacement directory without

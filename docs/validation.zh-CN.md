@@ -315,7 +315,8 @@ benchmark。现在 ABACUS/Phonopy 与 VASP 路径使用质量加权的刚体平�
 虚频需要核查。CP2K 原生收集尚无模式本征矢，暂保留频率门控。
 只有明确使用 `--allow-imaginary` 才会继续分析不稳定相的正频支。
 [Cs2SnO3 案例](../examples/Benchmarks/cs2sno3_gamma_modes/README.md)展示了
-声学漂移与真实非平移虚频的区别。
+声学漂移与非平移负频的区别；后者只在一组 DFPT 对照中出现，独立有限位移
+结果与之不同，其物理成因仍需核查。
 
 当前高质量验证图、绘图脚本、紧凑源数据和哈希已归档于
 [docs/paper_figures](paper_figures/README.md)：

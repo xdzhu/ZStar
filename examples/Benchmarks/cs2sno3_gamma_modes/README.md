@@ -30,6 +30,8 @@ The `inspect` command can also write machine-readable output with `--json`.
 
 The default 20 cm^-1 tolerance now applies **only to a mode identified as a
 rigid translation**. A small imaginary internal mode is not silently accepted.
+The audit calls a mode rigid at overlap >= 0.9 and internal at overlap <= 0.1;
+intermediate overlap is left as mixed rather than forced into either class.
 The mixed raw primitive mode requires further inspection; after the acoustic
 sum rule, its optical component remains imaginary. The conventional-cell
 result demonstrates why a small negative frequency alone is not evidence of
