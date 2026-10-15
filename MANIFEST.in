@@ -10,6 +10,8 @@ include docs/cp2k_bec.md
 include docs/dielectric_response.md
 include docs/highk_bec_database.md
 include docs/job_headers.md
+include docs/workflow_diagnostics.md
+include docs/workflow_diagnostics.zh-CN.md
 include docs/molecular_spectroscopy.md
 include docs/one_dimensional_workflow.md
 include docs/potential_examples.md

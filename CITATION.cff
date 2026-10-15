@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use ZStar, please cite the software release and the associated software article."
 title: "ZStar: A unified toolkit for polarization, Born effective charges, dielectric and piezoelectric responses, and infrared and Raman spectra"
 type: software
-version: 0.3.4
-date-released: 2026-09-19
+version: 0.3.5
+date-released: 2026-10-15
 license: GPL-3.0-only
 repository-code: "https://github.com/xdzhu/ZStar"
 url: "https://pypi.org/project/zstar/"

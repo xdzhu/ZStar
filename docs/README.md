@@ -103,6 +103,7 @@ from both routes. Exact counts and timing provenance are available in the
 | Potential maps, profiles and vacuum steps | [Electrostatic potential](potential_examples.md) | `zstar pot` |
 | Configure executables, MPI/OMP and PP/orbitals | [Configuration and assets](cli_reference.md#calculator-configuration) | `zstar config` |
 | Shell, Slurm and Torque/PBS execution | [Job headers](job_headers.md) | `zstar bec/phonon/spectra job` |
+| Locate failed stages and inspect physical checks | [Workflow diagnostics](workflow_diagnostics.md) | `zstar bec stat --json` |
 | Agent-assisted execution | [agent skill](agent_skill.md) | `zstar skill` |
 
 The command-reference tables list actions, not literal slash-containing commands.

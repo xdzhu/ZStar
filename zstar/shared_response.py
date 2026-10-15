@@ -7,6 +7,7 @@ Born tensors use Z[atom, polarization, displacement], not its transpose.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +15,7 @@ from phonopy import Phonopy
 from phonopy.structure.atoms import PhonopyAtoms
 
 from .stru_analyzer import stru_analyzer
+from .progress import progress
 
 BOHR_ANGSTROM = 0.529177210903
 DEFAULT_DISTANCE = 0.02 * BOHR_ANGSTROM
@@ -87,32 +89,70 @@ def produce_force_constants(phonon: Phonopy) -> None:
     phonon.produce_force_constants(fc_calculator=calculator)
 
 
-def symmetry_operations(phonon: Phonopy, *, dimension: int = 3):
+def symmetry_operations(phonon: Phonopy, *, dimension: int = 3,
+                        diagnostics_path: str | Path | None = None):
     """Return Cartesian rotations and source-to-target permutations."""
     atoms = phonon.supercell
     cell, pos = atoms.cell, atoms.scaled_positions
     labels = np.asarray(atoms.numbers)
     ops = []
     tolerance = phonon.symmetry.tolerance
-    for w, t in zip(phonon.symmetry.symmetry_operations["rotations"],
-                    phonon.symmetry.symmetry_operations["translations"]):
+    symmetry = phonon.symmetry.symmetry_operations
+    report = dict(status="checking", symprec_A=float(tolerance), dimension=dimension,
+                  operation_count=len(symmetry["rotations"]), checked_operations=0,
+                  orthogonality_tolerance=1e-7, max_orthogonality_error=0.0,
+                  max_atom_mapping_error_A=0.0, orthogonalization_applied=False)
+
+    def finish(status, reason=None):
+        report["status"] = status
+        if reason is not None:
+            report["reason"] = reason
+        if diagnostics_path is not None:
+            path = Path(diagnostics_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            progress("geometry", "SYMMETRY", status,
+                     f"operations={report['checked_operations']}/{report['operation_count']}; "
+                     f"symmprec={tolerance:g} A; max |R^T R-I|={report['max_orthogonality_error']:.3e} "
+                     f"(limit=1e-7); max atom mapping error={report['max_atom_mapping_error_A']:.3e} A; "
+                     f"{reason or 'No stricter symmprec required by these checks'}; report={path}")
+
+    for index, (w, t) in enumerate(zip(symmetry["rotations"], symmetry["translations"])):
         r = cell.T @ w @ np.linalg.inv(cell.T)
+        error = float(np.max(np.abs(r.T @ r - np.eye(3))))
+        report["checked_operations"] = index + 1
+        report["max_orthogonality_error"] = max(report["max_orthogonality_error"], error)
         if not np.allclose(r.T @ r, np.eye(3), atol=1e-7, rtol=0):
-            raise ValueError("Approximate lattice symmetry is nonorthogonal; refine the structure or lower --symmprec")
+            reason = (f"Approximate lattice symmetry is nonorthogonal at operation {index + 1}: "
+                      f"max |R^T R-I|={error:.3e} exceeds 1e-7 with --symmprec {tolerance:g}. "
+                      f"Refine the structure or retry pre in a new directory with a stricter "
+                      f"--symmprec (e.g. {tolerance / 10:g}); fewer symmetry operations can require "
+                      "more displacements. No automatic orthogonalization was applied.")
+            finish("FAIL", reason)
+            raise ValueError(reason)
         # Periodic and open directions have different electrostatic boundaries.
         if dimension in (1, 2):
             normal = np.cross(cell[0], cell[1])
             normal /= np.linalg.norm(normal)
             if not np.isclose(abs(normal @ r @ normal), 1, atol=1e-8):
-                raise ValueError("Detected symmetry mixes periodic and open directions")
+                reason = f"Detected symmetry mixes periodic and open directions at operation {index + 1}"
+                finish("FAIL", reason)
+                raise ValueError(reason)
         delta = (pos @ w.T + t)[:, None, :] - pos[None, :, :]
         delta -= np.rint(delta)
         distances = np.linalg.norm(delta @ cell, axis=2)
         distances[labels[:, None] != labels[None, :]] = np.inf
         perm = distances.argmin(axis=1)
+        report["max_atom_mapping_error_A"] = max(
+            report["max_atom_mapping_error_A"], float(np.max(distances[np.arange(len(pos)), perm])))
         if len(set(perm)) != len(pos) or np.max(distances[np.arange(len(pos)), perm]) > tolerance * 1.01:
-            raise ValueError("Ambiguous symmetry atom mapping")
+            reason = (f"Ambiguous symmetry atom mapping at operation {index + 1}; "
+                      f"symmprec={tolerance:g} A. Check atom positions and species, "
+                      "or use a stricter --symmprec in a new pre workspace.")
+            finish("FAIL", reason)
+            raise ValueError(reason)
         ops.append((r, perm))
+    finish("PASS")
     return ops
 
 

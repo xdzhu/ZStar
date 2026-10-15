@@ -67,6 +67,9 @@ zstar bec stat
 zstar bec post
 ```
 
+高通量任务可参考[工作流日志与故障定位](docs/workflow_diagnostics.zh-CN.md)：
+实时程序日志、`zstar bec stat --json`，以及绝缘性、对称性和 Γ 点模式检查。
+
 `pre` 准备参考态及对称性适配位移；`run` 检查参考结构的带隙并执行计算；
 `post` 同时重建 BEC 和 Gamma 点力常数。结果包括 `BEC.dat`、`BORN`、
 `FORCE_CONSTANTS` 和 `qpoints.yaml`。Si/C 的对角 BEC 约为符号相反的

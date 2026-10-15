@@ -96,6 +96,15 @@ Gamma-point IR/Raman response, but it does not implement a finite-wavevector
   Do not create one scheduler script per displacement.
 - Stop on a failed insulating gate, atom-count mismatch, missing tensor, or
   inconsistent dimensional convention. Report the retained diagnostic path.
+- For ABACUS BEC failures, inspect `zstar bec stat --json`, the recorded
+  `active_step` and `log_path`, `.zstar/progress.log`, and the per-stage solver
+  log. Preserve a last-saved running state when a scheduler killed the worker;
+  consult the scheduler before interpreting it as a live calculation.
+- Read `.zstar/symmetry.json`, `<stage>/zstar_insulation.json`, and
+  `.zstar/gamma_modes.json` before suggesting a restart. Do not loosen physical
+  checks merely to obtain output. BEC completion does not imply the total
+  dielectric step was run: inspect `.zstar/stages/dielectric-*.json` for an
+  attempted step, and report its specific failure even if no output folder exists.
 
 ## Report completion
 

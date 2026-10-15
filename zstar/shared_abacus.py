@@ -106,7 +106,8 @@ def prepare_shared_abacus(f_stru="STRU", *, root=".", scf_input=None,
         if not np.allclose(normal, [0, 0, 1], atol=1e-8, rtol=0):
             raise ValueError('The shared 2D workflow requires a positive Cartesian z slab normal')
     phonon = make_phonopy(atoms, symprec=symprec)
-    operations = symmetry_operations(phonon, dimension=dimension)
+    operations = symmetry_operations(phonon, dimension=dimension,
+                                     diagnostics_path=root / ".zstar" / "symmetry.json")
     phonon.generate_displacements(distance=distance, is_plusminus={
         "auto": "auto", "forward": False, "central": True}[method])
     if displacement_scheme == "cartesian-control":
@@ -326,7 +327,8 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     reference = root / "0.no-move"
     atoms = read_structure(reference / "STRU")
     phonon = make_phonopy(atoms, symprec=manifest["symprec_A"])
-    operations = symmetry_operations(phonon, dimension=manifest["dimension"])
+    operations = symmetry_operations(phonon, dimension=manifest["dimension"],
+                                     diagnostics_path=root / ".zstar" / "symmetry.json")
     f0 = read_forces(reference)
     dipole_diagnostics = {}
     dipoles = [np.zeros(3) for _ in manifest["stages"]] if forces_only else _dipole_changes(root, manifest, dipole_diagnostics)
@@ -377,6 +379,11 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     with _working_directory(root):
         phonon.write_yaml_qpoints_phonon()
     phonon.save(filename=str(root / "phonopy.yaml"), settings={"force_constants": True})
+    from .spectra import load_gamma_modes, write_gamma_mode_audit
+    gamma_report = write_gamma_mode_audit(
+        load_gamma_modes(root / "qpoints.yaml"), root / ".zstar" / "gamma_modes.json",
+        dimensionality=manifest["dimension"],
+    )
     with _working_directory(root):
         if hasattr(phonon, "run_irreps"):
             phonon.run_irreps([0, 0, 0])
@@ -395,6 +402,11 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
               "frequencies_THz": phonon.qpoints.frequencies[0].tolist(),
               "dipole_integration_diagnostics": dipole_diagnostics,
               "static_response_validated": False}
+    output["gamma_stability"] = {
+        "report": ".zstar/gamma_modes.json",
+        "flagged_mode_numbers": gamma_report["flagged_mode_numbers"],
+        "harmonic_response_allowed": gamma_report["harmonic_response_allowed"],
+    }
     output['source_hashes'] = {}
     for name in ['0.no-move']+[s['name'] for s in manifest['stages']]:
         patterns = ['OUT.*/running_scf.log']
@@ -447,4 +459,11 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             structure={"symbols": atoms.symbols, "cell_angstrom": atoms.cell, "scaled_positions": atoms.scaled_positions},
             metadata={"raw_diagnostics": raw.diagnostics, "scope": "Gamma", "asr_projected": True}).write(root / "response.json")
     print(f"[SHARED] Collected {len(observations)} displacements; {result_path}")
+    if not forces_only:
+        from .progress import progress
+        progress("bec-post", "OUTPUT", "PASS", f"BEC.dat and Gamma force constants are complete in {root}")
+        progress("bec-post", "DIELECTRIC", "READY" if gamma_report["harmonic_response_allowed"] else "BLOCKED",
+                 "Total harmonic dielectric response is a separate step: zstar dielectric static (or freq). "
+                 + ("Gamma stability checks passed." if gamma_report["harmonic_response_allowed"] else
+                    "Flagged Gamma modes must be inspected; BEC output remains available."))
     return output

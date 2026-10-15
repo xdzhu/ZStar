@@ -70,6 +70,8 @@ def _verify_done(folder, *, sources=True):
 def _static_stage(stage, reference, folder, *, command, caps, env, dry_run=False):
     """Private matrix copies prevent PYATB conversion/output from changing BEC data."""
     if _verify_done(folder):
+        from .progress import progress
+        progress(stage.name, 'PYATB Raman static', 'SKIP', f'Verified completed response in {folder}')
         return 'completed'
     if dry_run:
         print(f'[DRY RUN] static dielectric: {stage.name} -> {folder}')
@@ -120,7 +122,8 @@ def _static_stage(stage, reference, folder, *, command, caps, env, dry_run=False
     record = dict(sources=hashes, success=False, additional_DFT_calls=0)
     started = time.monotonic()
     try:
-        workflow._run_shell(command, cwd=folder, env=env, log_path=folder/'run.log', dry_run=False)
+        workflow._run_shell(command, cwd=folder, env=env, log_path=folder/'run.log', dry_run=False,
+                            stage=stage.name, component='PYATB Raman static')
         epsilon, path = read_static_dielectric(folder)
         precision = path.parent/'zstar_static_precision.json'
         if not precision.is_file():
@@ -131,6 +134,11 @@ def _static_stage(stage, reference, folder, *, command, caps, env, dry_run=False
         record.update(success=True, epsilon=epsilon.tolist(),
             outputs={p.relative_to(folder).as_posix():_digest(p)
                      for p in [path, precision, folder/'Input', folder/'STRU']})
+    except Exception as exc:
+        from .progress import progress
+        record['error'] = str(exc)
+        progress(stage.name, 'PYATB Raman static', 'FAIL', f'{exc}; log={folder / "run.log"}')
+        raise
     finally:
         record['wall_seconds'] = time.monotonic()-started
         (folder/('completed.json' if record['success'] else 'failed.json')).write_text(

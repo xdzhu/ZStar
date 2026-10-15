@@ -78,6 +78,10 @@ ABACUS 自洽计算和 PYATB 极化计算，再次执行时会续算未完成阶
 同时重建 BEC 与 Gamma 点力常数，并输出 `BEC.dat`、`BORN`、
 `FORCE_CONSTANTS` 和模式数据。
 
+高通量监测见[工作流日志与故障定位](workflow_diagnostics.zh-CN.md)。程序输出实时
+进入日志，`zstar bec stat --json` 提供最后步骤和日志路径；Γ 点稳定性及介电拒算
+原因均保留诊断报告。
+
 ### 4. 生成 IR 与 Raman 谱
 
 将已经完成的响应计算作为谱学数据源：

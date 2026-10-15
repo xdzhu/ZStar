@@ -1,5 +1,19 @@
 ## Unreleased
 
+## 0.3.5 - 2026-10-15
+
+- Stream ABACUS/PYATB stdout and stderr into scheduler output and stage logs;
+  report displacement progress, commands, exit codes and elapsed times.
+- Persist the last active step and exact log path, improve failed-component
+  state, and add `zstar bec stat --json` for high-throughput inspection.
+- Print explicit insulating-state verdicts and save symmetry orthogonality,
+  atom-mapping and actual-tolerance diagnostics with actionable failure hints.
+- Save eigenvector-aware Gamma stability reports during Unified collection
+  and dielectric analysis. Record refused or failed dielectric attempts even
+  when no result directory exists, without discarding completed BEC outputs.
+- Add scheduler failure hints and bilingual troubleshooting guidance; update
+  the packaged agent skill to inspect the new diagnostics before restarting.
+
 - Strengthen the ABACUS insulating-state gate by combining the PYATB path/MP
   diagnostic with occupations and the minimum gap on the complete SCF k mesh.
 - Require every displaced BEC and Raman structure to remain insulating with

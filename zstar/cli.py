@@ -165,6 +165,69 @@ def _run_qe_action(args) -> None:
         print(f"[OUT] {output}")
 
 
+def _run_dielectric_cli(args) -> None:
+    from .spectra import (calculate_ir_spectrum, load_gamma_modes, read_born_data,
+                          write_gamma_mode_audit, write_ir_outputs)
+    from .workflow import StageState, WorkflowStateStore
+
+    action = "static" if args.command == "calc" else "freq"
+    store = WorkflowStateStore(PathLib.cwd())
+    state = StageState(
+        name=f"dielectric-{action}", path=str(PathLib(args.outdir).resolve()),
+        status="running", scf="not-requested", band="not-requested",
+        pyatb="not-requested", dielectric="running",
+        log_path=str(store.state_dir / "progress.log"),
+    )
+    store.event(state.name, "start", qpoints=str(PathLib(args.qpoints).resolve()),
+                born=str(PathLib(args.born).resolve()), output=state.path)
+    try:
+        store.step(state, "load Gamma modes")
+        modes = load_gamma_modes(args.qpoints)
+        store.step(state, "Gamma stability")
+        audit_path = store.state_dir / "gamma_modes.json"
+        report = write_gamma_mode_audit(
+            modes, audit_path, dimensionality=args.dim,
+            imaginary_tolerance_cm1=args.imaginary_tolerance,
+            allow_imaginary=args.allow_imaginary,
+        )
+        store.event(state.name, "gamma-check", allowed=report["harmonic_response_allowed"],
+                    flagged_modes=report["flagged_mode_numbers"], report=str(audit_path))
+        # Use the scientific gate before reading further inputs, so failure
+        # points to the modes even when no output directory has been created.
+        from .spectra import validate_gamma_stability
+        if not report["harmonic_response_allowed"]:
+            validate_gamma_stability(
+                modes, dimensionality=args.dim,
+                imaginary_tolerance_cm1=args.imaginary_tolerance,
+                allow_imaginary=args.allow_imaginary,
+            )
+        store.step(state, "dielectric reconstruction")
+        born = read_born_data(args.born, natoms=len(modes.masses_amu),
+                              dielectric_path=args.dielectric)
+        result = calculate_ir_spectrum(
+            modes, born, dimensionality=args.dim,
+            acoustic_cutoff_cm1=args.acoustic_cutoff, broadening_cm1=args.broadening,
+            max_frequency_cm1=args.max_frequency, points=args.points,
+            thickness_angstrom=args.thickness, slab_boundary=args.slab_boundary,
+            periodic_axis="xyz".index(args.periodic_axis),
+            imaginary_tolerance_cm1=args.imaginary_tolerance,
+            allow_imaginary=args.allow_imaginary,
+        )
+        store.step(state, "write dielectric outputs")
+        write_ir_outputs(args.outdir, result, plot=args.plot)
+        state.status = state.dielectric = "completed"
+        state.active_step = "complete"
+        store.save(state)
+        store.event(state.name, "complete", output=state.path)
+        print(f"Static {result.response_kind}:")
+        for row in result.response_real[0]:
+            print("  " + " ".join(f"{value:14.8e}" for value in row))
+        print(f"[OUT] {state.path}", flush=True)
+    except Exception as exc:
+        store.failed(state, exc, resume_command=f"zstar dielectric {action}")
+        raise
+
+
 def zstar_cli(argv=None, *, _canonical=True) -> None:
     """
     Entry point function for the `zstar` command.
@@ -955,6 +1018,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         'status', help='Inspect stage progress and band-gap gates.'
     )
     parser_workflow_status.add_argument('--root', default='.')
+    parser_workflow_status.add_argument('--json', action='store_true',
+                                       help='Write machine-readable stage states, including the last active step and log path.')
 
     parser_workflow_script = workflow_actions.add_parser(
         'script', help='Generate one shell, Slurm, or Torque driver script.'
@@ -2166,7 +2231,13 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             )
             print(format_status_table(states))
         elif args.workflow_action == 'status':
-            print(format_status_table(workflow_status(args.root)))
+            states = workflow_status(args.root)
+            if args.json:
+                from dataclasses import asdict
+                import json
+                print(json.dumps([asdict(state) for state in states], indent=2))
+            else:
+                print(format_status_table(states))
         elif args.workflow_action == 'script':
             script = generate_backend_script(
                 root=args.root,
@@ -2529,72 +2600,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
 
         run_read_irrep_cli(_build_irrep_argv(args))
 
-    elif args.command == 'calc':
-        from .spectra import (
-            calculate_ir_spectrum,
-            load_gamma_modes,
-            read_born_data,
-            write_ir_outputs,
-        )
-
-        modes = load_gamma_modes(args.qpoints)
-        born = read_born_data(
-            args.born,
-            natoms=len(modes.masses_amu),
-            dielectric_path=args.dielectric,
-        )
-        result = calculate_ir_spectrum(
-            modes,
-            born,
-            dimensionality=args.dim,
-            acoustic_cutoff_cm1=args.acoustic_cutoff,
-            broadening_cm1=args.broadening,
-            max_frequency_cm1=args.max_frequency,
-            points=args.points,
-            thickness_angstrom=args.thickness,
-            slab_boundary=args.slab_boundary,
-            periodic_axis='xyz'.index(args.periodic_axis),
-            imaginary_tolerance_cm1=args.imaginary_tolerance,
-            allow_imaginary=args.allow_imaginary,
-        )
-        write_ir_outputs(args.outdir, result, plot=args.plot)
-        print(f"Static {result.response_kind}:")
-        for row in result.response_real[0]:
-            print("  " + " ".join(f"{value:14.8e}" for value in row))
-        print(f"[OUT] {os.path.abspath(args.outdir)}")
-
-    elif args.command == 'freq':
-        from .spectra import (
-            calculate_ir_spectrum,
-            load_gamma_modes,
-            read_born_data,
-            write_ir_outputs,
-        )
-        modes = load_gamma_modes(args.qpoints)
-        born = read_born_data(
-            args.born,
-            natoms=len(modes.masses_amu),
-            dielectric_path=args.dielectric,
-        )
-        result = calculate_ir_spectrum(
-            modes,
-            born,
-            dimensionality=args.dim,
-            acoustic_cutoff_cm1=args.acoustic_cutoff,
-            broadening_cm1=args.broadening,
-            max_frequency_cm1=args.max_frequency,
-            points=args.points,
-            thickness_angstrom=args.thickness,
-            slab_boundary=args.slab_boundary,
-            periodic_axis='xyz'.index(args.periodic_axis),
-            imaginary_tolerance_cm1=args.imaginary_tolerance,
-            allow_imaginary=args.allow_imaginary,
-        )
-        write_ir_outputs(args.outdir, result, plot=args.plot)
-        print(f"Static {result.response_kind}:")
-        for row in result.response_real[0]:
-            print("  " + " ".join(f"{value:14.8e}" for value in row))
-        print(f"[OUT] {os.path.abspath(args.outdir)}")
+    elif args.command in {'calc', 'freq'}:
+        _run_dielectric_cli(args)
 
     elif args.command == 'md':
         from .md_dielectric import compute_md_dielectric, parse_type_map

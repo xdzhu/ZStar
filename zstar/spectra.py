@@ -492,19 +492,14 @@ def validate_gamma_stability(
 ) -> np.ndarray:
     """Distinguish acoustic drift, molecular rotations, and unstable modes."""
 
+    report = gamma_stability_report(
+        modes, dimensionality=dimensionality,
+        imaginary_tolerance_cm1=imaginary_tolerance_cm1,
+        allow_imaginary=allow_imaginary,
+    )
     tolerance = float(imaginary_tolerance_cm1)
-    if not np.isfinite(tolerance) or tolerance < 0:
-        raise ValueError("imaginary_tolerance_cm1 must be finite and nonnegative")
-    audit = assess_gamma_modes(modes, dimensionality=dimensionality)
-    unstable = [
-        row for row in audit
-        if row["frequency_cm-1"] < 0
-        and not (
-            row["classification"] == "translation"
-            and row["frequency_cm-1"] >= -tolerance
-        )
-        and row["classification"] != "rotation"
-    ]
+    audit = report["modes"]
+    unstable = [row for row in audit if row["mode"] in report["flagged_mode_numbers"]]
     large_rotations = [
         row for row in audit
         if row["classification"] == "rotation"
@@ -546,6 +541,65 @@ def validate_gamma_stability(
             "intentionally analyzing stable modes of an unstable phase."
         )
     return np.asarray([row["mode"] for row in unstable], dtype=int)
+
+
+def gamma_stability_report(modes: GammaModes, *, dimensionality: int = 3,
+                           imaginary_tolerance_cm1: float = 20.0,
+                           allow_imaginary: bool = False) -> dict:
+    """Describe the same eigenvector-aware gate used by spectral calculations."""
+    tolerance = float(imaginary_tolerance_cm1)
+    if not np.isfinite(tolerance) or tolerance < 0:
+        raise ValueError("imaginary_tolerance_cm1 must be finite and nonnegative")
+    audit = assess_gamma_modes(modes, dimensionality=dimensionality)
+    unstable = [
+        row for row in audit
+        if row["frequency_cm-1"] < 0
+        and not (
+            row["classification"] == "translation"
+            and row["frequency_cm-1"] >= -tolerance
+        )
+        and row["classification"] != "rotation"
+    ]
+    return {
+        "dimensionality": dimensionality,
+        "acoustic_drift_tolerance_cm-1": tolerance,
+        "translation_overlap_threshold": 0.9,
+        "flagged_mode_numbers": [row["mode"] for row in unstable],
+        "negative_mode_numbers": [row["mode"] for row in audit if row["frequency_cm-1"] < 0],
+        "allow_imaginary": bool(allow_imaginary),
+        "harmonic_response_allowed": not unstable or bool(allow_imaginary),
+        "modes": audit,
+    }
+
+
+def write_gamma_mode_audit(modes: GammaModes, output: str | Path, *,
+                           dimensionality: int = 3,
+                           imaginary_tolerance_cm1: float = 20.0,
+                           allow_imaginary: bool = False) -> dict:
+    """Persist mode classification before a response calculation can be refused."""
+    from .progress import progress
+
+    report = gamma_stability_report(
+        modes, dimensionality=dimensionality,
+        imaginary_tolerance_cm1=imaginary_tolerance_cm1,
+        allow_imaginary=allow_imaginary,
+    )
+    output = Path(output).resolve()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    for row in report["modes"]:
+        if row["frequency_cm-1"] < 0 or row["classification"] == "mixed":
+            progress("Gamma", "PHONON", "CHECK" if row["mode"] in report["flagged_mode_numbers"] else "INFO",
+                     f"mode={row['mode']}; frequency={row['frequency_cm-1']:.3f} cm-1; "
+                     f"class={row['classification']}; translation overlap={row['translation_overlap']:.6f}; "
+                     f"rotation overlap={row['rotation_overlap']:.6f}")
+    status = "PASS" if not report["flagged_mode_numbers"] else (
+        "OVERRIDE" if allow_imaginary else "BLOCKED")
+    progress("Gamma", "STABILITY", status,
+             f"negative modes={len(report['negative_mode_numbers'])}; "
+             f"flagged modes={report['flagged_mode_numbers']}; "
+             f"harmonic dielectric {'allowed' if report['harmonic_response_allowed'] else 'refused'}; report={output}")
+    return report
 
 
 def _lorentzian(grid: np.ndarray, centers: np.ndarray, gamma: float) -> np.ndarray:

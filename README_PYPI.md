@@ -74,6 +74,9 @@ each stage and report the BEC table, optical-mode frequencies, and spectrum path
 - Reuse of the converged reference charge density.
 - A combined insulating-state gate using a PYATB path diagnostic and the
   complete ABACUS SCF k mesh, followed by displaced-state manifold checks.
+- Live ABACUS/PYATB output, stage and failure-location records, symmetry
+  diagnostics, and eigenvector-aware Gamma stability reports. See the
+  [diagnostic guide](https://github.com/xdzhu/ZStar/blob/main/docs/workflow_diagnostics.md).
 - Shell, Slurm, and Torque/PBS drivers with Specified, Current, or Global headers.
 - Legacy and direct-static-response PYATB compatibility.
 - Hybrid 1D BECs: transverse charge-density dipoles plus longitudinal Berry polarization.

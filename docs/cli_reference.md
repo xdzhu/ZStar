@@ -130,6 +130,11 @@ These examples use local execution. On Slurm, replace the local `run` with
 then submit it with `sbatch run_zstar_born.slurm`. Wait for completion before
 `post`; `job` alone does not execute any calculation.
 
+Runs stream solver output and label each displacement, ABACUS/PYATB step and
+check verdict. `zstar bec stat --json` also exposes saved steps and log paths.
+See [workflow logs and failure diagnosis](workflow_diagnostics.md), including
+Gamma-mode reports and missing dielectric-output diagnosis.
+
 `zstar bec pre` defaults to ABACUS + PYATB and
 Phonopy's symmetry-adapted Unified BEC/Gamma displacement set, with
 automatic +/- selection. The calculator and `--pyatb` switch remain optional;

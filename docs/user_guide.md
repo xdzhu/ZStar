@@ -86,6 +86,10 @@ polarization calculations; rerunning it resumes incomplete stages. `bec post`
 jointly reconstructs the BEC and Gamma-point force constants and writes
 `BEC.dat`, `BORN`, `FORCE_CONSTANTS`, and the mode data.
 
+For high-throughput monitoring, see [workflow logs and failure diagnosis](workflow_diagnostics.md).
+Solver output is streamed live; `zstar bec stat --json` exposes the last step
+and log path. Gamma stability and dielectric refusals retain diagnostic reports.
+
 ### 4. Generate the IR and Raman spectra
 
 Use the completed response calculation as the spectroscopy source:
@@ -195,7 +199,7 @@ mesh/step diagnostics, and separately accounted CPU core-hours.
 - Symmetry reduction, full-cell tensor reconstruction, and acoustic-sum-rule correction.
 - A serial, resumable `0.no-move -> displaced structures` execution model.
 - Reuse of the converged `0.no-move` charge density for every displacement.
-- One-time insulating-state check after the reference SCF.
+- Reference PYATB plus SCF-mesh insulation checks and displaced-state occupied-manifold checks.
 - Shell, Slurm, and Torque driver generation.
 - Automatic compatibility with legacy and direct-static-response PYATB versions.
 - A serial, resumable CP2K backend for Berry-phase BEC tensors and native APT checks.

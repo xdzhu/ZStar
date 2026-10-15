@@ -91,6 +91,7 @@ zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式�
 | 平面静电势、线剖面与真空电势差 | [静电势](potential_examples.zh-CN.md) | `zstar pot` |
 | 可执行文件、MPI/OMP、赝势与轨道 | [配置及资源解析](cli_reference.zh-CN.md) | `zstar config` |
 | Shell、Slurm、Torque/PBS 脚本 | [作业 header](job_headers.zh-CN.md) | `zstar bec/phonon/spectra job` |
+| 失败定位与物理检查报告 | [工作流诊断](workflow_diagnostics.zh-CN.md) | `zstar bec stat --json` |
 | 智能体辅助使用 | [agent skill](agent_skill.zh-CN.md) | `zstar skill` |
 
 表中的斜杠用于列举子命令，不是可以直接复制运行的完整命令。例如依次执行

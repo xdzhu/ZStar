@@ -12,6 +12,8 @@ import re
 import shlex
 import shutil
 import subprocess
+import sys
+import time
 from typing import Iterable, Optional, Sequence
 
 from .insulation import parse_abacus_occupation_gap
@@ -24,6 +26,7 @@ from .pyatb_compat import (
     read_band_gap,
 )
 from .configuration import normalize_execution_system
+from .progress import progress
 
 
 _ATOM_DIR_RE = re.compile(r"^(\d+)\.([^.]+)$")
@@ -65,6 +68,9 @@ class StageState:
     started_at: Optional[str] = None
     finished_at: Optional[str] = None
     error: Optional[str] = None
+    active_step: Optional[str] = None
+    log_path: Optional[str] = None
+    updated_at: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -143,6 +149,11 @@ class WorkflowStateStore:
         return StageState(**data)
 
     def save(self, state: StageState) -> None:
+        state.updated_at = _utc_now()
+        if state.status == "running" and state.started_at is None:
+            state.started_at = state.updated_at
+        if state.status in {"completed", "failed", "dry-run"} and state.finished_at is None:
+            state.finished_at = state.updated_at
         path = self.stage_path(state.name)
         temporary = path.with_suffix(".json.tmp")
         temporary.write_text(json.dumps(asdict(state), indent=2), encoding="utf-8")
@@ -152,6 +163,28 @@ class WorkflowStateStore:
         record = {"time": _utc_now(), "stage": stage, "event": event, **details}
         with self.log_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record, sort_keys=True) + "\n")
+        status = ("FAIL" if "failed" in event else "SKIP" if "skip" in event else
+                  "PASS" if event.endswith(("complete", "pass")) or event in {"band-gap", "finish"} else
+                  "START" if event.endswith("start") else "INFO")
+        message = "; ".join(f"{key}={value}" for key, value in details.items())
+        progress(stage, event, status, message, log_path=self.state_dir / "progress.log")
+
+    def step(self, state: StageState, name: str) -> None:
+        state.active_step = name
+        self.save(state)
+        self.event(state.name, name, log=state.log_path)
+
+    def failed(self, state: StageState, exc: Exception, *, resume_command: Optional[str] = None) -> None:
+        state.status = "failed"
+        state.error = str(exc)
+        state.finished_at = _utc_now()
+        for name in ("scf", "band", "pyatb", "dielectric"):
+            if getattr(state, name) == "running":
+                setattr(state, name, "failed")
+        self.save(state)
+        self.event(state.name, "stage-failed", step=state.active_step,
+                   error=state.error, log=state.log_path,
+                   resume=resume_command or "zstar bec run --root " + shlex.quote(str(self.root)))
 
 
 def _find_scf_log(stage_dir: Path) -> Optional[Path]:
@@ -237,7 +270,11 @@ def _run_displaced_mesh_gate(
     *,
     reference_occupied_bands: int,
     min_gap_eV: float,
+    log_path: Optional[Path] = None,
+    stage_name: Optional[str] = None,
 ) -> dict:
+    name = stage_name or stage_dir.name
+    progress(name, "INSULATION", "START", "Checking SCF k-mesh occupations and reference occupied-band count", log_path=log_path)
     mesh = _read_abacus_mesh_gap(stage_dir, min_gap_eV=min_gap_eV)
     occupied_bands = mesh.get("occupied_band_count")
     manifold_consistent = occupied_bands == reference_occupied_bands
@@ -255,6 +292,11 @@ def _run_displaced_mesh_gate(
     (stage_dir / "zstar_insulation.json").write_text(
         json.dumps(report, indent=2), encoding="utf-8"
     )
+    progress(name, "INSULATION", "PASS" if report["insulating"] else "FAIL",
+             f"SCF-mesh gap={mesh['gap_eV']:.6f} eV; threshold={min_gap_eV:g} eV; "
+             f"fractional occupations={mesh['fractional_occupation_count']}; "
+             f"occupied bands={occupied_bands} (reference={reference_occupied_bands}); "
+             f"report={stage_dir / 'zstar_insulation.json'}", log_path=log_path)
     if not mesh["insulating"]:
         raise RuntimeError(
             f"Full-SCF-mesh insulation check failed in {stage_dir.name}: "
@@ -339,25 +381,49 @@ def _run_shell(
     env: dict[str, str],
     log_path: Path,
     dry_run: bool,
+    stage: Optional[str] = None,
+    component: str = "command",
 ) -> None:
+    stage = stage or cwd.name
     log_path.parent.mkdir(parents=True, exist_ok=True)
+    progress(stage, component, "DRY-RUN" if dry_run else "START",
+             f"cwd={cwd}; log={log_path}; command={command}", log_path=log_path)
+    started = time.monotonic()
     with log_path.open("a", encoding="utf-8") as log:
-        log.write(f"\n[{_utc_now()}] cwd={cwd}\n$ {command}\n")
-        log.flush()
         if dry_run:
             return
-        result = subprocess.run(
+        process = subprocess.Popen(
             command,
             cwd=cwd,
-            env=env,
+            env={**env, "PYTHONUNBUFFERED": "1"},
             shell=True,
-            stdout=log,
+            stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1,
         )
-    if result.returncode != 0:
+        try:
+            for line in process.stdout:
+                log.write(line)
+                log.flush()
+                sys.stdout.write(line)
+                sys.stdout.flush()
+            returncode = process.wait()
+        except BaseException:
+            process.terminate()
+            process.wait()
+            raise
+        finally:
+            process.stdout.close()
+    elapsed = time.monotonic() - started
+    progress(stage, component, "PASS" if returncode == 0 else "FAIL",
+             f"exit={returncode}; elapsed={elapsed:.1f}s; log={log_path}", log_path=log_path)
+    if returncode != 0:
         raise RuntimeError(
-            f"Command failed with exit code {result.returncode}: {command}"
+            f"{component} failed with exit code {returncode} in {cwd}. "
+            f"See {log_path}. Command: {command}"
         )
 
 
@@ -516,6 +582,8 @@ def _run_insulation_gate(
 ):
     """Combine a full-SCF-mesh occupation gate with a PYATB band diagnostic."""
 
+    progress("0.no-move", "INSULATION", "START",
+             f"PYATB {gap_mode} + SCF k-mesh; minimum gap={min_gap_eV:g} eV", log_path=log_path)
     band_dir = reference_dir / "pyatb-band"
     if not band_is_complete(reference_dir):
         if not (band_dir / "Input").is_file():
@@ -530,6 +598,8 @@ def _run_insulation_gate(
                 env=env,
                 log_path=log_path,
                 dry_run=dry_run,
+                stage="0.no-move",
+                component="PYATB band input",
             )
         if not dry_run:
             prepare_pyatb_assets(reference_dir, band_dir)
@@ -539,8 +609,13 @@ def _run_insulation_gate(
             env=env,
             log_path=log_path,
             dry_run=dry_run,
+            stage="0.no-move",
+            component="PYATB band",
         )
+    else:
+        progress("0.no-move", "PYATB band", "SKIP", f"Reusing band output from {band_dir}; rechecking the gap")
     if dry_run:
+        progress("0.no-move", "INSULATION", "DRY-RUN", "No gap verdict without executing the calculation", log_path=log_path)
         return None
 
     gap = read_band_gap(band_dir, threshold_eV=min_gap_eV)
@@ -570,6 +645,10 @@ def _run_insulation_gate(
     (reference_dir / "zstar_insulation.json").write_text(
         json.dumps(gap_report, indent=2), encoding="utf-8"
     )
+    progress("0.no-move", "INSULATION", "PASS" if insulating else "FAIL",
+             f"PYATB {gap_mode} gap={gap.gap_eV:.6f} eV; SCF-mesh gap={mesh['gap_eV']:.6f} eV; "
+             f"threshold={min_gap_eV:g} eV; fractional occupations={mesh['fractional_occupation_count']}; "
+             f"occupied bands={occupied_bands}; report={reference_dir / 'zstar_insulation.json'}", log_path=log_path)
     if not insulating:
         raise RuntimeError(
             "Combined insulating-state check failed in 0.no-move: "
@@ -622,6 +701,7 @@ def run_serial_workflow(
     caps = detect_pyatb_capabilities(pyatb_executable)
     env = os.environ.copy()
     env["OMP_NUM_THREADS"] = str(int(omp_threads))
+    env["PYTHONUNBUFFERED"] = "1"
     env.setdefault("MKL_NUM_THREADS", str(int(omp_threads)))
     env.setdefault("OPENBLAS_NUM_THREADS", "1")
     results: list[StageState] = []
@@ -635,19 +715,33 @@ def run_serial_workflow(
         dry_run=dry_run,
         pyatb=caps.to_dict(),
     )
+    if shared:
+        from .shared_response import make_phonopy, read_structure, symmetry_operations
+        manifest = load_manifest(root_path)
+        symmetry_operations(
+            make_phonopy(read_structure(reference_dir / "STRU"), symprec=manifest["symprec_A"]),
+            dimension=dimensionality, diagnostics_path=store.state_dir / "symmetry.json",
+        )
+        store.event("workflow", "symmetry-pass", report=str(store.state_dir / "symmetry.json"))
+    else:
+        store.event("workflow", "symmetry-not-available",
+                    reason="Legacy directory tree; no Unified symmetry manifest")
 
     for index, stage in enumerate(stages):
         if stop_after is not None and index >= stop_after:
             break
         state = store.load(stage)
         state.started_at = state.started_at or _utc_now()
+        state.finished_at = None
         state.status = "running"
         state.error = None
-        store.save(state)
-        store.event(stage.name, "stage-start", path=str(stage.path))
         log_path = store.state_dir / "logs" / f"{store._safe_name(stage.name)}.log"
+        state.log_path = str(log_path)
+        store.save(state)
+        store.event(stage.name, "stage-start", index=index + 1, total=len(stages), path=str(stage.path))
 
         try:
+            store.step(state, "ABACUS SCF")
             if scf_is_complete(stage.path):
                 state.scf = "completed"
                 store.event(stage.name, "scf-skip", reason="completion marker found")
@@ -672,6 +766,8 @@ def run_serial_workflow(
                     env=env,
                     log_path=log_path,
                     dry_run=dry_run,
+                    stage=stage.name,
+                    component="ABACUS SCF",
                 )
                 if not dry_run and not scf_is_complete(stage.path):
                     raise RuntimeError(
@@ -680,11 +776,13 @@ def run_serial_workflow(
                 state.scf = "dry-run" if dry_run else "completed"
 
             if shared and not dry_run:
+                store.step(state, "force validation")
                 read_forces(stage.path)
+                store.event(stage.name, "forces-pass")
 
             if check_insulating and stage.reference:
                 state.band = "running"
-                store.save(state)
+                store.step(state, "insulation")
                 gap = _run_insulation_gate(
                     reference_dir,
                     pyatb_input=pyatb_input,
@@ -715,6 +813,8 @@ def run_serial_workflow(
                         insulating=True,
                     )
             elif check_insulating:
+                state.band = "running"
+                store.step(state, "insulation")
                 if dry_run:
                     state.band = "reference-gated"
                 else:
@@ -724,6 +824,8 @@ def run_serial_workflow(
                         stage.path,
                         reference_occupied_bands=reference_gate.occupied_band_count,
                         min_gap_eV=min_gap_eV,
+                        log_path=log_path,
+                        stage_name=stage.name,
                     )
                     state.band_gap_eV = float(mesh["gap_eV"])
                     state.band = "insulating"
@@ -738,7 +840,9 @@ def run_serial_workflow(
                     )
             else:
                 state.band = "not-requested"
+                store.event(stage.name, "insulation-skipped", reason="--no-insulation-check")
 
+            store.step(state, "PYATB polarization/dielectric")
             need_dielectric = bool(stage.reference and electronic_dielectric)
             polar_done = polarization_is_complete(stage.path)
             dielectric_done = dielectric_is_complete(stage.path) if need_dielectric else True
@@ -763,6 +867,8 @@ def run_serial_workflow(
                         env=env,
                         log_path=log_path,
                         dry_run=dry_run,
+                        stage=stage.name,
+                        component="PYATB response input",
                     )
                 if need_dielectric and not dry_run:
                     configure_optical_input(
@@ -787,6 +893,8 @@ def run_serial_workflow(
                     env=env,
                     log_path=log_path,
                     dry_run=dry_run,
+                    stage=stage.name,
+                    component="PYATB polarization/dielectric",
                 )
                 if not dry_run and not polarization_is_complete(stage.path):
                     raise RuntimeError("PYATB did not produce Polarization/polarization.dat")
@@ -798,13 +906,10 @@ def run_serial_workflow(
 
             state.status = "dry-run" if dry_run else "completed"
             state.finished_at = _utc_now()
+            state.active_step = "complete"
             store.event(stage.name, "stage-complete", status=state.status)
         except Exception as exc:
-            state.status = "failed"
-            state.error = str(exc)
-            state.finished_at = _utc_now()
-            store.event(stage.name, "stage-failed", error=str(exc))
-            store.save(state)
+            store.failed(state, exc)
             results.append(state)
             raise
         store.save(state)
@@ -875,6 +980,7 @@ def run_raman_workflow(
     caps = detect_pyatb_capabilities(pyatb_executable)
     env = os.environ.copy()
     env["OMP_NUM_THREADS"] = str(int(omp_threads))
+    env["PYTHONUNBUFFERED"] = "1"
     env.setdefault("MKL_NUM_THREADS", str(int(omp_threads)))
     env.setdefault("OPENBLAS_NUM_THREADS", "1")
     results: list[StageState] = []
@@ -897,18 +1003,29 @@ def run_raman_workflow(
     reference_gate: Optional[InsulationGateResult] = None
     if check_insulating:
         reference_log = store.state_dir / "logs" / "0.no-move.log"
-        gap = _run_insulation_gate(
-            reference,
-            pyatb_input=pyatb_input,
-            pyatb_command=pyatb_command,
-            gap_mode=gap_mode,
-            dimensionality=dimensionality,
-            mp_density=mp_density,
-            min_gap_eV=min_gap_eV,
-            env=env,
-            log_path=reference_log,
-            dry_run=dry_run,
-        )
+        reference_state = StageState(name="0.no-move", path=str(reference), status="running",
+                                     band="running", log_path=str(reference_log))
+        store.step(reference_state, "insulation")
+        try:
+            gap = _run_insulation_gate(
+                reference,
+                pyatb_input=pyatb_input,
+                pyatb_command=pyatb_command,
+                gap_mode=gap_mode,
+                dimensionality=dimensionality,
+                mp_density=mp_density,
+                min_gap_eV=min_gap_eV,
+                env=env,
+                log_path=reference_log,
+                dry_run=dry_run,
+            )
+        except Exception as exc:
+            store.failed(reference_state, exc,
+                         resume_command="zstar spectra run --root " + shlex.quote(str(root)))
+            raise
+        reference_state.band = "dry-run" if dry_run else "insulating"
+        reference_state.status = "dry-run" if dry_run else "completed"
+        store.save(reference_state)
         if gap is not None:
             reference_gate = gap
             store.event(
@@ -928,16 +1045,19 @@ def run_raman_workflow(
             break
         state = store.load(stage)
         state.started_at = state.started_at or _utc_now()
+        state.finished_at = None
         state.status = "running"
         state.error = None
         state.dielectric = "pending"
-        store.save(state)
-        store.event(stage.name, "stage-start", path=str(stage.path))
         log_path = (
             store.state_dir / "logs" / f"{store._safe_name(stage.name)}.log"
         )
+        state.log_path = str(log_path)
+        store.save(state)
+        store.event(stage.name, "stage-start", index=index + 1, total=len(stages), path=str(stage.path))
 
         try:
+            store.step(state, "ABACUS SCF")
             if scf_is_complete(stage.path):
                 state.scf = "completed"
                 store.event(stage.name, "scf-skip", reason="completion marker found")
@@ -958,6 +1078,8 @@ def run_raman_workflow(
                     env=env,
                     log_path=log_path,
                     dry_run=dry_run,
+                    stage=stage.name,
+                    component="ABACUS SCF",
                 )
                 if not dry_run and not scf_is_complete(stage.path):
                     raise RuntimeError(
@@ -967,6 +1089,8 @@ def run_raman_workflow(
                 state.scf = "dry-run" if dry_run else "completed"
 
             if check_insulating:
+                state.band = "running"
+                store.step(state, "insulation")
                 if dry_run:
                     state.band = "reference-gated"
                 else:
@@ -976,12 +1100,16 @@ def run_raman_workflow(
                         stage.path,
                         reference_occupied_bands=reference_gate.occupied_band_count,
                         min_gap_eV=min_gap_eV,
+                        log_path=log_path,
+                        stage_name=stage.name,
                     )
                     state.band_gap_eV = float(mesh["gap_eV"])
                     state.band = "insulating"
             else:
                 state.band = "not-requested"
+                store.event(stage.name, "insulation-skipped", reason="--no-insulation-check")
 
+            store.step(state, "PYATB Raman dielectric")
             if dielectric_is_complete(stage.path):
                 store.event(
                     stage.name,
@@ -1005,6 +1133,8 @@ def run_raman_workflow(
                         env=env,
                         log_path=log_path,
                         dry_run=dry_run,
+                        stage=stage.name,
+                        component="PYATB Raman input",
                     )
                 if not dry_run:
                     configure_optical_input(
@@ -1024,6 +1154,8 @@ def run_raman_workflow(
                     env=env,
                     log_path=log_path,
                     dry_run=dry_run,
+                    stage=stage.name,
+                    component="PYATB Raman dielectric",
                 )
                 if not dry_run and not dielectric_is_complete(stage.path):
                     raise RuntimeError(
@@ -1034,6 +1166,7 @@ def run_raman_workflow(
             if molecular_ir and not polarization_is_complete(
                 stage.path, "pyatb-polar"
             ):
+                store.step(state, "PYATB molecular polarization")
                 polar_dir = stage.path / "pyatb-polar"
                 polar_input = polar_dir / "Input"
                 if not polar_input.is_file():
@@ -1051,6 +1184,8 @@ def run_raman_workflow(
                         env=env,
                         log_path=log_path,
                         dry_run=dry_run,
+                        stage=stage.name,
+                        component="PYATB molecular input",
                     )
                 if not dry_run:
                     prepare_pyatb_assets(stage.path, polar_dir)
@@ -1062,6 +1197,8 @@ def run_raman_workflow(
                     env=env,
                     log_path=log_path,
                     dry_run=dry_run,
+                    stage=stage.name,
+                    component="PYATB molecular polarization",
                 )
                 if not dry_run and not polarization_is_complete(
                     stage.path, "pyatb-polar"
@@ -1079,13 +1216,10 @@ def run_raman_workflow(
 
             state.status = "dry-run" if dry_run else "completed"
             state.finished_at = _utc_now()
+            state.active_step = "complete"
             store.event(stage.name, "stage-complete", status=state.status)
         except Exception as exc:
-            state.status = "failed"
-            state.error = str(exc)
-            state.finished_at = _utc_now()
-            store.event(stage.name, "stage-failed", error=str(exc))
-            store.save(state)
+            store.failed(state, exc, resume_command="zstar spectra run --root " + shlex.quote(str(root)))
             results.append(state)
             raise
         store.save(state)
@@ -1130,6 +1264,11 @@ def workflow_status(root: str | Path = ".") -> list[StageState]:
                 state.status = 'failed'
                 state.error = str(exc)
         states.append(state)
+    for action in ("static", "freq"):
+        name = f"dielectric-{action}"
+        if store.stage_path(name).is_file():
+            state = store.load(WorkflowStage(name, root_path))
+            states.append(state)
     return states
 
 
@@ -1312,6 +1451,8 @@ def generate_backend_script(
         "set -euo pipefail",
         f"ROOT={_quote_bash(str(root_path))}",
         'mkdir -p "$ROOT/.zstar"',
+        'export PYTHONUNBUFFERED=1',
+        'trap \'rc=$?; printf "[ZStar] FAILED exit=%s; run: zstar bec stat --root %s; logs: %s/.zstar/logs\\n" "$rc" "$ROOT" "$ROOT" >&2; exit "$rc"\' ERR',
     ]
     body.append('cd "$ROOT"')
     if env_script:
@@ -1386,6 +1527,7 @@ def submit_backend_script(script: str | Path, backend: str) -> str:
 
 
 def format_status_table(states: Iterable[StageState]) -> str:
+    states = list(states)
     rows = [
         (
             state.name,
@@ -1395,6 +1537,7 @@ def format_status_table(states: Iterable[StageState]) -> str:
             "" if state.band_gap_eV is None else f"{state.band_gap_eV:.6f}",
             state.pyatb,
             state.dielectric,
+            state.active_step or "",
             state.error or "",
         )
         for state in states
@@ -1407,6 +1550,7 @@ def format_status_table(states: Iterable[StageState]) -> str:
         "gap_eV",
         "pyatb",
         "dielectric",
+        "last_step",
         "error",
     )
     widths = [
@@ -1421,4 +1565,10 @@ def format_status_table(states: Iterable[StageState]) -> str:
         "  ".join(str(row[i]).ljust(widths[i]) for i in range(len(headers)))
         for row in rows
     )
+    for state in states:
+        if state.status in {"failed", "running"}:
+            lines.append(f"\n{state.name}: last saved step={state.active_step or 'unknown'}; "
+                         f"updated={state.updated_at or 'unknown'}; log={state.log_path or 'not recorded'}")
+    if any(state.status == "running" for state in states):
+        lines.append("'running' is the last saved state; check the scheduler if the worker was killed or timed out.")
     return "\n".join(lines)

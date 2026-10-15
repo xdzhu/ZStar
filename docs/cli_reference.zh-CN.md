@@ -125,6 +125,10 @@ zstar bec post --root .
 检查生成的 `run_zstar_born.slurm`，再执行 `sbatch run_zstar_born.slurm`。
 计算完成后才执行 `post`；仅运行 `job` 不会执行计算。
 
+运行时会实时输出程序日志，并标明当前位移、ABACUS/PYATB 阶段和检查结论。
+`zstar bec stat --json` 可收集最后步骤和日志路径。Γ 点模式报告和介电结果缺失的
+定位方法见[工作流日志与故障定位](workflow_diagnostics.zh-CN.md)。
+
 `zstar bec pre` 默认使用 ABACUS + PYATB 和 Phonopy 对称性适配的
 Unified BEC/Gamma 声子位移，自动选择所需正负位移。计算器和 `--pyatb` 开关仍可
 省略；切换后端时才指定 `--calculator cp2k`、`vasp` 或 `qe`。

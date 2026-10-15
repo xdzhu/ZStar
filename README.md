@@ -77,6 +77,9 @@ reconstructs BEC and Gamma force constants. Outputs include `BEC.dat`, `BORN`,
 near **2.70 e** and an optical triplet near **773 cm^-1**. Rerunning resumes
 incomplete stages.
 
+For batch runs, [workflow diagnostics](docs/workflow_diagnostics.md) explains
+live solver logs, `zstar bec stat --json`, and insulating/symmetry/Gamma checks.
+
 ### 4. Generate IR and Raman spectra
 
 ```bash

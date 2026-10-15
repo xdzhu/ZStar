@@ -47,6 +47,58 @@ def test_small_imaginary_translation_is_tolerated():
     assert validate_gamma_stability(modes).size == 0
 
 
+def test_saved_gamma_report_distinguishes_drift_from_internal_instability(tmp_path, capsys):
+    from zstar.spectra import write_gamma_mode_audit
+
+    modes = _two_atom_modes([-3.0, -2.0, 0.5, -0.1, 150.0, 200.0])
+    path = tmp_path / "gamma_modes.json"
+    report = write_gamma_mode_audit(modes, path)
+    assert report["negative_mode_numbers"] == [1, 2, 4]
+    assert report["flagged_mode_numbers"] == [4]
+    assert not report["harmonic_response_allowed"]
+    assert json.loads(path.read_text())["modes"][0]["classification"] == "translation"
+    output = capsys.readouterr().out
+    assert "class=non-translation" in output
+    assert "[STABILITY] [BLOCKED]" in output
+
+
+def test_dielectric_refusal_is_saved_even_without_output_folder(tmp_path, monkeypatch, capsys):
+    from zstar.cli import zstar_cli
+    from zstar.workflow import workflow_status
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "0.no-move").mkdir()
+    monkeypatch.setattr("zstar.spectra.load_gamma_modes", lambda _: _two_atom_modes([-3, 0, 0, -0.1, 150, 200]))
+    with pytest.raises(ValueError, match="non-translation"):
+        zstar_cli(["dielectric", "static", "--outdir", "dielectric"])
+    assert not (tmp_path / "dielectric").exists()
+    state = json.loads((tmp_path / ".zstar/stages/dielectric-static.json").read_text())
+    assert state["status"] == state["dielectric"] == "failed"
+    assert state["active_step"] == "Gamma stability"
+    assert "non-translation" in state["error"]
+    assert (tmp_path / ".zstar/gamma_modes.json").is_file()
+    assert workflow_status(tmp_path)[-1].name == "dielectric-static"
+    assert "[stage-failed] [FAIL]" in capsys.readouterr().out
+
+
+def test_dielectric_success_has_completed_record_and_gamma_report(tmp_path, monkeypatch):
+    from zstar.cli import zstar_cli
+    from zstar.spectra import BornData
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("zstar.spectra.load_gamma_modes", lambda _: _two_atom_modes([-3, 0, 0, 100, 150, 200]))
+    born = BornData(np.array([np.eye(3), -np.eye(3)]), np.eye(3) * 2, "test")
+    monkeypatch.setattr("zstar.spectra.read_born_data", lambda *args, **kwargs: born)
+    zstar_cli(["dielectric", "static", "--outdir", "dielectric"])
+    state = json.loads((tmp_path / ".zstar/stages/dielectric-static.json").read_text())
+    assert state["status"] == state["dielectric"] == "completed"
+    assert state["active_step"] == "complete"
+    assert state["started_at"] and state["finished_at"]
+    report = json.loads((tmp_path / ".zstar/gamma_modes.json").read_text())
+    assert report["harmonic_response_allowed"]
+    assert (tmp_path / "dielectric/static_response.json").is_file()
+
+
 def test_small_imaginary_internal_mode_is_not_hidden_by_acoustic_tolerance():
     modes = _two_atom_modes([-3.0, -2.0, 0.5, -2.0, 150.0, 200.0])
     with pytest.raises(ValueError, match=r"4:-2.00 cm-1 \(non-translation"):
