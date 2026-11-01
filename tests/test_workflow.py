@@ -5,6 +5,7 @@ import unittest
 from unittest.mock import patch
 
 from zstar.workflow import (
+    _find_scf_log,
     _run_insulation_gate,
     _run_displaced_mesh_gate,
     _prepare_abacus_input,
@@ -22,6 +23,39 @@ from zstar.pyatb_compat import BandGapResult
 
 
 class WorkflowTests(unittest.TestCase):
+    def test_scf_log_selection_rejects_ambiguous_or_wrong_suffix(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ('OLD', 'NEW'):
+                folder = root / ('OUT.' + name)
+                folder.mkdir()
+                (folder / 'running_scf.log').write_text('log')
+            with self.assertRaisesRegex(ValueError, 'Multiple ABACUS SCF logs'):
+                _find_scf_log(root)
+            (root / 'INPUT').write_text('INPUT_PARAMETERS\nsuffix NEW\n')
+            self.assertEqual(_find_scf_log(root), root / 'OUT.NEW/running_scf.log')
+            (root / 'INPUT').write_text('INPUT_PARAMETERS\nsuffix MISSING\n')
+            with self.assertRaisesRegex(ValueError, 'suffix selects'):
+                _find_scf_log(root)
+
+    def test_completed_stage_with_missing_scf_is_reported_stale(self):
+        from zstar.workflow import StageState, WorkflowStage, WorkflowStateStore, workflow_status, format_status_table
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            reference = root / '0.no-move'
+            reference.mkdir()
+            store = WorkflowStateStore(root)
+            state = StageState(name='0.no-move', path=str(reference), status='completed',
+                               scf='completed', pyatb='completed')
+            store.save(state)
+            states = workflow_status(root)
+            self.assertEqual(states[0].status, 'stale')
+            self.assertIn('SCF output is missing', states[0].error)
+            self.assertIn('stale=1', format_status_table(states))
+            # A read-only status check must not overwrite the saved history.
+            self.assertEqual(store.load(WorkflowStage('0.no-move', reference)).status, 'completed')
+
     def test_execution_system_aliases_use_canonical_manifest_names(self):
         self.assertEqual(normalize_execution_system("local"), "shell")
         self.assertEqual(normalize_execution_system("bash"), "shell")
@@ -277,7 +311,6 @@ class WorkflowTests(unittest.TestCase):
                 raman,
                 reference_dir=root / "0.no-move",
                 dimensionality=0,
-                molecular_ir=True,
                 dry_run=True,
             )
             self.assertEqual(
@@ -289,11 +322,11 @@ class WorkflowTests(unittest.TestCase):
                 path.read_text(encoding="utf-8")
                 for path in (raman / ".zstar" / "logs").glob("*.log")
             )
-            self.assertIn("pyatb_input --band --output pyatb-band", log_text)
-            self.assertEqual(log_text.count("pyatb_input --band"), 1)
+            self.assertNotIn("pyatb_input --band", log_text)
             self.assertNotIn("--kmode", log_text)
-            self.assertEqual(log_text.count("--polar"), 2)
-            self.assertEqual(log_text.count("--output pyatb-polar"), 2)
+            self.assertNotIn("--polar", log_text)
+            with self.assertRaisesRegex(ValueError, "Legacy molecular IR"):
+                run_raman_workflow(raman, dimensionality=0, molecular_ir=True, dry_run=True)
 
     def test_born_gap_gate_runs_only_for_reference(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -309,6 +342,19 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(log_text.count("pyatb_input --band"), 1)
             self.assertEqual(states[0].band, "dry-run")
             self.assertEqual(states[1].band, "reference-gated")
+
+    def test_legacy_molecular_dry_run_does_not_request_berry(self):
+        from zstar.workflow import run_serial_workflow
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._make_tree(root)
+            states = run_serial_workflow(root, dimensionality=0, dry_run=True, stop_after=2)
+            logs = '\n'.join(path.read_text(encoding='utf-8') for path in (root/'.zstar/logs').glob('*.log'))
+            self.assertEqual(len(states), 2)
+            self.assertIn('--optical', logs)
+            self.assertNotIn('--polar', logs)
+            self.assertNotIn('--band', logs)
 
     def test_failed_insulation_gate_stops_before_displaced_stage(self):
         with tempfile.TemporaryDirectory() as tmp:

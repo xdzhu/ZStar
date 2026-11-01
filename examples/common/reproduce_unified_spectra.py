@@ -22,6 +22,9 @@ def reproduce(case, output):
     delta=np.asarray(atoms.scaled_positions)-modes.positions_fractional
     np.testing.assert_allclose((delta-np.rint(delta))@np.asarray(atoms.cell),0,atol=1e-6)
     dim=meta['dimension']
+    if dim == 0:
+        raise ValueError('The historical molecular IR archive lacks a verified APT source receipt. '
+                         'Keep the retained SCFs and recollect with the experimental Unified 0D route.')
     observations=json.loads((inputs/'observations.json').read_text())
     tensors,diagnostics=reconstruct_raman_derivatives(len(atoms),observations,
         symmetry_operations(make_phonopy(atoms,symprec=meta['symprec_A']),dimension=dim))
@@ -31,7 +34,8 @@ def reproduce(case, output):
     raman_tensors=project_raman_modes(tensors,modes.eigenvectors,modes.masses_amu)[selected]*factor
     common=dict(broadening_cm1=8,points=3001,allow_imaginary=True)
     raman=spectra.calculate_raman_spectrum(modes,numbers,raman_tensors,
-        tensor_kind=raman_convention(dim)['tensor_unit'],temperature_K=298,laser_nm=532,**common)
+        tensor_kind=raman_convention(dim)['tensor_unit'], dimensionality=dim,
+        temperature_K=298,laser_nm=532,**common)
     born=spectra.read_born_data(inputs/'BEC.dat',natoms=len(atoms),dielectric_path=inputs/'BORN')
     if dim==0:
         derivatives=spectra.mode_effective_charges(modes,born.tensors)[selected]*4.80320471257

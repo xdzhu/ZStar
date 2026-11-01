@@ -1,0 +1,265 @@
+{
+  "method": "unified",
+  "dimension": 0,
+  "mode_selection": {
+    "rigid_mode_numbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "rigid_frequencies_cm1": [
+      -24.265836934430155,
+      -24.265836934430155,
+      -24.265836934430155,
+      -5.49646916067515e-05,
+      -2.7178802476745434e-05,
+      4.094832832652515e-05
+    ],
+    "rigid_overlaps": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      5.650896238935645e-29,
+      2.783562179023715e-29,
+      3.5780538578072515e-29,
+      2.9111739018909936e-33,
+      2.5080172735740225e-33,
+      2.4163782891979727e-34,
+      1.2283605738015295e-28,
+      2.6130600252064853e-30,
+      7.930891469693008e-29
+    ],
+    "one_dimensional_axial_candidates": [],
+    "note": "1D positive near-zero axial candidates are excluded assuming an isolated wire; negative candidates require review and are not automatically exempt."
+  },
+  "mode_numbers": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "source_manifest_sha256": "1148968c1cc1ab57101ca3acae64386fff16d0a8a68a8887d9a873b99a43c070",
+  "response_scope": {
+    "calculator": "ABACUS",
+    "phonons": "Gamma finite displacement using the Unified ensemble",
+    "ir_dipole_source": "experimental R=0 position-matrix expectation",
+    "raman_electronic_response": "PYATB independent-particle static response; no self-consistent local-field screening",
+    "scope_limit": "Gamma stability and method checks do not establish stability over the full Brillouin zone"
+  },
+  "spectrum_settings": {
+    "broadening": {
+      "profile": "Lorentzian",
+      "fwhm_cm-1": 8.0
+    },
+    "grid_points": 3001,
+    "maximum_wavenumber_cm-1": null,
+    "raman_temperature_K": 300.0,
+    "raman_laser_nm": 532.0,
+    "raman_geometry": "powder average",
+    "incident_polarization_cartesian": null,
+    "scattered_polarization_cartesian": null,
+    "polarization_vectors": "normalized to unit vectors when used",
+    "normalization": "Raman activities and broadened powder spectrum normalized independently; polarized activities normalized independently"
+  },
+  "gamma_stability": {
+    "dimensionality": 0,
+    "acoustic_drift_tolerance_cm-1": 20.0,
+    "translation_overlap_threshold": 0.99,
+    "rotation_overlap_threshold": 0.99,
+    "overlap_interpretation": "Heuristic per-mode classification; overlaps can depend on the basis within a degenerate subspace and do not prove stability.",
+    "rotation_interpretation": "molecular rigid rotation",
+    "flagged_mode_numbers": [],
+    "negative_mode_numbers": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "allow_imaginary": false,
+    "harmonic_response_allowed": true,
+    "modes": [
+      {
+        "mode": 1,
+        "frequency_cm-1": -24.265836934430155,
+        "translation_overlap": 1.0782659094100271e-24,
+        "rotation_overlap": 1.0,
+        "internal_overlap": 0.0,
+        "rotation_scope": "molecular",
+        "classification": "rotation"
+      },
+      {
+        "mode": 2,
+        "frequency_cm-1": -24.265836934430155,
+        "translation_overlap": 2.6739067872038233e-24,
+        "rotation_overlap": 1.0,
+        "internal_overlap": 0.0,
+        "rotation_scope": "molecular",
+        "classification": "rotation"
+      },
+      {
+        "mode": 3,
+        "frequency_cm-1": -24.265836934430155,
+        "translation_overlap": 1.5184969234438539e-24,
+        "rotation_overlap": 1.0,
+        "internal_overlap": 0.0,
+        "rotation_scope": "molecular",
+        "classification": "rotation"
+      },
+      {
+        "mode": 4,
+        "frequency_cm-1": -5.49646916067515e-05,
+        "translation_overlap": 1.0,
+        "rotation_overlap": 5.055433983974379e-25,
+        "internal_overlap": 0.0,
+        "rotation_scope": "molecular",
+        "classification": "translation"
+      },
+      {
+        "mode": 5,
+        "frequency_cm-1": -2.7178802476745434e-05,
+        "translation_overlap": 1.0,
+        "rotation_overlap": 2.424824988169069e-24,
+        "internal_overlap": 0.0,
+        "rotation_scope": "molecular",
+        "classification": "translation"
+      },
+      {
+        "mode": 6,
+        "frequency_cm-1": 4.094832832652515e-05,
+        "translation_overlap": 1.0,
+        "rotation_overlap": 2.2940600498844686e-24,
+        "internal_overlap": 0.0,
+        "rotation_scope": "molecular",
+        "classification": "translation"
+      },
+      {
+        "mode": 7,
+        "frequency_cm-1": 1330.5193946073189,
+        "translation_overlap": 6.587274869035009e-30,
+        "rotation_overlap": 4.9921687520321446e-29,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 8,
+        "frequency_cm-1": 1330.5193946073189,
+        "translation_overlap": 2.8545192752962514e-30,
+        "rotation_overlap": 2.49811025149409e-29,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 9,
+        "frequency_cm-1": 1330.5193946073189,
+        "translation_overlap": 1.0801328860527005e-29,
+        "rotation_overlap": 2.497920971754551e-29,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 10,
+        "frequency_cm-1": 1557.7253443113639,
+        "translation_overlap": 3.96240820128897e-35,
+        "rotation_overlap": 2.8715498198781038e-33,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 11,
+        "frequency_cm-1": 1557.7253443113639,
+        "translation_overlap": 4.073098726619199e-35,
+        "rotation_overlap": 2.4672862863078307e-33,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 12,
+        "frequency_cm-1": 3031.7596305541488,
+        "translation_overlap": 1.2855739408350786e-34,
+        "rotation_overlap": 1.130804348362894e-34,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 13,
+        "frequency_cm-1": 3159.3804660122573,
+        "translation_overlap": 4.836002769588076e-29,
+        "rotation_overlap": 7.447602968427219e-29,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 14,
+        "frequency_cm-1": 3159.3804660122573,
+        "translation_overlap": 2.613038425405159e-30,
+        "rotation_overlap": 2.1599801326304414e-35,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      },
+      {
+        "mode": 15,
+        "frequency_cm-1": 3159.3804660122573,
+        "translation_overlap": 5.444360867105978e-29,
+        "rotation_overlap": 2.48653060258703e-29,
+        "internal_overlap": 1.0,
+        "rotation_scope": "molecular",
+        "classification": "internal"
+      }
+    ]
+  },
+  "molecular_apt_validation": {
+    "method": "abacus_r0_position_expectation_experimental",
+    "sum_consistency": "pass",
+    "independent_accuracy_validated": false
+  },
+  "raman_convention": {
+    "response_definition": "V*(epsilon_r-I)/(4*pi)",
+    "response_unit": "angstrom^3",
+    "response_convention": "Gaussian polarizability volume",
+    "normal_coordinate": "q",
+    "normal_coordinate_unit": "angstrom*sqrt(amu)",
+    "tensor_unit": "angstrom^3/(angstrom*sqrt(amu))",
+    "field_convention": "inherited from the electronic-response source",
+    "local_field_correction_added": false
+  },
+  "raman_diagnostics": {
+    "site_fits": [
+      {
+        "atom": 0,
+        "rank": 3,
+        "condition": 1.0000000000000002,
+        "max_epsilon_residual": 1.7789831117109856e-06
+      },
+      {
+        "atom": 1,
+        "rank": 3,
+        "condition": 1.0,
+        "max_epsilon_residual": 3.434287516566519e-07
+      }
+    ],
+    "translation_sum_max_per_A": 1.8357532619007154e-07,
+    "symmetry_ab_max_per_A": 0.0,
+    "symmetry_reconstruction_applied": true,
+    "acoustic_sum_rule_projected": false
+  }
+}

@@ -182,6 +182,9 @@ class SpectroscopyBackendTests(unittest.TestCase):
             )
             result = collect_calculator_spectra(root, points=101, plot=False)
             self.assertEqual(result["calculator"], "cp2k")
+            self.assertIn("eigenvectors not parsed", result["gamma_stability"]["method"])
+            self.assertEqual(result["spectrum_settings"]["broadening"]["fwhm_cm-1"], 8.0)
+            self.assertIn("without rescaling", result["spectrum_settings"]["normalization"])
             self.assertTrue((root / "ir_spectrum" / "ir_modes.csv").is_file())
             self.assertTrue((root / "raman_spectrum" / "raman_modes.csv").is_file())
 

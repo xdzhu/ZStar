@@ -226,6 +226,18 @@ class CanonicalCliArchitectureTests(unittest.TestCase):
             finally:
                 os.chdir(previous)
 
+    def test_legacy_molecular_spectra_requires_raman_only_and_preserves_dimension(self):
+        calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'raman'
+            with self.assertRaisesRegex(ValueError, 'molecular IR is disabled'):
+                handle_canonical_cli(['spectra', 'pre', '--method', 'mode', '--dim', '0',
+                                      '--root', str(root), '--stru', 'STRU'], calls.append)
+            self.assertFalse(root.exists())
+            handle_canonical_cli(['spectra', 'pre', '--method', 'mode', '--dim', '0',
+                                  '--kind', 'raman', '--root', str(root), '--stru', 'STRU'], calls.append)
+            self.assertEqual(calls[0][calls[0].index('--dim') + 1], '0')
+
     def test_canonical_piezo_pre_and_job_use_installed_workflow(self):
         source = Path(__file__).resolve().parents[1] / "examples" / "Piezoelectric_Response" / "AlN" / "run"
         with tempfile.TemporaryDirectory() as tmp:

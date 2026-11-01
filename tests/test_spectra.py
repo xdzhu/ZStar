@@ -295,6 +295,7 @@ class SpectraTests(unittest.TestCase):
             numbers, derivatives, kind = collect_molecular_dipole_derivatives(
                 root,
                 cell_volume_angstrom3=500.0,
+                diagnostic_only=True,
             )
             expected_delta = np.asarray([0.02, -0.02, 0.06])
             expected = expected_delta * 500.0e-30 / (0.04 * 3.33564e-30)
@@ -310,6 +311,7 @@ class SpectraTests(unittest.TestCase):
                 root,
                 cell_volume_angstrom3=500.0,
                 cell_lattice_angstrom=lattice,
+                diagnostic_only=True,
             )
             basis_to_cartesian = lattice / np.linalg.norm(
                 lattice, axis=1

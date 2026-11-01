@@ -363,11 +363,9 @@ def gen_input_in_folder(
     elif dimension == 2:
         k_grid = f"{k_grid} {k_grid} 1"
 
-    # Transverse low-dimensional polarization is integrated from the charge
-    # cube. ABACUS defaults to only three output digits, which is too coarse
-    # for finite-difference Born charges; its documented high-precision form
-    # is ``out_chg 1 10``.
-    charge_output = "1 10" if dimension in (1, 2) else "1"
+    # Real-space low-dimensional dipoles require more cube precision than
+    # ABACUS's three-digit default for finite-difference responses.
+    charge_output = "1 10" if dimension in (0, 1, 2) else "1"
 
     gdirs = [1, 2, 3]
     file_suffix = ['a', 'b', 'c']
@@ -559,6 +557,7 @@ def gen_input_in_folder(
         input_file.write("smearing_sigma      0.010\n")
         input_file.write("scf_nmax            200\n")
         input_file.write("scf_thr             1e-7\n")
+        input_file.write("mixing_beta         0.5\n")
         input_file.write("\n#Input & Output variables\n")
         input_file.write(f"init_chg            {initial_charge}\n")
         input_file.write("stru_file           STRU\n")

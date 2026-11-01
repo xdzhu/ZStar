@@ -44,10 +44,10 @@ EOF
         cat <<EOF
 6. For dim > 0: zstar ir --qpoints qpoints.yaml --born BEC.dat \
      --dielectric BORN --dim $dim --outdir ir_spectrum
-7. zstar raman prepare --stru STRU --qpoints qpoints.yaml --outdir raman
+7. zstar raman prepare --stru STRU --qpoints qpoints.yaml --outdir raman --dim $dim
 8. zstar raman run --raman-dir raman --reference 0.no-move \
      --qpoints qpoints.yaml --dim $dim
-   For dim 0 this also writes molecular IR from the mode dipole derivatives.
+   For dim 0 this is Raman-only; the historical Berry-phase IR route is disabled.
 DRY RUN: no spectroscopy solver or post-processing command was started.
 EOF
     fi
@@ -75,8 +75,8 @@ if [[ "$dim" != 0 ]]; then
     zstar ir --qpoints qpoints.yaml --born BEC.dat \
         --dielectric BORN --dim "$dim" --outdir ir_spectrum
 fi
-zstar raman prepare --stru STRU --qpoints qpoints.yaml --outdir raman
+zstar raman prepare --stru STRU --qpoints qpoints.yaml --outdir raman --dim "$dim"
 zstar raman run --raman-dir raman --reference 0.no-move \
     --qpoints qpoints.yaml --dim "$dim" \
     --abacus-command "$abacus_command" --pyatb-command "$pyatb_command"
-echo "IR/Raman spectra completed under $work"
+echo "Requested spectra completed under $work (mode workflow: Raman-only for dim 0)"

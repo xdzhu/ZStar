@@ -153,7 +153,9 @@ def status(root):
     for name in ['0.no-move']+[s['name'] for s in data['stages']]:
         stage = response/name
         rows.append(dict(stage=name, scf=workflow.scf_is_complete(stage),
-            polarization=workflow.polarization_is_complete(stage),
+            polarization=(None if data['dimension'] == 0 else workflow.polarization_is_complete(stage)),
+            molecular_position_source=(workflow.molecular_position_source_available(stage)
+                                       if data['dimension'] == 0 else None),
             raman_static=None if options['kind']=='ir' else _verify_done(root/'static'/name)))
     return rows
 
@@ -173,14 +175,36 @@ def run(root, **kwargs):
         dry_run = kwargs.get('dry_run', False)
         states = status(root)
         reference = response/'0.no-move'
-        if (not all(r['scf'] and r['polarization'] for r in states)
-                or not workflow.dielectric_is_complete(reference)
-                or not workflow.band_is_complete(reference)):
-            workflow.run_serial_workflow(response, **kwargs)
+        molecular = data.get('dimension') == 0
+        molecular_gate = reference/'zstar_insulation.json'
+        if molecular:
+            try:
+                gap_report = json.loads(molecular_gate.read_text(encoding='utf-8'))
+                gap_ready = gap_report.get('insulating') is True and gap_report.get('sampling') == 'scf-gamma'
+            except (OSError, ValueError, TypeError):
+                gap_ready = False
+        else:
+            gap_ready = workflow.band_is_complete(reference)
+        need_reference_dielectric = not (molecular and options['kind'] == 'ir')
+        if (not all(r['scf'] and (r['molecular_position_source'] if molecular else r['polarization'])
+                    for r in states)
+                or (need_reference_dielectric and not workflow.dielectric_is_complete(reference)) or not gap_ready):
+            run_options = dict(kwargs)
+            if not need_reference_dielectric:
+                run_options.setdefault('electronic_dielectric', False)
+            workflow.run_serial_workflow(response, **run_options)
         if not dry_run:
-            gap = workflow.read_band_gap(response/'0.no-move/pyatb-band')
-            if not gap.insulating:
-                raise ValueError('Reference band gap is not insulating')
+            if molecular:
+                try:
+                    gap_report = json.loads(molecular_gate.read_text(encoding='utf-8'))
+                except (OSError, ValueError, TypeError) as exc:
+                    raise ValueError('Molecular Gamma insulation report is missing or invalid') from exc
+                if gap_report.get('insulating') is not True or gap_report.get('sampling') != 'scf-gamma':
+                    raise ValueError('Molecular Gamma insulation check did not pass')
+            else:
+                gap = workflow.read_band_gap(response/'0.no-move/pyatb-band')
+                if not gap.insulating:
+                    raise ValueError('Reference band gap is not insulating')
         if options['kind'] != 'ir':
             executable = kwargs.get('pyatb_executable', 'pyatb')
             command = precision_command(kwargs.get('pyatb_command', 'pyatb'), executable)
@@ -197,9 +221,21 @@ def run(root, **kwargs):
 def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
             max_frequency=None, incident_polarization=None,
             scattered_polarization=None, plot=True):
+    if (incident_polarization is None) != (scattered_polarization is None):
+        raise ValueError('Specify both incident and scattered polarizations')
     root = Path(root).resolve()
     response, data, options = source(root)
-    if not (response/'qpoints.yaml').exists() or not (response/'BEC.dat').exists():
+    if data['dimension'] == 0 and options['kind'] in ('ir', 'all'):
+        from .molecular_apt_validation import verify_molecular_apt_receipt
+        if not (response/'qpoints.yaml').exists() or not (response/'BEC.dat').exists():
+            collect_shared_abacus(response, molecular_source='position')
+        apt_receipt = verify_molecular_apt_receipt(response)
+    else:
+        apt_receipt = None
+    if data['dimension'] == 0 and options['kind'] == 'raman':
+        if not (response/'qpoints.yaml').exists():
+            collect_shared_abacus(response, forces_only=True)
+    elif not (response/'qpoints.yaml').exists() or not (response/'BEC.dat').exists():
         collect_shared_abacus(response)
     modes = spectra.load_gamma_modes(response/'qpoints.yaml')
     atoms = read_structure(response/'0.no-move/STRU')
@@ -213,9 +249,9 @@ def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
     common = dict(broadening_cm1=broadening, max_frequency_cm1=max_frequency,
                   points=points, allow_imaginary=True)
     # Imaginary rigid modes are excluded by overlap; internal modes must be positive.
-    born = spectra.read_born_data(response/'BEC.dat', natoms=len(atoms),
-                                   dielectric_path=response/'BORN')
     if options['kind'] in ('ir','all'):
+        born = spectra.read_born_data(response/'BEC.dat', natoms=len(atoms),
+                                       dielectric_path=(None if data['dimension'] == 0 else response/'BORN'))
         if data['dimension'] == 0:
             derivatives = spectra.mode_effective_charges(modes, born.tensors)[selected]*4.80320471257
             ir = spectra.calculate_molecular_ir_spectrum(modes, numbers, derivatives, **common)
@@ -226,6 +262,40 @@ def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
             spectra.write_ir_outputs(root/'ir', ir, plot=plot)
     report = dict(method='unified', dimension=data['dimension'], mode_selection=audit,
                   mode_numbers=numbers, source_manifest_sha256=_digest(response/MANIFEST))
+    report['response_scope'] = {
+        'calculator': 'ABACUS',
+        'phonons': 'Gamma finite displacement using the Unified ensemble',
+        'ir_dipole_source': ({0: 'experimental R=0 position-matrix expectation',
+                              1: 'Berry phase along the periodic axis and charge density in open directions',
+                              2: 'Berry phase in periodic directions and charge density normal to the slab',
+                              3: 'Berry-phase polarization'}[data['dimension']]
+                             if options['kind'] in ('ir', 'all') else None),
+        'raman_electronic_response': ('PYATB independent-particle static response; '
+                                      'no self-consistent local-field screening'
+                                      if options['kind'] != 'ir' else None),
+        'scope_limit': 'Gamma stability and method checks do not establish stability over the full Brillouin zone',
+    }
+    report['spectrum_settings'] = {
+        'broadening': {'profile': 'Lorentzian', 'fwhm_cm-1': float(broadening)},
+        'grid_points': int(points), 'maximum_wavenumber_cm-1': max_frequency,
+        'raman_temperature_K': float(temperature) if options['kind'] != 'ir' else None,
+        'raman_laser_nm': float(laser) if options['kind'] != 'ir' else None,
+        'raman_geometry': ('powder average plus specified Cartesian polarization' if incident_polarization is not None
+                           else 'powder average') if options['kind'] != 'ir' else None,
+        'incident_polarization_cartesian': (list(map(float, incident_polarization))
+                                           if incident_polarization is not None else None),
+        'scattered_polarization_cartesian': (list(map(float, scattered_polarization))
+                                            if scattered_polarization is not None else None),
+        'polarization_vectors': 'normalized to unit vectors when used',
+        'normalization': ('Raman activities and broadened powder spectrum normalized independently; '
+                          'polarized activities normalized independently') if options['kind'] != 'ir' else None,
+    }
+    report['gamma_stability'] = spectra.gamma_stability_report(modes, dimensionality=data['dimension'])
+    if apt_receipt is not None:
+        report['molecular_apt_validation'] = {
+            'method': apt_receipt['method'], 'sum_consistency': apt_receipt['sum_consistency'],
+            'independent_accuracy_validated': apt_receipt['independent_accuracy_validated'],
+        }
     if options['kind'] != 'ir':
         static = root/'static'
         names = ['0.no-move']+[s['name'] for s in data['stages']]
@@ -250,9 +320,7 @@ def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
             tensor_kind=convention['tensor_unit'], dimensionality=data['dimension'],
             temperature_K=temperature, laser_nm=laser, **common)
         spectra.write_raman_outputs(root/'raman', raman, plot=plot)
-        if bool(incident_polarization) != bool(scattered_polarization):
-            raise ValueError('Specify both incident and scattered polarizations')
-        if incident_polarization:
+        if incident_polarization is not None:
             from .spectroscopy_analysis import calculate_polarized_raman_spectrum
             polarized = calculate_polarized_raman_spectrum(
                 modes.frequencies_cm1[selected], tensors, mode_numbers=numbers,
@@ -272,7 +340,7 @@ def collect(root, *, temperature=300., laser=532., broadening=8., points=3001,
             metadata={'mode_numbers':numbers}), ResponseQuantity('dielectric_displacement_derivatives',
             derivative, '1/angstrom', 'supercell', ('atom','row','column','displacement'))]
         base = response/'response.json'
-        if base.exists():
+        if base.exists() and (data['dimension'] != 0 or apt_receipt is not None):
             quantities = list(ResponseRecord.read(base).quantities)+quantities
         ResponseRecord(backend='abacus', dimensionality=dimension_spec(data['dimension']),
             quantities=tuple(quantities), provenance={'method':'unified', 'ensemble':str(response)},

@@ -62,7 +62,11 @@ zstar db collect --manifest candidates.csv --output database
 
 `response_kind` 与 `status` 用于防止不同物理量混用：三维 bulk 为 `bulk_3d`，二维为
 `sheet_2d`，一维为 `line_1d`，分子为 `molecular_spectroscopy`。具有已验证光谱但不适用周期 BEC 的分子
-记录为 `complete_auxiliary`，而不是伪报“缺失 BEC”。
+仅有分子谱文件时记录为 `complete_auxiliary`，但同时标记
+`molecular_spectrum_accuracy_not_assessed`：文件存在不代表物理结果已验证。
+ABACUS 零维 APT 必须具有匹配的来源与结果指纹，否则标为 `unverified` 并排除在
+`born_tensors.jsonl` 之外。凭据通过只说明来源和原始求和检查通过，不证明独立精度；
+该限制也会保留在质量标记中。VASP 和 CP2K 原生条目不套用 ABACUS 专属凭据。
 
 ## 最小来源记录
 

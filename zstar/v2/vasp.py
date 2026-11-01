@@ -36,7 +36,17 @@ def _numbers(line: str) -> list[float]:
 
 
 def _parse_energy(text: str) -> float:
-    matches = re.findall(rf"free\s+energy\s+TOTEN\s*=\s*({_NUMBER})\s+eV", text, re.I)
+    # DFPT iterations can print additional response-energy TOTEN lines after
+    # the ground-state total. Prefer the final ionic energy-summary block.
+    matches = re.findall(
+        rf"FREE\s+ENERG(?:IE|Y)\s+OF\s+THE\s+ION-ELECTRON\s+SYSTEM\s*\(eV\)"
+        rf"[\s\S]{{0,1000}}?(?i:free\s+energy\s+TOTEN)\s*=\s*({_NUMBER})\s+eV",
+        text,
+    )
+    if not matches:
+        matches = re.findall(rf"free\s+energy\s+TOTEN\s*=\s*({_NUMBER})\s+eV", text, re.I)
+        if len(matches) > 1 and re.search(r"linear\s+response", text, re.I):
+            raise ValueError("VASP OUTCAR has multiple response energies but no ionic energy-summary block")
     if not matches:
         raise ValueError("VASP OUTCAR does not contain a free-energy TOTEN line")
     value = _float(matches[-1])

@@ -107,6 +107,36 @@ def make_stru(path, mode='Direct'):
     (path.parent / 'Si.orb').write_text('test orbital fixture')
 
 
+def test_molecular_workflow_dry_run_uses_position_not_berry(tmp_path):
+    from zstar.workflow import run_serial_workflow
+
+    source = tmp_path / 'STRU'
+    make_stru(source)
+    output = tmp_path / 'run'
+    prepare_shared_abacus(source, root=output, dimension=0)
+    states = run_serial_workflow(output, dry_run=True, stop_after=2)
+    assert len(states) == 2
+    assert all(state.status == 'dry-run' for state in states)
+    logs = '\n'.join(p.read_text(encoding='utf-8') for p in (output / '.zstar' / 'logs').glob('*.log'))
+    assert '--optical' in logs
+    assert '--polar' not in logs
+    assert '--band' not in logs
+    for stage in ('0.no-move', 'disp-001'):
+        lines = (output / stage / 'INPUT').read_text(encoding='utf-8').splitlines()
+        assert any(line.split() == ['out_chg', '1', '10'] for line in lines)
+
+
+def test_molecular_dipole_changes_accept_position_adapter_lists(tmp_path, monkeypatch):
+    from zstar.shared_abacus import _dipole_changes
+
+    monkeypatch.setattr('zstar.molecular_position.experimental_position_responses',
+                        lambda root, manifest: ([[1.0, 2.0, 3.0]], {'method': 'position'}))
+    diagnostics = {}
+    changes = _dipole_changes(tmp_path, {'dimension': 0}, diagnostics, molecular_source='position')
+    assert changes[0].tolist() == [1.0, 2.0, 3.0]
+    assert diagnostics['method'] == 'position'
+
+
 @pytest.mark.parametrize('mode', ['Direct', 'Cartesian'])
 def test_actual_written_displacement_and_bohr_scale(tmp_path, mode):
     source = tmp_path / 'STRU'
@@ -203,6 +233,42 @@ def test_joint_post_roundtrip_and_asymmetric_born_convention(tmp_path, monkeypat
     np.testing.assert_allclose(loaded.force_constants.transpose(0,2,1,3).reshape(6,6), hessian, atol=1e-8)
 
 
+@pytest.mark.parametrize('charge', [0.0, 4.0])
+def test_molecular_collection_gates_before_projection_and_certifies_sources(tmp_path, monkeypatch, charge):
+    from zstar.molecular_apt_validation import PENDING, verify_molecular_apt_receipt
+    from zstar.shared_abacus import _digest, collect_shared_abacus
+    source = tmp_path/'STRU'
+    make_stru(source)
+    out = tmp_path/'molecule'
+    manifest = prepare_shared_abacus(source, root=out, dimension=0)
+    initial = out/'0.no-move/STRU'
+    changes = [charge*np.asarray(stage['displacement_A']) for stage in manifest['stages']]
+    def fake_dipoles(root, data, diagnostics, *, molecular_source):
+        assert molecular_source == 'position'
+        diagnostics.update({'method': 'abacus_r0_position_expectation_experimental',
+                            'reference': {'source_sha256': {str(initial): _digest(initial)}},
+                            'stages': {}})
+        return changes
+    monkeypatch.setattr('zstar.shared_abacus._dipole_changes', fake_dipoles)
+    monkeypatch.setattr('zstar.shared_abacus.read_forces', lambda path: np.zeros((1, 3)))
+    monkeypatch.setattr('zstar.pyatb_compat.read_static_dielectric', lambda *a: (np.eye(3), 'test'))
+    if charge:
+        with pytest.raises(ValueError, match='before projection'):
+            collect_shared_abacus(out, molecular_source='position')
+        assert not (out/'BEC.dat').exists()
+        assert (out/PENDING).exists()
+        assert json.loads((out/'.zstar/molecular_apt_diagnostic.json').read_text())['status'] == 'fail'
+    else:
+        result = collect_shared_abacus(out, molecular_source='position')
+        assert result['molecular_apt_quality']['sum_consistency'] == 'pass'
+        receipt = verify_molecular_apt_receipt(out)
+        assert not receipt['independent_accuracy_validated']
+        assert not (out/PENDING).exists()
+        initial.write_text(initial.read_text() + '\n# changed\n')
+        with pytest.raises(ValueError, match='source changed'):
+            verify_molecular_apt_receipt(out)
+
+
 def test_joint_post_allows_explicitly_omitted_electronic_dielectric(tmp_path, monkeypatch):
     from zstar.shared_abacus import collect_shared_abacus
     from zstar.response_schema import ResponseRecord
@@ -225,6 +291,11 @@ def test_joint_post_allows_explicitly_omitted_electronic_dielectric(tmp_path, mo
     (state_dir / '0.no-move.json').write_text(
         json.dumps({'dielectric': 'not-requested'}), encoding='utf-8')
     (output / 'BORN').write_text('stale output\n', encoding='utf-8')
+
+    with pytest.raises(FileExistsError, match='BORN already exists'):
+        collect_shared_abacus(output)
+    assert (output / 'BORN').read_text(encoding='utf-8') == 'stale output\n'
+    (output / 'BORN').unlink()
 
     result = collect_shared_abacus(output)
 

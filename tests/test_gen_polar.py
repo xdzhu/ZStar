@@ -21,6 +21,28 @@ from zstar.symmetry_reduction import reduce_abacus_atoms, write_reduction_report
 
 
 class GenPolarTests(unittest.TestCase):
+    def test_default_mixing_beta_does_not_override_user_input(self):
+        for supplied in (None, '0.2'):
+            with self.subTest(supplied=supplied), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                source = None
+                if supplied is not None:
+                    source = root / 'user-input'
+                    source.write_text(f'INPUT_PARAMETERS\nmixing_beta {supplied}\n')
+                before = Path.cwd()
+                try:
+                    os.chdir(root)
+                    gen_input_in_folder(0.1, nscf_calculator='pyatb',
+                                        input_mode='pyatb', scf_input=source,
+                                        xc='pbe')
+                finally:
+                    os.chdir(before)
+                fields = [line.split() for line in (root / 'INPUT-scf').read_text().splitlines()]
+                mixing = [row[1] for row in fields if len(row) > 1 and row[0] == 'mixing_beta']
+                self.assertEqual(mixing, [supplied or '0.5'])
+                if source:
+                    self.assertIn(f'mixing_beta {supplied}', source.read_text())
+
     def test_pyatb_matrix_export_disables_gamma_only(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -39,6 +61,7 @@ class GenPolarTests(unittest.TestCase):
             self.assertEqual(fields['gamma_only'], ['0'])
             self.assertEqual(fields['out_mat_hs2'], ['1'])
             self.assertEqual(fields['out_mat_r'], ['1'])
+            self.assertEqual(fields['out_chg'], ['1', '10'])
             self.assertEqual(source.read_text(), original)
 
     def test_gen_polar_uses_spglib_representatives_for_task_directories(self):

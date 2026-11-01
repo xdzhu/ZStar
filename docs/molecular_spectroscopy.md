@@ -1,29 +1,19 @@
 # Molecular IR and Raman spectroscopy
 
-The preferred ABACUS route now reuses the [Unified displacement workflow](unified_spectroscopy.md)
-for APT, Gamma modes, IR and Raman. The explicit normal-mode workflow below remains
-available with `zstar spectra pre --method mode` as an independent control.
-
-This guide describes the production `--dim 0` workflow for isolated molecules
-in periodic vacuum cells. It covers the physical convention, execution chain,
-outputs, convergence checks, and benchmark acceptance criteria.
+The ABACUS route reuses the [Unified displacement workflow](unified_spectroscopy.md)
+for APT, Gamma modes, IR and Raman. Its molecular position-matrix APT is
+experimental and currently restricted to neutral, nonmagnetic closed-shell
+molecules with Gamma-only sampling. An APT sum-rule pass is not an independent
+accuracy or vacuum-convergence certificate.
 
 ## Scope and convention
 
 The molecule is placed in a cell with enough vacuum to remove interactions
 between periodic images. ZStar uses mass-weighted Gamma normal coordinates
-`Q` in `angstrom * sqrt(amu)`. PYATB polarization components along the
-lattice directions are transformed to Cartesian components, including for a
-non-orthogonal cell.
-
-For every selected mode, ZStar evaluates the `+Q` and `-Q` structures:
-
-- Molecular IR: `dmu/dQ = V * dP/dQ`, where the PYATB Berry polarization
-  difference is wrapped onto the nearest polarization branch before the cell
-  volume `V` is applied.
-- Molecular Raman: `dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ`, where the
-  dilute-supercell dielectric derivative is converted to a molecular
-  polarizability derivative.
+`Q` in `angstrom * sqrt(amu)`. Molecular IR uses dipole derivatives obtained
+from the APT; it is not obtained from a periodic Berry-polarization branch.
+For Raman, `dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ` converts the dilute-cell
+dielectric derivative to a molecular polarizability derivative.
 
 The displayed spectra are normalized. The CSV files preserve dipole and
 polarizability derivatives, but ZStar does not label the normalized curves as
@@ -31,53 +21,34 @@ gas-phase integrated cross sections.
 
 ## Calculation chain
 
-1. Relax the molecule in a fixed vacuum cell. Fix one central atom during the
-   relaxation only when needed to prevent center-of-mass drift.
-2. Release every atom and calculate finite-displacement force constants with
-   `zstar phonon pre` and `zstar phonon post`.
-3. Inspect the Gamma modes with `zstar phonon irrep`. Exclude rigid translations and
-   rotations by a reviewed frequency cutoff or explicit mode list.
-4. Prepare central mode displacements with `zstar spectra pre --method mode`.
-5. Run the reference SCF once and retain its reusable charge density.
-6. Run `zstar spectra run`. Each displaced SCF reuses the reference
-   charge density; PYATB then calculates static dielectric response and Berry
-   polarization without repeating DFT.
+Relax the molecule in a sufficiently large fixed cell and release all atoms
+for the response calculations. Prepare, run and inspect the common ensemble:
 
 ```bash
-zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml \
-  --dim 0 --acoustic-cutoff 100 --amplitude 0.02 --root raman \
-  --copy INPUT-scf --copy KPT
-
-zstar spectra run --root raman --reference 0.no-move \
-  --abacus-command "mpirun -np 1 abacus" \
-  --pyatb-command "mpirun -np 1 pyatb"
-zstar spectra stat --root raman
-zstar spectra post --root raman
+zstar bec pre --stru STRU --dim 0
+zstar bec run
+zstar bec post
+zstar phonon inspect --dim 0 --qpoints qpoints.yaml --json gamma_review.json
+zstar spectra pre --response . --root spectra
+zstar spectra run --root spectra
+zstar spectra post --root spectra
 ```
 
-The workflow is serial and resumable. Use `zstar spectra stat --root raman`
-to inspect every plus/minus stage.
-
-## Independent post-processing
-
-```bash
-zstar spectra stat --root raman
-zstar spectra post --root raman
-```
-
-The postprocessor checks `pyatb` and `pyatb-polar` under each mode stage and
-writes both spectra from the saved workflow manifest.
+The legacy normal-mode Raman-only workflow remains available, but its old
+Berry-phase molecular IR route is disabled. Historical molecular IR results
+without compatible APT provenance should be treated as unverified. See the
+[diagnostics guide](workflow_diagnostics.md) before reusing old SCF results.
 
 ## Outputs
 
 | Path | Contents |
 | --- | --- |
-| `raman/molecular_ir_derivatives.json` | Mode-resolved `dmu/dQ`, volume, amplitude, and provenance. |
-| `raman/raman_tensors.json` | Molecular `dalpha/dQ` tensors and conversion metadata. |
-| `ir_spectrum/ir_modes.csv` | Frequencies, Cartesian dipole derivatives, raw activities, and normalized activities. |
-| `raman_spectrum/raman_modes.csv` | Frequencies, Placzek activities, depolarization ratios, and Raman tensors. |
-| `ir_spectrum/*.{png,pdf,svg}` | Normalized molecular IR spectrum. |
-| `raman_spectrum/*.{png,pdf,svg}` | Normalized molecular Raman spectrum. |
+| `BEC.raw.dat`, `BEC.dat` | Unprojected and projected atomic polar tensors. |
+| `.zstar/molecular_apt_diagnostic.json` | Raw APT sum and projection diagnostics. |
+| `.zstar/molecular_apt_validation.json` | Method, checks and source/output fingerprints. |
+| `spectra/ir/ir_modes.csv` | Frequencies, dipole derivatives and IR activities. |
+| `spectra/raman/raman_modes.csv` | Frequencies, Placzek activities and Raman tensors. |
+| `spectra/spectra_result.json` | Response method, mode selection and spectrum settings. |
 
 ## Required convergence checks
 
@@ -90,7 +61,12 @@ writes both spectra from the saved workflow manifest.
 - Preserve molecular symmetry tightly enough that forbidden activities and
   degenerate mode splittings remain close to numerical zero.
 
-## Benchmarks
+## Historical Benchmarks
+
+The frequency and selection-rule comparisons below describe historical
+calculations. Their old Berry-derived molecular IR intensities have not been
+validated by the experimental position-matrix route and must not be treated
+as an accuracy certificate for the current molecular APT.
 
 Methane is the primary non-centrosymmetric benchmark. The ABACUS/PBE harmonic
 frequencies are 1287.93, 1516.62, 2968.29, and 3088.05 cm-1, within

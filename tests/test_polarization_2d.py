@@ -101,6 +101,30 @@ def write_molecular_cube(path: Path, dipole=(0.5, 0.0, 0.0)):
 
 
 class Polarization2DTests(unittest.TestCase):
+    def test_molecular_dipole_can_preserve_raw_density_and_fixed_center(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cube = Path(tmp) / "SPIN1_CHG.cube"
+            write_molecular_cube(cube, (0.5, 0.0, 0.0))
+            lines = cube.read_text().splitlines()
+            for index in range(7, len(lines)):
+                lines[index] = " ".join(str(float(value) * 1.01) for value in lines[index].split())
+            cube.write_text("\n".join(lines) + "\n")
+            scaled = integrate_molecular_dipole(cube)
+            raw = integrate_molecular_dipole(cube, normalize_density=False,
+                                             center_fractional=scaled.center_fractional)
+            self.assertAlmostEqual(raw.electron_count_raw, 1.01)
+            self.assertEqual(raw.neutrality_scale, 1.0)
+            self.assertFalse(raw.diagnostics['density_normalized'])
+            self.assertNotAlmostEqual(raw.dipole_e_bohr[0], scaled.dipole_e_bohr[0])
+            centered = integrate_molecular_dipole(cube, normalize_density=False,
+                                                  center_fractional=scaled.center_fractional,
+                                                  dipole_origin_fractional=scaled.center_fractional)
+            shift_bohr = np.asarray(scaled.center_fractional) @ (np.eye(3) * 4)
+            np.testing.assert_allclose(np.asarray(centered.dipole_e_bohr) - raw.dipole_e_bohr,
+                                       .01 * shift_bohr, atol=1e-12)
+            with self.assertRaisesRegex(ValueError, 'center_fractional'):
+                integrate_molecular_dipole(cube, center_fractional=[1, 2])
+
     def test_molecular_dipole_integrates_all_cartesian_components(self):
         with tempfile.TemporaryDirectory() as tmp:
             cube = Path(tmp) / "SPIN1_CHG.cube"

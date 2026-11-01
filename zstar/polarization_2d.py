@@ -367,6 +367,9 @@ def integrate_molecular_dipole(
     *,
     neutrality_tolerance: float = 0.05,
     ionic_valence_charges: Optional[Sequence[float]] = None,
+    normalize_density: bool = True,
+    center_fractional: Optional[Sequence[float]] = None,
+    dipole_origin_fractional: Optional[Sequence[float]] = None,
 ) -> MolecularDipole:
     """Integrate a neutral molecular dipole from a 3D electron-density cube.
 
@@ -387,18 +390,20 @@ def integrate_molecular_dipole(
     inverse_cell = np.linalg.inv(cell)
     origin = np.asarray(cube.origin, dtype=float)
     atom_fractional = (cube.positions - origin) @ inverse_cell
-    center = np.asarray(
-        [
-            _periodic_weighted_center(
-                atom_fractional[:, axis],
-                cube.charges,
-                0.0,
-                1.0,
-            )
-            for axis in range(3)
-        ],
-        dtype=float,
-    )
+    if center_fractional is None:
+        center = np.asarray(
+            [
+                _periodic_weighted_center(
+                    atom_fractional[:, axis], cube.charges, 0.0, 1.0
+                )
+                for axis in range(3)
+            ],
+            dtype=float,
+        )
+    else:
+        center = np.asarray(center_fractional, dtype=float)
+        if center.shape != (3,) or not np.all(np.isfinite(center)):
+            raise ValueError("center_fractional must contain three finite values")
     atom_unwrapped_fractional = np.column_stack(
         [
             _periodic_unwrap(atom_fractional[:, axis], center[axis], 1.0)
@@ -415,7 +420,8 @@ def integrate_molecular_dipole(
         )
         for axis, size in enumerate(cube.dimensions)
     ]
-    density = cube.density * cube.voxel_volume_bohr3 * cube.neutrality_scale
+    density_scale = cube.neutrality_scale if normalize_density else 1.0
+    density = cube.density * cube.voxel_volume_bohr3 * density_scale
     electronic_fractional_moment = np.asarray(
         [
             float(
@@ -434,6 +440,12 @@ def integrate_molecular_dipole(
     ionic_fractional_moment = np.sum(
         cube.charges[:, None] * atom_unwrapped_fractional, axis=0
     )
+    origin_fractional = (np.zeros(3) if dipole_origin_fractional is None
+                         else np.asarray(dipole_origin_fractional, dtype=float))
+    if origin_fractional.shape != (3,) or not np.all(np.isfinite(origin_fractional)):
+        raise ValueError("dipole_origin_fractional must contain three finite values")
+    ionic_fractional_moment -= origin_fractional * float(np.sum(cube.charges))
+    electronic_fractional_moment -= origin_fractional * cube.electron_count_raw * density_scale
     ionic_dipole = ionic_fractional_moment @ cell
     electronic_dipole = -electronic_fractional_moment @ cell
     dipole = ionic_dipole + electronic_dipole
@@ -444,13 +456,20 @@ def integrate_molecular_dipole(
         dipole_debye=tuple(float(value) for value in dipole_debye),
         electron_count_raw=cube.electron_count_raw,
         ionic_charge=float(np.sum(cube.charges)),
-        neutrality_scale=cube.neutrality_scale,
+        neutrality_scale=density_scale,
         center_fractional=tuple(float(value) for value in center),
         diagnostics={
             "cell_bohr": cell.tolist(),
             "dimensions": list(cube.dimensions),
+            "cube_origin_bohr": cube.origin.tolist(),
+            "step_vectors_bohr": cube.step_vectors.tolist(),
+            "atom_positions_bohr": cube.positions.tolist(),
             "ionic_dipole_e_bohr": ionic_dipole.tolist(),
             "electronic_dipole_e_bohr": electronic_dipole.tolist(),
+            "density_normalized": bool(normalize_density),
+            "unapplied_neutrality_scale": cube.neutrality_scale,
+            "dipole_origin_fractional": origin_fractional.tolist(),
+            "effective_electron_count": cube.electron_count_raw * density_scale,
             "neutrality_error_relative": abs(
                 cube.electron_count_raw - float(np.sum(cube.charges))
             ) / float(np.sum(cube.charges)),

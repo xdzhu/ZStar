@@ -78,9 +78,14 @@ ABACUS 自洽计算和 PYATB 极化计算，再次执行时会续算未完成阶
 同时重建 BEC 与 Gamma 点力常数，并输出 `BEC.dat`、`BORN`、
 `FORCE_CONSTANTS` 和模式数据。
 
+自动生成的 ABACUS 输入默认使用 `mixing_beta 0.5`；如果提供自己的 SCF
+`INPUT`，则保留用户设置，不会用该默认值覆盖。
+
 高通量监测见[工作流日志与故障定位](workflow_diagnostics.zh-CN.md)。程序输出实时
 进入日志，`zstar bec stat --json` 提供最后步骤和日志路径；Γ 点稳定性及介电拒算
 原因均保留诊断报告。
+[分子 APT 核查记录](../examples/Benchmarks/Molecular_APT_Safety/README.md)展示了
+原始求和检查、同一 SCF 数据的交叉检查与独立精度验证之间的区别。
 
 ### 4. 生成 IR 与 Raman 谱
 
@@ -408,7 +413,7 @@ zstar bec run --root . \
 低维极化/BEC 任务会自动写入 `out_chg 1 10`，避免 ABACUS cube 默认舍入精度限制
 横向偶极差分。
 
-默认执行顺序如下：
+对于周期体系，默认执行顺序如下：
 
 1. 执行 `0.no-move` SCF，输出电荷密度与稀疏矩阵。
 2. 在完整 ABACUS SCF k 网格上检查占据数与最小带隙。
@@ -418,7 +423,10 @@ zstar bec run --root . \
 6. 按确定顺序串行执行全部位移，复查其 SCF 网格带隙与占据流形后再计算极化。
 7. 在 `.zstar/` 保存阶段状态；中断后再次执行同一命令即可继续。
 
-默认门控同时采用完整 SCF k 网格的占据记录和高对称路径诊断。
+对于 `--dim 0`，实验性分子路线检查 SCF 的 Gamma 点占据，并由位置矩阵重构偶极；
+不计算周期能带路径或分子的 Berry 相位极化。
+
+对于周期体系，默认门控同时采用完整 SCF k 网格的占据记录和高对称路径诊断。
 `--gap-mode mp` 会以 PYATB MP 网格替代路径诊断，SCF 网格检查仍然保留：
 
 ```bash
@@ -485,11 +493,10 @@ zstar bec run --root . \
 zstar bec post --root .
 ```
 
-Unified 收集器同时重构分子 APT 与力常数，将原始及投影后张量保存在
-`response_fit.json`，并写出统一格式的 `response.json`。
-PYATB 输出适配器保留完整精度的极化数值，不修改已安装的 PYATB 内核。
-旧式分子收集流程（`--ensemble cartesian`）仍写出 `apt.json`；对于旧的舍入输出，
-它也可以从分别打印的离子相位与电子相位中恢复微小的极化信号。
+实验性的 Gamma 点分子位置矩阵路线同时重构 APT 与力常数，记录原始及投影后张量、
+投影前求和诊断和来源指纹。检查通过不代表独立精度或真空收敛性已得到证明。
+旧式笛卡尔位移集合也可使用同一位置矩阵方法；缺少相应验证记录的历史 Berry/cube
+分子 APT 属于未经验证的数据，不会被静默用于 IR。
 
 三维：
 
@@ -527,7 +534,7 @@ zstar bec post --root .
 | `BEC_symmetry.json` | 旧式笛卡尔位移结果的对称重构与残差报告。 |
 | `zstar_2d_bec.json` | 旧式笛卡尔位移的二维混合 BEC 诊断。 |
 | `zstar_1d_bec.json` | 旧式笛卡尔位移的一维混合 BEC 诊断。 |
-| `apt.json` | 旧式笛卡尔位移/cube 分子 APT 及平移求和诊断。 |
+| `molecular_apt.json` | 笛卡尔位置矩阵分子 APT 及原始求和诊断。 |
 
 新计算使用上述短文件名。历史档案保留 `Z-BORN-symm.out`、
 `zstar_response.json`、`molecular_apt.json` 等原名和原始哈希。
@@ -714,31 +721,32 @@ zstar spectra post
 完整的物理约定、工作流、输出文件与 benchmark 请见
 [分子 IR 与 Raman 光谱](molecular_spectroscopy.zh-CN.md)。
 
-孤立分子使用足够大的周期真空超胞表示。首先沿正频分子振动模式生成 Raman 与 IR
-共用的简正坐标正负位移：
+孤立分子使用足够大的周期真空超胞表示。对于 Gamma 点中性的非磁闭壳层分子，
+先计算实验性的位置矩阵 APT 和 Gamma 点力常数：
 
 ```bash
-zstar spectra pre --stru STRU --dim 0 \
-  --acoustic-cutoff 100 --amplitude 0.02
+zstar bec pre --stru STRU --dim 0
+zstar bec run
+zstar bec post
 ```
 
-以下命令以可断点续算的串行工作流同时生成两种谱：
+随后以该响应结果准备和计算光谱：
 
 ```bash
-zstar spectra run
-zstar spectra post
+zstar spectra pre --response . --root spectra
+zstar spectra run --root spectra
+zstar spectra post --root spectra
 ```
 
-每个已完成的位移 SCF 只增加两个很轻的 PYATB 后处理阶段。静态介电响应按照
-`dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ` 转换为分子极化率导数；完成极化分支回绕
-后的 Berry 极化按照 `dmu/dQ = V * dP/dQ` 转换为分子偶极矩导数。简正坐标步长
-`Q` 的单位为 `angstrom * sqrt(amu)`。
+IR 偶极导数来自经过来源校验的 APT，而不是分子的 Berry 相位极化差分。
+静态介电响应导数通过 `dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ` 给出 Raman
+极化率导数。分子路线的适用范围与局限详见上述文档。
 
 已有分子位移结果仍通过同一套规范生命周期检查和重新后处理：
 
 ```bash
-zstar spectra stat --root raman
-zstar spectra post --root raman
+zstar spectra stat --root spectra
+zstar spectra post --root spectra
 ```
 
 分子谱默认归一化，用于模式归属和工作流验证，不宣称为气相积分截面。定量强度计算
@@ -772,7 +780,8 @@ VASP 薄层可使用 `--dim 2 --modes-phonopy qpoints.yaml` 提供已归档的 P
 `examples/0D_Molecules/{H2O,CH4}/results/hse_apt_summary.json`。完整求解器
 临时目录和 cube 文件有意不纳入仓库；JSON 保留泛函、收敛阈值、位移、张量约定
 和对称性修正后的结果，足以追溯该基准。
-两套 HSE 案例均采用 ABACUS 电荷密度 cube 积分，不经过 PYATB。
+两套均为不经过 PYATB 的历史 cube 积分结果，其 APT 精度尚未经当前分子位置矩阵
+路线验证。
 
 ## 代表性 BEC 与 APT 结果
 
@@ -789,7 +798,8 @@ VASP 薄层可使用 `--dim 2 --modes-phonopy qpoints.yaml` 提供已归档的 P
 | 0D | [CH4](../examples/0D_Molecules/CH4_unified) | ABACUS + PYATB, PBE | `q_GAPT(C) = -0.021 e`; `q_GAPT(H) = +0.005 e` |
 
 周期体系行列出 BEC 的代表分量。分子行列出原子极化张量的旋转不变量
-`q_GAPT = Tr(A)/3`，不应将其解释为周期晶体 BEC。
+`q_GAPT = Tr(A)/3`，不应将其解释为周期晶体 BEC。上述两个分子条目为历史数值，
+尚未经当前 APT 路线验证。
 
 数值收敛性模板见公开的 [SiC 位移幅度扫描](../examples/Convergence_Tests/SiC_Displacement)
 与[单层 hBN 胞高扫描](../examples/Convergence_Tests/hBN_Vacuum)。两个案例均保留

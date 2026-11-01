@@ -86,9 +86,15 @@ polarization calculations; rerunning it resumes incomplete stages. `bec post`
 jointly reconstructs the BEC and Gamma-point force constants and writes
 `BEC.dat`, `BORN`, `FORCE_CONSTANTS`, and the mode data.
 
+The generated ABACUS input uses `mixing_beta 0.5` by default. If you provide
+your own SCF `INPUT`, its mixing setting is retained rather than replaced.
+
 For high-throughput monitoring, see [workflow logs and failure diagnosis](workflow_diagnostics.md).
 Solver output is streamed live; `zstar bec stat --json` exposes the last step
 and log path. Gamma stability and dielectric refusals retain diagnostic reports.
+The [molecular APT validation record](../examples/Benchmarks/Molecular_APT_Safety/README.md)
+illustrates the distinction between raw sum checks, same-SCF cross-checks and
+independent accuracy validation.
 
 ### 4. Generate the IR and Raman spectra
 
@@ -199,7 +205,8 @@ mesh/step diagnostics, and separately accounted CPU core-hours.
 - Symmetry reduction, full-cell tensor reconstruction, and acoustic-sum-rule correction.
 - A serial, resumable `0.no-move -> displaced structures` execution model.
 - Reuse of the converged `0.no-move` charge density for every displacement.
-- Reference PYATB plus SCF-mesh insulation checks and displaced-state occupied-manifold checks.
+- Periodic PYATB plus SCF-mesh insulation checks, and Gamma-occupation checks
+  for molecular stages.
 - Shell, Slurm, and Torque driver generation.
 - Automatic compatibility with legacy and direct-static-response PYATB versions.
 - A serial, resumable CP2K backend for Berry-phase BEC tensors and native APT checks.
@@ -457,7 +464,7 @@ For low-dimensional polarization/BEC runs, ZStar writes `out_chg 1 10` so
 real-space transverse dipole differences are not limited by ABACUS cube
 rounding.
 
-The default execution order is:
+For periodic systems, the default execution order is:
 
 1. Run `0.no-move` SCF and save charge density and sparse matrices.
 2. Check occupations and the minimum gap over the complete ABACUS SCF k mesh.
@@ -468,7 +475,11 @@ The default execution order is:
    manifold, and then calculate its polarization.
 7. Record stage state under `.zstar/` so an interrupted run can resume.
 
-The default gate combines the complete SCF k-mesh occupation record with a
+For `--dim 0`, the experimental molecular route instead checks the recorded
+Gamma-point SCF occupations and reconstructs dipoles from the position matrices;
+it does not evaluate a periodic band path or Berry-phase molecular polarization.
+
+For periodic systems, the default gate combines the complete SCF k-mesh occupation record with a
 high-symmetry-path diagnostic. `--gap-mode mp` replaces the path diagnostic
 with an additional PYATB MP-grid diagnostic; the SCF-mesh check remains active:
 
@@ -539,12 +550,12 @@ zstar bec run --root . \
 zstar bec post --root .
 ```
 
-The Unified collector reconstructs molecular APTs and force constants together,
-retaining raw and projected tensors in `response_fit.json` and the
-normalized `response.json`. Its PYATB output adapter retains full-precision
-polarization values without modifying the installed PYATB kernel.
-The legacy Cartesian molecular collector writes `apt.json`; for old
-rounded outputs it can also recover small signals from separately printed phases.
+The experimental Gamma-only molecular position-matrix route reconstructs APTs
+and force constants together. It records raw and projected tensors, a raw
+sum-rule diagnostic, and source fingerprints. A pass does not establish
+independent accuracy or vacuum convergence. The legacy Cartesian ensemble
+can use the same position-matrix approach; historical Berry/cube APTs without
+a compatible validation record are unverified and cannot be silently reused.
 
 Three-dimensional:
 
@@ -583,7 +594,7 @@ Key outputs:
 | `BEC_symmetry.json` | Legacy Cartesian reconstruction and residual report. |
 | `zstar_2d_bec.json` | Legacy Cartesian hybrid 2D diagnostics. |
 | `zstar_1d_bec.json` | Legacy Cartesian hybrid 1D diagnostics. |
-| `apt.json` | Legacy Cartesian/cube molecular APT and translational-sum diagnostics. |
+| `molecular_apt.json` | Legacy Cartesian position-matrix APT and raw sum diagnostics. |
 
 New outputs use these short names. Existing archives keep their original names
 (such as `Z-BORN-symm.out`, `zstar_response.json`, and `molecular_apt.json`).
@@ -786,33 +797,34 @@ For the complete physical convention, workflow, outputs, and benchmark, see
 [Molecular IR and Raman spectroscopy](molecular_spectroscopy.md).
 
 An isolated molecule is represented in a sufficiently large periodic cell.
-Prepare its positive-frequency vibrational modes with the same central
-normal-coordinate displacements used for Raman calculations:
+For neutral, nonmagnetic closed-shell molecules at Gamma, first calculate the
+experimental position-matrix APT and Gamma force constants:
 
 ```bash
-zstar spectra pre --stru STRU --dim 0 \
-  --acoustic-cutoff 100 --amplitude 0.02
+zstar bec pre --stru STRU --dim 0
+zstar bec run
+zstar bec post
 ```
 
-The complete resumable calculation produces both spectra:
+Then prepare the spectroscopy calculation from this response:
 
 ```bash
-zstar spectra run
-zstar spectra post
+zstar spectra pre --response . --root spectra
+zstar spectra run --root spectra
+zstar spectra post --root spectra
 ```
 
-Each displaced SCF is evaluated with two lightweight PYATB stages. The static
-dielectric response is converted to a molecular polarizability derivative,
-`dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ`. Branch-wrapped Berry polarization is
-converted to a molecular dipole derivative, `dmu/dQ = V * dP/dQ`. The
-normal-coordinate step `Q` is in `angstrom * sqrt(amu)`.
+IR dipole derivatives come from the provenance-checked APT record, not a molecular
+Berry-phase polarization difference. Static dielectric derivatives supply
+the Raman polarizability derivative, `dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ`.
+The molecular route and its restrictions are described in the linked guide.
 
 Existing prepared molecular results can be checked and reprocessed through the
 same canonical lifecycle:
 
 ```bash
-zstar spectra stat --root raman
-zstar spectra post --root raman
+zstar spectra stat --root spectra
+zstar spectra post --root spectra
 ```
 
 Molecular spectra are normalized for mode assignment and workflow validation.
@@ -853,7 +865,8 @@ The molecular APT examples also include compact HSE reference records in
 solver scratch directories and cube files are intentionally excluded; the JSON
 records retain the functional, convergence threshold, displacement, tensor
 convention, and symmetry-corrected values needed to identify the benchmark.
-Both HSE examples use ABACUS charge-density cube dipoles, without PYATB.
+Both are historical cube-based results, without PYATB; their APT accuracy
+has not been verified by the current molecular position-matrix route.
 
 ## Representative BEC and APT Results
 
@@ -872,7 +885,8 @@ settings behind these representative values:
 
 Periodic entries are selected BEC components. Molecular entries are the
 rotational invariant `q_GAPT = Tr(A)/3` of the atomic polar tensor; they should
-not be interpreted as periodic-crystal BECs.
+not be interpreted as periodic-crystal BECs. The two molecular rows are
+historical values and have not been validated by the current APT route.
 
 For numerical-convergence templates, see the public
 [SiC displacement-amplitude scan](../examples/Convergence_Tests/SiC_Displacement)

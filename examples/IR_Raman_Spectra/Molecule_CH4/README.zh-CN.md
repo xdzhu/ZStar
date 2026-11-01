@@ -1,8 +1,9 @@
 # Molecule CH4：IR 与 Raman
 
-默认 `bash run.sh` 使用 Unified 框架；`bash run.sh --post-only` 从已校验的
-归档响应离线重建 IR/Raman，输出至 `work-unified-post/`，无需 DFT。
-`bash run.sh --method mode --work mode_control` 保留独立模式位移对照。
+默认 `bash run.sh` 使用 Unified 框架。分子位置矩阵 APT 路线目前为实验性；
+请阅读[验证记录与限制](../../Benchmarks/Molecular_APT_Safety/README.md)。
+归档 IR 采用旧分子响应，缺少匹配的 APT 凭据，仅作历史记录，不作为当前已验证
+的 IR 结果；此归档的 `--post-only` 已禁用。历史 Raman 谱也有独立的响应和强度限制。
 
 `run/` 已对齐优化后的 Unified 基准结构，PBE、`scf_thr=1e-8`，
 `gamma_only=0` 用于 PYATB 矩阵导出。脚本从给定的优化结构开始，不再次优化。

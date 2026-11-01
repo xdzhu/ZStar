@@ -1,74 +1,49 @@
 # 分子 IR 与 Raman 光谱
 
 ABACUS 推荐使用 [Unified 位移工作流](unified_spectroscopy.zh-CN.md)，复用同一套
-SCF 完成 APT、Gamma 模式、IR 与 Raman。下述显式模式差分仍通过
-`zstar spectra pre --method mode` 保留，便于独立对照。
-
-本文档说明孤立分子在周期真空超胞中的正式 `--dim 0` 工作流，包括物理约定、
-计算步骤、输出文件、收敛要求和 benchmark 验收标准。
+SCF 完成 APT、Gamma 模式、IR 与 Raman。分子位置矩阵 APT 路线目前为实验性，
+仅适用于中性、非磁性闭壳层且只采样 Γ 点的分子。APT 求和通过不能替代独立
+精度和真空收敛性验证。
 
 ## 适用范围与物理约定
 
 将分子放入具有足够真空的超胞，以消除周期镜像相互作用。ZStar 使用单位为
-`angstrom * sqrt(amu)` 的质量加权 Gamma 点简正坐标 `Q`。PYATB 沿晶格
-方向给出的极化分量会转换为笛卡尔分量，非正交超胞同样适用。
-
-对每个选定模式，分别计算 `+Q` 和 `-Q` 结构：
-
-- 分子 IR：`dmu/dQ = V * dP/dQ`。程序先把 PYATB Berry 极化差回绕到最近的
-  极化分支，再乘以超胞体积 `V`；
-- 分子 Raman：`dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ`，将稀释超胞介电导数
-  转换为分子极化率导数。
+`angstrom * sqrt(amu)` 的质量加权 Gamma 点简正坐标 `Q`。分子 IR 使用 APT
+得到的偶极矩导数，而不是周期 Berry 极化分支。分子 Raman 使用
+`dalpha/dQ = V/(4*pi) * d(epsilon_r)/dQ`，将稀释超胞介电导数转换为分子极化率导数。
 
 展示谱按最大强度归一化。CSV 保留偶极矩和极化率导数，但归一化曲线不被宣称为气相
 积分截面。
 
 ## 完整计算链
 
-1. 在固定真空超胞中优化分子。必要时只在结构优化阶段固定一个中心原子，防止质心漂移；
-2. 释放全部原子，通过 `zstar phonon pre` 和 `zstar phonon post` 计算有限位移力常数；
-3. 使用 `zstar phonon irrep` 检查 Gamma 点模式，通过经过审查的频率阈值或显式模式列表排除
-   刚体平移和转动；
-4. 使用 `zstar spectra pre --method mode` 生成模式中心差分位移；
-5. 只计算一次参考结构 SCF，并保留可复用的电荷密度；
-6. 运行 `zstar spectra run`。所有位移 SCF 复用参考电荷密度，随后 PYATB
-   分别计算静态介电响应和 Berry 极化，不重复 DFT。
+先在足够大的固定真空超胞中优化分子，并在响应计算时释放全部原子。然后准备、
+运行并检查共同位移集合：
 
 ```bash
-zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml \
-  --dim 0 --acoustic-cutoff 100 --amplitude 0.02 --root raman \
-  --copy INPUT-scf --copy KPT
-
-zstar spectra run --root raman --reference 0.no-move \
-  --abacus-command "mpirun -np 1 abacus" \
-  --pyatb-command "mpirun -np 1 pyatb"
-zstar spectra stat --root raman
-zstar spectra post --root raman
+zstar bec pre --stru STRU --dim 0
+zstar bec run
+zstar bec post
+zstar phonon inspect --dim 0 --qpoints qpoints.yaml --json gamma_review.json
+zstar spectra pre --response . --root spectra
+zstar spectra run --root spectra
+zstar spectra post --root spectra
 ```
 
-该工作流串行运行并支持断点续算。使用 `zstar spectra stat --root raman`
-查看每个正负位移阶段。
-
-## 独立后处理
-
-```bash
-zstar spectra stat --root raman
-zstar spectra post --root raman
-```
-
-后处理会检查每个模式目录中的 `pyatb` 和 `pyatb-polar`，并按照已保存的工作流
-清单同时写出两种光谱。
+原有简正模式 Raman 单独工作流仍可用，但旧的 Berry 分子 IR 路线已禁用。没有
+兼容 APT 来源记录的历史分子 IR 应视为待核验。复用旧 SCF 结果前请阅读
+[诊断说明](workflow_diagnostics.zh-CN.md)。
 
 ## 输出文件
 
 | 路径 | 内容 |
 | --- | --- |
-| `raman/molecular_ir_derivatives.json` | 分模式 `dmu/dQ`、体积、位移幅度和来源。 |
-| `raman/raman_tensors.json` | 分子 `dalpha/dQ` 张量和换算元数据。 |
-| `ir_spectrum/ir_modes.csv` | 频率、笛卡尔偶极矩导数、原始活性和归一化活性。 |
-| `raman_spectrum/raman_modes.csv` | 频率、Placzek 活性、退偏比和 Raman 张量。 |
-| `ir_spectrum/*.{png,pdf,svg}` | 归一化分子 IR 谱。 |
-| `raman_spectrum/*.{png,pdf,svg}` | 归一化分子 Raman 谱。 |
+| `BEC.raw.dat`、`BEC.dat` | 投影前后原子极化张量。 |
+| `.zstar/molecular_apt_diagnostic.json` | 原始 APT 求和与投影诊断。 |
+| `.zstar/molecular_apt_validation.json` | 方法、检查以及来源和结果指纹。 |
+| `spectra/ir/ir_modes.csv` | 频率、偶极矩导数与 IR 活性。 |
+| `spectra/raman/raman_modes.csv` | 频率、Placzek 活性与 Raman 张量。 |
+| `spectra/spectra_result.json` | 响应方法、模式筛选及谱线设置。 |
 
 ## 必须完成的收敛检查
 
@@ -79,7 +54,10 @@ zstar spectra post --root raman
 - 检查 LCAO 基组、截断能和 PYATB 响应网格收敛；
 - 保持足够严格的分子对称性，使禁戒活性和简并模式劈裂接近数值零。
 
-## Benchmark
+## 历史 Benchmark
+
+以下频率和选择定则对照来自历史计算；其中旧 Berry 分子 IR 强度尚未由实验性的
+位置矩阵路线验证，不能作为当前分子 APT 的精度证明。
 
 甲烷是非中心对称主 benchmark。ABACUS/PBE 谐频率为 1287.93、1516.62、
 2968.29 和 3088.05 cm-1，与 NIST 基频误差为 1.13%-2.29%。计算振动表示为

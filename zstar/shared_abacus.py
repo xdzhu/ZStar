@@ -254,9 +254,8 @@ def _check_polarization_settings(reference, stage):
     return expected
 
 
-def _dipole_changes(root, manifest, diagnostics=None):
+def _dipole_changes(root, manifest, diagnostics=None, *, molecular_source=None):
     from .deal_polar import _parse_pyatb_polar_file, _read_pyatb_geom
-    from .spectra import read_pyatb_polarization
     from .polarization_2d import find_charge_cube, integrate_slab_dipole
     from .polarization_1d import integrate_transverse_dipole
 
@@ -264,10 +263,26 @@ def _dipole_changes(root, manifest, diagnostics=None):
     relative = Path("pyatb/Out/Polarization/polarization.dat")
     dimension = manifest["dimension"]
 
+    if dimension == 0:
+        if molecular_source == 'position':
+            from .molecular_position import experimental_position_responses
+            changes, report = experimental_position_responses(root, manifest)
+            if diagnostics is not None:
+                diagnostics.update(report)
+            return [np.asarray(change, dtype=float) for change in changes]
+        if molecular_source == 'cube':
+            raise ValueError(
+                'The Unified molecular cube collector is not yet validated for production APTs. '
+                'Retain the cubes for independent checks and use the experimental position-matrix route.'
+            )
+        raise ValueError(
+            "The Unified 0D Berry dipole route is not validated for molecular "
+            "APTs and cannot be used for production output. Keep the existing "
+            "SCF data for real-space reprocessing; do not rely on a projected "
+            "charge sum as an accuracy check."
+        )
+
     def berry(stage):
-        if dimension == 0:
-            p, q, _ = read_pyatb_polarization(stage / relative)
-            return np.asarray(p), np.asarray(q)
         values = _parse_pyatb_polar_file(stage / relative)
         return np.asarray(values[:3]), np.asarray(values[3:])
 
@@ -317,13 +332,20 @@ def _dipole_changes(root, manifest, diagnostics=None):
     return responses
 
 
-def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction=None):
+def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction=None,
+                          molecular_source=None):
     from phonopy.file_IO import write_FORCE_CONSTANTS, write_FORCE_SETS
     from .response_schema import ResponseQuantity, ResponseRecord, response_record_from_bec_result
     from .dimensions import dimension_spec
 
     root = Path(root).resolve()
     manifest = load_manifest(root)
+    molecular_position = manifest['dimension'] == 0 and not forces_only and molecular_source == 'position'
+    if molecular_position:
+        from .molecular_apt_validation import PENDING
+        pending = root / PENDING
+        pending.parent.mkdir(parents=True, exist_ok=True)
+        pending.write_text('Molecular APT collection is incomplete.\n', encoding='utf-8')
     reference = root / "0.no-move"
     atoms = read_structure(reference / "STRU")
     phonon = make_phonopy(atoms, symprec=manifest["symprec_A"])
@@ -331,7 +353,12 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
                                      diagnostics_path=root / ".zstar" / "symmetry.json")
     f0 = read_forces(reference)
     dipole_diagnostics = {}
-    dipoles = [np.zeros(3) for _ in manifest["stages"]] if forces_only else _dipole_changes(root, manifest, dipole_diagnostics)
+    if forces_only:
+        dipoles = [np.zeros(3) for _ in manifest['stages']]
+    elif molecular_position:
+        dipoles = _dipole_changes(root, manifest, dipole_diagnostics, molecular_source='position')
+    else:
+        dipoles = _dipole_changes(root, manifest, dipole_diagnostics)
     observations = []
     for item, dipole in zip(manifest["stages"], dipoles):
         stage = root / item["name"]
@@ -341,6 +368,19 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
         observations.append({**item, "displacement_A": displacement.tolist(),
                              "dipole_change_e_A": dipole.tolist(), "forces_eV_A": read_forces(stage).tolist()})
     raw = reconstruct_responses(len(atoms), observations, operations, reference_forces=f0)
+    molecular_quality = None
+    if molecular_position:
+        from .molecular_response_quality import check_raw_apt_consistency
+        # Conservative provisional thresholds, explicitly retained in the
+        # receipt; a pass is not an independent accuracy validation.
+        molecular_quality = check_raw_apt_consistency(
+            raw.born, absolute_sum_tolerance_e=.05, relative_projection_tolerance=.1)
+        diagnostic = root / '.zstar' / 'molecular_apt_diagnostic.json'
+        diagnostic.write_text(json.dumps({'status': molecular_quality['sum_consistency'],
+            'raw_apt_e': raw.born.tolist(), 'quality': molecular_quality,
+            'independent_accuracy_validated': False}, indent=2) + '\n', encoding='utf-8')
+        if molecular_quality['sum_consistency'] != 'pass':
+            raise ValueError(f'Raw molecular APT sum-rule check failed before projection; see {diagnostic}')
     projected = project_response(raw)
     phonon.dataset = {"natom": len(atoms), "first_atoms": [
         {"number": s["atom"], "displacement": np.array(s["displacement_A"]),
@@ -364,6 +404,12 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     if (not forces_only or nac) and dielectric_requested:
         from .pyatb_compat import read_static_dielectric
         dielectric, _ = read_static_dielectric(reference / "pyatb")
+    if not forces_only and dielectric is None and (root / "BORN").exists():
+        raise FileExistsError(
+            "BORN already exists, but no electronic dielectric was requested; "
+            "it may belong to an earlier calculation. Preserve or relocate it "
+            "before collecting this response, or use a clean calculation directory."
+        )
     if nac:
         if manifest["dimension"] != 3:
             raise ValueError("Bulk NAC cannot be applied to a low-dimensional shared ensemble")
@@ -379,9 +425,22 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
     with _working_directory(root):
         phonon.write_yaml_qpoints_phonon()
     phonon.save(filename=str(root / "phonopy.yaml"), settings={"force_constants": True})
+    from .force_diagnostics import gamma_force_diagnostics
     from .spectra import load_gamma_modes, write_gamma_mode_audit
+    gamma_modes = load_gamma_modes(root / "qpoints.yaml")
+    force_report = gamma_force_diagnostics(
+        gamma_modes, raw.force_constants, projected.force_constants,
+        dimensionality=manifest["dimension"],
+    )
+    force_report_path = root / ".zstar" / "force_constants_diagnostics.json"
+    force_report_path.write_text(json.dumps(force_report, indent=2) + "\n", encoding="utf-8")
+    from .progress import progress
+    progress("Gamma", "FORCE-CONSTANTS", "INFO",
+             f"raw reciprocity max={force_report['raw']['reciprocity_max_eV_A2']:.6g} eV/A^2; "
+             f"rigid/internal coupling={force_report['raw']['rigid_internal_coupling_frobenius']:.6g} "
+             f"eV/(A^2 amu); report={force_report_path}")
     gamma_report = write_gamma_mode_audit(
-        load_gamma_modes(root / "qpoints.yaml"), root / ".zstar" / "gamma_modes.json",
+        gamma_modes, root / ".zstar" / "gamma_modes.json",
         dimensionality=manifest["dimension"],
     )
     with _working_directory(root):
@@ -401,6 +460,8 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
               "born_projected_e": None if forces_only else projected.born.tolist(),
               "frequencies_THz": phonon.qpoints.frequencies[0].tolist(),
               "dipole_integration_diagnostics": dipole_diagnostics,
+              "molecular_apt_quality": molecular_quality,
+              "force_constants_diagnostics": ".zstar/force_constants_diagnostics.json",
               "static_response_validated": False}
     output["gamma_stability"] = {
         "report": ".zstar/gamma_modes.json",
@@ -432,7 +493,6 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             born_lines[0] = "# ZStar shared response: Z[polarization,displacement]; units e"
             (root / "BORN").write_text("\n".join(born_lines) + "\n", encoding="utf-8")
         else:
-            (root / "BORN").unlink(missing_ok=True)
             print("[SHARED] Electronic dielectric not requested; BORN was not written.")
         for name, values in (("BEC.raw.dat", raw.born), ("BEC.dat", projected.born)):
             lines = ["# atom species Z[displacement,polarization]; units e"]
@@ -457,13 +517,39 @@ def collect_shared_abacus(root=".", *, forces_only=False, nac=False, q_direction
             provenance={"ensemble_manifest": MANIFEST, "manifest_sha256": _digest(root / MANIFEST),
                         "result": result_path.name},
             structure={"symbols": atoms.symbols, "cell_angstrom": atoms.cell, "scaled_positions": atoms.scaled_positions},
-            metadata={"raw_diagnostics": raw.diagnostics, "scope": "Gamma", "asr_projected": True}).write(root / "response.json")
+            metadata={"raw_diagnostics": raw.diagnostics, "scope": "Gamma", "asr_projected": True,
+                      **({'molecular_apt_quality': molecular_quality,
+                          'independent_accuracy_validated': False} if molecular_position else {})}).write(root / "response.json")
+        if molecular_position:
+            from .molecular_apt_validation import RECEIPT
+            sources = {}
+            records = [dipole_diagnostics['reference'], *dipole_diagnostics['stages'].values()]
+            for record in records:
+                for name, digest in record['source_sha256'].items():
+                    path = Path(name).resolve()
+                    key = path.relative_to(root).as_posix() if path.is_relative_to(root) else str(path)
+                    if key in sources and sources[key] != digest:
+                        raise ValueError(f'Molecular APT source changed across stages: {path}')
+                    sources[key] = digest
+            outputs = ['shared_response.json', 'response_fit.json', 'BEC.dat', 'qpoints.yaml']
+            if (root / 'BORN').is_file():
+                outputs.append('BORN')
+            receipt = {'schema': 'zstar-molecular-apt-validation', 'version': 1,
+                       'method': dipole_diagnostics['method'], 'sum_consistency': 'pass',
+                       'quality': molecular_quality, 'independent_accuracy_validated': False,
+                       'source_sha256': sources,
+                       'output_sha256': {name: _digest(root / name) for name in outputs}}
+            (root / RECEIPT).write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+            pending.unlink()
+            print('[MOLECULE] Experimental position APT passed the raw sum-rule check; '
+                  'independent accuracy and finite-cell isolation are not certified.')
     print(f"[SHARED] Collected {len(observations)} displacements; {result_path}")
     if not forces_only:
-        from .progress import progress
         progress("bec-post", "OUTPUT", "PASS", f"BEC.dat and Gamma force constants are complete in {root}")
-        progress("bec-post", "DIELECTRIC", "READY" if gamma_report["harmonic_response_allowed"] else "BLOCKED",
-                 "Total harmonic dielectric response is a separate step: zstar dielectric static (or freq). "
-                 + ("Gamma stability checks passed." if gamma_report["harmonic_response_allowed"] else
-                    "Flagged Gamma modes must be inspected; BEC output remains available."))
+        next_step = ("Molecular IR is a separate step and requires the APT provenance checks. "
+                     if manifest['dimension'] == 0 else
+                     "Total harmonic dielectric response is a separate step: zstar dielectric static (or freq). ")
+        progress("bec-post", "RESPONSE", "READY" if gamma_report["harmonic_response_allowed"] else "BLOCKED",
+                 next_step + ("Gamma stability checks passed." if gamma_report["harmonic_response_allowed"] else
+                              "Flagged Gamma modes must be inspected; BEC output remains available."))
     return output

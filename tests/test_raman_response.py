@@ -143,6 +143,31 @@ def test_missing_band_gate_runs_and_failure_releases_lock(tmp_path, monkeypatch)
     assert not lock.exists()
 
 
+def test_unified_molecular_run_checks_gamma_and_matrix_sources_not_berry(tmp_path, monkeypatch):
+    (tmp_path/'.zstar').mkdir()
+    reference = tmp_path/'0.no-move'
+    reference.mkdir()
+    report = reference/'zstar_insulation.json'
+    report.write_text(json.dumps({'insulating': True, 'sampling': 'scf-gamma'}))
+    monkeypatch.setattr(unified_spectra, 'source', lambda root: (tmp_path,
+                        {'dimension': 0, 'stages': [{'name': 'disp-001'}]}, {'kind': 'ir'}))
+    monkeypatch.setattr(unified_spectra.workflow, 'scf_is_complete', lambda p: True)
+    monkeypatch.setattr(unified_spectra.workflow, 'molecular_position_source_available', lambda p: True)
+    monkeypatch.setattr(unified_spectra.workflow, 'dielectric_is_complete',
+                        lambda p: pytest.fail('0D IR-only must not require electronic dielectric'))
+    monkeypatch.setattr(unified_spectra.workflow, 'band_is_complete',
+                        lambda p: pytest.fail('A molecule must not require a band path'))
+    monkeypatch.setattr(unified_spectra.workflow, 'polarization_is_complete',
+                        lambda p: pytest.fail('A molecule must not require Berry polarization'))
+    monkeypatch.setattr(unified_spectra.workflow, 'run_serial_workflow',
+                        lambda *a, **kw: pytest.fail('Complete molecular sources should be reused'))
+    states = unified_spectra.run(tmp_path)
+    assert all(row['molecular_position_source'] and row['polarization'] is None for row in states)
+    report.write_text(json.dumps({'insulating': False, 'sampling': 'scf-gamma'}))
+    with pytest.raises(pytest.fail.Exception, match='Complete molecular sources'):
+        unified_spectra.run(tmp_path)
+
+
 @pytest.mark.parametrize('case,dimension', [('HfO2',3),('MoS2',2),('Sb2S3',1),('CH4',0)])
 def test_public_kernel_reproduces_retained_four_dimensional_evidence(case, dimension):
     from tools.spectroscopy_benchmark.collect import load
@@ -179,7 +204,39 @@ def test_cached_response_checks_output_and_source(tmp_path):
         unified_spectra._verify_done(tmp_path)
 
 
-@pytest.mark.parametrize('case', ['HfO2', 'MoS2', 'Sb2S3', 'CH4'])
+def test_molecular_raman_only_does_not_require_unverified_apt(tmp_path, monkeypatch):
+    import shutil
+    from zstar.shared_abacus import _digest
+    evidence = Path(__file__).parents[1]/'docs/research/unified_spectroscopy_20260906/evidence/CH4/unified'
+    response, output = tmp_path/'response', tmp_path/'spectra'
+    shutil.copytree(evidence, response)
+    (response/'BEC.dat').unlink()
+    output.mkdir()
+    manifest = json.loads((response/'shared_response.json').read_text())
+    monkeypatch.setattr(unified_spectra, 'source', lambda root: (response, manifest, {'kind': 'raman'}))
+    monkeypatch.setattr(unified_spectra.spectra, 'read_born_data',
+                        lambda *a, **k: pytest.fail('Raman-only must not read an APT'))
+    for name in ['0.no-move'] + [stage['name'] for stage in manifest['stages']]:
+        folder = output/'static'/name
+        folder.mkdir(parents=True)
+        source = response/name/'completed.json'
+        record = json.loads(source.read_text())
+        tensor = folder/'Out/Optical_Conductivity/static_dielectric_function.dat'
+        tensor.parent.mkdir(parents=True)
+        np.savetxt(tensor, np.array(record['epsilon']).reshape(1, 9))
+        marker = dict(outputs={tensor.relative_to(folder).as_posix(): _digest(tensor)},
+                      sources={str(source): _digest(source)})
+        (folder/'completed.json').write_text(json.dumps(marker))
+    result = unified_spectra.collect(output, plot=False)
+    assert result['dimension'] == 0
+    assert result['response_scope']['ir_dipole_source'] is None
+    assert 'no self-consistent local-field screening' in result['response_scope']['raman_electronic_response']
+    assert result['spectrum_settings']['raman_geometry'] == 'powder average'
+    assert (output/'raman/atomic_dielectric_derivatives.npy').is_file()
+    assert not (output/'ir').exists()
+
+
+@pytest.mark.parametrize('case', ['HfO2', 'MoS2', 'Sb2S3'])
 def test_complete_public_postprocessing_from_retained_responses(tmp_path, monkeypatch, case):
     import shutil
     from zstar.shared_abacus import _digest
@@ -204,6 +261,51 @@ def test_complete_public_postprocessing_from_retained_responses(tmp_path, monkey
         (folder/'completed.json').write_text(json.dumps(marker))
     report = unified_spectra.collect(output)
     assert report['method'] == 'unified'
+    assert report['response_scope']['calculator'] == 'ABACUS'
+    assert report['response_scope']['ir_dipole_source']
+    assert report['spectrum_settings']['broadening'] == {'profile': 'Lorentzian', 'fwhm_cm-1': 8.0}
+    assert 'full Brillouin zone' in report['response_scope']['scope_limit']
+    assert 'gamma_stability' in report
     assert (output/'response.json').is_file()
     assert (output/'raman/atomic_dielectric_derivatives.npy').is_file()
     assert (output/'ir').is_dir()
+
+
+def test_historical_ch4_bec_cannot_be_silently_reused_for_ir(tmp_path, monkeypatch):
+    import shutil
+    evidence = Path(__file__).parents[1]/'docs/research/unified_spectroscopy_20260906/evidence/CH4/unified'
+    response = tmp_path/'response'
+    shutil.copytree(evidence, response)
+    output = tmp_path/'spectra'
+    output.mkdir()
+    manifest = json.loads((response/'shared_response.json').read_text())
+    monkeypatch.setattr(unified_spectra, 'source', lambda root: (response, manifest, {'kind': 'all'}))
+    with pytest.raises(ValueError, match='pre-existing 0D BEC.dat is unverified'):
+        unified_spectra.collect(output)
+    assert not (output/'ir').exists()
+
+
+def test_molecular_ir_only_does_not_require_born_file(tmp_path, monkeypatch):
+    import shutil
+    evidence = Path(__file__).parents[1]/'docs/research/unified_spectroscopy_20260906/evidence/CH4/unified'
+    response = tmp_path/'response'
+    shutil.copytree(evidence, response)
+    (response/'BORN').unlink(missing_ok=True)
+    output = tmp_path/'spectra'
+    output.mkdir()
+    manifest = json.loads((response/'shared_response.json').read_text())
+    monkeypatch.setattr(unified_spectra, 'source', lambda root: (response, manifest, {'kind': 'ir'}))
+    # Isolate the optional-BORN behavior; receipt verification is tested separately.
+    monkeypatch.setattr('zstar.molecular_apt_validation.verify_molecular_apt_receipt',
+                        lambda root: {'method': 'test', 'sum_consistency': 'pass',
+                                      'independent_accuracy_validated': False})
+    report = unified_spectra.collect(output, plot=False)
+    assert report['dimension'] == 0
+    assert (output/'ir/ir_modes.csv').is_file()
+    assert not (output/'raman').exists()
+
+
+def test_unified_rejects_incomplete_polarization_before_creating_outputs(tmp_path):
+    with pytest.raises(ValueError, match='both incident and scattered'):
+        unified_spectra.collect(tmp_path, incident_polarization=[1, 0, 0])
+    assert not (tmp_path / 'ir').exists()

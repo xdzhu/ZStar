@@ -63,28 +63,30 @@ def project_raman_modes(derivative, eigenvectors, masses):
 
 
 def internal_mode_indices(modes, dimension):
-    """Separate rigid motions by mass-weighted overlaps, not a frequency cutoff."""
-    if dimension not in (0, 1, 2, 3):
-        raise ValueError('dimensionality must be 0, 1, 2, or 3')
-    positions = modes.positions_fractional @ modes.lattice_angstrom
-    positions -= np.average(positions, axis=0, weights=modes.masses_amu)
-    weight = np.sqrt(modes.masses_amu)[:, None]
-    vectors = [np.broadcast_to(axis, positions.shape)*weight for axis in np.eye(3)]
-    if dimension in (0, 1):
-        axes = np.eye(3) if dimension == 0 else np.eye(3)[2:]
-        vectors += [np.cross(axis, positions)*weight for axis in axes]
-    rigid = np.array([v.ravel() for v in vectors]).T
-    norms = np.linalg.norm(rigid, axis=0)
-    rigid = rigid[:, norms > 1e-12]/norms[norms > 1e-12]
-    u, singular, _ = np.linalg.svd(rigid, full_matrices=False)
-    rank = np.count_nonzero(singular > singular[0]*1e-10)
-    overlap = np.sum(abs(modes.eigenvectors.reshape(len(modes.frequencies_cm1), -1).conj()
-                         @ u[:, :rank])**2, axis=1)
-    if np.any((overlap >= .2) & (overlap <= .8)) or np.count_nonzero(overlap > .8) != rank:
-        raise ValueError('Ambiguous rigid/vibrational mode mixing; inspect the equilibrium structure and Hessian')
-    selected = np.flatnonzero(overlap < .2)
+    """Select stable modes using the same conservative Gamma-mode audit."""
+    from .spectra import assess_gamma_modes, rigid_motion_bases, validate_gamma_stability
+
+    rows = assess_gamma_modes(modes, dimensionality=dimension)
+    validate_gamma_stability(modes, dimensionality=dimension)
+    mixed = [row['mode'] for row in rows if row['classification'] == 'mixed']
+    if mixed:
+        raise ValueError(f'Ambiguous rigid/vibrational mode mixing in modes {mixed}; '
+                         'inspect the equilibrium structure and Hessian')
+    translations, rotations = rigid_motion_bases(modes, dimensionality=dimension)
+    rigid = [row for row in rows if row['classification'] in
+             ('translation', 'rotation', 'axial-rotation-candidate')]
+    if len(rigid) != translations.shape[1] + rotations.shape[1]:
+        raise ValueError('Ambiguous rigid/vibrational mode count; inspect the equilibrium structure and Hessian')
+    if any(row['classification'] == 'axial-rotation-candidate'
+           and row['frequency_cm-1'] > 20 for row in rigid):
+        raise ValueError('1D axial rotation candidate is far from zero frequency; inspect the Hessian')
+    selected = np.asarray([row['mode'] - 1 for row in rows if row not in rigid], dtype=int)
     if not len(selected) or np.any(modes.frequencies_cm1[selected] <= 0):
         raise ValueError('Unstable internal vibrations; no stable harmonic spectrum can be reported')
-    return selected, dict(rigid_mode_numbers=(np.flatnonzero(overlap > .8)+1).tolist(),
-                         rigid_frequencies_cm1=modes.frequencies_cm1[overlap > .8].tolist(),
-                         rigid_overlaps=overlap.tolist())
+    return selected, dict(rigid_mode_numbers=[row['mode'] for row in rigid],
+                         rigid_frequencies_cm1=[row['frequency_cm-1'] for row in rigid],
+                         rigid_overlaps=[row['translation_overlap'] + row['rotation_overlap'] for row in rows],
+                         one_dimensional_axial_candidates=[row['mode'] for row in rigid
+                             if row['classification'] == 'axial-rotation-candidate'],
+                         note='1D positive near-zero axial candidates are excluded assuming an isolated wire; '
+                              'negative candidates require review and are not automatically exempt.')

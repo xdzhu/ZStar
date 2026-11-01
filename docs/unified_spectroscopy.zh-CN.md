@@ -34,6 +34,12 @@ zstar spectra post
 基准态 band gap 检查，然后计算额外的静态介电响应；`post` 在需要时收集 BEC 和声子。
 
 复用已经完成的计算：
+对于 ABACUS 零维体系，实验性的分子 APT 路线使用 Γ 点闭壳层位置矩阵，
+不使用 Berry 极化。程序在投影前检查原始 APT 求和并记录来源指纹；求和较小和
+验收记录均不代表独立精度或真空收敛性已得到证明。没有匹配记录的历史分子
+`BEC.dat` 不会被 IR 静默复用。目前该路线拒绝带电、自旋极化和非 Γ 点体系。
+详见[诊断说明](workflow_diagnostics.zh-CN.md)。
+
 
 ```bash
 zstar spectra pre --response /path/to/completed/bec
@@ -53,8 +59,9 @@ zstar spectra job --system slurm
 ```
 
 沿用 [Specified / Current / Global header](job_headers.zh-CN.md) 与可执行文件配置。
-提交前检查 `spectra/run_zstar_spectra.slurm`。`stat` 逐项列出源 SCF、极化和 Raman
-静态响应是否完成；再次运行会校验并跳过已完成阶段。每个静态阶段保存请求、完成或
+提交前检查 `spectra/run_zstar_spectra.slurm`。`stat` 逐项列出源 SCF、周期极化或
+零维位置矩阵文件及 Raman 静态响应的状态；文件齐全不等于物理精度已经验证。
+再次运行会校验并跳过已完成阶段。每个静态阶段保存请求、完成或
 失败记录，用哈希检测输入或结果变化。工作锁阻止同一目录并发写入；确认进程结束后
 才可删除遗留锁。
 
@@ -76,6 +83,7 @@ zstar spectra job --system slurm
 偶极导数，不除以超胞体积。Raman 平移和规则残差保留报告，不暗中投影。
 平移、转动模式由质量加权重叠识别；内部虚频和不明确的模式混合会阻止结果收集。
 
+一维负频轴向转动候选不会自动放行；正的近零候选按孤立链假设排除，并在选择报告中列明。
 ## 对照与案例
 
 `zstar spectra pre --method mode --stru STRU --qpoints qpoints.yaml` 保留逐模式差分。

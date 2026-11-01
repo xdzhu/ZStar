@@ -83,6 +83,49 @@ class GammaModes:
         return self.volume_angstrom3 / self.periodic_length_angstrom(axis)
 
 
+def rigid_motion_bases(modes: GammaModes, *, dimensionality: int = 3) -> tuple[np.ndarray, np.ndarray]:
+    """Mass-weighted translations and, where appropriate, candidate rotations."""
+    if dimensionality not in (0, 1, 2, 3):
+        raise ValueError("dimensionality must be 0, 1, 2, or 3")
+    masses = np.asarray(modes.masses_amu, dtype=float)
+    if masses.ndim != 1 or not len(masses) or np.any(masses <= 0) or not np.all(np.isfinite(masses)):
+        raise ValueError("Rigid-motion assessment requires positive finite masses")
+    translations = np.zeros((3 * len(masses), 3), dtype=float)
+    weights = np.sqrt(masses / masses.sum())
+    for axis in range(3):
+        translations[axis::3, axis] = weights
+    if dimensionality not in (0, 1):
+        return translations, np.zeros((3 * len(masses), 0))
+    positions = np.asarray(modes.positions_fractional, dtype=float)
+    lattice = np.asarray(modes.lattice_angstrom, dtype=float)
+    if positions.shape != (len(masses), 3) or not np.all(np.isfinite(positions)):
+        raise ValueError("Rigid-motion assessment requires finite atomic positions")
+    if lattice.shape != (3, 3) or not np.all(np.isfinite(lattice)):
+        raise ValueError("Rigid-motion assessment requires a finite lattice")
+    positions = positions.copy()
+    if dimensionality == 1:
+        # Assumes the wire is localized within the transverse supercell.
+        delta = positions[:, :2] - positions[0, :2]
+        positions[:, :2] = positions[0, :2] + delta - np.rint(delta)
+    cartesian = positions @ lattice
+    cartesian -= np.average(cartesian, axis=0, weights=masses)
+    if dimensionality == 1:
+        length = np.linalg.norm(lattice[2])
+        if length <= 0:
+            raise ValueError("The 1D periodic lattice vector must be nonzero")
+        axes = [lattice[2] / length]
+    else:
+        axes = np.eye(3)
+    rotations = np.column_stack([
+        (np.cross(axis, cartesian) * np.sqrt(masses)[:, None]).reshape(-1)
+        for axis in axes
+    ])
+    rotations -= translations @ (translations.T @ rotations)
+    basis, singular, _ = np.linalg.svd(rotations, full_matrices=False)
+    rank = int(np.count_nonzero(singular > max(singular[0] * 1e-10, 1e-12)))
+    return translations, basis[:, :rank]
+
+
 def assess_gamma_modes(modes: GammaModes, *, dimensionality: int = 3) -> list[dict]:
     """Classify Gamma eigenvectors by their mass-weighted rigid-motion content.
 
@@ -110,34 +153,20 @@ def assess_gamma_modes(modes: GammaModes, *, dimensionality: int = 3) -> list[di
     norms = np.sum(np.abs(flat) ** 2, axis=1)
     if np.any(norms <= 0):
         raise ValueError("Gamma eigensystem contains a zero-norm eigenvector")
-    translations = np.zeros((3, 3 * len(masses)), dtype=float)
-    weights = np.sqrt(masses / masses.sum())
-    for axis in range(3):
-        translations[axis, axis::3] = weights
-    overlap = np.sum(np.abs(flat @ translations.T) ** 2, axis=1) / norms
+    translations, rotations = rigid_motion_bases(modes, dimensionality=dimensionality)
+    overlap = np.sum(np.abs(flat @ translations) ** 2, axis=1) / norms
     overlap = np.clip(overlap, 0.0, 1.0)
-    rotation_overlap = np.zeros_like(overlap)
-    if dimensionality == 0:
-        positions = np.asarray(modes.positions_fractional, dtype=float)
-        if positions.shape != (len(masses), 3) or not np.all(np.isfinite(positions)):
-            raise ValueError("Molecular Gamma modes require finite atomic positions")
-        cartesian = positions @ np.asarray(modes.lattice_angstrom, dtype=float)
-        cartesian -= np.average(cartesian, axis=0, weights=masses)
-        rotations = np.column_stack([
-            (np.cross(axis, cartesian) * np.sqrt(masses)[:, None]).reshape(-1)
-            for axis in np.eye(3)
-        ])
-        basis, singular, _ = np.linalg.svd(rotations, full_matrices=False)
-        if singular[0] > 0:
-            rank = int(np.count_nonzero(singular > singular[0] * 1e-10))
-            rotation_overlap = np.sum(np.abs(flat @ basis[:, :rank]) ** 2, axis=1) / norms
-            rotation_overlap = np.clip(rotation_overlap, 0.0, 1.0)
+    rotation_overlap = np.sum(np.abs(flat @ rotations) ** 2, axis=1) / norms
+    rotation_overlap = np.clip(rotation_overlap, 0.0, 1.0)
+    # A dominant rigid component does not make the remaining internal motion
+    # disappear. Keep modes with >1% non-rigid content in the mixed category.
+    rigid_threshold = 0.99
     labels = np.where(
-        overlap >= 0.9,
+        overlap >= rigid_threshold,
         "translation",
         np.where(
-            rotation_overlap >= 0.9,
-            "rotation",
+            rotation_overlap >= rigid_threshold,
+            "rotation" if dimensionality == 0 else "axial-rotation-candidate",
             np.where(
                 overlap + rotation_overlap <= 0.1,
                 "internal" if dimensionality == 0 else "non-translation",
@@ -151,6 +180,9 @@ def assess_gamma_modes(modes: GammaModes, *, dimensionality: int = 3) -> list[di
             "frequency_cm-1": float(frequency),
             "translation_overlap": float(overlap[index]),
             "rotation_overlap": float(rotation_overlap[index]),
+            "internal_overlap": float(np.clip(1.0 - overlap[index] - rotation_overlap[index], 0, 1)),
+            "rotation_scope": ("molecular" if dimensionality == 0 else
+                               "1D axial candidate" if dimensionality == 1 else "not assessed"),
             "classification": str(labels[index]),
         }
         for index, frequency in enumerate(frequencies)
@@ -451,9 +483,12 @@ def _selected_mode_indices(
     indices = np.flatnonzero(frequencies_cm1 > float(acoustic_cutoff_cm1))
     if len(modes.masses_amu) > 1 and len(frequencies_cm1) == 3 * len(modes.masses_amu):
         audit = assess_gamma_modes(modes, dimensionality=dimensionality)
+        if any(row['classification'] == 'axial-rotation-candidate' and row['frequency_cm-1'] > 20
+               for row in audit):
+            raise ValueError('1D axial rotation candidate is far from zero frequency; inspect the Hessian')
         indices = np.asarray([
             index for index in indices
-            if audit[index]["classification"] not in {"translation", "rotation"}
+            if audit[index]["classification"] not in {"translation", "rotation", "axial-rotation-candidate"}
         ], dtype=int)
     return indices
 
@@ -519,7 +554,7 @@ def validate_gamma_stability(
     ]
     if mixed_positive:
         warnings.warn(
-            "Gamma modes mix rigid translation with internal motion; inspect "
+            "Gamma modes mix rigid motion with internal motion; inspect "
             f"the force constants and acoustic sum rule (modes {mixed_positive}).",
             UserWarning,
             stacklevel=2,
@@ -563,7 +598,13 @@ def gamma_stability_report(modes: GammaModes, *, dimensionality: int = 3,
     return {
         "dimensionality": dimensionality,
         "acoustic_drift_tolerance_cm-1": tolerance,
-        "translation_overlap_threshold": 0.9,
+        "translation_overlap_threshold": 0.99,
+        "rotation_overlap_threshold": 0.99,
+        "overlap_interpretation": ("Heuristic per-mode classification; overlaps can depend on the basis "
+                                   "within a degenerate subspace and do not prove stability."),
+        "rotation_interpretation": ("1D axial rotations are candidates, not automatic stability exemptions"
+                                    if dimensionality == 1 else
+                                    "molecular rigid rotation" if dimensionality == 0 else "not assessed"),
         "flagged_mode_numbers": [row["mode"] for row in unstable],
         "negative_mode_numbers": [row["mode"] for row in audit if row["frequency_cm-1"] < 0],
         "allow_imaginary": bool(allow_imaginary),
@@ -592,7 +633,7 @@ def write_gamma_mode_audit(modes: GammaModes, output: str | Path, *,
             progress("Gamma", "PHONON", "CHECK" if row["mode"] in report["flagged_mode_numbers"] else "INFO",
                      f"mode={row['mode']}; frequency={row['frequency_cm-1']:.3f} cm-1; "
                      f"class={row['classification']}; translation overlap={row['translation_overlap']:.6f}; "
-                     f"rotation overlap={row['rotation_overlap']:.6f}")
+                     f"rotation overlap={row['rotation_overlap']:.6f}; internal overlap={row['internal_overlap']:.6f}")
     status = "PASS" if not report["flagged_mode_numbers"] else (
         "OVERRIDE" if allow_imaginary else "BLOCKED")
     progress("Gamma", "STABILITY", status,
@@ -1038,8 +1079,16 @@ def collect_molecular_dipole_derivatives(
     cell_volume_angstrom3: float,
     cell_lattice_angstrom: Optional[np.ndarray] = None,
     polarization_subdir: Optional[str] = None,
+    diagnostic_only: bool = False,
 ) -> tuple[np.ndarray, np.ndarray, str]:
-    """Collect central-difference molecular dipole derivatives from PYATB P."""
+    """Inspect legacy PYATB P derivatives, without certifying molecular IR."""
+
+    if not diagnostic_only:
+        raise ValueError(
+            "The 0D PYATB Berry dipole route is not validated for molecular IR. "
+            "Existing polarization files cannot certify an IR spectrum; retain "
+            "the SCF outputs for validated real-space reprocessing."
+        )
 
     root = Path(displacement_dir).resolve()
     manifest_path = root / "raman_manifest.json"
@@ -1088,6 +1137,7 @@ def collect_molecular_dipole_derivatives(
     derivative_array = np.asarray(derivatives, dtype=float)
     tensor_kind = "molecular dipole derivative (Debye per Angstrom sqrt(amu))"
     output = {
+        "validation_status": "unverified_diagnostic_only",
         "mode_numbers": mode_numbers,
         "dipole_derivatives": derivative_array.tolist(),
         "tensor_kind": tensor_kind,

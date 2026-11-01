@@ -29,7 +29,8 @@ from .cp2k_bec import (
 from .spectra import (
     BornData,
     GammaModes,
-    assess_gamma_modes,
+    _selected_mode_indices,
+    gamma_stability_report,
     load_gamma_modes,
     calculate_ir_spectrum,
     calculate_molecular_ir_spectrum,
@@ -85,20 +86,8 @@ def _mode_indices(
     *,
     dimensionality: int = 3,
 ) -> np.ndarray:
-    frequencies_cm1 = modes.frequencies_cm1
-    if mode_numbers:
-        indices = np.asarray([int(number) - 1 for number in mode_numbers], dtype=int)
-        if np.any(indices < 0) or np.any(indices >= len(frequencies_cm1)):
-            raise IndexError("Requested mode number is outside the eigensystem")
-        return indices
-    indices = np.flatnonzero(frequencies_cm1 > float(acoustic_cutoff_cm1))
-    if len(modes.masses_amu) > 1 and len(frequencies_cm1) == 3 * len(modes.masses_amu):
-        audit = assess_gamma_modes(modes, dimensionality=dimensionality)
-        indices = np.asarray([
-            index for index in indices
-            if audit[index]["classification"] not in {"translation", "rotation"}
-        ], dtype=int)
-    return indices
+    return _selected_mode_indices(modes, mode_numbers, acoustic_cutoff_cm1,
+                                  dimensionality=dimensionality)
 
 
 def _real_modes(eigenvectors: np.ndarray) -> np.ndarray:
@@ -908,6 +897,28 @@ def _collect_vasp_spectra(
         "polarized_raman": polarized_summary,
         "ir_summary": ir_summary,
         "raman_summary": raman_summary,
+        "response_provenance": {
+            "phonon_source": str(modes_source),
+            "born_source": "reference/OUTCAR",
+            "raman_static_method": manifest.get("method"),
+            "raman_static_sources": "vasprun.xml when present, otherwise OUTCAR; see raman_sources",
+            "local_field_scope": "Determined by the selected VASP method and source dielectric tensor; consult the saved INCAR and output.",
+        },
+        "spectrum_settings": {
+            "broadening": {"profile": "Lorentzian", "fwhm_cm-1": float(broadening_cm1)},
+            "grid_points": int(points), "temperature_K": float(temperature_K), "laser_nm": float(laser_nm),
+            "raman_geometry": ("powder average plus specified Cartesian polarization"
+                               if incident_polarization is not None else "powder average"),
+            "incident_polarization_cartesian": (list(map(float, incident_polarization))
+                                                if incident_polarization is not None else None),
+            "scattered_polarization_cartesian": (list(map(float, scattered_polarization))
+                                                 if scattered_polarization is not None else None),
+            "normalization": "Raman activities and broadened powder spectrum normalized independently",
+        },
+        "gamma_stability": gamma_stability_report(modes, dimensionality=dimensionality,
+                                                   imaginary_tolerance_cm1=imaginary_tolerance_cm1,
+                                                   allow_imaginary=allow_imaginary),
+        "stability_scope": "Gamma-point assessment only; not full Brillouin-zone stability",
     }
     from .vasp_response import write_native_qpoints
     write_native_qpoints(modes, root / "qpoints.yaml")
@@ -1150,6 +1161,22 @@ def _collect_cp2k_spectra(
             "schema_version": 1,
             "calculator": "cp2k",
             "dimensionality": manifest["dimensionality"],
+            "response_provenance": {
+                "phonons_and_intensities": "CP2K native vibrational output: calculation/output.log",
+                "raman_response": "CP2K-reported Raman activity; consult native input and output for response settings",
+            },
+            "spectrum_settings": {
+                "broadening": {"profile": "Lorentzian", "fwhm_cm-1": float(broadening_cm1)},
+                "grid_points": int(points),
+                "raman_geometry": "native activity; no polarized tensor analysis",
+                "normalization": "native positive-frequency activities are broadened without rescaling",
+            },
+            "gamma_stability": {
+                "method": "frequency-only threshold; eigenvectors not parsed",
+                "imaginary_tolerance_cm-1": float(imaginary_tolerance_cm1),
+                "allow_imaginary": bool(allow_imaginary),
+                "scope": "Cannot identify translation, rotation or mixed modes from this output alone",
+            },
             "ir_summary": write_native_line_spectrum_outputs(
                 root / "ir_spectrum", ir, stem="ir", plot=plot
             ),

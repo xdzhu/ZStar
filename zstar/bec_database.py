@@ -281,6 +281,20 @@ def collect_entry(entry: ManifestEntry) -> tuple[dict[str, Any], list[dict[str, 
     if zborn_path:
         tensors = read_zborn(zborn_path)
 
+    molecular_receipt = None
+    molecular_receipt_error = None
+    if entry.dimensionality == 0 and 'abacus' in entry.backend.lower() and tensors is not None:
+        from .molecular_apt_validation import verify_legacy_molecular_apt_receipt, verify_molecular_apt_receipt
+        try:
+            molecular_receipt = (verify_molecular_apt_receipt(root) if (root / 'shared_response.json').is_file()
+                                 else verify_legacy_molecular_apt_receipt(root))
+        except (OSError, ValueError, TypeError) as exc:
+            molecular_receipt_error = str(exc)
+            record['quality_flags'].append('unverified_molecular_apt')
+        else:
+            record['quality_flags'].append('molecular_apt_independent_accuracy_not_validated')
+            record['molecular_apt_method'] = molecular_receipt['method']
+
     stru = _find_first(root, ["STRU", "0.no-move/STRU"])
     labels = _atomic_labels_from_stru(stru or Path())
     natoms_structure = len(labels) or None
@@ -358,11 +372,16 @@ def collect_entry(entry: ManifestEntry) -> tuple[dict[str, Any], list[dict[str, 
         record["status"] = "complete" if insulating is not False else "rejected_metal"
         if not full_cell and record["status"] == "complete":
             record["status"] = "incomplete"
+        if molecular_receipt_error is not None:
+            record['status'] = 'unverified'
+            record['molecular_apt_verification_error'] = molecular_receipt_error
+            atom_rows = []
     else:
         has_spectra = any(root.glob("**/ir_modes.csv")) or any(root.glob("**/raman_modes.csv"))
         if entry.dimensionality == 0 and has_spectra:
             record["status"] = "complete_auxiliary"
             record["tensor_scope"] = "not_applicable"
+            record['quality_flags'].append('molecular_spectrum_accuracy_not_assessed')
         else:
             record["quality_flags"].append("missing_bec_tensor")
 
@@ -430,6 +449,7 @@ def collect_database(manifest: str | Path, output: str | Path) -> dict[str, Any]
         "materials": len(records),
         "complete": sum(record["status"] == "complete" for record in records),
         "complete_auxiliary": sum(record["status"] == "complete_auxiliary" for record in records),
+        "unverified": sum(record["status"] == "unverified" for record in records),
         "rejected_metal": sum(record["status"] == "rejected_metal" for record in records),
         "incomplete": sum(record["status"] == "incomplete" for record in records),
         "ranked_high_k_3d": len(ranked),

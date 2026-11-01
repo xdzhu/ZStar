@@ -9,16 +9,21 @@ include docs/cli_reference.md
 include docs/cp2k_bec.md
 include docs/dielectric_response.md
 include docs/highk_bec_database.md
+include docs/highk_bec_database.zh-CN.md
 include docs/job_headers.md
 include docs/workflow_diagnostics.md
 include docs/workflow_diagnostics.zh-CN.md
 include docs/molecular_spectroscopy.md
+include docs/molecular_spectroscopy.zh-CN.md
 include docs/one_dimensional_workflow.md
 include docs/potential_examples.md
 include docs/qnep_dataset.md
 include docs/response_conventions.md
 include docs/spectroscopy_backend_benchmark.md
 include docs/unified_spectroscopy.md
+include docs/unified_spectroscopy.zh-CN.md
+include docs/user_guide.md
+include docs/user_guide.zh-CN.md
 include docs/validation.md
 include docs/vasp_bec.md
 recursive-include zstar/agent_skills *

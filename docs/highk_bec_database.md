@@ -68,8 +68,15 @@ Atom-resolved records preferentially use full-cell tensors from
 `BEC.dat`, while the Phonopy-style `BORN` supplies `epsilon_infinity`.
 Acoustic-sum diagnostics are evaluated only for `tensor_scope=full_cell`.
 Representative-only tensors are explicitly marked and cannot enter the ranking.
-Validated molecular spectra use `status=complete_auxiliary`: they remain
-traceable without being mislabeled as missing periodic BEC data.
+Molecular spectra without a tensor are marked `complete_auxiliary` when a
+spectrum file is present; the accompanying
+`molecular_spectrum_accuracy_not_assessed` flag makes clear that file presence
+is not physical validation. An ABACUS 0D APT must have a matching source and
+output receipt. Otherwise it is marked `unverified` and excluded from
+`born_tensors.jsonl`. A passing receipt checks provenance and the raw sum rule,
+but does not certify independent accuracy; this limitation is retained as a
+quality flag. Calculator-native VASP and CP2K entries are not subjected to the
+ABACUS-specific receipt.
 
 ## Minimum provenance
 

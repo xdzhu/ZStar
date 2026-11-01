@@ -391,8 +391,9 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                            help='Collect a generated CP2K Berry-phase BEC workflow.')
     parser_deal.add_argument('--cp2k-root', default='cp2k_bec')
     parser_deal.add_argument(
-        '--molecular-source', choices=['pyatb', 'cube'], default='pyatb',
-        help='For --dim 0, collect APTs from PYATB polarization or charge-density cubes.'
+        '--molecular-source', choices=['pyatb', 'cube', 'position'], default=None,
+        help=('For --dim 0, position is the experimental default for Unified and Cartesian ensembles; '
+              'legacy pyatb and cube collectors are disabled pending validation.')
     )
 
     # ---------------- bornsym ----------------
@@ -1020,6 +1021,10 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_workflow_status.add_argument('--root', default='.')
     parser_workflow_status.add_argument('--json', action='store_true',
                                        help='Write machine-readable stage states, including the last active step and log path.')
+    parser_workflow_status.add_argument('--job-id', default=None,
+                                       help='Optionally query one Slurm allocation with sacct.')
+    parser_workflow_status.add_argument('--budget-core-hours', type=float, default=None,
+                                       help='Advisory budget for that allocation; not an enforced cap.')
 
     parser_workflow_script = workflow_actions.add_parser(
         'script', help='Generate one shell, Slurm, or Torque driver script.'
@@ -2232,12 +2237,27 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             print(format_status_table(states))
         elif args.workflow_action == 'status':
             states = workflow_status(args.root)
+            from .workflow_accounting import estimate_remaining_work, slurm_allocation_accounting
+            estimate = estimate_remaining_work(states)
+            accounting = (slurm_allocation_accounting(args.job_id, budget_core_hours=args.budget_core_hours)
+                          if args.job_id or args.budget_core_hours is not None else None)
             if args.json:
                 from dataclasses import asdict
                 import json
-                print(json.dumps([asdict(state) for state in states], indent=2))
+                rows = [asdict(state) for state in states]
+                # Preserve the historical JSON list unless optional accounting is requested.
+                print(json.dumps({'stages': rows, 'remaining_work_estimate': estimate,
+                                  'slurm_allocation': accounting} if accounting is not None else rows, indent=2))
             else:
                 print(format_status_table(states))
+                print(f"Unfinished displacements: {estimate['unfinished_displacements']}; "
+                      f"completed timing samples: {estimate['completed_timing_samples']}; "
+                      f"rough remaining wall seconds: {estimate['estimated_remaining_wall_seconds']}")
+                if accounting is not None:
+                    print(f"Slurm allocation {accounting['job_id']}: {accounting['state']}; "
+                          f"allocated CPU-hours so far: {accounting['allocated_core_hours']:.3f}; "
+                          f"advisory budget remaining: {accounting['budget_remaining_core_hours']}")
+                    print(accounting['scope'])
         elif args.workflow_action == 'script':
             script = generate_backend_script(
                 root=args.root,
@@ -2338,15 +2358,12 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
         import numpy as np
 
         from .spectra import (
-            calculate_molecular_ir_spectrum,
             calculate_raman_spectrum,
-            collect_molecular_dipole_derivatives,
             collect_raman_tensors,
             load_gamma_modes,
             load_raman_tensors,
             prepare_raman_displacements,
             write_raman_outputs,
-            write_molecular_ir_outputs,
             write_native_line_spectrum_outputs,
         )
         from .spectroscopy_analysis import calculate_polarized_raman_spectrum
@@ -2418,7 +2435,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                 check_insulating=not args.no_insulation_check,
                 gap_mode=args.gap_mode,
                 dimensionality=args.dim,
-                molecular_ir=args.dim == 0,
+                molecular_ir=False,
                 min_gap_eV=args.min_gap,
                 legacy_omega_max=args.legacy_omega_max,
                 legacy_domega=args.legacy_domega,
@@ -2485,31 +2502,8 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
                     )
                     print(f"[OUT] {os.path.abspath(polarized_dir)}")
                 if args.dim == 0:
-                    ir_numbers, derivatives, _ = (
-                        collect_molecular_dipole_derivatives(
-                            args.raman_dir,
-                            cell_volume_angstrom3=modes.volume_angstrom3,
-                            cell_lattice_angstrom=modes.lattice_angstrom,
-                            polarization_subdir="pyatb-polar",
-                        )
-                    )
-                    ir_result = calculate_molecular_ir_spectrum(
-                        modes,
-                        ir_numbers,
-                        derivatives,
-                        broadening_cm1=args.broadening,
-                        max_frequency_cm1=args.max_frequency,
-                        points=args.points,
-                        imaginary_tolerance_cm1=args.imaginary_tolerance,
-                        allow_imaginary=args.allow_imaginary,
-                    )
-                    ir_summary = write_molecular_ir_outputs(
-                        args.ir_outdir,
-                        ir_result,
-                        plot=not args.no_plot,
-                    )
-                    print(f"Calculated {ir_summary['modes']} molecular IR modes.")
-                    print(f"[OUT] {os.path.abspath(args.ir_outdir)}")
+                    print("Molecular IR is not generated by the legacy Raman route; "
+                          "use the Unified 0D APT workflow for IR.")
         elif args.raman_action == 'collect':
             mode_numbers, tensors, tensor_kind = collect_raman_tensors(
                 args.raman_dir,
@@ -2837,7 +2831,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             method=method_fd,
             running_type=running_type,
             displacement_angstrom=getattr(args, 'displacement', None),
-            molecular_source=getattr(args, 'molecular_source', 'pyatb'),
+            molecular_source=getattr(args, 'molecular_source', None),
         )
         if calc_flag:
             kwargs['nscf_calculator'] = calc_flag

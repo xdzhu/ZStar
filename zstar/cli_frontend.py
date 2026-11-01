@@ -37,7 +37,7 @@ ACTION_ALIASES = {
 
 FAMILY_HELP = {
     "bec": "pre, job, run, stat, post",
-    "phonon": "pre, job, run, stat, post, irrep, spectrum, inspect",
+    "phonon": "pre, job, run, stat, post, irrep, spectrum, inspect, compare, translation-check",
     "spectra": "pre, job, run, stat, post",
     "piezo": "pre, job, run, stat, post",
     "dielectric": "static, freq, optics",
@@ -562,11 +562,67 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         _print_family_help("phonon")
         return
     action = ACTION_ALIASES.get(arguments[0], arguments[0])
-    if action not in {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "inspect"}:
+    if action not in {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "inspect", "compare", "translation-check"}:
         raise SystemExit(f"Unknown zstar phonon action: {arguments[0]}")
     rest = list(arguments[1:])
     root = str(_option(rest, "--root", default="."))
     root_path = Path(root).resolve()
+    if action == "translation-check":
+        from .translation_diagnostics import compare_translation_stages, read_translation_stage
+
+        parser = argparse.ArgumentParser(prog="zstar phonon translation-check")
+        parser.add_argument("--calculator", choices=("abacus", "vasp"), required=True)
+        parser.add_argument("--reference", required=True, help="Completed reference static stage directory")
+        parser.add_argument("--translated", required=True, help="Completed translated static stage directory")
+        parser.add_argument("--dim", type=int, choices=(0, 1, 2, 3), default=3)
+        parser.add_argument("--geometry-tolerance", type=float, default=1e-5, help="Tolerance in Angstrom")
+        parser.add_argument("--json", default=None, help="Optional diagnostic JSON path")
+        args = parser.parse_args(rest)
+        report = compare_translation_stages(read_translation_stage(args.reference, calculator=args.calculator),
+                                            read_translation_stage(args.translated, calculator=args.calculator),
+                                            dimensionality=args.dim, geometry_tolerance_A=args.geometry_tolerance)
+        print(f"Translation (A): {report['translation_A']}; geometry residual: {report['geometry_max_residual_A']:.6g} A")
+        print(f"Energy difference (eV): {report['energy_difference_eV']}; "
+              f"max atom force change: {report['max_atom_force_delta_eV_A']:.6g} eV/A")
+        print(f"Input file hash equality: {report['input_file_hashes_equal']}")
+        print("Printed forces may already include calculator-native drift corrections; check both native outputs.")
+        if args.json:
+            destination = Path(args.json)
+            destination.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            print(f"[TRANSLATION-CHECK] {destination.resolve()}")
+        return
+    if action == "compare":
+        from .abacus_assets import sha256_file
+        from .mode_comparison import compare_gamma_modes
+        from .spectra import load_gamma_modes
+
+        parser = argparse.ArgumentParser(prog="zstar phonon compare")
+        parser.add_argument("--reference", required=True, help="Reference Gamma qpoints.yaml")
+        parser.add_argument("--candidate", required=True, help="Candidate Gamma qpoints.yaml")
+        parser.add_argument("--dim", type=int, choices=(0, 1, 2, 3), default=3)
+        parser.add_argument("--geometry-tolerance", type=float, default=1e-4, help="Geometry tolerance in Angstrom")
+        parser.add_argument("--degeneracy-tolerance", type=float, default=1.0, help="Frequency grouping tolerance in cm-1")
+        parser.add_argument("--json", default=None, help="Optional comparison JSON path")
+        args = parser.parse_args(rest)
+        report = compare_gamma_modes(load_gamma_modes(args.reference), load_gamma_modes(args.candidate),
+                                     dimensionality=args.dim, geometry_tolerance_A=args.geometry_tolerance,
+                                     degeneracy_tolerance_cm1=args.degeneracy_tolerance)
+        report["sources"] = {"reference": {"path": str(Path(args.reference).resolve()),
+                                            "sha256": sha256_file(Path(args.reference))},
+                             "candidate": {"path": str(Path(args.candidate).resolve()),
+                                            "sha256": sha256_file(Path(args.candidate))}}
+        print("Reference modes  Candidate modes  Subspace overlap  Dimensions")
+        for row in report["matches"]:
+            print(f"{str(row['reference_modes']):16s} {str(row['candidate_modes']):16s} "
+                  f"{row['subspace_overlap_score']:16.4f}  {'match' if row['dimension_match'] else 'REVIEW'}")
+        if report["unmatched_reference_groups"] or report["unmatched_candidate_groups"]:
+            print(f"Unmatched groups: reference={report['unmatched_reference_groups']}; "
+                  f"candidate={report['unmatched_candidate_groups']}")
+        if args.json:
+            destination = Path(args.json)
+            destination.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+            print(f"[COMPARE] {destination.resolve()}")
+        return
     if action == "inspect":
         from .spectra import assess_gamma_modes, load_gamma_modes, validate_gamma_stability
 
@@ -574,8 +630,14 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         parser.add_argument("--qpoints", default="qpoints.yaml")
         parser.add_argument("--dim", type=int, choices=(0, 1, 2, 3), default=3)
         parser.add_argument("--imaginary-tolerance", type=float, default=20.0)
+        parser.add_argument("--force-constants", default=None,
+                            help="Optional raw Phonopy FORCE_CONSTANTS for residual/coupling diagnostics.")
+        parser.add_argument("--projected-force-constants", default=None,
+                            help="Optional projected FORCE_CONSTANTS; requires --force-constants.")
         parser.add_argument("--json", default=None, help="Optional audit JSON path.")
         args = parser.parse_args(rest)
+        if args.projected_force_constants and not args.force_constants:
+            parser.error("--projected-force-constants requires --force-constants")
         modes = load_gamma_modes(args.qpoints)
         rows = assess_gamma_modes(modes, dimensionality=args.dim)
         flagged = validate_gamma_stability(
@@ -591,7 +653,20 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
             "flagged_mode_numbers": flagged.tolist(),
             "modes": rows,
         }
-        if args.dim == 0:
+        if args.force_constants:
+            from phonopy.file_IO import parse_FORCE_CONSTANTS
+            from .force_diagnostics import gamma_force_diagnostics
+
+            raw = parse_FORCE_CONSTANTS(filename=args.force_constants).transpose(1, 0, 3, 2)
+            projected = (parse_FORCE_CONSTANTS(filename=args.projected_force_constants).transpose(1, 0, 3, 2)
+                         if args.projected_force_constants else None)
+            report["force_constants"] = gamma_force_diagnostics(modes, raw, projected, dimensionality=args.dim)
+            report["force_constants_source"] = str(Path(args.force_constants).resolve())
+            report["projected_force_constants_source"] = (
+                str(Path(args.projected_force_constants).resolve()) if args.projected_force_constants else None)
+            print(f"Raw FC reciprocity max: {report['force_constants']['raw']['reciprocity_max_eV_A2']:.6g} eV/A^2; "
+                  f"rigid/internal coupling: {report['force_constants']['raw']['rigid_internal_coupling_frobenius']:.6g} eV/(A^2 amu)")
+        if args.dim in (0, 1):
             print("Mode  Frequency(cm-1)  Translation  Rotation  Classification  Assessment")
         else:
             print("Mode  Frequency(cm-1)  Translation overlap  Classification  Assessment")
@@ -604,18 +679,20 @@ def _run_phonon(arguments: Sequence[str], legacy: LegacyRunner) -> None:
                 status = "CHECK"
             if row["classification"] == "rotation" and row["frequency_cm-1"] < -args.imaginary_tolerance:
                 status = "CHECK"
+            if row["classification"] == "axial-rotation-candidate" and status == "ok":
+                status = "CHECK"
             if status == "CHECK":
                 review.append(row["mode"])
             row["assessment"] = status
             prefix = f"{row['mode']:4d}  {row['frequency_cm-1']:16.3f}  "
-            if args.dim == 0:
+            if args.dim in (0, 1):
                 prefix += (
                     f"{row['translation_overlap']:11.3f}  "
                     f"{row['rotation_overlap']:8.3f}  "
                 )
             else:
                 prefix += f"{row['translation_overlap']:19.3f}  "
-            print(f"{prefix}{row['classification']:15s}  {status}")
+            print(f"{prefix}{row['classification']:24s}  {status}")
         report["review_mode_numbers"] = review
         if args.json is not None:
             destination = Path(args.json)
@@ -832,7 +909,7 @@ def handle_canonical_cli(arguments: Sequence[str], legacy: LegacyRunner) -> bool
     if family == "piezo":
         _run_piezo(rest, legacy)
         return True
-    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "inspect"}
+    phonon_actions = set(ACTION_ALIASES) | {"pre", "run", "stat", "post", "irrep", "job", "spectrum", "inspect", "compare", "translation-check"}
     if family == "phonon" or (
         family == "ph" and rest and rest[0] in phonon_actions | {"-h", "--help"}
     ):

@@ -24,7 +24,9 @@ alias); the agent-skill preflight uses the user-facing values
 `molecule|1d|2d|bulk`. The default insulating gate combines the ABACUS SCF
 k-mesh occupations with a PYATB path diagnostic and checks every displaced
 SCF against the reference occupied manifold. `--gap-mode mp` replaces the path
-diagnostic with an additional PYATB MP-grid diagnostic.
+diagnostic with an additional PYATB MP-grid diagnostic. A 0D molecule instead
+uses explicitly recorded Gamma SCF occupations; do not interpret a molecular
+Berry phase as a verified dipole.
 
 For shell, Slurm, or Torque, generate one root driver:
 
@@ -87,9 +89,13 @@ zstar bec run --root .
 zstar bec post --root .
 ```
 
-The Unified collector records its joint APT and force-constant reconstruction
-in `response_fit.json`; archived Cartesian/cube calculations may instead contain
-`apt.json`. Inspect the raw and corrected translational sums. CP2K can run the same definition with
+The ABACUS position-matrix APT path is experimental and requires a neutral,
+nonmagnetic closed-shell molecule and one Gamma point. Check
+`.zstar/molecular_apt_diagnostic.json` before projection and verify the
+fingerprinted receipt before using the APT for IR. A small sum-rule residual
+does not independently validate accuracy or vacuum convergence. Do not use
+legacy Berry-derived molecular APT/IR as an approved result. The Unified
+collector records the reconstruction in `response_fit.json`. CP2K can run the same definition with
 `zstar bec pre --calculator cp2k --dim 0`; compare rotationally invariant GAPT values
 (`trace(APT)/3`) when molecular orientations differ.
 
@@ -139,6 +145,12 @@ Converge the Berry mesh for mixed seeds, inspect raw residuals and conditioning,
 and retain full-precision polarization. Charge cubes must be private copies.
 All stages must have matching polarization grids, valence counts, and occupied
 bands. Negative optical frequencies must not be hidden in a static response.
+Use `zstar phonon inspect --dim 1 --force-constants FORCE_CONSTANTS.raw
+--json gamma_review.json` to inspect force and rigid/internal diagnostics.
+An axial rotation in 1D is a candidate, not an automatic exemption for a
+negative mode. `zstar phonon compare` requires matched geometries and compares
+degenerate mode subspaces; `zstar phonon translation-check` reads two existing
+static stages without starting DFT. Neither proves full-q stability.
 
 For a finite-q supercell workflow, use a separate directory. The spectrum
 variant also writes Phonopy band and DOS plots:

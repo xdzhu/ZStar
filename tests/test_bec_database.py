@@ -102,6 +102,28 @@ class BecDatabaseTests(unittest.TestCase):
             self.assertEqual(summary["complete_auxiliary"], 1)
             self.assertEqual(record["status"], "complete_auxiliary")
             self.assertNotIn("missing_bec_tensor", record["quality_flags"])
+            self.assertIn("molecular_spectrum_accuracy_not_assessed", record["quality_flags"])
+
+    def test_unverified_abacus_molecular_apt_is_not_exported_as_training_tensor(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            case = root / 'molecule'
+            case.mkdir()
+            (case / 'BEC.dat').write_text('No. Atom xx xy xz yx yy yz zx zy zz\n'
+                                           '* 1 C 1 0 0 0 1 0 0 0 1\n')
+            manifest = root / 'manifest.csv'
+            manifest.write_text('material_id,formula,dimensionality,workspace,backend\n'
+                                'ch4,CH4,0,molecule,abacus-pyatb\n')
+            summary = collect_database(manifest, root / 'database')
+            record = json.loads((root / 'database/materials.jsonl').read_text().splitlines()[0])
+            self.assertEqual(summary['unverified'], 1)
+            self.assertEqual(summary['atom_tensors'], 0)
+            self.assertEqual(record['status'], 'unverified')
+            self.assertIn('unverified_molecular_apt', record['quality_flags'])
+            self.assertEqual((root / 'database/born_tensors.jsonl').read_text(), '')
+            from zstar.response_schema import response_record_from_abacus_files
+            with self.assertRaisesRegex(ValueError, 'no validation receipt'):
+                response_record_from_abacus_files(case / 'BEC.dat', dimensionality=0)
 
     def test_one_dimensional_response_is_stored_but_not_ranked(self):
         with tempfile.TemporaryDirectory() as tmp:

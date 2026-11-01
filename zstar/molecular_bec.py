@@ -123,6 +123,12 @@ def collect_molecular_cube_apts(
 ) -> dict:
     """Collect molecular APTs from cube outputs and apply molecular symmetry."""
 
+    raise ValueError(
+        "The legacy molecular cube collector does not yet validate raw "
+        "electron counts and APT residuals before projection. Keep the SCF "
+        "and cube files for the validated real-space collection route."
+    )
+
     root_path = Path(root).resolve()
     reference = root_path / "0.no-move"
     stru = reference / "STRU"
@@ -371,6 +377,12 @@ def collect_molecular_apts(
     response_output: str | Path = "response.json",
 ) -> dict:
     """Collect molecular APTs, reconstruct symmetry, and enforce translation invariance."""
+
+    raise ValueError(
+        "The 0D PYATB Berry dipole route is not validated for molecular APTs. "
+        "Do not use a projected charge sum as proof of accuracy. Keep the SCF "
+        "outputs for a validated real-space reprocessing route."
+    )
 
     root_path = Path(root).resolve()
     reference = root_path / "0.no-move"

@@ -231,6 +231,9 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
         root = str(root_given or ("raman" if calculator == "abacus" else "calculator_spectra"))
         dim = 3 if dim is None else dim
         if calculator == "abacus":
+            if dim == 0 and kind in {"ir", "all"}:
+                raise ValueError('Legacy mode-displacement molecular IR is disabled because its Berry dipole '
+                                 'is unverified. Use a Unified 0D response for IR, or --kind raman for Raman only.')
             clean = _drop(clean, "--root", "--born", "--dielectric", "--dim")
             if kind in {"raman", "all"}:
                 if not _has(clean, "--copy"):
@@ -239,6 +242,7 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
                             clean.extend(["--copy", name])
                 if not _has(clean, "--outdir"):
                     clean.extend(["--outdir", root])
+                clean.extend(["--dim", str(dim)])
                 legacy(["raman", "prepare", *clean])
         elif calculator in {"vasp", "cp2k"}:
             if not _has(clean, "--root"):
@@ -274,6 +278,10 @@ def run_spectra_cli(arguments: Sequence[str], legacy: LegacyRunner) -> None:
 
     root = str(root_given or _default_root())
     calculator, kind, dim, options = _saved(root, calculator, kind, dim)
+    if (calculator == 'abacus' and options.get('method') != 'unified'
+            and dim == 0 and kind in {'ir', 'all'}):
+        raise ValueError('Legacy mode-displacement molecular IR is disabled because its Berry dipole '
+                         'is unverified. Use a Unified 0D response for IR, or prepare a Raman-only workflow.')
     if action == "job":
         system = str(_option(rest, "--system", "--backend", default="shell"))
         output = _option(rest, "--output")

@@ -511,6 +511,22 @@ def read_bec_data(path: str | Path) -> BecData:
 
     from .artifacts import resolve_artifact
     source = resolve_artifact(path)
+    parent = source.parent
+    manifest = parent / 'shared_response.json'
+    legacy_receipt = parent / '.zstar/legacy_molecular_apt_validation.json'
+    legacy_pending = parent / '.zstar/legacy_molecular_apt_validation.pending'
+    if manifest.is_file():
+        metadata = json.loads(manifest.read_text(encoding='utf-8'))
+        if metadata.get('dimension') == 0:
+            from .molecular_apt_validation import verify_molecular_apt_receipt
+            if source.name != 'BEC.dat':
+                raise ValueError('Managed molecular dataset export requires the fingerprinted BEC.dat')
+            verify_molecular_apt_receipt(parent)
+    elif legacy_receipt.is_file() or legacy_pending.is_file():
+        from .molecular_apt_validation import verify_legacy_molecular_apt_receipt
+        if source.name != 'BEC.dat':
+            raise ValueError('Managed molecular dataset export requires the fingerprinted BEC.dat')
+        verify_legacy_molecular_apt_receipt(parent)
     if source.suffix.lower() == ".json":
         data = json.loads(source.read_text(encoding="utf-8"))
         atoms = data.get("atoms")

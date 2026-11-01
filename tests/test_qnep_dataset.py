@@ -30,6 +30,18 @@ ZBORN = """No. Atom xx xy xz yx yy yz zx zy zz
 
 
 class QnepDatasetTests(unittest.TestCase):
+    def test_managed_molecular_export_requires_matching_apt_receipt(self):
+        from zstar.qnep_dataset import read_bec_data
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'BEC.dat').write_text(ZBORN)
+            (root / 'shared_response.json').write_text(json.dumps({'dimension': 0}))
+            with self.assertRaisesRegex(ValueError, 'validation receipt'):
+                read_bec_data(root / 'BEC.dat')
+            (root / 'shared_response.json').write_text(json.dumps({'dimension': 3}))
+            self.assertEqual(read_bec_data(root / 'BEC.dat').tensors.shape, (2, 3, 3))
+
     @staticmethod
     def _record(frame_id, symbols, positions, *, phase=None, bec=None, available=False):
         return {

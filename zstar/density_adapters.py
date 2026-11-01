@@ -124,7 +124,7 @@ def _qe_species_and_positions(text: str) -> tuple[dict[str, str], list[str]]:
 def _upf_z_valence(path: Path) -> float:
     text = path.read_text(encoding="utf-8", errors="ignore")[:100000]
     patterns = (
-        rf"z_valence\s*=\s*[\"']({_NUMBER})",
+        rf"z_valence\s*=\s*[\"']\s*({_NUMBER})\s*[\"']",
         rf"Z\s*valence\s*=\s*({_NUMBER})",
     )
     for pattern in patterns:

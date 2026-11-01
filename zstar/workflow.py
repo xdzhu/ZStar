@@ -76,8 +76,8 @@ class StageState:
 @dataclass(frozen=True)
 class InsulationGateResult:
     gap_eV: float
-    path_gap_eV: float
-    bz_gap_eV: float
+    path_gap_eV: Optional[float]
+    bz_gap_eV: Optional[float]
     occupied_band_count: int
     sampling: str
 
@@ -189,7 +189,20 @@ class WorkflowStateStore:
 
 def _find_scf_log(stage_dir: Path) -> Optional[Path]:
     candidates = sorted(stage_dir.glob("OUT.*/running_scf.log"))
-    return candidates[-1] if candidates else None
+    if not candidates:
+        return None
+    input_path = stage_dir / "INPUT"
+    if input_path.is_file():
+        match = re.search(r"(?mi)^[ \t]*suffix[ \t]+([^#\s]+)", input_path.read_text(encoding="utf-8"))
+        if match:
+            expected = stage_dir / f"OUT.{match.group(1)}" / "running_scf.log"
+            if expected in candidates:
+                return expected
+            raise ValueError(f"ABACUS INPUT suffix selects {expected}, but only other SCF logs were found")
+    if len(candidates) == 1:
+        return candidates[0]
+    raise ValueError(f"Multiple ABACUS SCF logs found in {stage_dir}; "
+                     "set the actual INPUT suffix or isolate the intended output directory")
 
 
 def _contains_completion_marker(path: Path) -> bool:
@@ -230,6 +243,17 @@ def dielectric_is_complete(stage_dir: str | Path) -> bool:
         optical / "dielectric_function_real_part.dat",
     )
     return any(path.is_file() and path.stat().st_size > 0 for path in candidates)
+
+
+def molecular_position_source_available(stage_dir: str | Path) -> bool:
+    """Report source-file availability, not the physical validity of an APT."""
+    stage = Path(stage_dir)
+    log = _find_scf_log(stage)
+    if log is None or not (stage / 'pyatb' / 'Input').is_file():
+        return False
+    return all((log.parent / filename).is_file() and (log.parent / filename).stat().st_size > 0
+               for filename in ('data-HR-sparse_SPIN0.csr', 'data-SR-sparse_SPIN0.csr',
+                                'data-rR-sparse.csr'))
 
 
 def band_is_complete(stage_dir: str | Path) -> bool:
@@ -461,7 +485,7 @@ def _prepare_abacus_input(
         text = source.read_text(encoding="utf-8")
     if not reference:
         text = _set_abacus_parameter(text, "init_chg", "file")
-    charge_output = "1 10" if int(dimensionality) in (1, 2) else "1"
+    charge_output = "1 10" if int(dimensionality) in (0, 1, 2) else "1"
     text = _set_abacus_parameter(text, "out_chg", charge_output)
     text = _set_abacus_parameter(text, "out_mat_hs2", "1")
     text = _set_abacus_parameter(text, "out_mat_r", "1")
@@ -581,6 +605,40 @@ def _run_insulation_gate(
     dry_run: bool,
 ):
     """Combine a full-SCF-mesh occupation gate with a PYATB band diagnostic."""
+
+    if int(dimensionality) == 0:
+        progress("0.no-move", "INSULATION", "START",
+                 f"Molecular Gamma occupations; minimum gap={min_gap_eV:g} eV", log_path=log_path)
+        if dry_run:
+            progress("0.no-move", "INSULATION", "DRY-RUN", "No gap verdict without executing the calculation", log_path=log_path)
+            return None
+        from .molecular_position import validate_abacus_gamma_point
+        report_path = reference_dir / "zstar_insulation.json"
+        report_path.write_text(json.dumps({"schema": 2, "insulating": False, "status": "running",
+                                          "sampling": "scf-gamma", "dimensionality": 0}, indent=2), encoding="utf-8")
+        try:
+            log = _find_scf_log(reference_dir)
+            if log is None:
+                raise RuntimeError("Missing molecular SCF output for Gamma insulation check")
+            source = validate_abacus_gamma_point(log.parent)
+            mesh = _read_abacus_mesh_gap(reference_dir, min_gap_eV=min_gap_eV)
+            occupied = mesh.get("occupied_band_count")
+            if not mesh["insulating"] or occupied is None or mesh["kpoint_count"] != 1:
+                raise RuntimeError("Molecular Gamma occupation/gap check failed; displaced calculations were not started")
+        except Exception as exc:
+            report_path.write_text(json.dumps({"schema": 2, "insulating": False, "status": "failed",
+                                              "sampling": "scf-gamma", "dimensionality": 0,
+                                              "error": str(exc)}, indent=2), encoding="utf-8")
+            raise
+        report = {"schema": 2, "insulating": True, "gap_eV": float(mesh["gap_eV"]),
+                  "path_gap_eV": None, "bz_gap_eV": None, "threshold_eV": float(min_gap_eV),
+                  "sampling": "scf-gamma", "dimensionality": 0,
+                  "scope": "0.no-move molecular reference gate", "occupied_band_count": int(occupied),
+                  "gamma_source": str(source), "scf_occupation": mesh}
+        report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        progress("0.no-move", "INSULATION", "PASS",
+                 f"Gamma gap={mesh['gap_eV']:.6f} eV; occupied bands={occupied}", log_path=log_path)
+        return InsulationGateResult(float(mesh["gap_eV"]), None, None, int(occupied), "scf-gamma")
 
     progress("0.no-move", "INSULATION", "START",
              f"PYATB {gap_mode} + SCF k-mesh; minimum gap={min_gap_eV:g} eV", log_path=log_path)
@@ -842,8 +900,49 @@ def run_serial_workflow(
                 state.band = "not-requested"
                 store.event(stage.name, "insulation-skipped", reason="--no-insulation-check")
 
-            store.step(state, "PYATB polarization/dielectric")
+            molecular_position = int(dimensionality) == 0
+            store.step(state, "Molecular position matrices/dielectric" if molecular_position else "PYATB polarization/dielectric")
             need_dielectric = bool(stage.reference and electronic_dielectric)
+            if molecular_position:
+                pyatb_dir = stage.path / "pyatb"
+                pyatb_input_path = pyatb_dir / "Input"
+                if not pyatb_input_path.is_file():
+                    _run_shell(
+                        _pyatb_input_command(pyatb_input, reference=True, dimensionality=0,
+                                             mp_density=mp_density, legacy_omega_max=legacy_omega_max,
+                                             polarization=False),
+                        cwd=stage.path, env=env, log_path=log_path, dry_run=dry_run,
+                        stage=stage.name, component="PYATB molecular matrix metadata",
+                    )
+                if need_dielectric and not dielectric_is_complete(stage.path):
+                    if not dry_run:
+                        text = pyatb_input_path.read_text(encoding="utf-8")
+                        if re.search(r"(?mi)^\s*POLARIZATION\s*$", text):
+                            raise ValueError(
+                                f"{pyatb_input_path} contains a periodic POLARIZATION task. "
+                                "Preserve or move the old pyatb directory and regenerate a molecular optical input."
+                            )
+                        configure_optical_input(pyatb_input_path, capabilities=caps, static_only=True,
+                                                legacy_omega_max=legacy_omega_max, legacy_domega=legacy_domega)
+                        prepare_pyatb_assets(stage.path, pyatb_dir)
+                    state.pyatb = "running"
+                    state.dielectric = "running"
+                    store.save(state)
+                    _run_shell(pyatb_command, cwd=pyatb_dir, env=env, log_path=log_path,
+                               dry_run=dry_run, stage=stage.name, component="PYATB molecular dielectric")
+                    if not dry_run and not dielectric_is_complete(stage.path):
+                        raise RuntimeError("PYATB did not produce a static dielectric output")
+                state.pyatb = "dry-run" if dry_run else "completed"
+                state.dielectric = ("dry-run" if dry_run else "completed") if need_dielectric else "not-requested"
+                store.event(stage.name, "molecular-position-source", method="R=0 position matrices",
+                            note="APT reconstructed after all stages; experimental, not independently certified")
+                state.status = "dry-run" if dry_run else "completed"
+                state.finished_at = _utc_now()
+                state.active_step = "complete"
+                store.event(stage.name, "stage-complete", status=state.status)
+                store.save(state)
+                results.append(state)
+                continue
             polar_done = polarization_is_complete(stage.path)
             dielectric_done = dielectric_is_complete(stage.path) if need_dielectric else True
             if polar_done and dielectric_done:
@@ -969,6 +1068,11 @@ def run_raman_workflow(
 ) -> list[StageState]:
     """Run Raman +/- structures serially and calculate response tensors."""
 
+    if molecular_ir:
+        raise ValueError(
+            "Legacy molecular IR from Berry-phase polarization is disabled: "
+            "use the Unified molecular position-matrix workflow; standalone Raman remains available."
+        )
     root = Path(raman_dir).resolve()
     reference = Path(reference_dir).resolve()
     stages = discover_raman_stages(root)
@@ -1231,16 +1335,48 @@ def run_raman_workflow(
 
 def workflow_status(root: str | Path = ".") -> list[StageState]:
     root_path = Path(root).resolve()
-    from .shared_abacus import MANIFEST, read_forces
+    from .shared_abacus import MANIFEST, load_manifest, read_forces
     shared = (root_path / MANIFEST).is_file()
+    if shared:
+        molecular_position = load_manifest(root_path)["dimension"] == 0
+    else:
+        from .project_manifest import manifest_path, read_manifest
+        molecular_position = (manifest_path(root_path, 'bec').is_file()
+                              and read_manifest('bec', root_path)['dimensionality'] == 0)
     store = WorkflowStateStore(root_path)
-    reference_gated = (root_path / "0.no-move" / "zstar_insulation.json").is_file()
+    reference_gated = False
+    report_path = root_path / "0.no-move" / "zstar_insulation.json"
+    if report_path.is_file():
+        try:
+            reference_gated = json.loads(report_path.read_text(encoding="utf-8")).get("insulating") is True
+        except (OSError, ValueError, json.JSONDecodeError):
+            pass
     states: list[StageState] = []
     for stage in discover_stages(root_path):
         state = store.load(stage)
+        if state.status == 'completed':
+            try:
+                reason = None
+                if not scf_is_complete(stage.path):
+                    reason = 'Previously completed SCF output is missing or no longer complete'
+                elif molecular_position and not molecular_position_source_available(stage.path):
+                    reason = 'Previously completed molecular position-matrix sources are missing'
+                elif not molecular_position and not polarization_is_complete(stage.path):
+                    reason = 'Previously completed polarization output is missing'
+                elif stage.reference and state.dielectric == 'completed' and not dielectric_is_complete(stage.path):
+                    reason = 'Previously completed electronic dielectric output is missing'
+                if reason:
+                    state.status, state.error = 'stale', reason
+            except (OSError, ValueError) as exc:
+                state.status, state.error = 'stale', str(exc)
         if state.status == "pending":
-            if scf_is_complete(stage.path):
-                state.scf = "completed"
+            try:
+                if scf_is_complete(stage.path):
+                    state.scf = "completed"
+            except (OSError, ValueError) as exc:
+                state.status, state.error = 'stale', str(exc)
+                states.append(state)
+                continue
             report_path = Path(stage.path) / "zstar_insulation.json"
             if report_path.is_file():
                 try:
@@ -1251,7 +1387,10 @@ def workflow_status(root: str | Path = ".") -> list[StageState]:
                     pass
             elif not stage.reference and reference_gated:
                 state.band = "reference-gated"
-            if polarization_is_complete(stage.path):
+            if molecular_position:
+                if molecular_position_source_available(stage.path):
+                    state.pyatb = "position-source-available"
+            elif polarization_is_complete(stage.path):
                 state.pyatb = "completed"
             if stage.reference and dielectric_is_complete(stage.path):
                 state.dielectric = "completed"
@@ -1283,7 +1422,13 @@ def raman_workflow_status(raman_dir: str | Path = "raman") -> list[StageState]:
         if reference_value
         else root.parent / "0.no-move"
     )
-    reference_gated = (reference / "zstar_insulation.json").is_file()
+    reference_gated = False
+    gate = reference / "zstar_insulation.json"
+    if gate.is_file():
+        try:
+            reference_gated = json.loads(gate.read_text(encoding="utf-8")).get("insulating") is True
+        except (OSError, ValueError, json.JSONDecodeError):
+            pass
     states: list[StageState] = []
     for stage in discover_raman_stages(root):
         state = store.load(stage)
@@ -1315,6 +1460,13 @@ def write_workflow_manifest(root: str | Path = ".") -> Path:
     state_dir = root_path / ".zstar"
     state_dir.mkdir(parents=True, exist_ok=True)
     path = state_dir / "workflow_manifest.json"
+    from .shared_abacus import MANIFEST, load_manifest
+    if (root_path / MANIFEST).is_file():
+        molecular = load_manifest(root_path)["dimension"] == 0
+    else:
+        from .project_manifest import manifest_path, read_manifest
+        molecular = (manifest_path(root_path, 'bec').is_file()
+                     and read_manifest('bec', root_path)['dimensionality'] == 0)
     data = {
         "schema": 1,
         "root": str(root_path),
@@ -1324,10 +1476,10 @@ def write_workflow_manifest(root: str | Path = ".") -> Path:
             "0.no-move/OUT.*/SPIN*_CHG.cube or "
             "0.no-move/OUT.*/*-CHARGE-DENSITY.restart"
         ),
-        "insulation_gate": (
-            "0.no-move PYATB band diagnostic plus full SCF k-mesh occupations; "
-            "displaced-stage SCF-mesh gap and occupied-manifold consistency"
-        ),
+        "insulation_gate": ("0.no-move explicit Gamma SCF occupations; displaced-stage SCF "
+                            "occupations and occupied-manifold consistency" if molecular else
+                            "0.no-move PYATB band diagnostic plus full SCF k-mesh occupations; "
+                            "displaced-stage SCF-mesh gap and occupied-manifold consistency"),
         "stages": [
             {
                 "index": index,
@@ -1558,6 +1710,11 @@ def format_status_table(states: Iterable[StageState]) -> str:
         for i in range(len(headers))
     ]
     lines = [
+        "Stages: " + ", ".join(f"{status}={sum(s.status == status for s in states)}"
+                               for status in (*("completed", "running", "failed", "pending"),
+                                              *sorted({s.status for s in states} -
+                                                      {"completed", "running", "failed", "pending"}))),
+        "Completed means execution completed, not independently validated physical accuracy.",
         "  ".join(headers[i].ljust(widths[i]) for i in range(len(headers))),
         "  ".join("-" * width for width in widths),
     ]
@@ -1566,7 +1723,7 @@ def format_status_table(states: Iterable[StageState]) -> str:
         for row in rows
     )
     for state in states:
-        if state.status in {"failed", "running"}:
+        if state.status in {"failed", "running", "stale"}:
             lines.append(f"\n{state.name}: last saved step={state.active_step or 'unknown'}; "
                          f"updated={state.updated_at or 'unknown'}; log={state.log_path or 'not recorded'}")
     if any(state.status == "running" for state in states):

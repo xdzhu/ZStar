@@ -1736,7 +1736,7 @@ def main(
     method="central",
     running_type=None,
     displacement_angstrom=None,
-    molecular_source="pyatb",
+    molecular_source=None,
 ):
 
     if running_type == 'solo':
@@ -1763,11 +1763,14 @@ def main(
         return
 
 
-    from .shared_abacus import MANIFEST, collect_shared_abacus
+    from .shared_abacus import MANIFEST, collect_shared_abacus, load_manifest
     if Path(MANIFEST).is_file():
         if displacement_angstrom is not None:
             raise ValueError('Unified responses use actual STRU displacement vectors; do not override --displacement during postprocessing')
-        return collect_shared_abacus('.')
+        source = molecular_source
+        if source is None and load_manifest('.')['dimension'] == 0:
+            source = 'position'
+        return collect_shared_abacus('.', molecular_source=source)
 
     if displacement_angstrom is None:
         half_displacement, displacement_source = _infer_displacement_angstrom()
@@ -1785,11 +1788,14 @@ def main(
     if dimension == 0:
         from .molecular_bec import collect_molecular_apts, collect_molecular_cube_apts
 
-        collector = (
-            collect_molecular_cube_apts
-            if str(molecular_source).lower() in {"cube", "cube-apt", "hse"}
-            else collect_molecular_apts
-        )
+        source = str(molecular_source or 'position').lower()
+        if source == 'position':
+            from .molecular_legacy import collect_legacy_position_apts
+            collector = collect_legacy_position_apts
+        elif source in {"cube", "cube-apt", "hse"}:
+            collector = collect_molecular_cube_apts
+        else:
+            collector = collect_molecular_apts
         result = collector(
             ".", method=method, displacement_angstrom=half_displacement,
             symprec=symm_tol,

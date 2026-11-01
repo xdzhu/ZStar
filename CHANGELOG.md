@@ -1,5 +1,19 @@
 ## Unreleased
 
+## 0.3.6 - 2026-11-02
+
+- Add `mixing_beta 0.5` to generated default ABACUS inputs without overriding
+  user-provided inputs.
+- Add an experimental closed-shell, Gamma-only molecular position-matrix APT
+  route, with source fingerprints, raw sum-rule checks and clear accuracy limits;
+  reject unsafe reuse of unverified legacy molecular IR responses.
+- Improve Gamma rigid-motion and unstable-mode diagnostics; record raw and
+  projected force-constant quality and report ambiguous one-dimensional rotations.
+- Record spectroscopy methods and settings, and add optional mode comparison,
+  rigid-translation diagnostics and advisory Slurm accounting to aid review.
+- Improve workflow status and restart checks; refresh bilingual documentation
+  and add a compact methane molecular-response validation archive.
+
 ## 0.3.5 - 2026-10-15
 
 - Stream ABACUS/PYATB stdout and stderr into scheduler output and stage logs;

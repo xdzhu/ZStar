@@ -39,6 +39,14 @@ Gamma results when they are not already available.
 For a completed Unified response calculation:
 
 ```bash
+For 0D ABACUS, the experimental molecular APT path uses closed-shell
+Gamma-point position matrices rather than Berry polarization. It checks
+unprojected charge-sum residuals and records source fingerprints; neither a
+small residual nor the receipt proves independent accuracy or vacuum
+convergence. Historical molecular `BEC.dat` files without a matching receipt
+are not silently reused for IR. Charged, spin-polarized and non-Gamma
+molecular cases are currently rejected. See [diagnostics](workflow_diagnostics.md).
+
 zstar spectra pre --response /path/to/completed/bec
 zstar spectra run
 zstar spectra stat
@@ -58,7 +66,9 @@ zstar spectra job --system slurm
 
 The same [Specified / Current / Global headers](job_headers.md) and executable
 configuration apply. Inspect `spectra/run_zstar_spectra.slurm` before submission.
-`zstar spectra stat` reports each source SCF, polarization and Raman-static stage.
+`zstar spectra stat` reports each source SCF, periodic polarization or 0D
+position-matrix availability, and Raman-static stage. File availability is
+not a physical accuracy certification.
 Repeated `run` calls validate and skip completed stages. Each static stage keeps
 request, completion or failure records. Source/output hashes prevent silent reuse
 after changes. A worker lock prevents two writers in the same workspace; only
@@ -89,8 +99,11 @@ or V/(4 pi) (molecule), consistent with the existing
 [response conventions](response_conventions.md). The cell is fixed. Molecular
 IR uses APT-derived dipole derivatives without dividing by the supercell volume.
 Raman sum-rule residuals are reported without silently projecting them away.
-Rigid translations/rotations are separated by mass-weighted overlaps; unstable
-internal modes or ambiguous rigid-mode mixing stop collection.
+Rigid translations/rotations are identified by mass-weighted overlaps; unstable
+internal modes or ambiguous rigid-mode mixing stop collection. Negative 1D
+axial-rotation candidates are not automatically exempt. Positive near-zero
+axial candidates are excluded assuming an isolated wire and listed in the
+selection report.
 
 ## Separate Controls and Examples
 

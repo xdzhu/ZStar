@@ -64,3 +64,19 @@ def test_parse_vasp_observations_requires_energy_stress_lattice(tmp_path: Path):
     source.write_text("ions per type = 1\n", encoding="utf-8")
     with pytest.raises(ValueError, match="stress"):
         parse_vasp_outcar_observations(source)
+
+
+def test_dfpt_response_toten_does_not_override_ground_state_energy(tmp_path: Path):
+    source = tmp_path / 'OUTCAR'
+    text = _outcar().replace(' free  energy   TOTEN  =       -12.34567890 eV',
+        ' FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)\n'
+        ' ---------------------------------------------------\n'
+        ' free  energy   TOTEN  =       -12.34567890 eV')
+    source.write_text(text + '\n Linear response reoptimize wavefunctions\n'
+                      ' Free energy of the ion-electron system (eV)\n'
+                      ' free energy TOTEN = -0.56294625 eV\n', encoding='utf-8')
+    assert parse_vasp_outcar_observations(source, require_forces=True).energy == pytest.approx(-12.34567890)
+    source.write_text(_outcar() + '\n Linear response reoptimize wavefunctions\n'
+                      ' free energy TOTEN = -0.56294625 eV\n', encoding='utf-8')
+    with pytest.raises(ValueError, match='no ionic energy-summary block'):
+        parse_vasp_outcar_observations(source, require_forces=True)

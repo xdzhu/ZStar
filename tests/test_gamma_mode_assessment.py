@@ -131,6 +131,19 @@ def test_mixed_mode_is_not_mistaken_for_translation():
         assert validate_gamma_stability(positive).size == 0
 
 
+def test_ninety_five_percent_translation_is_still_mixed():
+    modes = _two_atom_modes([-2.0, 0.0, 0.0, 100.0, 150.0, 30.0])
+    vectors = modes.eigenvectors.copy()
+    vectors[0] = np.sqrt(0.95) * modes.eigenvectors[0] + np.sqrt(0.05) * modes.eigenvectors[3]
+    mixed = GammaModes(modes.frequencies_thz, vectors, modes.masses_amu,
+                       modes.lattice_angstrom, modes.symbols, modes.positions_fractional)
+    row = assess_gamma_modes(mixed)[0]
+    assert row['classification'] == 'mixed'
+    assert row['internal_overlap'] == pytest.approx(0.05)
+    with pytest.raises(ValueError, match='mixed'):
+        validate_gamma_stability(mixed)
+
+
 def test_large_imaginary_translation_is_still_rejected():
     modes = _two_atom_modes([-25.0, 0.0, 0.0, 100.0, 150.0, 200.0])
     with pytest.raises(ValueError, match=r"1:-25.00 cm-1 \(translation"):
@@ -202,6 +215,63 @@ def test_molecular_rotations_are_distinguished_from_internal_vibrations():
         validate_gamma_stability(unstable, dimensionality=0)
 
 
+def test_one_dimensional_axial_rotation_is_candidate_not_stability_exemption():
+    vectors = np.zeros((6, 2, 3), dtype=complex)
+    for axis in range(3):
+        vectors[axis, :, axis] = 1 / np.sqrt(2.0)
+        vectors[axis + 3, :, axis] = [1 / np.sqrt(2.0), -1 / np.sqrt(2.0)]
+    modes = GammaModes(
+        frequencies_thz=np.array([0, 0, 0, 100, -1, 200]) / THZ_TO_CM1,
+        eigenvectors=vectors, masses_amu=np.ones(2),
+        lattice_angstrom=np.diag([10.0, 10.0, 4.0]), symbols=('H', 'H'),
+        positions_fractional=np.array([[0.95, 0.5, 0.5], [0.05, 0.5, 0.5]]),
+    )
+    rows = assess_gamma_modes(modes, dimensionality=1)
+    assert rows[4]['classification'] == 'axial-rotation-candidate'
+    assert rows[4]['rotation_overlap'] == pytest.approx(1.0)
+    with pytest.raises(ValueError, match='axial-rotation-candidate'):
+        validate_gamma_stability(modes, dimensionality=1)
+    from zstar.raman_response import internal_mode_indices
+    with pytest.raises(ValueError, match='axial-rotation-candidate'):
+        internal_mode_indices(modes, 1)
+    frequencies = np.array([0, 0, 0, 100, 10, 200]) / THZ_TO_CM1
+    positive = GammaModes(frequencies, vectors, modes.masses_amu, modes.lattice_angstrom,
+                          modes.symbols, modes.positions_fractional)
+    selected, report = internal_mode_indices(positive, 1)
+    assert 4 not in selected
+    assert report['one_dimensional_axial_candidates'] == [5]
+    assert 4 not in _selected_mode_indices(positive, None, 5, dimensionality=1)
+    assert 4 not in _mode_indices(positive, None, 5, dimensionality=1)
+    high = GammaModes(np.array([0, 0, 0, 100, 25, 200]) / THZ_TO_CM1,
+                      vectors, modes.masses_amu, modes.lattice_angstrom,
+                      modes.symbols, modes.positions_fractional)
+    with pytest.raises(ValueError, match='far from zero'):
+        _selected_mode_indices(high, None, 5, dimensionality=1)
+
+
+def test_force_diagnostics_exposes_rigid_internal_coupling_without_claiming_stability():
+    from zstar.force_diagnostics import gamma_force_diagnostics
+    from zstar.spectra import rigid_motion_bases
+
+    modes = _two_atom_modes([0, 0, 0, 100, 150, 200])
+    translations, _ = rigid_motion_bases(modes, dimensionality=3)
+    t = translations[:, 0]
+    internal = modes.eigenvectors[3].real.reshape(-1)
+    assert abs(t @ internal) < 1e-12
+    dynamical = np.outer(internal, internal) + 0.5 * (np.outer(t, internal) + np.outer(internal, t))
+    masses = np.repeat(np.sqrt(modes.masses_amu), 3)
+    hessian = masses[:, None] * dynamical * masses[None, :]
+    q = np.eye(6) - np.tile(np.eye(3), (2, 1)) @ np.tile(np.eye(3), (2, 1)).T / 2
+    projected = q @ hessian @ q
+    to_tensor = lambda h: h.reshape(2, 3, 2, 3).transpose(0, 2, 1, 3)
+    report = gamma_force_diagnostics(modes, to_tensor(hessian), to_tensor(projected), dimensionality=3)
+    assert report['raw']['rigid_internal_coupling_frobenius'] == pytest.approx(0.5)
+    assert report['raw']['internal_block_min_eigenvalue'] >= -1e-12
+    assert np.linalg.eigvalsh(dynamical)[0] < 0
+    assert report['projection_relative_frobenius'] > 0
+    assert 'do not alone establish' in report['interpretation']
+
+
 def test_phonon_inspect_writes_audit_without_rejecting_unstable_modes(tmp_path):
     modes = _two_atom_modes([-3.0, 0.0, 0.0, -2.0, 150.0, 200.0])
     points = [
@@ -239,3 +309,24 @@ def test_phonon_inspect_writes_audit_without_rejecting_unstable_modes(tmp_path):
     report = json.loads(output.read_text(encoding="utf-8"))
     assert report["flagged_mode_numbers"] == [4]
     assert report["modes"][0]["classification"] == "translation"
+
+
+def test_phonon_inspect_one_dimensional_force_report(tmp_path, monkeypatch, capsys):
+    from phonopy.file_IO import write_FORCE_CONSTANTS
+
+    modes = _two_atom_modes([0, 0, 0, 100, 150, 200])
+    modes = GammaModes(modes.frequencies_thz, modes.eigenvectors, modes.masses_amu,
+                       modes.lattice_angstrom, modes.symbols,
+                       np.array([[0.45, 0.5, 0.5], [0.55, 0.5, 0.5]]))
+    monkeypatch.setattr('zstar.spectra.load_gamma_modes', lambda _: modes)
+    fc = tmp_path / 'FORCE_CONSTANTS.raw'
+    write_FORCE_CONSTANTS(np.zeros((2, 2, 3, 3)), filename=str(fc))
+    output = tmp_path / 'audit.json'
+    assert handle_canonical_cli(['phonon', 'inspect', '--dim', '1', '--qpoints', 'ignored',
+                                 '--force-constants', str(fc), '--json', str(output)], lambda _: None)
+    report = json.loads(output.read_text(encoding='utf-8'))
+    assert report['force_constants']['rigid_basis']['rotations'] == 1
+    assert report['force_constants']['projected'] is None
+    assert report['force_constants']['raw']['reciprocity_max_eV_A2'] == 0
+    text = capsys.readouterr().out
+    assert 'Rotation' in text and 'axial-rotation-candidate' in text

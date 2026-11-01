@@ -260,6 +260,21 @@ def response_record_from_abacus_files(
     from .bec_database import read_born, read_zborn
 
     zborn = Path(zborn_path).resolve()
+    molecular_receipt = None
+    if dimensionality == 0:
+        from .molecular_apt_validation import verify_legacy_molecular_apt_receipt, verify_molecular_apt_receipt
+        root = zborn.parent
+        if zborn.name != 'BEC.dat':
+            raise ValueError('ABACUS molecular response import requires a fingerprinted BEC.dat')
+        molecular_receipt = (verify_molecular_apt_receipt(root) if (root / 'shared_response.json').is_file()
+                             else verify_legacy_molecular_apt_receipt(root))
+        if born_path is not None:
+            born_candidate = Path(born_path).resolve()
+            expected = molecular_receipt.get('output_sha256', {}).get('BORN')
+            from .abacus_assets import sha256_file
+            if (born_candidate != root / 'BORN' or expected is None or not born_candidate.is_file()
+                    or sha256_file(born_candidate) != expected):
+                raise ValueError('Molecular BORN is not covered by the APT source receipt')
     tensors = read_zborn(zborn)
     epsilon = None
     born = None if born_path is None else Path(born_path).resolve()
@@ -268,7 +283,8 @@ def response_record_from_abacus_files(
     data = {
         "schema_version": 1,
         "backend": "abacus",
-        "method": "finite_displacement_polarization",
+        "method": (molecular_receipt['method'] if molecular_receipt is not None
+                   else "finite_displacement_polarization"),
         "tensor_convention": (
             "rows=atomic displacement/force; columns=polarization/electric field"
         ),
@@ -288,6 +304,8 @@ def response_record_from_abacus_files(
             "collector": "zstar.response_schema.response_record_from_abacus_files",
             "zborn": str(zborn),
             "born": None if born is None else str(born),
+            **({'molecular_sum_consistency': molecular_receipt['sum_consistency'],
+                'independent_accuracy_validated': False} if molecular_receipt is not None else {}),
         },
     )
 
