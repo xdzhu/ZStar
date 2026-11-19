@@ -97,3 +97,14 @@ translation. The largest element changed by 6.47 meV. We used the released
 overlap, and computed the position matrix from the same ABACUS orbitals.
 On a 4 × 4 × 4 mesh with 256 occupied bands, the sampled indirect gap was
 0.603 eV. The initial Hamiltonian supplied with the example gave 0.943 eV.
+On the branch nearest zero, the predicted polarization components were
+(-1.7, -2.0, -2.2) × 10⁻⁵ C/m². The initial Hamiltonian gave zero
+to the reported precision.
+
+We also used HamGNN and DeepH predictions for two hBN structures with
+out-of-plane N displacements held out of training. Both networks predicted
+the change from the equilibrium ABACUS Hamiltonian. The predicted matrices
+used the ABACUS overlap and position matrices of each test structure.
+The N out-of-plane Born charges were -0.335 e and -0.433 e, respectively.
+The displaced-structure ABACUS reference gave -0.341 e. Using the equilibrium
+Hamiltonian at both displacements gave -0.884 e.
