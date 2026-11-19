@@ -84,3 +84,16 @@ all 81 real-space blocks. The largest entrywise errors were 1.11e-16
 Ry for DeepH and 2.30e-17 Ry for HamGNN. This checks conversion of the
 basis and units. To evaluate a trained model, prepare its own predicted
 Hamiltonian for every reference and displaced geometry.
+In a polarization test, PYATB used the original hBN overlap and
+position matrices and a 36 × 36 × 8 mesh. The recovered HamGNN and
+DeepH inputs and the native ABACUS CSR used by NextHAM produced the same
+printed polarization as the original hBN Hamiltonian.
+
+For the [released NextHAM silicon example](https://github.com/DavidYin94/NextHAM_V1_1_Inference),
+we ran the four model stages and used their 1664-dimensional spinor
+Hamiltonian. For this output we enforced real-space Hermiticity by
+averaging each block with the conjugate transpose of its opposite
+translation. The largest element changed by 6.47 meV. We used the released
+overlap, and computed the position matrix from the same ABACUS orbitals.
+On a 4 × 4 × 4 mesh with 256 occupied bands, the sampled indirect gap was
+0.603 eV. The initial Hamiltonian supplied with the example gave 0.943 eV.
