@@ -54,6 +54,14 @@ if the macroscopic-field term is set to zero. The reference is the
 matching tnlo_3.ddb.out and tnlo_4.abo. The header of the DDB specifies Al
 and P.
 
+A finite shear check with the same tutorial geometry, pseudopotentials,
+cutoff and k points gave a relaxed-ion photoelastic coefficient
+p_yz4 = -0.0373. The relaxed-ion piezoelectric coefficient d4x = 3.331 pm/V
+adds -0.1243 pm/V to the fixed-strain r_yzx. The free-stress r_yzx is
+-0.5416 pm/V. The ionic part of the photoelastic coefficient from the
+finite shear calculations agreed with the Raman derivative and internal
+strain contraction to 0.000124.
+
 ## Electronic chi2 from finite-field dipoles
 
 Supply a JSON object with field_step_V_m, directions (n Cartesian triples),
