@@ -888,6 +888,18 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     response_actions = parser_response.add_subparsers(
         dest='response_action', required=True
     )
+    from .pyatb_hamiltonian import MODELS
+
+    parser_response_hamiltonian = response_actions.add_parser(
+        'pyatb-hamiltonian', help='Prepare polarization input using an exported model Hamiltonian.'
+    )
+    parser_response_hamiltonian.add_argument('--input', required=True)
+    parser_response_hamiltonian.add_argument('--hamiltonian', required=True)
+    parser_response_hamiltonian.add_argument('--structure', required=True)
+    parser_response_hamiltonian.add_argument('--prediction-structure', required=True)
+    parser_response_hamiltonian.add_argument('--model', choices=MODELS, required=True)
+    parser_response_hamiltonian.add_argument('--fermi-energy', type=float, required=True)
+    parser_response_hamiltonian.add_argument('--output-dir', required=True)
     parser_response_validate = response_actions.add_parser(
         'validate', help='Validate a zstar-response JSON document.'
     )
@@ -2115,7 +2127,15 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             validate_response_document,
         )
 
-        if args.response_action == 'validate':
+        if args.response_action == 'pyatb-hamiltonian':
+            from .pyatb_hamiltonian import prepare_pyatb_hamiltonian
+
+            output = prepare_pyatb_hamiltonian(
+                args.input, args.hamiltonian, args.structure, args.prediction_structure,
+                model=args.model, fermi_energy_ev=args.fermi_energy, output_dir=args.output_dir,
+            )
+            print(f"[OUT] {output}")
+        elif args.response_action == 'validate':
             print(json.dumps(validate_response_document(args.input), indent=2))
         elif args.response_action == 'import-bec':
             source = Path(args.input).resolve()
