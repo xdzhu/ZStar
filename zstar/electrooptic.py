@@ -187,3 +187,54 @@ def run_electrooptic_cli(argv):
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     print(f"[OUT] {args.output}")
+
+
+def finite_field_chi2(field_step_v_m, directions, zero_c_m2, plus_c_m2, minus_c_m2):
+    """Fit the static SI susceptibility from pairs of clamped-ion polarizations.
+
+    A direction v gives fields +field_step*v and -field_step*v. Leave all
+    polarizations on a continuous branch. Output is chi2 in pm/V for
+    P(2)_i = epsilon_0 * sum_jk chi2_ijk E_j E_k.
+    """
+    step = float(field_step_v_m)
+    if not np.isfinite(step) or step <= 0:
+        raise ValueError("The field step must be positive and finite")
+    axes = np.asarray(directions, dtype=float)
+    if axes.ndim != 2 or axes.shape[1] != 3 or not np.isfinite(axes).all():
+        raise ValueError("Field directions must have shape (n, 3) and be finite")
+    x, y, z = axes.T
+    design = np.column_stack((x*x, y*y, z*z, 2*y*z, 2*x*z, 2*x*y))
+    zero = _array(zero_c_m2, (3,), "zero-field polarization")
+    plus = _array(plus_c_m2, axes.shape, "positive-field polarizations")
+    minus = _array(minus_c_m2, axes.shape, "negative-field polarizations")
+    even = (plus - zero) + (minus - zero)
+    scale = 2 * VACUUM_PERMITTIVITY * step**2
+    coefficients, _, rank, _ = np.linalg.lstsq(design, even, rcond=None)
+    if rank != 6:
+        raise ValueError("Field directions do not span the six symmetric quadratic terms")
+    fit = (coefficients.T / scale) * 1e12
+    raw = fit[:, [[0, 5, 4], [5, 1, 3], [4, 3, 2]]]
+    # Static lossless response is symmetric in all three Cartesian indices.
+    chi2 = (raw + raw.transpose(1, 0, 2) + raw.transpose(1, 2, 0)) / 3
+    diagnostic = {
+        "maximum_permutation_correction_pm_V": float(np.max(abs(chi2 - raw))),
+        "maximum_even_polarization_fit_residual_C_m2": float(np.max(abs(design @ coefficients - even))),
+    }
+    return chi2, diagnostic
+
+
+def run_chi2_cli(argv):
+    parser = argparse.ArgumentParser(prog="zstar dielectric chi2",
+                                     description="Get static electronic chi2 from finite-field polarization.")
+    parser.add_argument("--input", type=Path, required=True, help="JSON containing paired field polarizations")
+    parser.add_argument("--output", type=Path, required=True, help="Write the 3×3×3 chi2 tensor in pm/V")
+    args = parser.parse_args(argv)
+    data = json.loads(args.input.read_text(encoding="utf-8-sig"))
+    tensor, diagnostic = finite_field_chi2(
+        data["field_step_V_m"], data["directions"], data["zero_C_m2"],
+        data["plus_C_m2"], data["minus_C_m2"],
+    )
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(tensor.tolist(), indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    print(json.dumps(diagnostic, allow_nan=False))
+    print(f"[OUT] {args.output}")

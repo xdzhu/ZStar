@@ -42,3 +42,33 @@ The fixed-strain ionic terms r_xxz, r_zzz, and r_xzx are approximately
 -0.885, 1.699, and -0.575 pm/V on the supplied Cartesian axes. A separate
 Cartesian harmonic calculation with the archived force constants gives
 the same components to 0.001 pm/V.
+
+## AlP comparison with ABINIT
+
+For zincblende AlP, the same ABINIT inputs give r_yzx = -0.9535 pm/V
+(electronic), +0.5361 pm/V (ionic), and -0.4174 pm/V (fixed-strain total).
+The longitudinal phonon along [100] is at 534.69 cm^-1. Its yz Raman
+susceptibility is 0.006864 in the ABINIT convention, versus 0.004315
+if the macroscopic-field term is set to zero. The reference is the
+[ABINIT nonlinear tutorial](https://docs.abinit.org/tutorial/nlo/) with the
+matching tnlo_3.ddb.out and tnlo_4.abo. The header of the DDB specifies Al
+and P.
+
+## Electronic chi2 from finite-field dipoles
+
+Supply a JSON object with field_step_V_m, directions (n Cartesian triples),
+zero_C_m2, plus_C_m2, and minus_C_m2. Rows in the two last arrays are paired
+clamped-ion polarizations for plus and minus the reference field multiplied
+by the corresponding direction. Keep the same cell, electronic settings,
+and polarization branch across the pairs. A direction such as [0,1,1]
+applies the specified field step along both y and z. Six independent
+quadratic directions are required.
+
+    zstar dielectric chi2 --input paired_fields.json --output chi2.json
+
+The command reports the largest symmetry and fit residuals. Repeat at
+another field step to check truncation and SCF precision. The output is
+accepted by zstar dielectric electrooptic --chi2. A check on the archived
+AlAs dipoles gave chi_xyz = 30.4489 pm/V and agreed with the
+[Materials Cloud tensor](https://archive.materialscloud.org/records/kqe32-5cy26)
+to 0.0012 pm/V across all components.

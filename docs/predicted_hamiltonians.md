@@ -30,3 +30,53 @@ copies model configuration files into the displacement tree.
 [NextHAM](https://github.com/DavidYin94/NextHAM) also have model-specific output
 formats. Convert the output of the selected predictor before using this
 stage preparation.
+
+## Export predictions from each package
+
+### DeepH-pack
+
+Install the optional h5py dependency with pip install 'zstar[deeph]'. Use the real, nonmagnetic ABACUS-trained model output. Pass the matching
+DeepH overlap and the orbital shell list emitted by the same workflow.
+
+    zstar response convert-deeph --prediction hamiltonians_pred.h5 \
+      --orbital-types orbital_types.dat --model-overlap overlaps.h5 \
+      --reference-overlap stage/data-SR-sparse_SPIN0.csr --output prediction-H.csr
+
+The command reverses DeepH's signed s/p/d/f orbital mapping, converts eV
+to Ry, and compares each overlap block with the ABACUS overlap.
+Both prediction converters enforce H(R) = H(-R)^T by averaging paired
+blocks, equivalent to Hermitianizing the Fourier Hamiltonian.
+
+### HamGNN
+
+Use the ABACUS non-SOC predictor. Save the single structure's numeric graph
+arrays in one NumPy archive:
+
+- orbital_mask is the boolean atom-by-padded-orbital array from the same
+  HamGNN basis definition used in band_cal.py.
+- edge_index has shape (2, edges), and cell_shift has shape (edges, 3).
+- Son and Soff contain padded onsite and inter-cell overlaps for atoms
+  and edges in the prediction order. Reshape to (atoms, orbitals, orbitals)
+  and (edges, orbitals, orbitals).
+
+The converter reads numeric arrays without Python object deserialization.
+
+    zstar response convert-hamgnn --prediction prediction_hamiltonian.npy \
+      --graph prediction_graph.npz --reference-overlap stage/data-SR-sparse_SPIN0.csr \
+      --output prediction-H.csr
+
+### NextHAM
+
+The official inference postprocessor writes predict_hr_tot as ABACUS
+text CSR in Ry. Use that file as the Hamiltonian on the preparation
+command. Match the original ABACUS basis and geometry used by NextHAM to
+the overlap and position matrices already supplied to PYATB.
+
+## Code validation
+
+The native DeepH and HamGNN conversion was checked by encoding a real hBN
+ABACUS Hamiltonian and its overlap in each model format and recovering
+all 81 real-space blocks. The largest entrywise errors were 1.11e-16
+Ry for DeepH and 2.30e-17 Ry for HamGNN. This checks conversion of the
+basis and units. To evaluate a trained model, prepare its own predicted
+Hamiltonian for every reference and displaced geometry.

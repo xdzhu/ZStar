@@ -53,3 +53,25 @@ def test_full_tensor_requires_both_strain_inputs():
     with pytest.raises(ValueError, match="both photoelastic and piezoelectric"):
         electrooptic([8.0], [[1, 0, 0]], np.zeros((1, 3, 3)), np.eye(3),
                       photoelastic=np.zeros((3, 3, 6)))
+
+
+def test_static_chi2_cancels_linear_term_and_recovers_mixed_components():
+    from zstar.electrooptic import finite_field_chi2
+    from zstar.spectra import VACUUM_PERMITTIVITY
+
+    directions = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1],
+                           [0, 1, 1], [1, 0, 1], [1, 1, 0]], dtype=float)
+    step = 1e8
+    zero = np.array([0., 0., 0.3])
+    expected = np.zeros((3, 3, 3))
+    expected[0, 2, 2] = expected[2, 0, 2] = expected[2, 2, 0] = 6.7
+    expected[2, 2, 2] = 21.5
+    linear = VACUUM_PERMITTIVITY * step * directions * np.array([4, 5, 6])
+    quadratic = VACUUM_PERMITTIVITY * step**2 * 1e-12 * np.einsum(
+        "ijk,nj,nk->ni", expected, directions, directions
+    )
+    actual, diagnostic = finite_field_chi2(
+        step, directions, zero, zero + linear + quadratic, zero - linear + quadratic
+    )
+    np.testing.assert_allclose(actual, expected, atol=1e-10)
+    assert diagnostic["maximum_permutation_correction_pm_V"] < 1e-9
