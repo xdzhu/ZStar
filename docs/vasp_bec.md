@@ -75,7 +75,7 @@ Generated outputs are:
 
 - `BEC.raw.dat`: full-cell tensors in ZStar order.
 - `BORN`: dielectric tensor plus BEC tensors in Phonopy format.
-- `vasp_bec.json`: backend, tensor-convention, atom-order, and sum-rule metadata.
+- `vasp_bec.json`: backend, tensor convention, atom order, and the sum of the final printed Born charges. When VASP reports all three raw field directions, this file and `response.json` also record `vasp_bec_drift_before_correction` in units of `e` (rows: electric field; columns: force). Check this drift before interpreting a small final sum as convergence.
 
 The text tensor files retain eight digits after the decimal point; JSON keeps
 the available floating-point precision. This avoids additional formatting

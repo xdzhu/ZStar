@@ -244,6 +244,8 @@ def response_record_from_bec_result(
             "method": data.get("method"),
             "sum_scope": data.get("sum_scope"),
             "acoustic_sum_tensor": data.get("acoustic_sum_tensor"),
+            **({"vasp_bec_drift_before_correction": data["vasp_bec_drift_before_correction"]}
+               if "vasp_bec_drift_before_correction" in data else {}),
         },
     )
 
