@@ -20,8 +20,10 @@ NextHAM. Repeat preparation for the reference and each displacement.
        cd prediction-pyatb
        pyatb
 
-The preparation checks atom order, lattice, atom positions, and matrix
-dimensions, and records the exact files. Keep the orbital ordering identical
+The preparation checks atom order, atom positions, matrix dimensions and
+the cell in the PYATB template. The template cell must match the structure
+after applying the lattice scale and its units. The preparation records the
+exact files. Keep the orbital ordering identical
 when exporting model matrices. A matching matrix size cannot verify an
 orbital ordering.
 

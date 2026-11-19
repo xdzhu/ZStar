@@ -10,11 +10,15 @@ from tempfile import TemporaryDirectory
 
 import numpy as np
 
+from .polarization_2d import BOHR_M
 from .structure_io import read_structure
 
 
 MODELS = ("hamgnn", "deeph", "nextham")
 _PARAMETERS = re.compile(r"(?ms)^[ \t]*INPUT_PARAMETERS[ \t]*\n\s*\{[^}]*\}")
+_LATTICE = re.compile(r"(?ms)^[ \t]*LATTICE[ \t]*\n\s*\{([^}]*)\}")
+_CELL_FIELD = re.compile(r"(?m)^[ \t]*(lattice_constant_unit|lattice_constant|lattice_vector)\b")
+_GEOMETRY_ATOL_A = 1e-6
 _DIMENSION = re.compile(r"^Matrix Dimension(?:\s+(?:of|with)\s+\S+)?\s+(\d+)\s*$")
 
 
@@ -25,6 +29,29 @@ def _value(block, name, default=None):
     if len(matches) != 1:
         raise ValueError(f"Expected exactly one {name} in PYATB INPUT_PARAMETERS")
     return matches[0]
+
+
+def _template_lattice(text):
+    blocks = _LATTICE.findall(text)
+    if len(blocks) != 1:
+        raise ValueError("Expected one PYATB LATTICE block")
+    block = "\n".join(line.split("#", 1)[0] for line in blocks[0].splitlines())
+    parts = _CELL_FIELD.split(block)
+    keys = parts[1::2]
+    if parts[0].strip() or len(set(keys)) != len(keys):
+        raise ValueError("Invalid fields in PYATB LATTICE")
+    fields = {name: value.split() for name, value in zip(keys, parts[2::2])}
+    try:
+        scale_text, = fields["lattice_constant"]
+        unit, = fields.get("lattice_constant_unit", ["Bohr"])
+        scale = float(scale_text) * {"Angstrom": 1.0, "Bohr": BOHR_M * 1e10}[unit]
+        vectors = np.asarray(fields["lattice_vector"], dtype=float).reshape(3, 3)
+        lattice = scale * vectors
+    except (KeyError, ValueError) as exc:
+        raise ValueError("Invalid PYATB LATTICE scale, unit or vectors") from exc
+    if scale <= 0 or not np.isfinite(lattice).all():
+        raise ValueError("PYATB LATTICE must have positive scale and finite vectors")
+    return lattice
 
 
 def _resolve(parent, value):
@@ -58,7 +85,7 @@ def prepare_pyatb_hamiltonian(input_path, hamiltonian, structure, prediction_str
     """Keep S and r and replace H for the specified displaced geometry.
 
     The caller exports the prediction in the same numerical orbital basis
-    and atom order as S and r. This function checks geometry and matrix sizes.
+    and atom order as S and r. This function checks the template cell, geometry and matrix sizes.
     """
     if model not in MODELS or not math.isfinite(fermi_energy_ev):
         raise ValueError("Provide a supported model name and a finite Fermi level in eV")
@@ -71,14 +98,17 @@ def prepare_pyatb_hamiltonian(input_path, hamiltonian, structure, prediction_str
     prediction = read_structure(prediction_structure)
     if (reference.symbols != prediction.symbols
             or not np.allclose(reference.lattice_angstrom, prediction.lattice_angstrom,
-                               atol=1e-6, rtol=0)):
+                               atol=_GEOMETRY_ATOL_A, rtol=0)):
         raise ValueError("Prediction atom order or lattice differs from reference")
     delta = prediction.positions_fractional - reference.positions_fractional
     delta -= np.rint(delta)
-    if np.max(np.abs(delta @ reference.lattice_angstrom)) > 1e-6:
+    if np.max(np.abs(delta @ reference.lattice_angstrom)) > _GEOMETRY_ATOL_A:
         raise ValueError("Prediction was made for different atomic positions")
 
     text = input_path.read_text(encoding="utf-8-sig")
+    if not np.allclose(_template_lattice(text), reference.lattice_angstrom,
+                       atol=_GEOMETRY_ATOL_A, rtol=0):
+        raise ValueError("PYATB LATTICE differs from the reference structure")
     matches = list(_PARAMETERS.finditer(text))
     if len(matches) != 1:
         raise ValueError("Expected one PYATB INPUT_PARAMETERS block")

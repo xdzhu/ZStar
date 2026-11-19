@@ -22,6 +22,15 @@ def _fixture(tmp_path):
  fermi_energy_unit eV
  fermi_energy 1.0
 }
+LATTICE
+{
+ lattice_constant 3
+ lattice_constant_unit Angstrom
+ lattice_vector
+   1 0 0
+   0 1 0
+   0 0 1
+}
 POLARIZATION
 {
  stru_file POSCAR
@@ -68,3 +77,27 @@ def test_nextham_spinor_export_keeps_spinor_template(tmp_path):
         prepare_pyatb_hamiltonian(infile, hamiltonian, structure, structure,
                                   model="deeph", fermi_energy_ev=1.5,
                                   output_dir=tmp_path/"deeph-spinor")
+
+
+@pytest.mark.parametrize("unit_line", (" lattice_constant_unit Bohr\n", ""))
+def test_template_cell_accepts_equivalent_bohr(tmp_path, unit_line):
+    infile, hamiltonian, structure = _fixture(tmp_path)
+    original = infile.read_text()
+    infile.write_text(original.replace(
+        " lattice_constant 3\n lattice_constant_unit Angstrom\n",
+        " lattice_constant 5.66917837387731\n" + unit_line,
+    ))
+    output = prepare_pyatb_hamiltonian(infile, hamiltonian, structure, structure,
+                                      model="nextham", fermi_energy_ev=1.5,
+                                      output_dir=tmp_path/"bohr")
+    assert "lattice_constant 5.66917837387731" in (output/"Input").read_text()
+
+
+def test_wrong_template_lattice_does_not_prepare_input(tmp_path):
+    infile, hamiltonian, structure = _fixture(tmp_path)
+    infile.write_text(infile.read_text().replace(" lattice_constant 3", " lattice_constant 4"))
+    output = tmp_path/"export"
+    with pytest.raises(ValueError, match="PYATB LATTICE differs"):
+        prepare_pyatb_hamiltonian(infile, hamiltonian, structure, structure,
+                                  model="deeph", fermi_energy_ev=1.5, output_dir=output)
+    assert not output.exists()
