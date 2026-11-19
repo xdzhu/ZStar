@@ -84,12 +84,15 @@ def prepare_pyatb_hamiltonian(input_path, hamiltonian, structure, prediction_str
         raise ValueError("Expected one PYATB INPUT_PARAMETERS block")
     parameters = matches[0]
     block = parameters[0]
+    nspin = _value(block, "nspin")
+    allowed_spins = ("1", "4") if model == "nextham" else ("1",)
+    if nspin not in allowed_spins:
+        raise ValueError(f"{model} requires an ABACUS template with nspin {' or '.join(allowed_spins)}")
     if (_value(block, "package").lower() != "abacus"
-            or _value(block, "nspin") != "1"
             or _value(block, "binary", "0") != "0"
             or _value(block, "HR_unit") != "Ry"
             or _value(block, "fermi_energy_unit") != "eV"):
-        raise ValueError("Use nonmagnetic ABACUS text matrices with H in Ry and Fermi energy in eV")
+        raise ValueError("Use ABACUS text matrices with H in Ry and Fermi energy in eV")
     overlap = _resolve(input_path.parent, _value(block, "SR_route"))
     position = _resolve(input_path.parent, _value(block, "rR_route"))
     size = _dimension(hamiltonian)
@@ -117,6 +120,7 @@ def prepare_pyatb_hamiltonian(input_path, hamiltonian, structure, prediction_str
                "overlap": overlap, "position": position, "structure": structure,
                "prediction_structure": prediction_structure}
     receipt = {"model": model, "fermi_energy_eV": fermi_energy_ev, "basis_dimension": size,
+               "nspin": int(nspin),
                "source_files": {name: {"path": str(path), "sha256": _sha(path)}
                                 for name, path in sources.items()}}
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -7,7 +7,9 @@ NextHAM. Repeat preparation for the reference and each displacement.
 
 1. Predict H for the same cell, atom order, orbital order, and numerical orbital
    basis as S and r. Use the model version appropriate to that basis.
-2. Export it as a nonmagnetic, real ABACUS text sparse matrix with H in Ry.
+2. Export H as an ABACUS text sparse matrix in Ry. Use `nspin 1` for the
+   DeepH and HamGNN converters. Use a matching `nspin 1` or `nspin 4` PYATB
+   template for a native NextHAM export.
    Supply the prediction structure and the insulating Fermi energy in eV.
 3. Prepare the input and execute PYATB.
 
@@ -70,7 +72,9 @@ The converter reads numeric arrays without Python object deserialization.
 The official inference postprocessor writes predict_hr_tot as ABACUS
 text CSR in Ry. Use that file as the Hamiltonian on the preparation
 command. Match the original ABACUS basis and geometry used by NextHAM to
-the overlap and position matrices already supplied to PYATB.
+the overlap and position matrices already supplied to PYATB. For the
+spin-orbit model, all three matrices must use the same spinor basis and
+ordering, with `nspin 4` and the spinor occupied-band count in the template.
 
 ## Code validation
 

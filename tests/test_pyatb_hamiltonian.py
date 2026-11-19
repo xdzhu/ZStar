@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from zstar.pyatb_hamiltonian import prepare_pyatb_hamiltonian
@@ -52,3 +54,17 @@ def test_geometry_mismatch_does_not_write_prepared_input(tmp_path):
                                   model="hamgnn", fermi_energy_ev=1.5,
                                   output_dir=tmp_path/"export")
     assert not (tmp_path/"export").exists()
+
+
+def test_nextham_spinor_export_keeps_spinor_template(tmp_path):
+    infile, hamiltonian, structure = _fixture(tmp_path)
+    infile.write_text(infile.read_text().replace("nspin 1", "nspin 4"))
+    output = prepare_pyatb_hamiltonian(infile, hamiltonian, structure, structure,
+                                      model="nextham", fermi_energy_ev=1.5,
+                                      output_dir=tmp_path/"nextham-spinor")
+    assert "nspin 4" in (output/"Input").read_text()
+    assert json.loads((output/"hamiltonian_source.json").read_text())["nspin"] == 4
+    with pytest.raises(ValueError, match="deeph requires an ABACUS template with nspin 1"):
+        prepare_pyatb_hamiltonian(infile, hamiltonian, structure, structure,
+                                  model="deeph", fermi_energy_ev=1.5,
+                                  output_dir=tmp_path/"deeph-spinor")
