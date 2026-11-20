@@ -14,7 +14,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .polarization_1d import integrate_transverse_dipole
+from .polarization_1d import integrate_transverse_dipoles
 from .polarization_2d import (
     BOHR_M,
     ELEMENTARY_CHARGE,
@@ -190,16 +190,15 @@ def _field_alpha(
     cubes = [find_charge_cube(stage) for stage in field_stages]
     for cube in cubes:
         require_cube_precision(cube, minimum_cube_digits)
+    plus, minus = [
+        integrate_transverse_dipoles(cube, unwrap_centers_bohr=unwrap_centers_bohr)
+        for cube in cubes
+    ]
     alpha = np.zeros(3, dtype=float)
-    for index, axis in enumerate(("x", "y")):
-        dipoles = [
-            integrate_transverse_dipole(
-                cube, axis, unwrap_center_bohr=unwrap_centers_bohr[axis]
-            ).dipole_e_bohr
-            for cube in cubes
-        ]
+    for index, axis in enumerate("xy"):
         alpha[index] = dipole_line_polarizability_a2(
-            dipoles[0], dipoles[1], field_au=field_au, length_a=length_a
+            plus[axis].dipole_e_bohr, minus[axis].dipole_e_bohr,
+            field_au=field_au, length_a=length_a,
         )
     alpha[2] = line_polarizability_a2(
         *_field_pair_berry(root, geometry), field_au=field_au,
@@ -270,8 +269,8 @@ def collect_screened_1d_raman_tensors(
     reference_cube = find_charge_cube(roots["x"] / "states/reference/field_plus")
     require_cube_precision(reference_cube, minimum_cube_digits)
     centers = {
-        axis: integrate_transverse_dipole(reference_cube, axis).unwrap_center_bohr
-        for axis in ("x", "y")
+        axis: value.unwrap_center_bohr
+        for axis, value in integrate_transverse_dipoles(reference_cube).items()
     }
     tensors = np.zeros_like(original)
     xy_residuals: dict[str, float] = {}
