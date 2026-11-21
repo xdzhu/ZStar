@@ -1,0 +1,34 @@
+INPUT_PARAMETERS
+{
+    nspin 4
+    package ABACUS
+    fermi_energy 0
+    fermi_energy_unit eV
+    HR_route h0.csr
+    SR_route overlap.csr
+    rR_route position.csr
+    HR_unit Ry
+    rR_unit Bohr
+    max_kpoint_num 256
+}
+
+LATTICE
+{
+    lattice_constant 1.8897261258369282
+    lattice_constant_unit Bohr
+    lattice_vector
+       10.8874047459000  0.0000000000000  0.0000000000000
+        0.0000000000000 10.8874047459000  0.0000000000000
+        0.0000000000000  0.0000000000000 10.8874047459000
+}
+
+POLARIZATION
+{
+    occ_band 256
+    nk1 4
+    nk2 4
+    nk3 4
+    atom_type 1
+    stru_file STRU
+    valence_e 4
+}

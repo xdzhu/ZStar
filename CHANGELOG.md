@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Read each charge-density cube once for both transverse dipoles in the 1D
+  polarization, Born-charge, and screened Raman calculations.
+
 ## 0.3.6 - 2026-11-02
 
 - Add `mixing_beta 0.5` to generated default ABACUS inputs without overriding

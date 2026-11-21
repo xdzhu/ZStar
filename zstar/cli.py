@@ -888,6 +888,33 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     response_actions = parser_response.add_subparsers(
         dest='response_action', required=True
     )
+    from .pyatb_hamiltonian import MODELS
+
+    parser_response_hamiltonian = response_actions.add_parser(
+        'pyatb-hamiltonian', help='Prepare polarization input using an exported model Hamiltonian.'
+    )
+    parser_response_hamiltonian.add_argument('--input', required=True)
+    parser_response_hamiltonian.add_argument('--hamiltonian', required=True)
+    parser_response_hamiltonian.add_argument('--structure', required=True)
+    parser_response_hamiltonian.add_argument('--prediction-structure', required=True)
+    parser_response_hamiltonian.add_argument('--model', choices=MODELS, required=True)
+    parser_response_hamiltonian.add_argument('--fermi-energy', type=float, required=True)
+    parser_response_hamiltonian.add_argument('--output-dir', required=True)
+    parser_response_deeph = response_actions.add_parser(
+        'convert-deeph', help='Convert a DeepH-pack ABACUS HDF5 prediction to text CSR.'
+    )
+    parser_response_deeph.add_argument('--prediction', required=True)
+    parser_response_deeph.add_argument('--orbital-types', required=True)
+    parser_response_deeph.add_argument('--model-overlap', required=True)
+    parser_response_deeph.add_argument('--reference-overlap', required=True)
+    parser_response_deeph.add_argument('--output', required=True)
+    parser_response_hamgnn = response_actions.add_parser(
+        'convert-hamgnn', help='Convert real HamGNN ABACUS NumPy prediction blocks to text CSR.'
+    )
+    parser_response_hamgnn.add_argument('--prediction', required=True)
+    parser_response_hamgnn.add_argument('--graph', required=True)
+    parser_response_hamgnn.add_argument('--reference-overlap', required=True)
+    parser_response_hamgnn.add_argument('--output', required=True)
     parser_response_validate = response_actions.add_parser(
         'validate', help='Validate a zstar-response JSON document.'
     )
@@ -2115,7 +2142,26 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             validate_response_document,
         )
 
-        if args.response_action == 'validate':
+        if args.response_action == 'pyatb-hamiltonian':
+            from .pyatb_hamiltonian import prepare_pyatb_hamiltonian
+
+            output = prepare_pyatb_hamiltonian(
+                args.input, args.hamiltonian, args.structure, args.prediction_structure,
+                model=args.model, fermi_energy_ev=args.fermi_energy, output_dir=args.output_dir,
+            )
+            print(f"[OUT] {output}")
+        elif args.response_action == 'convert-deeph':
+            from .model_hamiltonian import convert_deeph
+
+            output = convert_deeph(args.prediction, args.orbital_types, args.model_overlap,
+                                   args.reference_overlap, args.output)
+            print(f"[OUT] {output}")
+        elif args.response_action == 'convert-hamgnn':
+            from .model_hamiltonian import convert_hamgnn
+
+            output = convert_hamgnn(args.prediction, args.graph, args.reference_overlap, args.output)
+            print(f"[OUT] {output}")
+        elif args.response_action == 'validate':
             print(json.dumps(validate_response_document(args.input), indent=2))
         elif args.response_action == 'import-bec':
             source = Path(args.input).resolve()

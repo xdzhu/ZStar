@@ -591,11 +591,32 @@ def _numeric_triplet(line: str) -> list[float] | None:
 def parse_vasp_outcar(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
     """Parse epsilon-infinity and BECs, normalized to ZStar tensor order."""
 
-    source = Path(path)
+    epsilon, tensors, _ = _parse_vasp_outcar(Path(path))
+    return epsilon, tensors
+
+
+def _parse_vasp_outcar(source: Path) -> tuple[np.ndarray, np.ndarray, list[list[float]] | None]:
     lines = source.read_text(encoding="utf-8", errors="ignore").splitlines()
     dielectric_candidates: list[np.ndarray] = []
-    born_candidates: list[np.ndarray] = []
+    born_candidates: list[tuple[np.ndarray, list[list[float]] | None]] = []
+    direction_header = re.compile(r"^\s*POSITION\s+DIRECTION\s+([123])\s+BORN EFFECTIVE CHARGE", re.I)
+    drift_line = re.compile(
+        rf"^\s*total drift \(improves with k-points\):\s*({_NUMBER})\s+({_NUMBER})\s+({_NUMBER})\s*$",
+        re.I,
+    )
+    direction = None
+    drifts: dict[int, list[float]] = {}
     for index, line in enumerate(lines):
+        header = direction_header.match(line)
+        if header:
+            direction = int(header[1])
+            if direction == 1:
+                drifts = {}
+        elif direction is not None:
+            drift = drift_line.match(line)
+            if drift:
+                drifts[direction] = [_float(value) for value in drift.groups()]
+                direction = None
         upper = line.upper()
         if (
             "MACROSCOPIC STATIC DIELECTRIC TENSOR" in upper
@@ -633,12 +654,16 @@ def parse_vasp_outcar(path: str | Path) -> tuple[np.ndarray, np.ndarray]:
                     break
                 cursor += 1
             if tensors:
-                born_candidates.append(np.asarray(tensors))
+                raw_drift = [drifts[axis] for axis in (1, 2, 3)] if len(drifts) == 3 else None
+                born_candidates.append((np.asarray(tensors), raw_drift))
+                direction = None
+                drifts = {}
     if not dielectric_candidates:
         raise ValueError(f"No dielectric tensor including local fields found in {source}")
     if not born_candidates:
         raise ValueError(f"No Born effective charges including local fields found in {source}")
-    return dielectric_candidates[-1], born_candidates[-1]
+    tensors, raw_drift = born_candidates[-1]
+    return dielectric_candidates[-1], tensors, raw_drift
 
 
 def collect_vasp_bec(
@@ -650,7 +675,7 @@ def collect_vasp_bec(
     response_output: str | Path | None = "response.json",
 ) -> dict:
     root_path, manifest = _load_manifest(root)
-    epsilon, tensors = parse_vasp_outcar(root_path / "response" / "OUTCAR")
+    epsilon, tensors, raw_drift = _parse_vasp_outcar(root_path / "response" / "OUTCAR")
     labels = list(manifest["labels"])
     if len(tensors) != len(labels):
         raise ValueError(f"OUTCAR has {len(tensors)} BEC tensors but POSCAR has {len(labels)} atoms")
@@ -671,6 +696,12 @@ def collect_vasp_bec(
         ],
         "acoustic_sum_tensor": acoustic_sum.tolist(),
     }
+    if raw_drift is not None:
+        result["vasp_bec_drift_before_correction"] = {
+            "values": raw_drift,
+            "unit": "e",
+            "axes": ["electric_field", "force"],
+        }
 
     output_path = Path(output)
     if not output_path.is_absolute():

@@ -257,7 +257,7 @@ def _check_polarization_settings(reference, stage):
 def _dipole_changes(root, manifest, diagnostics=None, *, molecular_source=None):
     from .deal_polar import _parse_pyatb_polar_file, _read_pyatb_geom
     from .polarization_2d import find_charge_cube, integrate_slab_dipole
-    from .polarization_1d import integrate_transverse_dipole
+    from .polarization_1d import integrate_transverse_dipoles
 
     reference = root / "0.no-move"
     relative = Path("pyatb/Out/Polarization/polarization.dat")
@@ -297,11 +297,12 @@ def _dipole_changes(root, manifest, diagnostics=None, *, molecular_source=None):
     slab0 = integrate_slab_dipole(cube0) if dimension == 2 else None
     if slab0 and not np.allclose(slab0.normal, [0, 0, 1], atol=1e-6):
         raise ValueError("The shared 2D workflow requires a positive Cartesian z slab normal")
-    wire0 = [integrate_transverse_dipole(cube0, axis) for axis in "xy"] if dimension == 1 else []
+    wire0 = integrate_transverse_dipoles(cube0) if dimension == 1 else {}
+    wire_centers = {axis: value.unwrap_center_bohr for axis, value in wire0.items()}
     if diagnostics is not None:
         diagnostics['polarization_settings'] = response_settings
         diagnostics['reference_real_space'] = (slab0.to_dict() if slab0 else
-                                                [value.to_dict() for value in wire0])
+                                                [value.to_dict() for value in wire0.values()])
         diagnostics['stages'] = {}
     responses = []
     for item in manifest["stages"]:
@@ -324,10 +325,11 @@ def _dipole_changes(root, manifest, diagnostics=None, *, molecular_source=None):
             if diagnostics is not None:
                 diagnostics['stages'][item['name']] = slab.to_dict()
         elif dimension == 1:
-            cube = find_charge_cube(stage)
-            for axis, base in enumerate(wire0):
-                value = integrate_transverse_dipole(cube, "xy"[axis], unwrap_center_bohr=base.unwrap_center_bohr)
-                dipole[axis] = (value.dipole_e_bohr - base.dipole_e_bohr) * BOHR_ANGSTROM
+            wire = integrate_transverse_dipoles(
+                find_charge_cube(stage), unwrap_centers_bohr=wire_centers
+            )
+            for index, axis in enumerate("xy"):
+                dipole[index] = (wire[axis].dipole_e_bohr - wire0[axis].dipole_e_bohr) * BOHR_ANGSTROM
         responses.append(dipole)
     return responses
 

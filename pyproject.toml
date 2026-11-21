@@ -44,6 +44,7 @@ dependencies = [
 
 [project.optional-dependencies]
 vasp = ["pymatgen>=2024.0.0"]
+deeph = ["h5py>=3.7"]
 full = ["pymatgen>=2024.0.0"]
 
 

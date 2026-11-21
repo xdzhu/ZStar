@@ -189,6 +189,33 @@ class VaspBecTests(unittest.TestCase):
                 np.max(np.abs(np.asarray(result["acoustic_sum_tensor"]))), 0.0
             )
 
+    def test_collect_preserves_raw_drift_alongside_neutral_final_charges(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "response").mkdir()
+            drifts = [[0.868, 0.890, 0.0], [0.039, 0.022, 0.0], [0.0, 0.0, -0.009]]
+            native = "".join(
+                f" POSITION  DIRECTION {axis}  BORN EFFECTIVE CHARGE (rigid.aug. ionic)\n"
+                f" total drift (improves with k-points): {' '.join(map(str, row))}\n"
+                for axis, row in enumerate(drifts, start=1)
+            )
+            outcar = root / "response" / "OUTCAR"
+            outcar.write_text(native + outcar_text(), encoding="utf-8")
+            (root / "vasp_bec_manifest.json").write_text(
+                json.dumps({"method": "dfpt", "labels": ["Ba", "Ti", "O"]}),
+                encoding="utf-8",
+            )
+            key = "vasp_bec_drift_before_correction"
+            result = collect_vasp_bec(root)
+            self.assertEqual(result[key]["values"], drifts)
+            self.assertEqual(result[key]["axes"], ["electric_field", "force"])
+            self.assertEqual(result["acoustic_sum_tensor"], np.zeros((3, 3)).tolist())
+            response = json.loads((root / "response.json").read_text(encoding="utf-8"))
+            self.assertEqual(response["metadata"][key], result[key])
+
+            outcar.write_text(native + outcar_text() + outcar_text(), encoding="utf-8")
+            self.assertNotIn(key, collect_vasp_bec(root))
+
     def test_slurm_script_is_one_serial_driver(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

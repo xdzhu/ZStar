@@ -40,7 +40,7 @@ FAMILY_HELP = {
     "phonon": "pre, job, run, stat, post, irrep, spectrum, inspect, compare, translation-check",
     "spectra": "pre, job, run, stat, post",
     "piezo": "pre, job, run, stat, post",
-    "dielectric": "static, freq, optics",
+    "dielectric": "static, freq, optics, electrooptic, chi2",
     "stru": "convert, wyckoff",
     "data": "db, qnep",
     "skill": "install, path, preflight",
@@ -926,6 +926,16 @@ def handle_canonical_cli(arguments: Sequence[str], legacy: LegacyRunner) -> bool
     if family in {"dielectric", "diel"}:
         if not rest or rest[0] in {"-h", "--help"}:
             _print_family_help("dielectric")
+            return True
+        if rest[0] == "chi2":
+            from .electrooptic import run_chi2_cli
+
+            run_chi2_cli(rest[1:])
+            return True
+        if rest[0] == "electrooptic":
+            from .electrooptic import run_electrooptic_cli
+
+            run_electrooptic_cli(rest[1:])
             return True
         action = "static" if rest[0] == "zero" else rest[0]
         mapping = {"static": "calc", "freq": "freq", "optics": "optics"}

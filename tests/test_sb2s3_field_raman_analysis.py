@@ -109,8 +109,8 @@ def test_screened_collector_matches_mode_and_marks_axial_limit(tmp_path, monkeyp
     monkeypatch.setattr(LOCAL_FIELD, "find_charge_cube", lambda path: Path("unused.cube"))
     monkeypatch.setattr(LOCAL_FIELD, "require_cube_precision", lambda path, digits: None)
     monkeypatch.setattr(
-        LOCAL_FIELD, "integrate_transverse_dipole",
-        lambda cube, axis: SimpleNamespace(unwrap_center_bohr=10.0),
+        LOCAL_FIELD, "integrate_transverse_dipoles",
+        lambda cube: {axis: SimpleNamespace(unwrap_center_bohr=10.0) for axis in "xy"},
     )
 
     def fake_alpha(root, geometry, **kwargs):

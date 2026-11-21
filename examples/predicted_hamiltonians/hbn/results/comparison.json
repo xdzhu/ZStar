@@ -1,0 +1,47 @@
+{
+  "sample_material": "hBN",
+  "displacement_span_A": 0.02116708843611903,
+  "Berry_mesh": [
+    36,
+    36,
+    8
+  ],
+  "z_quantum_C_per_m2": 2.932871,
+  "methods": {
+    "reference": {
+      "P_plus_C_per_m2": -0.000353,
+      "P_minus_C_per_m2": 0.000353,
+      "delta_Pz_C_per_m2": -0.000706,
+      "Zstar_zz_e": -0.34091386324230893,
+      "minimum_sampled_indirect_gap_eV": 4.67197809625017
+    },
+    "fixed": {
+      "P_plus_C_per_m2": -0.000915,
+      "P_minus_C_per_m2": 0.000915,
+      "delta_Pz_C_per_m2": -0.00183,
+      "Zstar_zz_e": -0.8836719118037185,
+      "minimum_sampled_indirect_gap_eV": 4.674152115668535,
+      "abs_Zstar_error_e": 0.5427580485614096
+    },
+    "hamgnn": {
+      "P_plus_C_per_m2": -0.000347,
+      "P_minus_C_per_m2": 0.000347,
+      "delta_Pz_C_per_m2": -0.000694,
+      "Zstar_zz_e": -0.3351192933288418,
+      "minimum_sampled_indirect_gap_eV": 4.671481475049187,
+      "abs_Zstar_error_e": 0.005794569913467107,
+      "abs_Zstar_error_improvement_e": 0.5369634786479425,
+      "assessment": "supports_accuracy"
+    },
+    "deeph": {
+      "P_plus_C_per_m2": -0.000449,
+      "P_minus_C_per_m2": 0.000448,
+      "delta_Pz_C_per_m2": -0.000897,
+      "Zstar_zz_e": -0.43314410103165873,
+      "minimum_sampled_indirect_gap_eV": 4.664837827742863,
+      "abs_Zstar_error_e": 0.0922302377893498,
+      "abs_Zstar_error_improvement_e": 0.45052781077205983,
+      "assessment": "end_to_end_only"
+    }
+  }
+}

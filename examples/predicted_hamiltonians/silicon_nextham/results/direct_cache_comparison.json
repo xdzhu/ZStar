@@ -1,0 +1,12 @@
+[
+  {
+    "case": "predicted",
+    "identical": true,
+    "output_sha256": "08ff25ee11af00e2a42a61c3470a6f507ea7440b5bd701b46aff3105e83f5151"
+  },
+  {
+    "case": "initial",
+    "identical": true,
+    "output_sha256": "0b7bbbbf068598e0a7a12ed874f937603c1d3b3cd9e326eb5d7b66fcf8b556b4"
+  }
+]

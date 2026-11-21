@@ -67,7 +67,7 @@ zstar bec pre --calculator vasp \
 
 - `BEC.raw.dat`：采用 ZStar 统一约定的完整逐原子张量；
 - `BORN`：可直接供 Phonopy 使用的介电张量和 BEC；
-- `vasp_bec.json`：后端、张量约定、原子顺序和声学和规则残差等元数据。
+- `vasp_bec.json` 记录后端、张量约定、原子顺序和 VASP 最终打印电荷的总和。VASP 输出三个方向的原始漂移时，此文件与 `response.json` 也记录 `vasp_bec_drift_before_correction`，单位为 `e`，行是电场方向，列是力的方向。检查收敛时应同时查看原始漂移。
 
 文本张量文件固定保留小数点后 8 位，JSON 保留可用的浮点精度。这样可以避免
 ZStar 再次截断数据，但不会凭空提高 VASP 原始输出本身的数值精度。

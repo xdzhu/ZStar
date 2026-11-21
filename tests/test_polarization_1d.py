@@ -3,18 +3,21 @@ import math
 import tempfile
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
 from zstar.polarization_1d import (
     calculate_hybrid_1d_born,
     integrate_transverse_dipole,
+    integrate_transverse_dipoles,
     write_reference_1d_polarization,
 )
 from zstar.polarization_2d import (
     BOHR_M,
     ELEMENTARY_CHARGE,
     _periodic_weighted_center,
+    _read_cube_profile_data,
 )
 
 
@@ -115,6 +118,20 @@ class Polarization1DTests(unittest.TestCase):
                 unwrap_center_bohr=1.25,
             )
             self.assertAlmostEqual(overridden.unwrap_center_bohr, 1.25)
+
+    def test_transverse_pair_reads_cube_once_and_matches_single_axes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cube = Path(tmp) / "SPIN1_CHG.cube"
+            write_wire_cube(cube, 0.75, -0.35)
+            centers = {"x": 1.25, "y": 6.0}
+            expected = {
+                axis: integrate_transverse_dipole(cube, axis, unwrap_center_bohr=center)
+                for axis, center in centers.items()
+            }
+            with patch("zstar.polarization_1d._read_cube_profile_data", wraps=_read_cube_profile_data) as read:
+                actual = integrate_transverse_dipoles(cube, unwrap_centers_bohr=centers)
+            self.assertEqual(read.call_count, 1)
+            self.assertEqual(actual, expected)
 
     def test_hybrid_tensor_uses_cube_xy_and_berry_z(self):
         with tempfile.TemporaryDirectory() as tmp:

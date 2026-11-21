@@ -1,0 +1,51 @@
+{
+  "zero_branch_limit_C_per_m2": 0.001,
+  "systems": {
+    "predicted": {
+      "exit_status": 0,
+      "valid_output": true,
+      "axes": {
+        "a": {
+          "polarization_C_per_m2": -1.7e-05,
+          "quantum_C_per_m2": 0.135062,
+          "zero_branch_residual_C_per_m2": -1.7e-05
+        },
+        "b": {
+          "polarization_C_per_m2": -2e-05,
+          "quantum_C_per_m2": 0.135062,
+          "zero_branch_residual_C_per_m2": -2e-05
+        },
+        "c": {
+          "polarization_C_per_m2": -2.2e-05,
+          "quantum_C_per_m2": 0.135062,
+          "zero_branch_residual_C_per_m2": -2.2e-05
+        }
+      },
+      "max_abs_zero_branch_residual_C_per_m2": 2.2e-05,
+      "zero_branch_passed": true
+    },
+    "initial": {
+      "exit_status": 0,
+      "valid_output": true,
+      "axes": {
+        "a": {
+          "polarization_C_per_m2": -0.0,
+          "quantum_C_per_m2": 0.135062,
+          "zero_branch_residual_C_per_m2": -0.0
+        },
+        "b": {
+          "polarization_C_per_m2": -0.0,
+          "quantum_C_per_m2": 0.135062,
+          "zero_branch_residual_C_per_m2": -0.0
+        },
+        "c": {
+          "polarization_C_per_m2": -0.0,
+          "quantum_C_per_m2": 0.135062,
+          "zero_branch_residual_C_per_m2": -0.0
+        }
+      },
+      "max_abs_zero_branch_residual_C_per_m2": 0.0,
+      "zero_branch_passed": true
+    }
+  }
+}

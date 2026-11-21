@@ -11,13 +11,14 @@ from dataclasses import asdict, dataclass
 import json
 import math
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Mapping, Optional, Sequence
 
 import numpy as np
 
 from .polarization_2d import (
     BOHR_M,
     ELEMENTARY_CHARGE,
+    _CubeProfileData,
     _direction_directory,
     _nearest_branch,
     _parse_pyatb_polarization,
@@ -70,12 +71,36 @@ def integrate_transverse_dipole(
     axis_key = str(axis).lower()
     if axis_key not in {"x", "y"}:
         raise ValueError("transverse axis must be x or y for a z-periodic wire")
-    axis_index = "xyz".index(axis_key)
     cube = _read_cube_profile_data(
         cube_path,
         neutrality_tolerance=neutrality_tolerance,
         ionic_valence_charges=ionic_valence_charges,
     )
+    return _integrate_transverse_axis(cube, axis_key, unwrap_center_bohr)
+
+
+def integrate_transverse_dipoles(
+    cube_path: str | Path,
+    *,
+    neutrality_tolerance: float = 0.05,
+    ionic_valence_charges: Optional[Sequence[float]] = None,
+    unwrap_centers_bohr: Optional[Mapping[str, float]] = None,
+) -> dict[str, TransverseDipole]:
+    """Integrate both transverse dipoles from one read of the neutral cube."""
+
+    cube = _read_cube_profile_data(
+        cube_path,
+        neutrality_tolerance=neutrality_tolerance,
+        ionic_valence_charges=ionic_valence_charges,
+    )
+    centers = unwrap_centers_bohr if unwrap_centers_bohr is not None else {}
+    return {axis: _integrate_transverse_axis(cube, axis, centers.get(axis)) for axis in "xy"}
+
+
+def _integrate_transverse_axis(
+    cube: _CubeProfileData, axis: str, unwrap_center_bohr: Optional[float]
+) -> TransverseDipole:
+    axis_index = "xyz".index(axis)
     cell_vector = cube.cell[axis_index]
     period = float(np.linalg.norm(cell_vector))
     unit = cell_vector / period
@@ -121,7 +146,7 @@ def integrate_transverse_dipole(
     )
     return TransverseDipole(
         cube=str(cube.path),
-        axis=axis_key,
+        axis=axis,
         dipole_e_bohr=ionic_dipole + electronic_dipole,
         period_bohr=period,
         electron_count_raw=cube.electron_count_raw,
@@ -165,14 +190,10 @@ def calculate_hybrid_1d_born(
             "the wire aligned with Cartesian z"
         )
 
-    reference_dipoles = {
-        axis: integrate_transverse_dipole(
-            find_charge_cube(reference),
-            axis,
-            neutrality_tolerance=neutrality_tolerance,
-        )
-        for axis in ("x", "y")
-    }
+    reference_dipoles = integrate_transverse_dipoles(
+        find_charge_cube(reference), neutrality_tolerance=neutrality_tolerance
+    )
+    centers = {axis: value.unwrap_center_bohr for axis, value in reference_dipoles.items()}
     displacement_m = float(displacement_angstrom) * 1.0e-10
     displacement_bohr = displacement_m / BOHR_M
     if not math.isfinite(displacement_bohr) or displacement_bohr <= 0.0:
@@ -202,30 +223,22 @@ def calculate_hybrid_1d_born(
         plus_polar, plus_quanta = _parse_pyatb_polarization(
             _pyatb_polar_file(plus_dir)
         )
-        plus_dipoles = {
-            axis: integrate_transverse_dipole(
-                find_charge_cube(plus_dir),
-                axis,
-                neutrality_tolerance=neutrality_tolerance,
-                unwrap_center_bohr=reference_dipoles[axis].unwrap_center_bohr,
-            )
-            for axis in ("x", "y")
-        }
+        plus_dipoles = integrate_transverse_dipoles(
+            find_charge_cube(plus_dir),
+            neutrality_tolerance=neutrality_tolerance,
+            unwrap_centers_bohr=centers,
+        )
 
         if method_key == "central":
             minus_dir = _direction_directory(atom_dir, direction, "-")
             minus_polar, minus_quanta = _parse_pyatb_polarization(
                 _pyatb_polar_file(minus_dir)
             )
-            minus_dipoles = {
-                axis: integrate_transverse_dipole(
-                    find_charge_cube(minus_dir),
-                    axis,
-                    neutrality_tolerance=neutrality_tolerance,
-                    unwrap_center_bohr=reference_dipoles[axis].unwrap_center_bohr,
-                )
-                for axis in ("x", "y")
-            }
+            minus_dipoles = integrate_transverse_dipoles(
+                find_charge_cube(minus_dir),
+                neutrality_tolerance=neutrality_tolerance,
+                unwrap_centers_bohr=centers,
+            )
             quanta = np.where(np.abs(plus_quanta) > 0.0, plus_quanta, minus_quanta)
             delta_lattice = _nearest_branch(plus_polar, minus_polar, quanta)
             polar_derivative = (delta_lattice @ unit_vectors) / (
@@ -311,14 +324,8 @@ def write_reference_1d_polarization(
     length_angstrom = float(np.linalg.norm(lattice[2]))
     cross_section_angstrom2 = float(abs(np.linalg.det(lattice))) / length_angstrom
     cross_section_m2 = cross_section_angstrom2 * 1.0e-20
-    dipoles = {
-        axis: integrate_transverse_dipole(
-            find_charge_cube(root),
-            axis,
-            neutrality_tolerance=neutrality_tolerance,
-        )
-        for axis in ("x", "y")
-    }
+    cube = find_charge_cube(root)
+    dipoles = integrate_transverse_dipoles(cube, neutrality_tolerance=neutrality_tolerance)
     target = Path(output)
     if not target.is_absolute():
         target = root / target
@@ -341,7 +348,7 @@ def write_reference_1d_polarization(
                 "cross_section_angstrom2": cross_section_angstrom2,
                 "sources": {
                     "polarization": str(_pyatb_polar_file(root)),
-                    "charge_cube": str(find_charge_cube(root)),
+                    "charge_cube": str(cube),
                 },
             },
             indent=2,
