@@ -1,5 +1,7 @@
 # 2D MoS2: IR and Raman
 
+The archived BEC and dielectric results below support the manuscript appendix and dielectric figure. The current Figure 10 uses the [Table 1 matched-geometry inputs](../../Benchmarks/manuscript_settings/mos2_table1/) and [ABACUS/VASP spectra](../../Benchmarks/manuscript_settings/fig10/mos2/).
+
 ## Unified Workflow
 
 `bash run.sh` now uses the Unified BEC/force/dielectric response ensemble.

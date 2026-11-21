@@ -1,0 +1,23 @@
+{
+  "ABACUS": {
+    "ir_xy": 1.0,
+    "ir_z": 0.004134679683644293,
+    "raman_in_plane": 1.0,
+    "raman_crossed_z": 0.03669757060683651,
+    "raman_A1_prime_over_E_prime_area": 0.2548358239220363
+  },
+  "VASP": {
+    "ir_xy": 1.0,
+    "ir_z": 0.0038433115594668703,
+    "raman_in_plane": 1.0,
+    "raman_crossed_z": 0.0359513740991759,
+    "raman_A1_prime_over_E_prime_area": 0.27508846208195725
+  },
+  "VASP_DFT_local_fields": {
+    "ir_xy": 1.0,
+    "ir_z": 0.0038433115594668703,
+    "raman_in_plane": 1.0,
+    "raman_crossed_z": 1.0170437952583533e-05,
+    "raman_A1_prime_over_E_prime_area": 0.2836018532597259
+  }
+}

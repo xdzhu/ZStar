@@ -1,5 +1,7 @@
 # Molecule CH4: IR and Raman
 
+See the [Figure 10 comparison](../../Benchmarks/manuscript_settings/fig10/) for the methane ABACUS/VASP spectra and Yadavalli reference frequencies.
+
 ## Unified Workflow
 
 `bash run.sh` now uses the Unified BEC/force/dielectric response ensemble.

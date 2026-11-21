@@ -1,5 +1,7 @@
 # Sb2S3 isolated full chain
 
+For the manuscript, use the [Figure 10 comparison](../../Benchmarks/manuscript_settings/fig10/) and the [finite-displacement VASP BEC table inputs and tensors](../../Benchmarks/manuscript_settings/sb2s3_vasp_fd/).
+
 ## Unified Workflow
 
 `bash run.sh` now uses the Unified BEC/force/dielectric response ensemble.

@@ -1,0 +1,7 @@
+channel,mode,irrep,wavenumber_cm-1,source
+IR,nu4,T2,1285.6666666666667,Yadavalli2021_PBE_S13
+Raman,nu4,T2,1285.6666666666667,Yadavalli2021_PBE_S13
+Raman,nu2,E,1511.5,Yadavalli2021_PBE_S13
+Raman,nu1,A1,2975,Yadavalli2021_PBE_S13
+IR,nu3,T2,3091.3333333333335,Yadavalli2021_PBE_S13
+Raman,nu3,T2,3091.3333333333335,Yadavalli2021_PBE_S13

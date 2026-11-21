@@ -1,0 +1,10 @@
+channel,mode,wavenumber_cm-1,source,conditions
+IR,Eu_1,92.353999,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+Raman,Eg_1,103.583931,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+Raman,B1g_1,227.899132,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+Raman,A1g,293.807425,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+IR,A2u,319.462657,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+Raman,Eg_2,453.992891,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+IR,Eu_2,464.864493,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+Raman,B1g_2,600.874512,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"
+Raman,Eg_3,674.055093,Ohnishi et al. 2026 Phonix mp-1018721,"VASP PAW PBEsol, zero-pressure pure tetragonal, analytic Gamma"

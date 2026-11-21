@@ -5,6 +5,10 @@ tmp/
 examples/**/work/
 examples/**/work-vasp/
 examples/**/POTCAR
+examples/**/POTCAR.gz
+examples/**/POTCAR.bz2
+examples/**/POTCAR.xz
+examples/**/POTCAR.Z
 __pycache__/
 *.py[cod]
 *.egg-info/

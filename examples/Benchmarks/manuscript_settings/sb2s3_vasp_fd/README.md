@@ -13,3 +13,7 @@ atoms, with rows for atomic displacement and columns for polarization.
 The manuscript table shows the diagonal elements of the five inequivalent
 sites. A separate Cartesian displacement gives S(1) Zxx of −0.522 e on
 the same mesh, compared with −0.525497 e in the mode reconstruction.
+
+The VASP PAW datasets are S and Sb, in POSCAR order. Assemble the POTCAR from your licensed installation. The dipole step reads the saved electronic state for each displacement.
+
+[Figure 10 spectra and method notes](../fig10/).
