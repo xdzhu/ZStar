@@ -21,6 +21,8 @@ directories are intentionally excluded.
 | `Benchmarks/` | matched Unified/Separate BEC/APT and Gamma-Hessian efficiency | cubic BaTiO3, SiC, t-HfO2, alpha-In2Se3, hBN, MoS2, H2O, CH4, BN(9,0), Sb2S3 |
 | `Convergence_Tests/` | compact numerical convergence protocols | SiC displacement magnitude and monolayer hBN vacuum separation |
 
+For the manuscript benchmarks, see the [calculation settings and input files](Benchmarks/manuscript_settings/).
+
 The machine-readable index is `manifest.json`; `path_migration.json` maps older
 paths to the dimension-based layout. `Benchmarks/` indexes paired comparisons,
 while the material inputs now live in the four dimensionality directories.

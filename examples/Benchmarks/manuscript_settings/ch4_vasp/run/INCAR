@@ -1,0 +1,25 @@
+SYSTEM = ZStar intensity validation ch4
+ENCUT = 550
+GGA = PE
+EDIFFG = -0.001
+ISMEAR = 0
+SIGMA = 0.05
+LASPH = .TRUE.
+
+# ZStar VASP Born-charge workflow
+ISTART = 1
+ICHARG = 1
+ISIF = 2
+PREC = Accurate
+
+# ZStar VASP Born-charge workflow
+NSW = 0
+IBRION = -1
+ISYM = 0
+LREAL = .FALSE.
+LCHARG = .TRUE.
+LWAVE = .TRUE.
+EDIFF = 1E-8
+LRPA = .FALSE.
+NCORE = 4
+LEPSILON = .TRUE.
