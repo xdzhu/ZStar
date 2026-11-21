@@ -1,0 +1,25 @@
+{
+  "calculator": "Quantum ESPRESSO",
+  "version": "6.2.1",
+  "stages": [
+    {
+      "name": "scf",
+      "status": "completed"
+    },
+    {
+      "name": "phonon",
+      "status": "completed"
+    },
+    {
+      "name": "dynmat",
+      "status": "completed"
+    }
+  ],
+  "scf_gap_eV": 1.3553000000000015,
+  "native_raman": false,
+  "archived_output_sha256": {
+    "pw.out": "98d3ded1d2d80d93621620e76ad167988900ce23c161aad473f9551c7c5213d7",
+    "ph.out": "1ac3581caf019704852ed8e6b71276c78dc0fb8e842c48040eccc98d35c8cf9e",
+    "dynmat.out": "347341a5b4b14d27370f11d8dc21e0bef588ed48206b92f9aa1ac7789a0319dd"
+  }
+}

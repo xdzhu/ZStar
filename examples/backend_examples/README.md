@@ -1,8 +1,8 @@
 # Calculator backend examples
 
 These examples show how the calculator-independent ZStar analysis connects to
-CP2K and VASP. They are separate from the ABACUS + PYATB material cases because
-each backend has its own input syntax and native response conventions.
+CP2K, Quantum ESPRESSO, and VASP. Each backend uses its own input syntax and
+response conventions.
 
 ## CP2K
 
@@ -15,6 +15,11 @@ each backend has its own input syntax and native response conventions.
 The H2O BEC commands are in `cp2k_bec/H2O/README.md`. They require a local
 CP2K executable and CP2K data directory; neither is bundled.
 
+## Quantum ESPRESSO
+
+- [CO₂ and SiC](qe_bec/) include inputs, completed QE 6.2.1 solver outputs,
+  and ZStar dielectric, effective-charge, and mode records.
+
 ## VASP
 
 `calculator_spectroscopy/vasp_sic/` documents the required `INCAR`, `POSCAR`,
@@ -25,7 +30,6 @@ CP2K executable and CP2K data directory; neither is bundled.
 Use `zstar backend list --check` and `zstar config check` before launching a
 backend workflow.
 
-Each backend case now follows the same layout: `run/` contains the input
-contract, `results/` contains retained outputs, and `run.sh` is the resumable
-entry point. Run `bash run.sh --dry-run` before supplying local CP2K or VASP
-installations.
+Each case uses `run/` for inputs and `results/` for archived outputs. For the
+CP2K and VASP cases with a `run.sh` launcher, use `bash run.sh --dry-run` to
+check the command sequence.
