@@ -63,8 +63,8 @@ def _update_figure_manifest(
             "csv": csv_path.name,
             "metadata": metadata_path.name,
         },
-        "layout": "2x2: HfO2 bulk and MoS2 sheet responses, each with real and imaginary panels",
-        "completed_systems": ["HfO2", "MoS2"],
+        "layout": "2x2: HfO2 bulk and hBN sheet responses, each with real and imaginary panels",
+        "completed_systems": ["HfO2", "hBN"],
         "placeholder": False,
     }
     manifest["figures"] = [
@@ -150,15 +150,15 @@ def build_figure(output: Path) -> dict:
     source_paths = {
         "hfo2_real": DATA / "hfo2" / "dielectric_response" / "ir_response_real.dat",
         "hfo2_imag": DATA / "hfo2" / "dielectric_response" / "ir_response_imag.dat",
-        "mos2_real": DATA / "mos2" / "dielectric_response" / "ir_response_real.dat",
-        "mos2_imag": DATA / "mos2" / "dielectric_response" / "ir_response_imag.dat",
+        "hbn_real": DATA / "hbn" / "dielectric_response" / "ir_response_real.dat",
+        "hbn_imag": DATA / "hbn" / "dielectric_response" / "ir_response_imag.dat",
     }
     hfo2_frequency, hfo2_real = _read_response(source_paths["hfo2_real"])
     hfo2_frequency_i, hfo2_imag = _read_response(source_paths["hfo2_imag"])
-    mos2_frequency, mos2_real = _read_response(source_paths["mos2_real"])
-    mos2_frequency_i, mos2_imag = _read_response(source_paths["mos2_imag"])
+    hbn_frequency, hbn_real = _read_response(source_paths["hbn_real"])
+    hbn_frequency_i, hbn_imag = _read_response(source_paths["hbn_imag"])
     np.testing.assert_allclose(hfo2_frequency, hfo2_frequency_i)
-    np.testing.assert_allclose(mos2_frequency, mos2_frequency_i)
+    np.testing.assert_allclose(hbn_frequency, hbn_frequency_i)
 
     mpl.rcParams.update(
         {
@@ -182,16 +182,20 @@ def build_figure(output: Path) -> dict:
     fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.2), layout="constrained")
     _plot_components(axes[0, 0], hfo2_frequency, hfo2_real, real=True)
     _plot_components(axes[0, 1], hfo2_frequency, hfo2_imag, real=False)
-    _plot_components(axes[1, 0], mos2_frequency, mos2_real, real=True)
-    _plot_components(axes[1, 1], mos2_frequency, mos2_imag, real=False)
+    _plot_components(axes[1, 0], hbn_frequency, hbn_real, real=True)
+    _plot_components(axes[1, 1], hbn_frequency, hbn_imag, real=False)
 
+    for axis in axes[0]:
+        axis.set_title(r"Tetragonal HfO$_2$")
+    for axis in axes[1]:
+        axis.set_title("Monolayer hBN")
     axes[0, 0].set_ylabel(r"$\mathrm{Re}\,\epsilon(\omega)$")
     axes[0, 1].set_ylabel(r"$\mathrm{Im}\,\epsilon(\omega)$")
     axes[1, 0].set_ylabel(
-        r"$\mathrm{Re}\,[\alpha^{\mathrm{ph}}_{\mathrm{2D}}(\omega)/\epsilon_0]$ ($\mathrm{\AA}$)"
+        r"$\mathrm{Re}\,[\alpha_{\mathrm{2D}}(\omega)/\epsilon_0]$ ($\mathrm{\AA}$)"
     )
     axes[1, 1].set_ylabel(
-        r"$\mathrm{Im}\,[\alpha^{\mathrm{ph}}_{\mathrm{2D}}(\omega)/\epsilon_0]$ ($\mathrm{\AA}$)"
+        r"$\mathrm{Im}\,[\alpha_{\mathrm{2D}}(\omega)/\epsilon_0]$ ($\mathrm{\AA}$)"
     )
     for axis in axes.flat:
         axis.set_xlabel(r"Wavenumber (cm$^{-1}$)")
@@ -204,7 +208,7 @@ def build_figure(output: Path) -> dict:
         axis.set_xlim(0.0, float(hfo2_frequency.max()))
         axis.margins(x=0.0)
     for axis in axes[1, :]:
-        axis.set_xlim(0.0, float(mos2_frequency.max()))
+        axis.set_xlim(0.0, float(hbn_frequency.max()))
         axis.margins(x=0.0)
     axes[0, 1].legend(loc="best", fontsize=8.5, handlelength=2.2)
     axes[1, 1].legend(loc="best", fontsize=8.5, handlelength=2.2)
@@ -219,6 +223,8 @@ def build_figure(output: Path) -> dict:
     }
     fig.savefig(exports["pdf"], bbox_inches="tight")
     fig.savefig(exports["svg"], bbox_inches="tight")
+    svg = exports["svg"].read_text(encoding="utf-8")
+    exports["svg"].write_text("\n".join(line.rstrip() for line in svg.splitlines()) + "\n", encoding="utf-8")
     fig.savefig(exports["png"], dpi=350, bbox_inches="tight")
     fig.savefig(
         exports["tiff"],
@@ -244,7 +250,7 @@ def build_figure(output: Path) -> dict:
         )
         for system, frequency, real, imag, kind in (
             ("HfO2", hfo2_frequency, hfo2_real, hfo2_imag, "total relative dielectric"),
-            ("MoS2", mos2_frequency, mos2_real, mos2_imag, "lattice 2D sheet polarizability / epsilon_0"),
+            ("hBN", hbn_frequency, hbn_real, hbn_imag, "total 2D sheet polarizability / epsilon_0"),
         ):
             for index, omega in enumerate(frequency):
                 writer.writerow(
@@ -266,13 +272,13 @@ def build_figure(output: Path) -> dict:
             "archetype": "quantitative grid",
             "normalization": {
                 "HfO2": "dimensionless total relative permittivity",
-                "MoS2": "lattice alpha_2D/epsilon_0 in Angstrom",
+                "hBN": "total alpha_2D/epsilon_0 in Angstrom",
             },
             "broadening_cm-1": 8.0,
         },
         "static_values": {
             "HfO2_total": hfo2_real[0].tolist(),
-            "MoS2_lattice_sheet_A": mos2_real[0].tolist(),
+            "hBN_total_sheet_A": hbn_real[0].tolist(),
         },
         "source_data": {
             str(path.relative_to(ROOT)).replace("\\", "/"): {

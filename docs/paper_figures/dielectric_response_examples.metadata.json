@@ -5,7 +5,7 @@
     "archetype": "quantitative grid",
     "normalization": {
       "HfO2": "dimensionless total relative permittivity",
-      "MoS2": "lattice alpha_2D/epsilon_0 in Angstrom"
+      "hBN": "total alpha_2D/epsilon_0 in Angstrom"
     },
     "broadening_cm-1": 8.0
   },
@@ -27,40 +27,40 @@
         18.045191328
       ]
     ],
-    "MoS2_lattice_sheet_A": [
+    "hBN_total_sheet_A": [
       [
-        0.71045722799,
-        0.0,
+        18.025918801,
+        0.0021746556634,
+        0.0
+      ],
+      [
+        0.0021746556634,
+        18.025919606,
         0.0
       ],
       [
         0.0,
-        0.71045722799,
-        0.0
-      ],
-      [
         0.0,
-        0.0,
-        5.6767209753e-06
+        4.5452414084
       ]
     ]
   },
   "source_data": {
     "source_data/hfo2/dielectric_response/ir_response_real.dat": {
-      "bytes": 420987,
-      "sha256": "219221b54e79e73b5584554cb4935971c5007da543d65fe6ca821a83e8794004"
+      "bytes": 423489,
+      "sha256": "e5c2179d8eb79e643bef7507dcdfdfd42d4d1cd5fa1dcfa3599d8c779b90c415"
     },
     "source_data/hfo2/dielectric_response/ir_response_imag.dat": {
-      "bytes": 416884,
-      "sha256": "919f39159945d59bb38014fac284d7e3eddd922a0252aa1425891f022a034147"
+      "bytes": 419386,
+      "sha256": "d1aec637244926d284c22347c4eee08e033380bc6d6a812e8f89ed47b1d8b9d0"
     },
-    "source_data/mos2/dielectric_response/ir_response_real.dat": {
-      "bytes": 418758,
-      "sha256": "c092807488242d36a37ac42afc7e0012831df941f6de9bb974bcdaa6c3bf23dd"
+    "source_data/hbn/dielectric_response/ir_response_real.dat": {
+      "bytes": 537603,
+      "sha256": "98a35bd1b11606d0b3b9a5a01a4a4fa43b504ed2add8a3c857d8f4c75924b43a"
     },
-    "source_data/mos2/dielectric_response/ir_response_imag.dat": {
-      "bytes": 417162,
-      "sha256": "8f5f9f5b96acf653aa321a72f611a4d172a247443e8527f90637e216f487c74e"
+    "source_data/hbn/dielectric_response/ir_response_imag.dat": {
+      "bytes": 535593,
+      "sha256": "70ab513b777ee5c43babcef3b80520f0bca24667b0526db9473dee9eb490d372"
     }
   },
   "exports": {

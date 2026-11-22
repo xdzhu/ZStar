@@ -60,23 +60,6 @@
       ]
     },
     {
-      "figure": "dielectric_response_examples",
-      "files": {
-        "pdf": "dielectric_response_examples.pdf",
-        "svg": "dielectric_response_examples.svg",
-        "png": "dielectric_response_examples.png",
-        "tiff": "dielectric_response_examples.tiff",
-        "csv": "dielectric_response_examples.csv",
-        "metadata": "dielectric_response_examples.metadata.json"
-      },
-      "layout": "2x2: HfO2 bulk and MoS2 sheet responses, each with real and imaginary panels",
-      "completed_systems": [
-        "HfO2",
-        "MoS2"
-      ],
-      "placeholder": false
-    },
-    {
       "figure": "potential_examples_2d",
       "files": {
         "png": "potential_examples_2d.png",
@@ -146,6 +129,23 @@
         "MoS$_2$",
         "Sb$_2$S$_3$",
         "CH$_4$"
+      ],
+      "placeholder": false
+    },
+    {
+      "figure": "dielectric_response_examples",
+      "files": {
+        "pdf": "dielectric_response_examples.pdf",
+        "svg": "dielectric_response_examples.svg",
+        "png": "dielectric_response_examples.png",
+        "tiff": "dielectric_response_examples.tiff",
+        "csv": "dielectric_response_examples.csv",
+        "metadata": "dielectric_response_examples.metadata.json"
+      },
+      "layout": "2x2: HfO2 bulk and hBN sheet responses, each with real and imaginary panels",
+      "completed_systems": [
+        "HfO2",
+        "hBN"
       ],
       "placeholder": false
     }
@@ -283,13 +283,13 @@
     },
     {
       "path": "hfo2/dielectric_response/ir_response_imag.dat",
-      "size": 416884,
-      "sha256": "919f39159945d59bb38014fac284d7e3eddd922a0252aa1425891f022a034147"
+      "size": 419386,
+      "sha256": "d1aec637244926d284c22347c4eee08e033380bc6d6a812e8f89ed47b1d8b9d0"
     },
     {
       "path": "hfo2/dielectric_response/ir_response_real.dat",
-      "size": 420987,
-      "sha256": "219221b54e79e73b5584554cb4935971c5007da543d65fe6ca821a83e8794004"
+      "size": 423489,
+      "sha256": "e5c2179d8eb79e643bef7507dcdfdfd42d4d1cd5fa1dcfa3599d8c779b90c415"
     },
     {
       "path": "hfo2/ir/ir_modes.csv",
