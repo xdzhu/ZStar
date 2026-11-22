@@ -1,12 +1,11 @@
 """Export portable inputs and compact, independently reprocessable results."""
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import shutil
 
-from zstar.abacus_assets import prepare_stru_assets
+from zstar.abacus_assets import prepare_stru_assets, sha256_file
 from zstar.shared_abacus import load_manifest
 
 ROOT = Path('/home/zhuxd/abacus/agent-runs/20260904-shared-response-benchmark')
@@ -25,8 +24,9 @@ def copy(source, dest):
         shutil.copy2(source, dest)
 
 
-def export_response(source, result):
+def export_response(source, result, *, density_reference=None):
     meta = load_manifest(source)
+    reused_cubes = {}
     for name in RESULTS + ['STRU']:
         copy(source/name, result/name)
     for name in meta['input_hashes']:
@@ -41,7 +41,17 @@ def export_response(source, result):
                 copy(path, result/path.relative_to(source))
         if meta['dimension'] in (1, 2):
             for path in stage.glob('OUT.*/*CHG.cube'):
-                copy(path, result/path.relative_to(source))
+                relative = path.relative_to(source)
+                baseline = density_reference / relative if density_reference else None
+                if baseline and baseline.is_file() and not (result/relative).exists():
+                    digest = sha256_file(path)
+                    if sha256_file(baseline) == digest:
+                        reused_cubes[relative.as_posix()] = digest
+                        continue
+                copy(path, result/relative)
+    if density_reference:
+        record = {'scheme': density_reference.name, 'cubes': reused_cubes}
+        (result/'cube_sources.json').write_text(json.dumps(record, indent=2)+'\n', encoding='utf-8')
 
 
 def export(case, output):
@@ -70,7 +80,7 @@ def export(case, output):
     export_response(source, result)
     dense = ROOT/case/'shared-mesh88'
     if (dense/'shared_response_result.json').is_file():
-        export_response(dense, dest/'results/shared-mesh88')
+        export_response(dense, dest/'results/shared-mesh88', density_reference=result)
     for scheme in ('cartesian', 'shared-half', 'cartesian-half', 'cartesian-mesh88'):
         control = ROOT/case/scheme
         if (control/'shared_response_result.json').is_file():
@@ -97,7 +107,7 @@ def export(case, output):
     checksums = {}
     for path in sorted(dest.rglob('*')):
         if path.is_file() and path.name != 'checksums.json':
-            checksums[path.relative_to(dest).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+            checksums[path.relative_to(dest).as_posix()] = sha256_file(path)
     (dest/'checksums.json').write_text(json.dumps(checksums, indent=2)+'\n')
     print(case, 'exported', len(checksums), 'files', flush=True)
 

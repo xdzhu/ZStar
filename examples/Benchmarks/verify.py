@@ -1,6 +1,5 @@
 """Reprocess each complete shared archive in a temporary directory, offline."""
 
-import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -9,6 +8,7 @@ import sys
 
 import numpy as np
 
+from zstar.abacus_assets import sha256_file
 from zstar.shared_abacus import collect_shared_abacus, prepare_shared_abacus
 from zstar.spectra import BornData, calculate_ir_spectrum, load_gamma_modes, read_born_data
 
@@ -16,6 +16,26 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools/shared_respo
 from example_paths import case_path
 
 INDEX = Path(__file__).resolve().parent
+
+
+def restore_charge_densities(archive, copied):
+    manifest = archive / 'cube_sources.json'
+    if not manifest.is_file():
+        return
+    sources = json.loads(manifest.read_text(encoding='utf-8'))
+    if sources['scheme'] != 'shared':
+        raise ValueError(f'Unsupported charge density source in {manifest}')
+    source = archive.parent / sources['scheme']
+    for filename, expected in sources['cubes'].items():
+        relative = Path(filename)
+        if relative.is_absolute() or '..' in relative.parts or relative.suffix != '.cube':
+            raise ValueError(f'Invalid archived cube path: {filename}')
+        cube = source / relative
+        if sha256_file(cube) != expected:
+            raise ValueError(f'Archived charge density does not match: {cube}')
+        destination = copied / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(cube, destination)
 
 
 def verify(case, scheme='shared', name=None):
@@ -27,16 +47,13 @@ def verify(case, scheme='shared', name=None):
     checksums = case/'checksums.json'
     if checksums.is_file():
         for filename, expected in json.loads(checksums.read_text()).items():
-            digest = hashlib.sha256()
-            with (case/filename).open('rb') as handle:
-                for block in iter(lambda: handle.read(1024*1024), b''):
-                    digest.update(block)
-            if digest.hexdigest() != expected:
+            if sha256_file(case/filename) != expected:
                 raise ValueError(f'Archive checksum mismatch: {case.name}/{filename}')
     expected = json.loads((archive/'shared_response_result.json').read_text())
     with tempfile.TemporaryDirectory(prefix='zstar-shared-check-') as temporary:
         copied = Path(temporary)/'shared'
         shutil.copytree(archive, copied)
+        restore_charge_densities(archive, copied)
         result = collect_shared_abacus(copied)
         np.testing.assert_allclose(result['born_raw_e'], expected['born_raw_e'], atol=1e-8, rtol=0)
         np.testing.assert_allclose(result['born_projected_e'], expected['born_projected_e'], atol=1e-8, rtol=0)

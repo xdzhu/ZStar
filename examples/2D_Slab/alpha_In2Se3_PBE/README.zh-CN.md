@@ -17,6 +17,8 @@ ABACUS ONCV/LCAO 与原文的 VASP PAW 基组不同；本例不加 HSE 或 D3。
 
 `results/shared/` 为 22x22x2 Berry 网格基准；`results/shared-mesh88/`
 是在相同 SCF、力、cube 及参考电子响应上的 88x88x2 极化加密结果。
+两套网格共用电荷密度。`cube_sources.json` 记录所用文件和校验值，
+[离线验证脚本](../../Benchmarks/verify.py) 从 `results/shared/` 读取并在临时目录重放。
 `results/controls/` 保留对应对照及半步长测试。加密后原始 BEC 最大差为
 0.00154 e，频率最大差 0.168 cm^-1，静态声子面响应相对差 0.799%。
 它们不是实验误差；软模导致的约 1.1% 步长敏感性仍需说明。

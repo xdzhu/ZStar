@@ -30,7 +30,10 @@ and comparison numbers are in the parent benchmark record.
 `results/shared/` is the 22x22x2 Berry-mesh baseline reproduced by the default
 runner. `results/shared-mesh88/` retains the completed 88x88x2 polarization-only
 refinement, using the same SCFs, normal charge cubes, forces, and original
-electronic dielectric tensor. `results/controls/` contains the corresponding
+electronic dielectric tensor. The shared copy of each charge cube is recorded
+in `results/shared-mesh88/cube_sources.json`. The [offline benchmark verifier](../../Benchmarks/verify.py)
+copies these cubes from `results/shared/` into its temporary work directory.
+`results/controls/` contains the corresponding
 Cartesian and step controls; `results/mesh-diagnostics/` records the 44/66/88
 central-Se diagnostic. The full refined shared/control raw BEC difference is
 0.00154 e; the frequency difference is 0.168 cm^-1 and the sheet phonon static
