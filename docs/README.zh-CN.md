@@ -54,7 +54,7 @@ Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式约为 773 c
 如需让智能体协助运行，先执行 `zstar skill install`，新建智能体会话，然后使用：
 
 ```text
-使用 $run-zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
+使用 $zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
 先执行 preflight；如果 ABACUS 与 PYATB 可用，再分别执行 zstar bec 和
 zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式频率及谱图路径。
 ```

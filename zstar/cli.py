@@ -834,7 +834,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     # ---------------- agent skill ----------------
     parser_agent_skill = subparsers.add_parser(
         'agent-skill',
-        help='Install or inspect the packaged run-zstar-workflows agent skill.'
+        help='Install or inspect the packaged zstar-workflows agent skill.'
     )
     agent_skill_actions = parser_agent_skill.add_subparsers(
         dest='agent_skill_action', required=True
@@ -2085,7 +2085,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
 
         if args.agent_skill_action == 'install':
             destination = install_agent_skill(args.dest, force=args.force)
-            print(f"Installed run-zstar-workflows to {destination}")
+            print(f"Installed {destination.name} to {destination}")
             print("Restart or open a new agent session to refresh skill discovery.")
         elif args.agent_skill_action == 'path':
             print(packaged_skill_path())

@@ -125,7 +125,7 @@ Python 3.10 在 $HOME/.venvs/zstar 创建并激活独立环境，然后在源码
 
 zstar skill install --dest "$HOME/.codex/skills" --force
 
-确认 skill 已安装至 $HOME/.codex/skills/run-zstar-workflows，并在本次任务中
+确认 skill 已安装至 $HOME/.codex/skills/zstar-workflows，并在本次任务中
 读取和遵循其中的 SKILL.md。
 
 查找本机已有的 ABACUS 和 PYATB 可执行文件，将它们的真实路径以及可用的
@@ -311,7 +311,7 @@ zstar backend list --check
 
 ## agent skill
 
-安装 ZStar 后，可直接安装随软件提供的 `$run-zstar-workflows` 技能：
+安装 ZStar 后，可直接安装随软件提供的 `$zstar-workflows` 技能：
 
 ```bash
 zstar skill install

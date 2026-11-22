@@ -62,10 +62,10 @@ namespaces = false
 
 [tool.setuptools.package-data]
 zstar = [
-  "agent_skills/run-zstar-workflows/SKILL.md",
-  "agent_skills/run-zstar-workflows/agents/*.yaml",
-  "agent_skills/run-zstar-workflows/references/*.md",
-  "agent_skills/run-zstar-workflows/scripts/*.py"
+  "agent_skills/zstar-workflows/SKILL.md",
+  "agent_skills/zstar-workflows/agents/*.yaml",
+  "agent_skills/zstar-workflows/references/*.md",
+  "agent_skills/zstar-workflows/scripts/*.py"
 ]
 
 [tool.pytest.ini_options]

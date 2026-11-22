@@ -24,6 +24,10 @@ directories are intentionally excluded.
 For the manuscript benchmarks, see the [calculation settings and input files](Benchmarks/manuscript_settings/)
 and the [Figure 10 spectra and revised Born charges](Benchmarks/manuscript_settings/fig10/).
 
+To open an example with a coding agent, install the bundled skill with
+zstar skill install, then invoke $zstar-workflows from the example's working
+directory. See the [agent skill guide](../docs/agent_skill.md).
+
 The machine-readable index is `manifest.json`; `path_migration.json` maps older
 paths to the dimension-based layout. `Benchmarks/` indexes paired comparisons,
 while the material inputs now live in the four dimensionality directories.

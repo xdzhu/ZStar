@@ -25,6 +25,7 @@ class AgentSkillTests(unittest.TestCase):
     def test_skill_name_and_frontmatter_match_directory(self):
         skill = packaged_skill_path()
         text = (skill / "SKILL.md").read_text(encoding="utf-8")
+        self.assertEqual(SKILL_NAME, "zstar-workflows")
         self.assertEqual(skill.name, SKILL_NAME)
         self.assertIn(f"name: {SKILL_NAME}\n", text)
         self.assertNotIn("TODO", text)
@@ -62,6 +63,16 @@ class AgentSkillTests(unittest.TestCase):
                 install_agent_skill(root)
             replaced = install_agent_skill(root, force=True)
             self.assertEqual(replaced, installed)
+
+    def test_install_under_new_name_preserves_legacy_local_edits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            legacy = root / "run-zstar-workflows"
+            legacy.mkdir()
+            user_file = legacy / "SKILL.md"
+            user_file.write_text("local instructions", encoding="utf-8")
+            self.assertEqual(install_agent_skill(root).name, "zstar-workflows")
+            self.assertEqual(user_file.read_text(encoding="utf-8"), "local instructions")
 
     def test_preflight_accepts_supported_1d_workflow_with_scope_warning(self):
         with tempfile.TemporaryDirectory() as tmp:

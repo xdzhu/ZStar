@@ -13,7 +13,7 @@ from typing import Any
 from . import __version__
 
 
-SKILL_NAME = "run-zstar-workflows"
+SKILL_NAME = "zstar-workflows"
 LANES = ("bec", "phonon", "ir", "raman", "dielectric", "cp2k", "database")
 DIMENSIONS = ("molecule", "1d", "2d", "bulk")
 

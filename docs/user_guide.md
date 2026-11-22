@@ -138,7 +138,7 @@ agent skill using:
 zstar skill install --dest "$HOME/.codex/skills" --force
 
 Verify that the skill is installed at
-$HOME/.codex/skills/run-zstar-workflows, then read and follow its SKILL.md during
+$HOME/.codex/skills/zstar-workflows, then read and follow its SKILL.md during
 this task.
 
 Locate the existing ABACUS and PYATB executables on this machine and configure
@@ -343,7 +343,7 @@ zstar backend list --check
 
 ## agent skill
 
-Install the bundled, standards-compliant `$run-zstar-workflows` skill after
+Install the bundled, standards-compliant `$zstar-workflows` skill after
 installing ZStar:
 
 ```bash

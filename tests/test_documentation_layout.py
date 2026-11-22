@@ -69,7 +69,7 @@ class DocumentationLayoutTests(unittest.TestCase):
                 text = path.read_text(encoding="utf-8")
                 self.assertGreater(len(text.splitlines()), 750)
                 for snippet in ("773", "7.440", "5.394", "q_GAPT", "CP2K", "VASP",
-                                "PYATB", "Slurm", "Torque", "run-zstar-workflows"):
+                                "PYATB", "Slurm", "Torque", "zstar-workflows"):
                     self.assertIn(snippet, text)
                 parser = LocalImageParser()
                 parser.feed(text)

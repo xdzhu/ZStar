@@ -27,7 +27,7 @@ include docs/user_guide.zh-CN.md
 include docs/validation.md
 include docs/vasp_bec.md
 recursive-include zstar/agent_skills *
-prune zstar/agent_skills/run-zstar-workflows/scripts/__pycache__
+prune zstar/agent_skills/zstar-workflows/scripts/__pycache__
 prune examples
 # Repository tests use the separately distributed example library.
 prune tests

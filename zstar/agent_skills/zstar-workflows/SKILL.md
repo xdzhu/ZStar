@@ -1,5 +1,5 @@
 ---
-name: run-zstar-workflows
+name: zstar-workflows
 description: Prepare, execute, monitor, resume, and validate ZStar workflows for polarization, Born effective charges, phonons, dielectric and piezoelectric response, and IR/Raman spectra. Use for scientific calculations with ZStar; do not use for developing ZStar itself or for unrelated electronic-structure tasks.
 metadata:
   short-description: Run ZStar response workflows

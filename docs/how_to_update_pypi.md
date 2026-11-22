@@ -174,7 +174,7 @@ python -m zipfile -l dist\zstar-X.Y.Z-py3-none-any.whl
 确认：
 
 - 包中有 `zstar/` 模块和必要文档。
-- 包中有 `zstar/agent_skills/run-zstar-workflows/`，且不含
+- 包中有 `zstar/agent_skills/zstar-workflows/`，且不含
   `__pycache__` 或 `*.pyc`。
 - 包中没有 `examples/`、`dist/`、远端计算输出或凭据。
 - `README_PYPI.md` 渲染检查通过。
@@ -189,7 +189,7 @@ tmp\release-smoke\Scripts\zstar --version
 tmp\release-smoke\Scripts\zstar --help
 tmp\release-smoke\Scripts\zstar skill install --dest tmp\release-smoke-skill
 $codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
-python (Join-Path $codexHome 'skills\.system\skill-creator\scripts\quick_validate.py') tmp\release-smoke-skill\run-zstar-workflows
+python (Join-Path $codexHome 'skills\.system\skill-creator\scripts\quick_validate.py') tmp\release-smoke-skill\zstar-workflows
 ```
 
 ## 7. 提交并推送 GitHub

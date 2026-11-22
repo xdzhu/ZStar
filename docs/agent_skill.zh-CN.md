@@ -1,6 +1,6 @@
 # 面向智能体的 ZStar 工作流
 
-ZStar 随软件发行符合规范的 agent skill：`run-zstar-workflows`。它将命令行接口、
+ZStar 随软件发行符合规范的 agent skill：`zstar-workflows`。它将命令行接口、
 物理约定、断点续算状态和输出完成判据组织为可复用指令，使兼容的编程或科研智能体
 能够自动发现并正确调用 ZStar。
 
@@ -13,15 +13,14 @@ ZStar 随软件发行符合规范的 agent skill：`run-zstar-workflows`。它�
 agent skill 采用可移植的 agent skills 目录结构：
 
 ```text
-run-zstar-workflows/
+zstar-workflows/
 |-- SKILL.md
 |-- agents/openai.yaml
 |-- references/
 `-- scripts/preflight.py
 ```
 
-目录名与 YAML 中的 `name` 完全一致，均为 `run-zstar-workflows`：小写 ASCII、
-连字符分隔、动作导向，并且少于 64 个字符。
+目录名与 YAML 中的 `name` 均为 `zstar-workflows`。
 
 ## 安装
 
@@ -32,11 +31,14 @@ pip install -U zstar
 zstar skill install
 ```
 
-安装后新建一个智能体会话，使其重新发现技能。升级 ZStar 后可覆盖旧 agent skill：
+安装后新建一个智能体会话，使其重新发现技能。升级 ZStar 后可覆盖同名技能：
 
 ```bash
 zstar skill install --force
 ```
+
+如果先前安装的是旧名称，运行 `zstar skill install` 安装新版本，并用
+`$zstar-workflows` 调用。安装命令会保留旧目录中的本地改动。
 
 也可以安装到其他兼容智能体框架的技能父目录：
 
@@ -45,7 +47,7 @@ zstar skill install --dest /path/to/skills
 zstar skill path
 ```
 
-源码仓库中的 agent skill 位于 `zstar/agent_skills/run-zstar-workflows/`，兼容的 skill
+源码仓库中的 agent skill 位于 `zstar/agent_skills/zstar-workflows/`，兼容的 skill
 安装器也可以直接从该仓库路径安装。
 
 ## 调用
@@ -53,7 +55,7 @@ zstar skill path
 显式调用采用标准技能名，例如：
 
 ```text
-使用 $run-zstar-workflows 检查这个 BaTiO3 bulk BEC 工作区，执行 preflight，
+使用 $zstar-workflows 检查这个 BaTiO3 bulk BEC 工作区，执行 preflight，
 生成 Slurm dry-run 脚本，但不要提交任务。
 ```
 

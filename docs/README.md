@@ -61,7 +61,7 @@ For agent-assisted use, install the packaged skill with `zstar skill install`,
 open a new agent session, and use this prompt:
 
 ```text
-Use $run-zstar-workflows to reproduce the 3C-SiC Quick Start in
+Use $zstar-workflows to reproduce the 3C-SiC Quick Start in
 examples/3D_Bulk/SiC. Run the preflight first, then execute the zstar bec and
 zstar spectra stages individually if ABACUS and PYATB are available. Explain
 each stage and report the BEC table, optical-mode frequencies, and spectrum paths.

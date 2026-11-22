@@ -1,6 +1,6 @@
 # Agent-friendly ZStar workflows
 
-ZStar ships the standards-compliant agent skill `run-zstar-workflows`. The skill
+ZStar ships the standards-compliant agent skill `zstar-workflows`. The skill
 turns the command-line interface, physical conventions, resumable state, and
 output contracts into reusable instructions that a compatible coding or
 scientific agent can discover and follow.
@@ -15,15 +15,14 @@ requirements have been met.
 The skill follows the portable agent skills directory convention:
 
 ```text
-run-zstar-workflows/
+zstar-workflows/
 |-- SKILL.md
 |-- agents/openai.yaml
 |-- references/
 `-- scripts/preflight.py
 ```
 
-The folder and YAML `name` are both `run-zstar-workflows`: lowercase ASCII,
-hyphen-separated, action-oriented, and shorter than 64 characters.
+The folder and YAML `name` are both zstar-workflows.
 
 ## Install
 
@@ -42,6 +41,10 @@ copy after upgrading ZStar:
 zstar skill install --force
 ```
 
+If a previous release installed the skill under its original name,
+install the new copy with `zstar skill install` and invoke `$zstar-workflows`.
+The installer leaves the earlier directory available for any local edits.
+
 Use a custom parent directory for another compatible harness:
 
 ```bash
@@ -50,7 +53,7 @@ zstar skill path
 ```
 
 The skill is also present in a source checkout at
-`zstar/agent_skills/run-zstar-workflows/` and can be installed directly from
+`zstar/agent_skills/zstar-workflows/` and can be installed directly from
 that repository path by an agent-skill installer.
 
 ## Invoke
@@ -58,7 +61,7 @@ that repository path by an agent-skill installer.
 Explicit invocation uses the standard skill name:
 
 ```text
-Use $run-zstar-workflows to inspect this BaTiO3 bulk BEC workspace, run a
+Use $zstar-workflows to inspect this BaTiO3 bulk BEC workspace, run a
 preflight, generate a Slurm dry-run driver, and do not submit it.
 ```
 
