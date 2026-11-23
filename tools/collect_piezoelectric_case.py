@@ -19,22 +19,22 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from zstar.v2.abacus import collect_pyatb_strain_response
-from zstar.v2.algebra import remove_acoustic_translation
-from zstar.v2.fit import fit_internal_strain_response
-from zstar.v2.difference import fit_finite_difference_document
-from zstar.v2.structure import (
+from zstar.response.abacus_strain import collect_pyatb_strain_response
+from zstar.response.algebra import remove_acoustic_translation
+from zstar.response.fit import fit_internal_strain_response
+from zstar.response.difference import fit_finite_difference_document
+from zstar.response.structure import (
     allowed_response_basis,
     space_group_report_from_dict,
 )
-from zstar.v2.symmetry import intertwining_residual
-from zstar.v2.mechanical import stress_representation
-from zstar.v2.structure import (
+from zstar.response.symmetry import intertwining_residual
+from zstar.response.mechanical import stress_representation
+from zstar.response.structure import (
     displacement_representation,
     polarization_representation,
     strain_representation,
 )
-from zstar.v2.units import convert_values
+from zstar.response.units import convert_values
 
 
 DEFAULT_ZERO_ABSOLUTE_TOLERANCES = {
@@ -170,7 +170,7 @@ def _symmetry_response_audit(
             # collector.  The audit basis must use the same thermodynamic
             # intersection; asking fit_elastic_response is unnecessary here
             # because only the stored matrix is being diagnosed.
-            from zstar.v2.fit import _major_symmetric_basis
+            from zstar.response.fit import _major_symmetric_basis
 
             basis = _major_symmetric_basis(basis)
         if matrix.shape != (basis.output_dimension, basis.input_dimension):

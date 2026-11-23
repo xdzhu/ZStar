@@ -14,7 +14,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from zstar.v2.strain import V2_SYMPREC
+from zstar.response.strain import RESPONSE_SYMPREC
 from zstar.piezoelectric import prepare_abacus_strain_ensemble
 
 
@@ -43,7 +43,7 @@ def main() -> int:
     parser.add_argument(
         "--symprec",
         type=float,
-        default=V2_SYMPREC,
+        default=RESPONSE_SYMPREC,
         help="fixed response symmetry tolerance (must be 1e-3 Angstrom)",
     )
     parser.add_argument(
@@ -61,9 +61,9 @@ def main() -> int:
     parser.add_argument("--relax-nmax", type=int, default=100)
     parser.add_argument("--ion-relaxation", choices=("clamped-ion", "relaxed-ion"), default="relaxed-ion")
     args = parser.parse_args()
-    if args.symprec != V2_SYMPREC:
+    if args.symprec != RESPONSE_SYMPREC:
         raise SystemExit(
-            f"piezoelectric response requires --symprec {V2_SYMPREC:g}; refusing {args.symprec:g}"
+            f"piezoelectric response requires --symprec {RESPONSE_SYMPREC:g}; refusing {args.symprec:g}"
         )
     if args.profile == "production" and args.amplitude != 5.0e-3:
         raise SystemExit("production profile has fixed engineering strain amplitude 0.005")

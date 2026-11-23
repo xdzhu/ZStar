@@ -70,7 +70,7 @@ def read_translation_stage(path: str | Path, *, calculator: str) -> TranslationS
         inputs = [input_path, root/'KPT']
         outputs = [stru, log]
     elif backend == 'vasp':
-        from .v2.vasp import parse_vasp_outcar_observations
+        from .response.vasp_strain import parse_vasp_outcar_observations
         from .vasp_bec import _incar_value, vasp_output_complete
         stru, input_path, log = root/'POSCAR', root/'INCAR', root/'OUTCAR'
         if not vasp_output_complete(log):

@@ -22,11 +22,11 @@ import numpy as np
 from .configuration import launcher_command, normalize_execution_system, resolve_parallelism
 from .job_headers import compose_job_script, torque_ppn
 from .pyatb_precision import precision_command
-from .v2.abacus import collect_pyatb_strain_response
-from .v2.difference import fit_finite_difference_document
-from .v2.ensemble import ResponseEnsemble
-from .v2.strain import V2_SYMPREC, prepare_abacus_strain_ensemble
-from .v2.units import convert_values
+from .response.abacus_strain import collect_pyatb_strain_response
+from .response.difference import fit_finite_difference_document
+from .response.ensemble import ResponseEnsemble
+from .response.strain import RESPONSE_SYMPREC, prepare_abacus_strain_ensemble
+from .response.units import convert_values
 from .workflow import prepare_pyatb_assets
 
 
@@ -50,7 +50,7 @@ def prepare_abacus_piezoelectric_workflow(
     amplitude: float = 5.0e-3,
     profile: str = "production",
     method: str = "central",
-    symprec: float = V2_SYMPREC,
+    symprec: float = RESPONSE_SYMPREC,
     force_thr_ev: float | None = None,
     scf_thr: float | None = None,
     relax_nmax: int = 100,
@@ -61,8 +61,8 @@ def prepare_abacus_piezoelectric_workflow(
     output = Path(root).expanduser().resolve()
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f"piezoelectric output is not empty: {output}")
-    if float(symprec) != V2_SYMPREC:
-        raise ValueError(f"piezoelectric response requires symprec={V2_SYMPREC:g}")
+    if float(symprec) != RESPONSE_SYMPREC:
+        raise ValueError(f"piezoelectric response requires symprec={RESPONSE_SYMPREC:g}")
     if profile == "production" and float(amplitude) != 5.0e-3:
         raise ValueError("production profile has fixed engineering strain amplitude 0.005")
     if profile == "verification" and float(amplitude) not in {5.0e-3, 1.0e-2}:

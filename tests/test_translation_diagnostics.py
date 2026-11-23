@@ -34,7 +34,7 @@ def test_nonrigid_change_and_different_backends_are_rejected():
 
 
 def test_vasp_stage_checks_static_geometry_and_parses_native_forces(tmp_path):
-    from tests.test_v2_vasp_observations import _outcar
+    from tests.test_response_vasp_observations import _outcar
 
     (tmp_path / 'INCAR').write_text('NSW = 0\n')
     (tmp_path / 'POSCAR').write_text('fixture\n1\n3 0 0\n0 3.1 0\n0 0 3.2\n'

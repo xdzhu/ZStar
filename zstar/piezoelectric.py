@@ -7,20 +7,20 @@ execution remains explicit so scheduler policy stays outside the scientific
 response layer.
 """
 
-from .v2.abacus import collect_abacus_strain_response, collect_pyatb_strain_response
-from .v2.electromechanical import ElectromechanicalForms, convert_piezoelectric_forms
-from .v2.fit import (
+from .response.abacus_strain import collect_abacus_strain_response, collect_pyatb_strain_response
+from .response.electromechanical import ElectromechanicalForms, convert_piezoelectric_forms
+from .response.fit import (
     ProperPiezoelectricFitResult,
     fit_elastic_response,
     fit_proper_piezoelectric_response,
 )
-from .v2.model import ResponseDocument, TensorQuantity
-from .v2.relaxed_response import (
+from .response.model import ResponseDocument, TensorQuantity
+from .response.relaxed_response import (
     derive_relaxed_elastic_response,
     derive_relaxed_piezoelectric_response,
 )
-from .v2.strain import prepare_abacus_strain_ensemble
-from .v2.vasp import collect_vasp_strain_response
+from .response.strain import prepare_abacus_strain_ensemble
+from .response.vasp_strain import collect_vasp_strain_response
 from .piezoelectric_workflow import (
     collect_abacus_piezoelectric_workflow,
     format_piezoelectric_status,
