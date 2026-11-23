@@ -108,11 +108,11 @@ IR 谱由模式频率和 BEC 后处理得到；`spectra run` 补充 Raman 所需
 
 ### 5. 让智能体运行同一案例
 
-示例提示词：
-
 ```text
-假设本机尚未安装 ZStar 及其 agent skill。按照以下固定位置完成安装、配置并复现
-SiC Quick Start：
+先从 https://github.com/xdzhu/ZStar 安装 zstar-workflows 技能。
+技能位于主分支的 zstar/agent_skills/zstar-workflows。
+安装后按技能说明复现 examples/3D_Bulk/SiC 的 3C-SiC 快速入门。
+按以下位置安装 ZStar 并准备计算工作区：
 
 - ZStar 源码：$HOME/software/zstar
 - Python 环境：$HOME/.venvs/zstar
@@ -121,12 +121,9 @@ SiC Quick Start：
 
 将 https://github.com/xdzhu/ZStar.git 克隆到 $HOME/software/zstar。使用
 Python 3.10 在 $HOME/.venvs/zstar 创建并激活独立环境，然后在源码目录执行
-`pip install .` 安装 ZStar。执行以下命令安装软件自带的 agent skill：
-
-zstar skill install --dest "$HOME/.codex/skills" --force
-
-确认 skill 已安装至 $HOME/.codex/skills/zstar-workflows，并在本次任务中
-读取和遵循其中的 SKILL.md。
+`pip install .` 安装 ZStar。如果技能安装器无法直接从 GitHub 安装，可在安装
+ZStar 后执行 `zstar skill install --dest "$HOME/.codex/skills"`。
+确认技能已安装，然后阅读 SKILL.md 并运行案例。
 
 查找本机已有的 ABACUS 和 PYATB 可执行文件，将它们的真实路径以及可用的
 MPI/OMP 资源写入 ZStar 配置。不要猜测可执行文件路径。执行
@@ -309,16 +306,16 @@ zstar config check
 zstar backend list --check
 ```
 
-## agent skill
+## 智能体技能
 
-安装 ZStar 后，可直接安装随软件提供的 `$zstar-workflows` 技能：
+也可以安装随 ZStar 提供的技能，然后在新的智能体会话中用 `$zstar-workflows` 调用。
 
 ```bash
 zstar skill install
 zstar skill preflight --root . --lane bec --dim bulk
 ```
 
-安装后新建智能体会话。升级 ZStar 后使用 `--force` 刷新技能；其他兼容框架可用
+升级 ZStar 后可用 `--force` 更新技能。其他兼容框架可用
 `--dest /path/to/skills` 指定技能父目录。该 Skill 固化了维度约定、参考态优先执行、
 断点续算、调度系统权限边界和基于产物的完成判据。详见
 [docs/agent_skill.zh-CN.md](agent_skill.zh-CN.md)。

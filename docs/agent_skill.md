@@ -22,7 +22,7 @@ zstar-workflows/
 `-- scripts/preflight.py
 ```
 
-The folder and YAML `name` are both zstar-workflows.
+The folder and YAML `name` are both `zstar-workflows`.
 
 ## Install
 
@@ -52,17 +52,21 @@ zstar skill install --dest /path/to/skills
 zstar skill path
 ```
 
-The skill is also present in a source checkout at
-`zstar/agent_skills/zstar-workflows/` and can be installed directly from
-that repository path by an agent-skill installer.
+A compatible skill installer can also install [the skill directly from GitHub](https://github.com/xdzhu/ZStar/tree/main/zstar/agent_skills/zstar-workflows).
 
 ## Invoke
 
-Explicit invocation uses the standard skill name:
+Copy this request to install the skill and run the SiC example.
 
 ```text
-Use $zstar-workflows to inspect this BaTiO3 bulk BEC workspace, run a
-preflight, generate a Slurm dry-run driver, and do not submit it.
+Install the zstar-workflows skill from https://github.com/xdzhu/ZStar.
+The skill is in zstar/agent_skills/zstar-workflows on the main branch.
+Install ZStar from the same repository if the CLI is missing.
+Then use $zstar-workflows to reproduce the 3C-SiC Quick Start in
+examples/3D_Bulk/SiC. Copy the run/ inputs to a fresh working directory.
+Run preflight, then run the BEC, Gamma-point phonon, and IR/Raman workflow
+if ABACUS and PYATB are available. Report the BEC tensors, optical-mode
+frequencies, and IR and Raman output paths.
 ```
 
 The description also supports automatic discovery for requests that clearly

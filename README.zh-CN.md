@@ -254,17 +254,21 @@ IR/Raman 最高加速 **8.35 倍**。成对柱标出归一化成本、求解器 
 alpha-In2Se3 的真空势差约 **1.221 eV**，MoS2 则近乎对称；见
 [静电势教程](docs/potential_examples.zh-CN.md)和[可运行案例](examples/Electrostatic_Potential)。
 
-## agent skill
+## 智能体技能
 
-安装随软件提供的 `$run-zstar-workflows`，然后新建智能体会话：
+将下面的示例请求复制到支持技能的编程智能体。
 
-```bash
-zstar skill install
+```text
+先从 https://github.com/xdzhu/ZStar 安装 zstar-workflows 技能。
+技能位于主分支的 zstar/agent_skills/zstar-workflows。
+如果本机没有 ZStar 命令，先从同一仓库安装 ZStar。
+安装后用 $zstar-workflows 复现 examples/3D_Bulk/SiC 的 3C-SiC 快速入门。
+将 run/ 下的输入复制到新的工作目录，先做预检查。确认 ABACUS 和 PYATB
+可用后，运行 BEC、Gamma 点声子和 IR/Raman 工作流。报告 BEC 张量、
+光学模式频率，以及红外和拉曼输出文件的路径。
 ```
 
-示例请求：“使用 $run-zstar-workflows，将自带 SiC 输入复制到新工作目录，
-检查计算软件配置，逐步完成 BEC、Gamma 点声子及 IR/Raman 计算，报告张量、
-频率和输出路径。”
+已安装 ZStar 时，也可在终端执行 `zstar skill install`，然后新建智能体会话。
 
 尚未安装 ZStar 时，[从零开始的提示词](docs/user_guide.zh-CN.md#5-让智能体运行同一案例)
 明确指定源码、Python 环境、skill 与工作目录；升级及预检查见

@@ -51,13 +51,19 @@ BEC 阶段准备并运行共用位移，随后同时重建 BEC 与 Gamma 点力�
 随案例提供的赝势和轨道保留在 `run/`，已有结果位于 `results/`。正常结果中
 Si/C 的 BEC 约为符号相反的 2.70 e，三重简并光学模式约为 773 cm^-1。
 
-如需让智能体协助运行，先执行 `zstar skill install`，新建智能体会话，然后使用：
+将下面的示例请求复制到支持技能的编程智能体。
 
 ```text
-使用 $zstar-workflows 复现 examples/3D_Bulk/SiC 中的 3C-SiC Quick Start。
-先执行 preflight；如果 ABACUS 与 PYATB 可用，再分别执行 zstar bec 和
-zstar spectra 的各个阶段，解释每一步并报告 BEC 表、光学模式频率及谱图路径。
+先从 https://github.com/xdzhu/ZStar 安装 zstar-workflows 技能。
+技能位于主分支的 zstar/agent_skills/zstar-workflows。
+如果本机没有 ZStar 命令，先从同一仓库安装 ZStar。
+安装后用 $zstar-workflows 复现 examples/3D_Bulk/SiC 的 3C-SiC 快速入门。
+将 run/ 下的输入复制到新的工作目录，先做预检查。确认 ABACUS 和 PYATB
+可用后，运行 BEC、Gamma 点声子和 IR/Raman 工作流。报告 BEC 张量、
+光学模式频率，以及红外和拉曼输出文件的路径。
 ```
+
+已安装 ZStar 时，也可在终端执行 `zstar skill install`，然后新建智能体会话。
 
 后文再按需查阅任务入口、维度约定、作业系统、其他计算器和进阶分析。
 

@@ -119,11 +119,11 @@ case directory provides the same workflow as a resumable convenience command.
 
 ### 5. Let an agent run the same workflow
 
-Example prompt:
-
 ```text
-Assume that neither ZStar nor its agent skill is installed. Set up and reproduce
-the SiC Quick Start using the following locations:
+Install the zstar-workflows skill from https://github.com/xdzhu/ZStar.
+The skill is in zstar/agent_skills/zstar-workflows on the main branch.
+Then follow it to reproduce the 3C-SiC Quick Start in examples/3D_Bulk/SiC.
+Set up ZStar and the calculation using these locations:
 
 - ZStar source: $HOME/software/zstar
 - Python environment: $HOME/.venvs/zstar
@@ -132,14 +132,10 @@ the SiC Quick Start using the following locations:
 
 Clone https://github.com/xdzhu/ZStar.git into $HOME/software/zstar. Create the
 Python environment at $HOME/.venvs/zstar with Python 3.10, activate it, and
-install ZStar from the cloned source using `pip install .`. Install the packaged
-agent skill using:
-
-zstar skill install --dest "$HOME/.codex/skills" --force
-
-Verify that the skill is installed at
-$HOME/.codex/skills/zstar-workflows, then read and follow its SKILL.md during
-this task.
+install ZStar from the cloned source using `pip install .`. If the skill installer
+could not install the skill directly from GitHub, run
+`zstar skill install --dest "$HOME/.codex/skills"` after installing ZStar.
+Verify the installed skill and read its SKILL.md before running the example.
 
 Locate the existing ABACUS and PYATB executables on this machine and configure
 their real paths and the available MPI/OMP resources in ZStar. Do not guess
@@ -341,18 +337,17 @@ zstar config check
 zstar backend list --check
 ```
 
-## agent skill
+## Agent skill
 
-Install the bundled, standards-compliant `$zstar-workflows` skill after
-installing ZStar:
+Install the bundled skill, then invoke `$zstar-workflows` in a new agent session.
 
 ```bash
 zstar skill install
 zstar skill preflight --root . --lane bec --dim bulk
 ```
 
-Open a new agent session after installation. Use `--force` to refresh the skill
-after upgrading ZStar, or `--dest /path/to/skills` for a custom compatible skill
+Use `--force` to refresh the skill after upgrading ZStar, or
+`--dest /path/to/skills` for a custom compatible skill
 directory. The skill encodes dimensional conventions, reference-first execution,
 restart behavior, scheduler authorization boundaries, and artifact-based
 completion checks. See [docs/agent_skill.md](agent_skill.md).

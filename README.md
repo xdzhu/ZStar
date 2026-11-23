@@ -284,17 +284,22 @@ Alpha-In2Se3 gives a vacuum step near **1.221 eV**; MoS2 is nearly symmetric.
 See the [potential tutorial](docs/potential_examples.md) and
 [runnable cases](examples/Electrostatic_Potential).
 
-## agent skill
+## Agent skill
 
-Install the packaged `$run-zstar-workflows` skill, then open a new agent session:
+Copy this example request into a compatible coding agent.
 
-```bash
-zstar skill install
+```text
+Install the zstar-workflows skill from https://github.com/xdzhu/ZStar.
+The skill is in zstar/agent_skills/zstar-workflows on the main branch.
+Install ZStar from the same repository if the CLI is missing.
+Then use $zstar-workflows to reproduce the 3C-SiC Quick Start in
+examples/3D_Bulk/SiC. Copy the run/ inputs to a fresh working directory.
+Run preflight, then run the BEC, Gamma-point phonon, and IR/Raman workflow
+if ABACUS and PYATB are available. Report the BEC tensors, optical-mode
+frequencies, and IR and Raman output paths.
 ```
 
-Example request: "Use $run-zstar-workflows to copy the supplied SiC inputs into
-a new workspace, check the calculator configuration, and run the BEC, Gamma
-phonon, and IR/Raman stages. Report the tensors, frequencies, and output paths."
+If ZStar is already installed, you can also run `zstar skill install` and open a new agent session.
 
 If ZStar is not installed yet, the [from-scratch prompt](docs/user_guide.md#5-let-an-agent-run-the-same-workflow)
 specifies source, Python-environment, skill, and workspace locations. The

@@ -57,15 +57,20 @@ completed stages. The supplied PP/orbitals remain in `run/`; archived results
 are in `results/`. Expect opposite Si/C BEC values near 2.70 e and a triply
 degenerate optical mode near 773 cm^-1.
 
-For agent-assisted use, install the packaged skill with `zstar skill install`,
-open a new agent session, and use this prompt:
+Copy this example request into a compatible coding agent.
 
 ```text
-Use $zstar-workflows to reproduce the 3C-SiC Quick Start in
-examples/3D_Bulk/SiC. Run the preflight first, then execute the zstar bec and
-zstar spectra stages individually if ABACUS and PYATB are available. Explain
-each stage and report the BEC table, optical-mode frequencies, and spectrum paths.
+Install the zstar-workflows skill from https://github.com/xdzhu/ZStar.
+The skill is in zstar/agent_skills/zstar-workflows on the main branch.
+Install ZStar from the same repository if the CLI is missing.
+Then use $zstar-workflows to reproduce the 3C-SiC Quick Start in
+examples/3D_Bulk/SiC. Copy the run/ inputs to a fresh working directory.
+Run preflight, then run the BEC, Gamma-point phonon, and IR/Raman workflow
+if ABACUS and PYATB are available. Report the BEC tensors, optical-mode
+frequencies, and IR and Raman output paths.
 ```
+
+If ZStar is already installed, you can also run `zstar skill install` and open a new agent session.
 
 Continue below for task selection, dimensional conventions, schedulers, other
 calculators, and advanced analysis.

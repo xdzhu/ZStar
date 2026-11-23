@@ -47,16 +47,20 @@ zstar skill install --dest /path/to/skills
 zstar skill path
 ```
 
-源码仓库中的 agent skill 位于 `zstar/agent_skills/zstar-workflows/`，兼容的 skill
-安装器也可以直接从该仓库路径安装。
+也可使用兼容的技能安装器[直接从 GitHub 安装](https://github.com/xdzhu/ZStar/tree/main/zstar/agent_skills/zstar-workflows)。
 
 ## 调用
 
-显式调用采用标准技能名，例如：
+复制下面的请求，先安装技能，再运行 SiC 案例。
 
 ```text
-使用 $zstar-workflows 检查这个 BaTiO3 bulk BEC 工作区，执行 preflight，
-生成 Slurm dry-run 脚本，但不要提交任务。
+先从 https://github.com/xdzhu/ZStar 安装 zstar-workflows 技能。
+技能位于主分支的 zstar/agent_skills/zstar-workflows。
+如果本机没有 ZStar 命令，先从同一仓库安装 ZStar。
+安装后用 $zstar-workflows 复现 examples/3D_Bulk/SiC 的 3C-SiC 快速入门。
+将 run/ 下的输入复制到新的工作目录，先做预检查。确认 ABACUS 和 PYATB
+可用后，运行 BEC、Gamma 点声子和 IR/Raman 工作流。报告 BEC 张量、
+光学模式频率，以及红外和拉曼输出文件的路径。
 ```
 
 当请求明确涉及 ZStar 计算的准备、执行或验证时，技能描述也支持自动发现。

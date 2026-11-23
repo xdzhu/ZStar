@@ -2,6 +2,7 @@
 
 from html.parser import HTMLParser
 from pathlib import Path
+import re
 import unittest
 from urllib.parse import urlsplit, unquote
 
@@ -61,6 +62,26 @@ class DocumentationLayoutTests(unittest.TestCase):
                     path = f"docs/paper_figures/{image}"
                     self.assertIn(path, text)
                     self.assertTrue((ROOT / path).is_file())
+
+    def test_sic_agent_prompts_install_the_current_skill_from_github_first(self):
+        pages = (
+            "README.md", "README.zh-CN.md", "README_PYPI.md",
+            "docs/README.md", "docs/README.zh-CN.md",
+            "docs/user_guide.md", "docs/user_guide.zh-CN.md",
+            "docs/agent_skill.md", "docs/agent_skill.zh-CN.md",
+        )
+        skill_path = "zstar/agent_skills/zstar-workflows"
+        example_path = "examples/3D_Bulk/SiC"
+        self.assertIn("name: zstar-workflows", (ROOT / skill_path / "SKILL.md").read_text(encoding="utf-8"))
+        self.assertTrue((ROOT / example_path / "run" / "STRU").is_file())
+        for name in pages:
+            with self.subTest(name=name):
+                text = (ROOT / name).read_text(encoding="utf-8")
+                self.assertNotIn("run-zstar-workflows", text)
+                prompts = re.findall(r"^```text\n(.*?)^```$", text, re.M | re.S)
+                prompt = next(p for p in prompts if skill_path in p and example_path in p)
+                self.assertIn("https://github.com/xdzhu/ZStar", prompt)
+                self.assertLess(prompt.index(skill_path), prompt.index(example_path))
 
     def test_full_guides_preserve_results_and_local_images(self):
         for name in ("user_guide.md", "user_guide.zh-CN.md"):
