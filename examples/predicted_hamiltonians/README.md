@@ -1,6 +1,6 @@
 # Hamiltonian predictions and polarization
 
-The examples connect HamGNN, DeepH, and NextHAM predictions to ZStar and
+The examples connect HamGNN, DeepH, NextHAM, and Hot-Ham predictions to ZStar and
 PYATB. The [input guide](../../docs/predicted_hamiltonians.md) describes
 how to convert a new prediction and match its orbital basis.
 
@@ -11,3 +11,6 @@ how to convert a new prediction and match its orbital basis.
   of the predicted and initial spinor matrices against the zero branch.
   This case includes the input template and solver results. The full
   matrix inputs are supplied separately for a PYATB replay.
+- [hBN with Hot-Ham](hbn_hotham/). Check a real prediction against the
+  original ABACUS overlap, inspect the sampled gap, and replay the
+  insulating reference Hamiltonian exported by Hot-Ham.

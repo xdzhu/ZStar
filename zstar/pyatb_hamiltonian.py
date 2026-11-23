@@ -11,10 +11,10 @@ from tempfile import TemporaryDirectory
 import numpy as np
 
 from .polarization_2d import BOHR_M
-from .structure_io import read_structure
+from .structure_io import StructureData, read_structure
 
 
-MODELS = ("hamgnn", "deeph", "nextham")
+MODELS = ("hamgnn", "deeph", "nextham", "hotham")
 _PARAMETERS = re.compile(r"(?ms)^[ \t]*INPUT_PARAMETERS[ \t]*\n\s*\{[^}]*\}")
 _LATTICE = re.compile(r"(?ms)^[ \t]*LATTICE[ \t]*\n\s*\{([^}]*)\}")
 _CELL_FIELD = re.compile(r"(?m)^[ \t]*(lattice_constant_unit|lattice_constant|lattice_vector)\b")
@@ -80,8 +80,23 @@ def _sha(path):
     return digest.hexdigest()
 
 
+def _prediction_geometry(path):
+    if path.suffix.lower() not in {".xyz", ".extxyz"}:
+        return read_structure(path)
+    try:
+        from ase.io import read
+    except ImportError as exc:
+        raise ImportError("Reading extended XYZ requires ASE (pip install 'zstar[hotham]')") from exc
+    frames = read(path, index=":2", format="extxyz")
+    if len(frames) != 1 or frames[0].cell.rank != 3:
+        raise ValueError("Supply one prediction frame with a full lattice in extended XYZ")
+    frame = frames[0]
+    return StructureData(np.asarray(frame.cell), frame.get_scaled_positions(wrap=False),
+                         tuple(frame.get_chemical_symbols()))
+
+
 def prepare_pyatb_hamiltonian(input_path, hamiltonian, structure, prediction_structure,
-                              *, model, fermi_energy_ev, output_dir):
+                              *, model, fermi_energy_ev, output_dir, model_overlap=None):
     """Keep S and r and replace H for the specified displaced geometry.
 
     The caller exports the prediction in the same numerical orbital basis
@@ -95,14 +110,14 @@ def prepare_pyatb_hamiltonian(input_path, hamiltonian, structure, prediction_str
     structure = _resolve(cwd, structure)
     prediction_structure = _resolve(cwd, prediction_structure)
     reference = read_structure(structure)
-    prediction = read_structure(prediction_structure)
+    prediction = _prediction_geometry(prediction_structure)
     if (reference.symbols != prediction.symbols
             or not np.allclose(reference.lattice_angstrom, prediction.lattice_angstrom,
                                atol=_GEOMETRY_ATOL_A, rtol=0)):
         raise ValueError("Prediction atom order or lattice differs from reference")
     delta = prediction.positions_fractional - reference.positions_fractional
     delta -= np.rint(delta)
-    if np.max(np.abs(delta @ reference.lattice_angstrom)) > _GEOMETRY_ATOL_A:
+    if not np.all(np.abs(delta @ reference.lattice_angstrom) <= _GEOMETRY_ATOL_A):
         raise ValueError("Prediction was made for different atomic positions")
 
     text = input_path.read_text(encoding="utf-8-sig")
@@ -149,6 +164,15 @@ def prepare_pyatb_hamiltonian(input_path, hamiltonian, structure, prediction_str
     sources = {"template": input_path, "hamiltonian": hamiltonian,
                "overlap": overlap, "position": position, "structure": structure,
                "prediction_structure": prediction_structure}
+    if model == "hotham":
+        from .model_hamiltonian import validate_hotham_export
+
+        if model_overlap is None:
+            raise ValueError("Hot-Ham requires --model-overlap from the same export as H")
+        sources["model_overlap"] = _resolve(cwd, model_overlap)
+        validate_hotham_export(hamiltonian, sources["model_overlap"], overlap)
+    elif model_overlap is not None:
+        raise ValueError("--model-overlap on pyatb-hamiltonian applies only to Hot-Ham")
     receipt = {"model": model, "fermi_energy_eV": fermi_energy_ev, "basis_dimension": size,
                "nspin": int(nspin),
                "source_files": {name: {"path": str(path), "sha256": _sha(path)}

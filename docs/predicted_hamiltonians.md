@@ -2,13 +2,13 @@
 
 ZStar prepares finite-displacement structures, and PYATB obtains the
 polarization for each structure from H(R), S(R) and r(R). This example
-prepares one PYATB stage from a Hamiltonian exported by HamGNN, DeepH, or
-NextHAM. Repeat preparation for the reference and each displacement.
+prepares one PYATB stage from a Hamiltonian exported by HamGNN, DeepH,
+NextHAM, or Hot-Ham. Repeat preparation for the reference and each displacement.
 
 1. Predict H for the same cell, atom order, orbital order, and numerical orbital
    basis as S and r. Use the model version appropriate to that basis.
 2. Export H as an ABACUS text sparse matrix in Ry. Use `nspin 1` for the
-   DeepH and HamGNN converters. Use a matching `nspin 1` or `nspin 4` PYATB
+   DeepH, HamGNN and Hot-Ham routes. Use a matching `nspin 1` or `nspin 4` PYATB
    template for a native NextHAM export.
    Supply the prediction structure and the insulating Fermi energy in eV.
 3. Prepare the input and execute PYATB.
@@ -78,7 +78,43 @@ the overlap and position matrices already supplied to PYATB. For the
 spin-orbit model, all three matrices must use the same spinor basis and
 ordering, with `nspin 4` and the spinor occupied-band count in the template.
 
+### Hot-Ham
+
+Use an ABACUS LCAO checkpoint and dataset with `magnetism: nonmag`,
+`soc: false`, `prediction: 2` and `write: [h_pred, olp]`. Select
+`h_pred_0.csr` and `olp.csr` from the same frame (including its index
+prefix for a multi-frame export). The upstream writer restores ABACUS
+orbital order, assembles zero-based CSR rows and columns for each signed
+lattice translation, and converts H from eV to Ry. ZStar passes that
+Hamiltonian to PYATB directly. [Hot-Ham paper](https://doi.org/10.1088/0256-307X/43/2/020704)
+and [upstream export implementation](https://github.com/liangzhixin-202169/Hot-Ham/blob/7518adfe2cd1405de452eda362e45e55b522a836/hotham/entrypoints/kernel_lcao.py).
+
+    zstar response pyatb-hamiltonian --model hotham \
+      --input stage/pyatb/Input --structure stage/pyatb/STRU \
+      --prediction-structure inference/model.xyz \
+      --hamiltonian inference/h_pred_0.csr --model-overlap inference/olp.csr \
+      --fermi-energy ENERGY_IN_EV --output-dir hotham-pyatb
+    (cd hotham-pyatb && pyatb)
+
+For Hot-Ham's single-frame extended XYZ, install ASE with
+`pip install 'zstar[hotham]'`. A matching prediction STRU or POSCAR also
+works. Supply the original ABACUS S(R) and r(R) for that inference
+geometry in the template. Keep the numerical orbital files, shell order
+and atom order used to build the inference dataset. ZStar compares
+the exported overlap with the template overlap over the union of their
+translations (absolute entry tolerance 2 × 10⁻⁶), and checks
+H(R) against H(−R)ᵀ to 2 × 10⁻⁶ Ry. The receipt records both overlaps
+and the position matrix. Choose the Fermi level inside the predicted gap.
+
 ## Code validation
+
+In the [Hot-Ham hBN example](../examples/predicted_hamiltonians/hbn_hotham/),
+the overlap round-trip error was at most 1.50 × 10⁻⁸ across 81 lattice
+translations. Hot-Ham's export of the ABACUS reference H agreed within
+1.00 × 10⁻⁷ Ry and reproduced the native PYATB polarization to the
+printed precision. The learned H was Hermitian but had a sampled indirect
+gap of −3.366 eV after fitting one displacement. Only the insulating
+reference entered the polarization comparison.
 
 The native DeepH and HamGNN conversion was checked by encoding a real hBN
 ABACUS Hamiltonian and its overlap in each model format and recovering

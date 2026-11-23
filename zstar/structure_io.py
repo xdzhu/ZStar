@@ -102,7 +102,7 @@ def read_poscar(path: str | Path) -> StructureData:
         raise ValueError(f"POSCAR contains {len(coordinates)} coordinates, expected {n_atoms}: {source}")
     positions = np.asarray(coordinates, dtype=float)
     if mode.startswith("c") or mode.startswith("k"):
-        positions = positions @ np.linalg.inv(lattice)
+        positions = (positions * scale) @ np.linalg.inv(lattice)
     labels = tuple(symbol for symbol, count in zip(symbols, counts) for _ in range(count))
     return StructureData(lattice, positions, labels)
 
@@ -136,7 +136,7 @@ def read_abacus_stru(path: str | Path) -> StructureData:
             species.append(fields[0])
     if not species:
         raise ValueError(f"STRU contains no atomic species: {source}")
-    mode = lines[position_index + 1].strip().lower()
+    mode = lines[position_index + 1].split("#", 1)[0].strip().lower()
     cursor = position_index + 2
     positions: list[list[float]] = []
     labels: list[str] = []
@@ -162,6 +162,17 @@ def read_abacus_stru(path: str | Path) -> StructureData:
         cursor += 3 + count
     coordinates = np.asarray(positions, dtype=float)
     if mode.startswith("cart"):
+        if mode == "cartesian":
+            coordinates *= lattice_constant / 1.889726125
+        elif mode == "cartesian_au":
+            coordinates /= 1.889726125
+        elif mode.startswith("cartesian_angstrom_center_"):
+            axes = mode.rsplit("_", 1)[1]
+            if axes not in {"xy", "xz", "yz", "xyz"}:
+                raise ValueError(f"Unknown STRU coordinate mode: {mode}")
+            coordinates += lattice.sum(axis=0) * 0.5 * np.array([axis in axes for axis in "xyz"])
+        elif mode != "cartesian_angstrom":
+            raise ValueError(f"Unknown STRU coordinate mode: {mode}")
         coordinates = coordinates @ np.linalg.inv(lattice)
     if len(labels) == 0:
         raise ValueError(f"STRU contains no atomic coordinates: {source}")

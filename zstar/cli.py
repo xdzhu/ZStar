@@ -898,6 +898,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
     parser_response_hamiltonian.add_argument('--structure', required=True)
     parser_response_hamiltonian.add_argument('--prediction-structure', required=True)
     parser_response_hamiltonian.add_argument('--model', choices=MODELS, required=True)
+    parser_response_hamiltonian.add_argument('--model-overlap', help='Hot-Ham overlap CSR from the same prediction.')
     parser_response_hamiltonian.add_argument('--fermi-energy', type=float, required=True)
     parser_response_hamiltonian.add_argument('--output-dir', required=True)
     parser_response_deeph = response_actions.add_parser(
@@ -2148,6 +2149,7 @@ def zstar_cli(argv=None, *, _canonical=True) -> None:
             output = prepare_pyatb_hamiltonian(
                 args.input, args.hamiltonian, args.structure, args.prediction_structure,
                 model=args.model, fermi_energy_ev=args.fermi_energy, output_dir=args.output_dir,
+                model_overlap=args.model_overlap,
             )
             print(f"[OUT] {output}")
         elif args.response_action == 'convert-deeph':

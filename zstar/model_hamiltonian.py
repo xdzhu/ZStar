@@ -13,13 +13,16 @@ EV_PER_RY = 13.605698
 _ZERO = (0, 0, 0)
 
 
-def read_abacus_real_csr(path):
+def read_abacus_real_csr(path, *, kind=None):
     """Read ABACUS legacy text CSR blocks without densifying the basis."""
     with Path(path).open(encoding="ascii") as handle:
         header = handle.readline()
         if header.startswith("STEP:"):
             header = handle.readline()
         count_line = handle.readline()
+        if kind and (not header.startswith(f"Matrix Dimension of {kind}(R): ")
+                     or not count_line.startswith(f"Matrix number of {kind}(R): ")):
+            raise ValueError(f"Expected a Hot-Ham {kind}(R) export in {path}")
         if not header.startswith("Matrix Dimension") or not count_line.startswith("Matrix number"):
             raise ValueError(f"Expected ABACUS text CSR header in {path}")
         size, count = int(header.split()[-1]), int(count_line.split()[-1])
@@ -34,7 +37,10 @@ def read_abacus_real_csr(path):
             if nnz == 0:
                 blocks[key] = csr_matrix((size, size))
                 continue
-            values = np.array(handle.readline().split(), dtype=float)
+            try:
+                values = np.array(handle.readline().split(), dtype=float)
+            except ValueError as exc:
+                raise ValueError(f"Expected real CSR values at translation {key} in {path}") from exc
             columns = np.array(handle.readline().split(), dtype=int)
             rows = np.array(handle.readline().split(), dtype=int)
             if (len(values) != nnz or len(columns) != nnz or len(rows) != size + 1
@@ -147,6 +153,21 @@ def _symmetrize_hamiltonian(matrices):
                 matrices.get(tuple(-x for x in shift), zero).T) * .5
         for shift in translations
     }
+
+
+def validate_hotham_export(prediction, model_overlap, reference_overlap):
+    """Check native spin-1 CSR files from a single ABACUS Hot-Ham inference."""
+    size, overlap = read_abacus_real_csr(model_overlap, kind="S")
+    _verify_overlap(overlap, reference_overlap, size, 2e-6)
+    h_size, h = read_abacus_real_csr(prediction, kind="H")
+    if h_size != size or _ZERO not in h:
+        raise ValueError("Hot-Ham H and S must share a basis and include the home cell")
+    zero = csr_matrix((size, size))
+    for shift, matrix in h.items():
+        reverse = tuple(-i for i in shift)
+        residual = matrix - h.get(reverse, zero).T
+        if np.max(np.abs(residual.data), initial=0.) > 2e-6:
+            raise ValueError(f"Hot-Ham H(R) differs from H(-R)^T at {shift}")
 
 
 def convert_deeph(prediction, orbital_types, model_overlap, reference_overlap, output):

@@ -3,6 +3,7 @@ import subprocess
 import sys
 
 import numpy as np
+import pytest
 
 from zstar.structure_io import (
     format_wyckoff_summary,
@@ -14,6 +15,22 @@ from zstar.structure_io import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.mark.parametrize("mode,position", [
+    ("Cartesian", "1 0.5 0.25"), ("Cartesian_au", "4 2 1"),
+    ("Cartesian_angstrom", "2.116708843 1.058354422 0.529177211"),
+    ("Cartesian_angstrom_center_xy", "-2.116708843 -3.175063265 0.529177211"),
+])
+def test_cartesian_stru_matches_scaled_prediction_poscar(tmp_path, mode, position):
+    stru = tmp_path / "STRU"
+    stru.write_text(f"ATOMIC_SPECIES\nB 10 B.upf\nLATTICE_CONSTANT\n4\n"
+                    f"LATTICE_VECTORS\n4 0 0\n0 4 0\n0 0 4\n"
+                    f"ATOMIC_POSITIONS\n{mode}\nB\n0\n1\n{position}\n")
+    poscar = tmp_path / "POSCAR"
+    poscar.write_text("B\n2.116708843\n4 0 0\n0 4 0\n0 0 4\nB\n1\n"
+                      "Cartesian\n1 0.5 0.25\n")
+    np.testing.assert_allclose(read_structure(stru).cart_coords, read_poscar(poscar).cart_coords)
 
 
 def test_read_abacus_stru_without_pymatgen():
