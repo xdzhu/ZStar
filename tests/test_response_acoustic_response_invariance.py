@@ -1,7 +1,7 @@
 """Three-dimensional optical response versus acoustic diagnostic contamination.
 
 These are synthetic algebra controls, not independent DFT validation. They
-reuse v1's explicit response projection and the existing v2 unit-aware APIs.
+reuse v1's explicit response projection and the unit-aware electromechanical API.
 """
 import numpy as np
 import pytest

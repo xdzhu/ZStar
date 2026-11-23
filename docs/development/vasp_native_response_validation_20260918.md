@@ -5,7 +5,7 @@ current test results, see [issue 2 PR acceptance](vasp_native_issue_2_pr_accepta
 
 Baseline: 9e0299a6, frozen with zstar-before-vasp-native-20260918.
 Development: codex/vasp-native-response, separate worktree
-`D:/Work/Code/zstar-vasp-native`. Main and the independent v2 worktree are untouched.
+`D:/Work/Code/zstar-vasp-native`. Main and the independent piezoelectric worktree are untouched.
 
 ## Actual Calculation Coverage
 

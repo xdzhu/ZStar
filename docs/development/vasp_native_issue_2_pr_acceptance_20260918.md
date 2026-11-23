@@ -4,7 +4,7 @@
 
 PR branch: `codex/vasp-native-issue-2`, based on `origin/main` at `6bc7b0d2`.
 Only the native-response commits `0e7c177b` and `bbaf059a` were transplanted
-from the development branch. The unrelated qNEP snapshot and the active v2
+from the development branch. The unrelated qNEP snapshot and the active piezoelectric
 research worktree are not included or modified.
 
 The implementation and retained 3C-SiC/AlN calculations address the native

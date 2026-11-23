@@ -2,7 +2,7 @@
 
 The low-level :func:`zstar.response.relaxed_piezoelectric` routine intentionally
 accepts arrays only.  This module supplies the calculator-neutral bridge from
-annotated v2 quantities to that algebra without guessing atom/Cartesian axis
+annotated response quantities to that algebra without guessing atom/Cartesian axis
 order, BEC units, or the reference-cell volume.
 """
 
@@ -159,7 +159,7 @@ def derive_relaxed_piezoelectric_response(
     """
 
     if not isinstance(document, ResponseDocument):
-        raise TypeError("document must be a v2 ResponseDocument")
+        raise TypeError("document must be an electromechanical ResponseDocument")
     if document.dimensionality.value != 3:
         raise ValueError("relaxed-ion bulk piezoelectric assembly requires dimensionality=3")
     if tuple(document.dimensionality.periodic_axes) != ("x", "y", "z"):
@@ -390,13 +390,13 @@ def derive_relaxed_elastic_response(
 
     ``clamped_elastic_name`` is a clamped-ion, engineering-Voigt stiffness.
     The IFC and Gamma quantities are consumed in their explicitly labelled
-    v1/v2 axis orders and matched eV/Angstrom (or J/m) units.  The result is
+    axis orders of both response formats and matched eV/Angstrom (or J/m) units.  The result is
     rejected when acoustic compatibility is requested but not satisfied; no
     translational projection is applied implicitly.
     """
 
     if not isinstance(document, ResponseDocument):
-        raise TypeError("document must be a v2 ResponseDocument")
+        raise TypeError("document must be an electromechanical ResponseDocument")
     if document.dimensionality.value != 3 or tuple(document.dimensionality.periodic_axes) != ("x", "y", "z"):
         raise ValueError("relaxed-ion bulk elastic assembly requires a three-dimensional periodic document")
     clamped = _quantity(document, clamped_elastic_name)

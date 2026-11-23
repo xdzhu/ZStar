@@ -21,7 +21,7 @@ from zstar.response.abacus_strain import _augment_reference_symmetry
 from zstar.dimensions import DimensionSpec
 
 
-# Use the tracked v2 fixture.  The historical cubic phonon input is generated
+# Use the tracked BaTiO3 fixture.  The historical cubic phonon input is generated
 # by some v1 workflows and is intentionally not a required checkout artifact.
 CASE_STRU = Path("tests/fixtures/response_tetragonal_BaTiO3/STRU")
 
@@ -380,7 +380,7 @@ def test_collect_abacus_strain_response_rejects_relaxed_stage_without_final_stru
         collect_abacus_strain_response(root)
 
 
-def test_collect_abacus_strain_response_builds_v2_document(tmp_path):
+def test_collect_abacus_strain_response_builds_response_document(tmp_path):
     root = tmp_path / "ensemble"
     _stage(root / "reference")
     stages = plan_central_stages(([0.001, 0, 0, 0, 0, 0],), kind="strain", prefix="strain")
@@ -612,7 +612,7 @@ def test_collect_pyatb_strain_response_uses_one_three_direction_run_per_stage(tm
     )
 
 
-def test_observed_symmetry_uses_fixed_v2_tolerance():
+def test_observed_symmetry_uses_fixed_strain_tolerance():
     data = json.loads(
         Path("examples/Piezoelectric_Response/AlN/results/abacus_pbe_response.json")
         .read_text(encoding="utf-8")
@@ -624,12 +624,12 @@ def test_observed_symmetry_uses_fixed_v2_tolerance():
         symbols=tuple(structure["symbols"]),
     )
     preparation = dict(data["symmetry"])
-    # The tracked reference has ~1e-4 fractional-coordinate round-off.  v2
+    # The tracked reference has ~1e-4 fractional-coordinate round-off.  The collector
     # uses the single declared 1e-3 tolerance for both preparation and audit.
     result = _augment_reference_symmetry(preparation, reference, DimensionSpec(3))
     assert result["reference_observed"]["space_group"] == "P6_3mc"
     assert result["reference_observed"]["symprec"] == pytest.approx(1.0e-3)
-    assert result["reference_observed"]["diagnostics"]["operational_symprec_source"] == "fixed_v2_symprec"
+    assert result["reference_observed"]["diagnostics"]["operational_symprec_source"] == "fixed_strain_symprec"
     assert "tight_probe" not in result["reference_observed"]["diagnostics"]
     assert result["comparison"]["status"] == "consistent"
 

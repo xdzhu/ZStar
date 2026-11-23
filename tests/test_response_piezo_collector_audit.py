@@ -17,7 +17,7 @@ from zstar.response import (
 
 def _collector_module():
     source = Path(__file__).resolve().parents[1] / "tools" / "collect_piezoelectric_case.py"
-    spec = importlib.util.spec_from_file_location("v2_piezo_collector", source)
+    spec = importlib.util.spec_from_file_location("piezo_collector", source)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

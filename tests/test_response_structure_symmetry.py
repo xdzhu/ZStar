@@ -515,7 +515,7 @@ def test_symmetry_analysis_marks_empty_spglib_dataset_untrusted(monkeypatch):
         symmetry_adapted_input_plan(report, input_kind="strain")
 
 
-def test_v2_symmetry_policy_rejects_nonstandard_symprec():
+def test_strain_symmetry_policy_rejects_nonstandard_symprec():
     structure = StructureSpec(
         lattice=np.diag([4.0, 4.0, 4.0]),
         fractional_positions=np.array([[0.0, 0.0, 0.0]]),

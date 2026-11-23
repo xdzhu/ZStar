@@ -154,7 +154,7 @@ SiC frequency dielectric and Raman JSON/qpoints round trips passed; the retained
 AlN spectral acceptance also passed from the installed wheel outside the source
 checkout. No PYATB or ABACUS installation was needed for these VASP postprocessors.
 
-The private venv/source on hf remain isolated; main code and the separate v2
+The private venv/source on hf remain isolated; main code and the separate piezoelectric
 worktree are unchanged. No main-branch merge, PyPI upload or paper edit is
 included in this acceptance. LDA, hybrid/meta-GGA and intrinsic low-dimensional
 native conversions are not claimed as end-to-end validated by these PBE bulk cases.

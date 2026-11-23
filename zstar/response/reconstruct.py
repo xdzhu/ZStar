@@ -107,7 +107,7 @@ def fit_response_document(
 ) -> ResponseDocument:
     """Fit available strain responses and append explicit tensor quantities.
 
-    The input must be a collected v2 document containing ``strain_vector`` and
+    The input must be a collected strain response document containing ``strain_vector`` and
     the corresponding observation quantities.  The function never guesses a
     stress sign: when ``stress_raw`` is present, ``stress_sign`` is required
     and must describe the calculator output.  Polarization is fitted only from
@@ -127,7 +127,7 @@ def fit_response_document(
     """
 
     if not isinstance(document, ResponseDocument):
-        raise TypeError("document must be a v2 ResponseDocument")
+        raise TypeError("document must be an electromechanical ResponseDocument")
     strains_quantity = _quantity_or_none(document, "strain_vector")
     if strains_quantity is None:
         raise ValueError("response document is missing required strain_vector quantity")

@@ -906,7 +906,9 @@ def build_figure(
     )
 
     output.mkdir(parents=True, exist_ok=True)
-    stem = stem or ("Figure_7_Spectroscopy_with_1D_layout_v2" if sb2s3_case else "spectroscopy_across_dimensions")
+    stem = stem or (
+        "spectroscopy_across_dimensions_with_nanowire" if sb2s3_case else "spectroscopy_across_dimensions"
+    )
     products = {
         "png": output / f"{stem}.png",
         "pdf": output / f"{stem}.pdf",

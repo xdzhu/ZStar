@@ -4,7 +4,7 @@
 
 Continue the validated native-response implementation on
 `codex/vasp-native-response`, based on `0e7c177b`. Do not change the original
-checkout, merge the concurrent v2 piezoelectric work, release to PyPI, or edit
+checkout, merge the concurrent piezoelectric work, release to PyPI, or edit
 the manuscript before the backend integration is agreed.
 
 The design follows native VASP capabilities rather than imposing the
@@ -69,7 +69,7 @@ end-to-end functional validation. Low-dimensional tensors remain labelled as
 periodic-supercell responses, with the existing 2D spectroscopy guard retained.
 The current workflow does not automatically calculate a VASP LOPTICS curve;
 the optical-constants command consumes supplied real/imaginary response data.
-The new option does not claim a formal merged v2 piezoelectric command family.
+This option was developed before the piezoelectric workflow was integrated.
 
 ## Primary sources
 

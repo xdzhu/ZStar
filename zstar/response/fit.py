@@ -319,9 +319,9 @@ def proper_piezoelectric_response(
 
     Vanderbilt's Cartesian relation is
     ``c_proper[i,j,k] = c_improper[i,j,k] + delta[j,k] P[i]
-    - delta[i,j] P[k]``.  For the symmetric engineering shear columns used by
-    v2, the ``yz``, ``xz`` and ``xy`` corrections are the average of the two
-    Cartesian index orderings, hence the factor one-half.  ``polarization``
+    - delta[i,j] P[k]``.  For the symmetric engineering shear columns,
+    the ``yz``, ``xz`` and ``xy`` corrections average the two Cartesian index
+    orderings, giving the factor one-half. ``polarization``
     must be the branch-matched reference value in C/m^2.  This function does
     not choose a Berry branch and does not alter the raw fit.
     """
@@ -744,7 +744,7 @@ def fit_internal_strain_response(
     contain Cartesian displacements of the relaxed ions relative to the
     clamped strained structures.  The returned :class:`LinearFitResult` uses
     flattened ``(atom, cartesian)`` output rows; reshape its ``matrix`` to
-    ``(atoms, 3, 6)`` for the tensor convention of the v2 response schema.
+    ``(atoms, 3, 6)`` for the tensor convention of the response document.
     An optional ``allowed_basis`` constrains the flattened displacement output
     to a validated space-group intertwiner subspace.
     No acoustic gauge is silently imposed: translation removal or a specified

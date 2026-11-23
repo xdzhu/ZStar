@@ -1,9 +1,9 @@
 ## Unreleased
 
-- Move the electromechanical response implementation from `zstar.v2` to
-  `zstar.response`. The ABACUS and VASP strain collectors are available as
-  `zstar.response.abacus_strain` and `zstar.response.vasp_strain`. The CLI and
-  serialized response and ensemble formats retain their existing interfaces.
+- Organize the electromechanical workflow under `zstar.response`, with dedicated
+  ABACUS and VASP strain collectors. New results and ensemble manifests use
+  descriptive schema identifiers. Existing response files, ensemble manifests,
+  and stage records remain readable.
 
 - Read each charge-density cube once for both transverse dipoles in the 1D
   polarization, Born-charge, and screened Raman calculations.

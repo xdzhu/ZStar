@@ -63,12 +63,12 @@ CONVERGENCE_PROFILES = {
 
 
 def convergence_profile(name: str = "production") -> tuple[str, dict[str, float]]:
-    """Return a named v2 numerical profile or fail before inputs are written."""
+    """Return a named strain convergence profile or fail before inputs are written."""
 
     normalized = str(name).strip().lower().replace("_", "-")
     if normalized not in CONVERGENCE_PROFILES:
         allowed = ", ".join(sorted(CONVERGENCE_PROFILES))
-        raise ValueError(f"unknown v2 convergence profile {name!r}; choose one of: {allowed}")
+        raise ValueError(f"unknown strain convergence profile {name!r}; choose one of: {allowed}")
     return normalized, dict(CONVERGENCE_PROFILES[normalized])
 
 
@@ -128,7 +128,7 @@ def _input_hash(directory: Path) -> str:
         if candidate.name in names or candidate.suffix.lower() in {".upf", ".orb", ".gz"}:
             candidates.append(candidate)
     if not candidates:
-        raise ValueError(f"cannot compute v2 input hash: no serialized inputs in {root}")
+        raise ValueError(f"cannot compute strain input hash: no serialized inputs in {root}")
     for candidate in sorted(set(candidates), key=lambda item: item.name.lower()):
         # ``STRU_INITIAL`` is a provenance-preserving alias for the original
         # serialized ``STRU``.  Use the logical input name in the digest so
@@ -223,18 +223,18 @@ def prepare_abacus_reference_relaxation(
         raise FileExistsError(f"reference relaxation output is not empty: {output}")
     profile_name, settings = convergence_profile(profile)
     if not np.isfinite(float(symprec)) or float(symprec) != RESPONSE_SYMPREC:
-        raise ValueError("v2 requires symprec=1e-3 for all space-group and atom-mapping operations")
+        raise ValueError("Strain response requires symprec=1e-3 for all space-group and atom-mapping operations")
     force = settings["reference_force_thr_ev"] if force_thr_ev is None else float(force_thr_ev)
     stress = settings["reference_stress_thr_kbar"] if stress_thr_kbar is None else float(stress_thr_kbar)
     electronic = settings["scf_thr"] if scf_thr is None else float(scf_thr)
     if not np.isfinite(force) or force != settings["reference_force_thr_ev"]:
-        raise ValueError(f"v2 {profile_name} reference relaxation requires force_thr_ev={settings['reference_force_thr_ev']:g}")
+        raise ValueError(f"{profile_name} reference relaxation requires force_thr_ev={settings['reference_force_thr_ev']:g}")
     if not np.isfinite(stress) or stress != settings["reference_stress_thr_kbar"]:
-        raise ValueError(f"v2 {profile_name} reference relaxation requires stress_thr_kbar={settings['reference_stress_thr_kbar']:g}")
+        raise ValueError(f"{profile_name} reference relaxation requires stress_thr_kbar={settings['reference_stress_thr_kbar']:g}")
     if not np.isfinite(electronic) or electronic != settings["scf_thr"]:
-        raise ValueError(f"v2 {profile_name} reference relaxation requires scf_thr={settings['scf_thr']:g}")
+        raise ValueError(f"{profile_name} reference relaxation requires scf_thr={settings['scf_thr']:g}")
     if isinstance(relax_nmax, (bool, np.bool_)) or int(relax_nmax) != relax_nmax or int(relax_nmax) < DEFAULT_RELAX_NMAX:
-        raise ValueError("v2 reference relaxation requires integer relax_nmax>=100")
+        raise ValueError("Reference relaxation requires integer relax_nmax>=100")
 
     input_source = Path(input_template).expanduser().resolve() if input_template else next(
         (candidate for candidate in (source.parent / "INPUT", source.parent / "INPUT-scf") if candidate.is_file()),
@@ -275,7 +275,7 @@ def prepare_abacus_reference_relaxation(
     for asset in prepared.assets:
         shutil.copy2(asset, output / asset.name)
     manifest = {
-        "schema": "zstar-v2-reference-relaxation",
+        "schema": "zstar-strain-reference-relaxation",
         "schema_version": "0.1",
         "status": "inputs_prepared_not_executed",
         "source_structure_sha256": _sha256(source),
@@ -329,15 +329,15 @@ def prepare_abacus_fixed_cell_relaxation(
         raise FileExistsError(f"fixed-cell relaxation output is not empty: {output}")
     profile_name, settings = convergence_profile(profile)
     if not np.isfinite(float(symprec)) or float(symprec) != RESPONSE_SYMPREC:
-        raise ValueError("v2 requires symprec=1e-3 for all space-group and atom-mapping operations")
+        raise ValueError("Strain response requires symprec=1e-3 for all space-group and atom-mapping operations")
     force = settings["relaxed_strain_force_thr_ev"] if force_thr_ev is None else float(force_thr_ev)
     electronic = settings["scf_thr"] if scf_thr is None else float(scf_thr)
     if not np.isfinite(force) or force != settings["relaxed_strain_force_thr_ev"]:
-        raise ValueError(f"v2 {profile_name} fixed-cell relaxation requires force_thr_ev={settings['relaxed_strain_force_thr_ev']:g}")
+        raise ValueError(f"{profile_name} fixed-cell relaxation requires force_thr_ev={settings['relaxed_strain_force_thr_ev']:g}")
     if not np.isfinite(electronic) or electronic != settings["scf_thr"]:
-        raise ValueError(f"v2 {profile_name} fixed-cell relaxation requires scf_thr={settings['scf_thr']:g}")
+        raise ValueError(f"{profile_name} fixed-cell relaxation requires scf_thr={settings['scf_thr']:g}")
     if isinstance(relax_nmax, (bool, np.bool_)) or int(relax_nmax) != relax_nmax or int(relax_nmax) < DEFAULT_RELAX_NMAX:
-        raise ValueError("v2 fixed-cell relaxation requires integer relax_nmax>=100")
+        raise ValueError("Fixed-cell relaxation requires integer relax_nmax>=100")
     input_source = Path(input_template).expanduser().resolve() if input_template else next(
         (candidate for candidate in (source.parent / "INPUT", source.parent / "INPUT-scf") if candidate.is_file()),
         None,
@@ -375,7 +375,7 @@ def prepare_abacus_fixed_cell_relaxation(
     for asset in prepared.assets:
         shutil.copy2(asset, output / asset.name)
     manifest = {
-        "schema": "zstar-v2-fixed-cell-relaxation",
+        "schema": "zstar-strain-fixed-cell-relaxation",
         "schema_version": "0.1",
         "status": "inputs_prepared_not_executed",
         "source_structure_sha256": _sha256(source),
@@ -472,7 +472,7 @@ def prepare_abacus_berry_stages(
         _set_input_parameter(stage / "INPUT", "symmetry", str(symmetry))
         prepared[direction] = str(stage)
     manifest = {
-        "schema": "zstar-v2-abacus-berry-preparation",
+        "schema": "zstar-abacus-berry-preparation",
         "schema_version": "0.1",
         "source_stage": source.name,
         "suffix": suffix,
@@ -555,7 +555,7 @@ def prepare_abacus_strain_ensemble(
         raise ValueError("symprec must be finite and positive")
     if float(symprec) != RESPONSE_SYMPREC:
         raise ValueError(
-            "v2 requires symprec=1e-3 for all space-group and atom-mapping operations; "
+            "Strain response requires symprec=1e-3 for all space-group and atom-mapping operations; "
             f"got {float(symprec):g}"
         )
     relaxation = str(ion_relaxation).strip().lower()
@@ -567,7 +567,7 @@ def prepare_abacus_strain_ensemble(
         raise ValueError("force_thr_ev must be finite and positive")
     if relaxation == "relaxed-ion" and threshold != settings["relaxed_strain_force_thr_ev"]:
         raise ValueError(
-            f"v2 {profile_name} relaxed-ion response requires "
+            f"{profile_name} relaxed-ion response requires "
             f"force_thr_ev={settings['relaxed_strain_force_thr_ev']:g}"
         )
     if isinstance(relax_nmax, (bool, np.bool_)):
@@ -579,7 +579,7 @@ def prepare_abacus_strain_ensemble(
     if relax_steps <= 0 or float(relax_nmax) != float(relax_steps):
         raise ValueError("relax_nmax must be a positive integer")
     if relaxation == "relaxed-ion" and relax_steps < DEFAULT_RELAX_NMAX:
-        raise ValueError("v2 relaxed-ion response requires relax_nmax>=100")
+        raise ValueError("Relaxed-ion strain response requires relax_nmax>=100")
     if not isinstance(symmetry_reduce, (bool, np.bool_)):
         raise TypeError("symmetry_reduce must be a bool")
     scf_threshold = settings["scf_thr"] if scf_thr is None else float(scf_thr)
@@ -587,7 +587,7 @@ def prepare_abacus_strain_ensemble(
         raise ValueError("scf_thr must be finite and positive when provided")
     if scf_threshold != settings["scf_thr"]:
         raise ValueError(
-            f"v2 {profile_name} response requires scf_thr={settings['scf_thr']:g}; "
+            f"{profile_name} response requires scf_thr={settings['scf_thr']:g}; "
             f"got {scf_threshold:g}"
         )
     atoms = read_structure(source)

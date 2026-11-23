@@ -12,7 +12,9 @@ deliberately limited to the two clearest completed comparisons:
 Each directory contains clean ABACUS inputs and redistributable assets in
 `run/`, native VASP input decks without licensed `POTCAR` files in `run/vasp/`,
 archived machine-readable results in `results/`, a case-level README, and
-`run.sh`.  The ABACUS calculation uses one reference plus explicit `+-0.5%`
+`run.sh`. The response JSON uses the `zstar-electromechanical-response` schema.
+Source paths in the JSON record where the archived data were produced.
+The ABACUS calculation uses one reference plus explicit `+-0.5%`
 engineering strains in six Voigt directions: 13 ABACUS calculations and 13
 PYATB polarization evaluations.  The written cell matrices are used to recover
 the actual strain vectors before fitting proper `e`, relaxed-ion `C`, and

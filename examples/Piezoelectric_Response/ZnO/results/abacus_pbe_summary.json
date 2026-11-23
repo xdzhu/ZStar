@@ -1,5 +1,5 @@
 {
-  "schema": "zstar-v2-piezo-result-summary",
+  "schema": "zstar-piezo-result-summary",
   "status": "completed_research_gate_pending_literature_audit",
   "root": "/home/zhuxd/abacus/agent-runs/20260918-v2-pbe-dual-backend/piezo-abacus/zno/response",
   "backend": "abacus+pyatb",

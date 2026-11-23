@@ -139,7 +139,7 @@ class ElectromechanicalForms:
         normalization: str = "cell_volume",
         provenance: Mapping[str, Any] | None = None,
     ) -> tuple[TensorQuantity, ...]:
-        """Materialize the forms as explicitly annotated v2 quantities.
+        """Materialize the forms as annotated response quantities.
 
         This method does not create a :class:`~zstar.response.model.ResponseDocument`
         because dimensionality and structure belong to the caller.  It does,
@@ -269,7 +269,7 @@ def convert_piezoelectric_forms(
     """Convert thermodynamic ``e`` to ``d``, ``g`` and ``h`` forms.
 
     Parameters are explicitly unit-labelled.  ``dielectric_unit`` may be
-    ``F/m`` or ``relative``; relative values are multiplied by the v2
+    ``F/m`` or ``relative``; relative values are multiplied by the
     ``epsilon_0`` constant.  ``elastic`` is converted to Pa using the shared
     pressure conversion table.  The supported piezoelectric input is C/m^2.
 

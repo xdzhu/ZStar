@@ -12,7 +12,8 @@ import numpy as np
 from ..dimensions import DimensionSpec
 
 
-ENSEMBLE_SCHEMA_NAME = "zstar-v2-ensemble"
+ENSEMBLE_SCHEMA_NAME = "zstar-response-ensemble"
+_LEGACY_ENSEMBLE_SCHEMA_NAME = "zstar-v2-ensemble"
 ENSEMBLE_SCHEMA_VERSION = "0.1"
 
 
@@ -115,7 +116,7 @@ class ResponseEnsemble:
         object.__setattr__(self, "periodic_axes", dimensions.periodic_axes)
         if self.schema_version != ENSEMBLE_SCHEMA_VERSION:
             raise ValueError(
-                f"unsupported v2 ensemble schema version {self.schema_version!r}; "
+                f"unsupported response ensemble schema version {self.schema_version!r}; "
                 f"expected {ENSEMBLE_SCHEMA_VERSION!r} or regenerate the ensemble"
             )
         ids = [stage.stage_id for stage in self.stages]
@@ -171,8 +172,8 @@ class ResponseEnsemble:
     @classmethod
     def read(cls, path: str | Path) -> "ResponseEnsemble":
         data = json.loads(Path(path).read_text(encoding="utf-8"))
-        if data.get("schema") != ENSEMBLE_SCHEMA_NAME:
-            raise ValueError(f"not a {ENSEMBLE_SCHEMA_NAME} manifest")
+        if data.get("schema") not in (ENSEMBLE_SCHEMA_NAME, _LEGACY_ENSEMBLE_SCHEMA_NAME):
+            raise ValueError("unsupported response ensemble schema")
         return cls(
             reference_hash=str(data["reference_hash"]),
             stages=tuple(PerturbationStage.from_dict(item) for item in data["stages"]),
@@ -224,6 +225,7 @@ class ResponseStageStore:
         legacy = state / "v2"
         self.root = legacy if (legacy / "stages").is_dir() and not response.exists() else response
         self.stage_root = self.root / "stages"
+        self._legacy_stage_root = legacy / "stages"
         self.stage_root.mkdir(parents=True, exist_ok=True)
 
     def path_for(self, stage_id: str) -> Path:
@@ -239,4 +241,9 @@ class ResponseStageStore:
         return target
 
     def read_stage(self, stage_id: str) -> PerturbationStage:
-        return PerturbationStage.from_dict(json.loads(self.path_for(stage_id).read_text(encoding="utf-8")))
+        target = self.path_for(stage_id)
+        if self.stage_root != self._legacy_stage_root and not target.exists():
+            legacy_target = self._legacy_stage_root / target.name
+            if legacy_target.is_file():
+                target = legacy_target
+        return PerturbationStage.from_dict(json.loads(target.read_text(encoding="utf-8")))

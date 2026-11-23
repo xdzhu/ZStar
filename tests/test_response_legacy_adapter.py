@@ -50,7 +50,7 @@ def test_unknown_v1_quantity_requires_explicit_boundary_and_relaxation_override(
         axes=("stage", "row", "column"),
     )
     record = _record(stress)
-    with pytest.raises(ValueError, match="requires explicit v2 override"):
+    with pytest.raises(ValueError, match="requires explicit override"):
         adapt_v1_response_record(record)
     with pytest.raises(ValueError, match="ion_relaxation"):
         adapt_v1_response_record(
@@ -116,13 +116,13 @@ def test_tracked_v1_bulk_sic_record_adapts_known_quantities():
     )
 
 
-def test_file_adapter_writes_only_new_v2_document_and_records_source(tmp_path):
+def test_file_adapter_writes_only_new_response_document_and_records_source(tmp_path):
     source = Path("examples/3D_Bulk/SiC/results/spectra/response.json")
-    output = tmp_path / "migrated-v2.json"
+    output = tmp_path / "migrated-response.json"
     document = adapt_v1_response_file(source, output=output)
     assert output.is_file()
     assert document.provenance["source_file"] == str(source.resolve())
     assert ResponseRecord.read(source).schema_version == "1.0"
     loaded = document.read(output)
-    assert loaded.schema == "zstar-v2-response"
+    assert loaded.schema == "zstar-electromechanical-response"
     assert loaded.quantity("born_effective_charge").shape == (2, 3, 3)

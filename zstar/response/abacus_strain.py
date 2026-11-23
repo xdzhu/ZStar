@@ -56,7 +56,7 @@ def _augment_reference_symmetry(
             preparation_tolerance = 0.0
         if preparation_tolerance != RESPONSE_SYMPREC:
             raise ValueError(
-                "v2 requires symprec=1e-3 in the preparation manifest; "
+                "Strain preparation requires symprec=1e-3 in the manifest; "
                 f"got {preparation_tolerance:g}"
             )
     try:
@@ -67,7 +67,7 @@ def _augment_reference_symmetry(
             dimensionality=dimensions,
         )
         # The observed-reference report uses the same fixed tolerance as every
-        # other v2 symmetry operation.  A second tolerance is not allowed to
+        # other symmetry operation.  A second tolerance is not allowed to
         # change atom equivalence classes or the response representation.
         observed_grid = (
             (preparation_tolerance,)
@@ -77,7 +77,7 @@ def _augment_reference_symmetry(
         observed = analyze_space_group(reference_spec, symprec_grid=observed_grid)
         observed_data: dict[str, Any] = space_group_report_to_dict(observed)
         observed_data.setdefault("diagnostics", {})["operational_symprec_source"] = (
-            "fixed_v2_symprec" if preparation_tolerance > 0.0 else "fixed_v2_default"
+            "fixed_strain_symprec" if preparation_tolerance > 0.0 else "default_strain_symprec"
         )
     except Exception as exc:  # pragma: no cover - defensive provenance path
         observed_data = {
@@ -155,7 +155,7 @@ def _augment_reference_symmetry(
 
 
 def _verify_input_hash(directory: Path, expected: str, *, label: str) -> None:
-    """Reject changed v2 inputs before parsing calculator output."""
+    """Reject changed strain inputs before parsing calculator output."""
 
     if not expected:
         return
@@ -164,10 +164,10 @@ def _verify_input_hash(directory: Path, expected: str, *, label: str) -> None:
     try:
         actual = _input_hash(directory)
     except ValueError as exc:
-        raise ValueError(f"cannot verify v2 input hash for {label}: {exc}") from exc
+        raise ValueError(f"cannot verify strain input hash for {label}: {exc}") from exc
     if actual != expected:
         raise ValueError(
-            f"v2 input hash mismatch for {label}: expected {expected}, got {actual}. "
+            f"strain input hash mismatch for {label}: expected {expected}, got {actual}. "
             "Restore the serialized INPUT/STRU/KPT/assets or regenerate the ensemble "
             "before collecting results."
         )
@@ -433,19 +433,19 @@ def collect_abacus_strain_response(
         try:
             declared_symprec = float(declared_symprec)
         except (TypeError, ValueError) as exc:
-            raise ValueError("v2 ensemble metadata symprec must be numeric") from exc
+            raise ValueError("strain ensemble metadata symprec must be numeric") from exc
         if declared_symprec != RESPONSE_SYMPREC:
             raise ValueError(
-                "v2 requires symprec=1e-3 in ensemble metadata; "
+                "The strain ensemble requires symprec=1e-3 in its metadata; "
                 f"got {declared_symprec:g}"
             )
     require_abacus_symmetry_modes = ensemble.metadata.get("preparation") == "abacus"
     if require_abacus_symmetry_modes:
         if ensemble.metadata.get("abacus_reference_symmetry") != 1:
-            raise ValueError("v2 ABACUS reference must declare symmetry=1")
+            raise ValueError("ABACUS strain reference must declare symmetry=1")
         if ensemble.metadata.get("abacus_perturbation_symmetry") != 0:
             raise ValueError(
-                "v2 ABACUS perturbations must declare symmetry=0 so finite perturbations "
+                "ABACUS strain perturbations must declare symmetry=0 so finite perturbations "
                 "are not projected away"
             )
     reference = base / "reference"
@@ -516,7 +516,7 @@ def collect_abacus_strain_response(
                              if key in record["input_parameters"]}
                 if overrides:
                     raise ValueError(
-                        f"v2 calculator-default symmetry policy forbids {sorted(overrides)} "
+                        f"The calculator-default symmetry policy forbids {sorted(overrides)} "
                         f"in stage {record['stage']!r}; regenerate the inputs"
                     )
             expected_symmetry = "1" if record_index == 0 else "0"
@@ -524,7 +524,7 @@ def collect_abacus_strain_response(
             if actual_symmetry != expected_symmetry:
                 role = "reference" if record_index == 0 else "perturbation"
                 raise ValueError(
-                    f"v2 ABACUS {role} stage {record['stage']!r} requires "
+                    f"ABACUS {role} stage {record['stage']!r} requires "
                     f"symmetry={expected_symmetry}; got {actual_symmetry!r}"
                 )
     dimensions = DimensionSpec(ensemble.dimensionality, ensemble.periodic_axes)
@@ -571,7 +571,7 @@ def collect_abacus_strain_response(
             )
         reference_force_configured_threshold = force_threshold
         # The serialized input value is provenance: older development runs may
-        # have been needlessly tighter than the now-fixed v2 protocol.  Judge
+        # have been needlessly tighter than the strain collection protocol.  Judge
         # physical usability against the fixed acceptance criterion without
         # rewriting or disguising the calculation that was actually run.
         reference_force_threshold = (
@@ -583,7 +583,7 @@ def collect_abacus_strain_response(
             raise ValueError(
                 "relaxed-ion reference is not internally equilibrated: ABACUS maximum "
                 f"Cartesian force component {reference_force_component_max:.6g} eV/angstrom "
-                "exceeds the fixed v2 acceptance "
+                "exceeds the strain collection acceptance "
                 f"threshold {reference_force_threshold:.6g}; relax the reference structure "
                 "before fitting"
             )
@@ -815,12 +815,12 @@ def collect_abacus_strain_response(
         try:
             loaded_symmetry = json.loads(symmetry_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
-            raise ValueError(f"Invalid v2 symmetry report: {symmetry_path}") from exc
+            raise ValueError(f"Invalid strain symmetry report: {symmetry_path}") from exc
         if not isinstance(loaded_symmetry, dict):
-            raise ValueError(f"v2 symmetry report must be a JSON object: {symmetry_path}")
+            raise ValueError(f"strain symmetry report must be a JSON object: {symmetry_path}")
         symmetry_data = loaded_symmetry
     # Keep the symmetry used to plan the ensemble distinct from a fresh audit
-    # of the serialized reference structure, while using the same fixed v2
+    # of the serialized reference structure, while using the same fixed strain
     # tolerance so atom equivalence classes cannot drift between stages.
     symmetry_data = _augment_reference_symmetry(symmetry_data, reference_structure, dimensions)
     strain_force_thresholds = _unique_finite_input_values(
@@ -1134,7 +1134,7 @@ def collect_pyatb_strain_response(
                 periodic_axes=dimensions.periodic_axes,
                 normalization=normalized[0].normalization,
                 source="explicit_low_dimensional_normalization",
-                backend="zstar-v2",
+                backend="zstar",
                 ion_relaxation=ion_relaxation,
                 provenance={
                     "stage_names": stage_names,

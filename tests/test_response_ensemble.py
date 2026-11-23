@@ -57,11 +57,19 @@ def test_response_stage_store_reads_existing_workspace(tmp_path):
     legacy = tmp_path / ".zstar" / "v2" / "stages"
     legacy.mkdir(parents=True)
     stage = plan_central_stages(([0.01],), kind="strain", prefix="strain")[0]
-    (legacy / f"{stage.stage_id}.json").write_text(json.dumps(stage.to_dict()), encoding="utf-8")
+    old_path = legacy / f"{stage.stage_id}.json"
+    old_path.write_text(json.dumps(stage.to_dict()), encoding="utf-8")
 
     store = ResponseStageStore(tmp_path)
     assert store.read_stage(stage.stage_id) == stage
-    assert not (tmp_path / ".zstar" / "response").exists()
+    assert store.write_stage(stage) == old_path
+    active = tmp_path / ".zstar" / "response"
+    assert not active.exists()
+
+    (active / "stages").mkdir(parents=True)
+    store = ResponseStageStore(tmp_path)
+    assert store.read_stage(stage.stage_id) == stage
+    assert store.write_stage(stage).parent == active / "stages"
 
 
 def test_stage_validation_rejects_unsafe_or_invalid_state(tmp_path):
@@ -80,7 +88,12 @@ def test_ensemble_schema_version_is_explicit_and_rejects_unknown_version(tmp_pat
     assert f'"schema": "{ENSEMBLE_SCHEMA_NAME}"' in data
     assert f'"schema_version": "{ENSEMBLE_SCHEMA_VERSION}"' in data
     payload = json.loads(data)
+    payload["schema"] = "zstar-v2-ensemble"
+    old_manifest = tmp_path / "old_manifest.json"
+    old_manifest.write_text(json.dumps(payload), encoding="utf-8")
+    assert ResponseEnsemble.read(old_manifest) == ResponseEnsemble.read(manifest)
+    assert json.loads(old_manifest.read_text(encoding="utf-8")) == payload
     payload["schema_version"] = "0.2"
     (tmp_path / "future.json").write_text(json.dumps(payload), encoding="utf-8")
-    with pytest.raises(ValueError, match="unsupported v2 ensemble schema version"):
+    with pytest.raises(ValueError, match="unsupported response ensemble schema version"):
         ResponseEnsemble.read(tmp_path / "future.json")

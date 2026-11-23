@@ -146,7 +146,7 @@ def space_group_report_from_dict(data: dict[str, object]) -> SpaceGroupReport:
     if not isinstance(raw_operations, (list, tuple)) or not raw_operations:
         raise ValueError(
             "persisted symmetry report has no operations; regenerate the preparation "
-            "manifest with v2 operation serialization before a constrained audit"
+            "manifest with symmetry operations before a constrained audit"
         )
     operations: list[SpaceGroupOperation] = []
     atom_count = len(tuple(data.get("equivalent_atoms", ())))
@@ -373,12 +373,11 @@ def analyze_space_group(
     *,
     symprec_grid: Iterable[float] = (RESPONSE_SYMPREC,),
 ) -> SpaceGroupReport:
-    """Identify a space group using the fixed v2 ``symprec=1e-3`` policy.
+    """Identify a space group using the fixed strain-response tolerance of ``symprec=1e-3``.
 
-    ``symprec_grid`` remains as a compatibility-shaped argument for callers
-    that pass an iterable, but v2 deliberately rejects other physical
-    symmetry thresholds.  This prevents a stricter or looser caller from
-    changing atom equivalence classes and response bases mid-workflow.
+    ``symprec_grid`` accepts an iterable of tolerances. Each entry must equal
+    ``RESPONSE_SYMPREC`` so that all stages use the same atom equivalence
+    classes and response bases.
     """
 
     if structure.dimensionality.value == 0:
@@ -399,7 +398,7 @@ def analyze_space_group(
             diagnostics={"periodic_reduction": False},
         )
     if spglib is None:
-        raise RuntimeError("spglib is required for periodic v2 symmetry analysis")
+        raise RuntimeError("spglib is required for periodic strain-response symmetry analysis")
     candidates = []
     for value in symprec_grid:
         tolerance = float(value)
@@ -407,7 +406,7 @@ def analyze_space_group(
             raise ValueError("symprec_grid values must be finite and positive")
         if tolerance != RESPONSE_SYMPREC:
             raise ValueError(
-                "v2 requires symprec=1e-3 for all space-group and atom-mapping operations; "
+                "Strain response requires symprec=1e-3 for all space-group and atom-mapping operations; "
                 f"got {tolerance:g}"
             )
         dataset = spglib.get_symmetry_dataset(structure.spglib_cell(), symprec=tolerance)

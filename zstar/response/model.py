@@ -17,7 +17,8 @@ import numpy as np
 from ..dimensions import DimensionSpec
 
 
-RESPONSE_SCHEMA_NAME = "zstar-v2-response"
+RESPONSE_SCHEMA_NAME = "zstar-electromechanical-response"
+_LEGACY_RESPONSE_SCHEMA_NAME = "zstar-v2-response"
 RESPONSE_SCHEMA_VERSION = "0.1"
 _AXES = {"x", "y", "z"}
 _ION_RELAXATION = {"clamped-ion", "relaxed-ion", "internal-contribution", "not-applicable"}
@@ -211,9 +212,9 @@ class ResponseDocument:
 
     def __post_init__(self) -> None:
         if self.schema != RESPONSE_SCHEMA_NAME:
-            raise ValueError(f"unsupported v2 response schema {self.schema!r}")
+            raise ValueError(f"unsupported electromechanical response schema {self.schema!r}")
         if self.schema_version != RESPONSE_SCHEMA_VERSION:
-            raise ValueError(f"unsupported v2 response version {self.schema_version!r}")
+            raise ValueError(f"unsupported electromechanical response schema version {self.schema_version!r}")
         if not self.backend.strip():
             raise ValueError("response backend must not be empty")
         if not self.quantities:
@@ -268,6 +269,9 @@ class ResponseDocument:
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> "ResponseDocument":
+        schema = str(data.get("schema", ""))
+        if schema == _LEGACY_RESPONSE_SCHEMA_NAME:
+            schema = RESPONSE_SCHEMA_NAME
         return cls(
             backend=str(data["backend"]),
             dimensionality=DimensionSpec.from_dict(dict(data["dimensionality"])),
@@ -282,7 +286,7 @@ class ResponseDocument:
             restart_state=dict(data.get("restart_state", {})),
             metadata=dict(data.get("metadata", {})),
             created_at=str(data.get("created_at", _utc_now())),
-            schema=str(data.get("schema", "")),
+            schema=schema,
             schema_version=str(data.get("schema_version", "")),
         )
 

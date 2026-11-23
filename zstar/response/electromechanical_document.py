@@ -81,7 +81,7 @@ def derive_electromechanical_forms(
     """
 
     if not isinstance(document, ResponseDocument):
-        raise TypeError("document must be a v2 ResponseDocument")
+        raise TypeError("document must be an electromechanical ResponseDocument")
     if document.dimensionality.value != 3:
         raise ValueError("electromechanical form conversion currently requires dimensionality=3")
     if not isinstance(require_thermodynamic_boundaries, bool):

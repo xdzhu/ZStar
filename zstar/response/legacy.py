@@ -1,8 +1,7 @@
 """Explicit adapters from the original response schema to the electromechanical schema.
 
-The adapter deliberately does not infer electromechanical boundary conditions for
-unknown v1 quantities.  Existing v1 records remain untouched; a v2 document is a
-new object carrying the original quantity metadata in its provenance.
+The adapter requires explicit boundary conditions for unknown quantities.
+The new document records the original quantity metadata in its provenance.
 """
 
 from __future__ import annotations
@@ -39,9 +38,8 @@ _KNOWN_DEFAULTS: dict[str, dict[str, Any]] = {
     "force_constants": {
         "boundary_conditions": BoundaryConditions(electric="E", mechanical="not-applicable"),
         "ion_relaxation": "not-applicable",
-        # v1 uses the same ``atom`` label for row and column.  v2 requires
-        # unique axis names, so retain the old labels in provenance and use an
-        # explicit row/column distinction in the adapted document.
+        # The original format labels both axes ``atom``. Distinguish rows from
+        # columns in the new format and preserve the original labels in provenance.
         "axes": ("atom_row", "atom_column", "force", "displacement"),
     },
     "raman_tensors": {
@@ -79,10 +77,9 @@ def adapt_v1_response_record(
 
     Known BEC, dielectric and Cartesian-polarization names receive only their
     unambiguous boundary defaults.  Unknown quantities require an explicit
-    ``quantity_overrides[name]`` entry; this prevents a legacy tensor with an
-    ambiguous stress sign or ion-relaxation state from silently becoming a v2
-    result.  Override values are copied into the new tensor and the original
-    v1 quantity metadata is retained under ``provenance``.
+    ``quantity_overrides[name]`` entry to resolve ambiguity in stress sign or
+    ion relaxation. The new tensor takes these values and records the
+    original quantity metadata under ``provenance``.
     """
 
     if not isinstance(record, ResponseRecord):
@@ -106,20 +103,20 @@ def adapt_v1_response_record(
         defaults = dict(_KNOWN_DEFAULTS.get(quantity.name, {}))
         if not defaults and not provided:
             raise ValueError(
-                f"v1 quantity {quantity.name!r} has no unambiguous v2 mapping and requires explicit v2 override fields; "
-                "supply quantity_overrides with boundary_conditions and ion_relaxation"
+                f"v1 quantity {quantity.name!r} requires explicit override fields. "
+                "Set boundary_conditions and ion_relaxation in quantity_overrides."
             )
         if not defaults:
             required = {"boundary_conditions", "ion_relaxation"}
             missing = sorted(required - set(provided))
             if missing:
                 raise ValueError(
-                    f"v1 quantity {quantity.name!r} requires explicit v2 override field(s): "
+                    f"v1 quantity {quantity.name!r} requires explicit override fields: "
                     + ", ".join(missing)
                 )
         merged = {**defaults, **provided}
         original_metadata = dict(quantity.metadata)
-        v2_provenance = {
+        quantity_provenance = {
             "adapter": "zstar.response.legacy.adapt_v1_response_record",
             "legacy_schema": "zstar-response",
             "legacy_schema_version": record.schema_version,
@@ -128,8 +125,8 @@ def adapt_v1_response_record(
             "legacy_source": quantity.source,
             "legacy_metadata": original_metadata,
         }
-        v2_provenance.update(dict(merged.pop("provenance", {})))
-        v2_diagnostics = dict(merged.pop("diagnostics", {}))
+        quantity_provenance.update(dict(merged.pop("provenance", {})))
+        quantity_diagnostics = dict(merged.pop("diagnostics", {}))
         boundary_value = merged.pop("boundary_conditions", None)
         if isinstance(boundary_value, Mapping):
             boundary = BoundaryConditions.from_dict(boundary_value)
@@ -168,13 +165,13 @@ def adapt_v1_response_record(
                 normalization=str(merged.pop("normalization", quantity.normalization)),
                 source=str(merged.pop("source", quantity.source or "v1")),
                 backend=record.backend,
-                provenance=v2_provenance,
-                diagnostics=v2_diagnostics,
+                provenance=quantity_provenance,
+                diagnostics=quantity_diagnostics,
             )
         )
         if merged:
             raise ValueError(
-                f"unconsumed v2 override fields for {quantity.name!r}: {sorted(merged)}"
+                f"unused override fields for {quantity.name!r}: {sorted(merged)}"
             )
 
     record_metadata = dict(record.metadata)
@@ -214,10 +211,8 @@ def adapt_v1_response_file(
 ) -> ResponseDocument:
     """Read, adapt, and optionally write one v1 response file.
 
-    The v1 file is read through its stable schema reader.  If ``output`` is
-    supplied, only the new v2 document is written there; the source file is
-    never modified.  The absolute source path is added to v2 provenance so a
-    migrated fixture can be traced without relying on directory conventions.
+    Pass ``output`` to save the new document to a separate file. Its provenance
+    records the absolute path of the original response file.
     """
 
     source_path = Path(source).expanduser().resolve()

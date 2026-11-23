@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import numpy as np
 import pytest
 
@@ -59,10 +61,17 @@ def test_response_document_roundtrip_keeps_explicit_metadata(tmp_path):
     assert loaded.quantity("piezoelectric").boundary_conditions.mechanical == "strain"
     assert loaded.symmetry["space_group"] == "P4mm"
 
+    old_payload = json.loads(target.read_text(encoding="utf-8"))
+    old_payload["schema"] = "zstar-v2-response"
+    old_path = tmp_path / "old_response.json"
+    old_path.write_text(json.dumps(old_payload), encoding="utf-8")
+    assert ResponseDocument.read(old_path).to_dict() == loaded.to_dict()
+    assert json.loads(old_path.read_text(encoding="utf-8")) == old_payload
+
 
 def test_electromechanical_schema_preserves_its_serialized_identity():
     assert RESPONSE_SCHEMA_VERSION == "0.1"
-    assert RESPONSE_SCHEMA_NAME == "zstar-v2-response"
+    assert RESPONSE_SCHEMA_NAME == "zstar-electromechanical-response"
 
 
 def test_metadata_and_quantity_validation():
