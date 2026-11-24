@@ -248,6 +248,10 @@ zstar bec post
 
 ## 安装
 
+Hot-Ham 哈密顿量接口请使用[仓库源码安装](predicted_hamiltonians.md#hot-ham)。
+PyPI 0.3.6 的发布早于该接口。
+
+
 ZStar 要求 Python 3.9 或更高版本。
 
 仓库中的 `examples/` 目录提供可复现输入和保留结果。PyPI 安装包不包含案例目录。
@@ -809,7 +813,7 @@ VASP 薄层可使用 `--dim 2 --modes-phonopy qpoints.yaml` 提供已归档的 P
 成对柱是在相同设置下测得的求解器核时。每个 Separate 柱归一化为 100%，
 柱内数字为实际 CPU 核时，右侧数字为 `Separate / Unified` 加速倍数。
 十体系 BEC/APT 与 Gamma 点声子基准最高加速
-3.98 倍，覆盖四种维度的 IR/Raman 联合基准最高加速 8.35 倍。精确任务数、
+4.18 倍，覆盖四种维度的 IR/Raman 联合基准最高加速 8.35 倍。精确任务数、
 统计边界和源数据保留在[基准案例](../examples/Benchmarks/README.zh-CN.md)和
 [绘图归档](paper_figures/README.md)中。
 

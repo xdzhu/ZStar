@@ -278,6 +278,11 @@ retained only for auditing an existing reference/displaced cube pair.
 
 ## Installation
 
+For Hot-Ham Hamiltonians, use the
+[repository source installation](predicted_hamiltonians.md#hot-ham).
+The PyPI 0.3.6 release predates this interface.
+
+
 ZStar requires Python 3.9 or newer.
 
 The repository contains reproducible inputs and retained reference results.
@@ -896,7 +901,7 @@ and editable PDF/PNG plots.
 The paired bars compare measured solver core-hours under matched settings. Each
 Separate bar is normalized to 100%, numbers inside the bars give absolute
 CPU core-hours, and the right-hand label gives the `Separate / Unified` speedup. The ten-system BEC/APT and
-Gamma-phonon benchmark reaches 3.98 times, while the combined IR/Raman benchmark
+Gamma-phonon benchmark reaches 4.18 times, while the combined IR/Raman benchmark
 spanning bulk, slab, nanowire and molecular systems reaches 8.35 times. Exact task counts, timing boundaries and
 source data are retained in the [benchmark archive](../examples/Benchmarks/README.md)
 and [figure archive](paper_figures/README.md).

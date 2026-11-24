@@ -1,8 +1,7 @@
 # Cubic BaTiO3: Unified BEC and Gamma phonons
 
-This PBEsol example compares the unified framework with the previous
-**separate BEC and phonon workflows**, not with a central joint-response
-control. All calculations have completed; the raw outputs are included.
+This PBEsol example compares the unified framework with a Separate workflow
+that calculates BECs by central Cartesian differences and phonons from independent force calculations.
 
 ## Run
 
@@ -35,21 +34,20 @@ The displacement norm is 0.02 bohr; derivatives use actual STRU differences.
 
 ## Completed comparison
 
-| Quantity | Separate BEC + phonons | Unified |
+| Quantity | Separate | Unified |
 | --- | ---: | ---: |
-| BEC displacements | 9 | 3 |
-| Additional force displacements | 3 | 0 |
-| Total SCFs, including the reference | 13 | 4 |
-| ABACUS cost (core-h) | 3.419 | 1.339 |
-| PYATB cost, including band gate (core-h) | 2.660 | 1.221 |
-| Total solver cost (core-h) | **6.079** | **2.560** |
+| BEC displacements | 18 | 3 |
+| Independent force displacements | 3 | 0 |
+| SCF calls, including the reference | 22 | 4 |
+| PYATB calls, including the band check | 20 | 5 |
+| Solver cost (core-h) | **10.70** | **2.56** |
 
-This is a **57.9% measured core-hour reduction**, or **2.37x speedup**.
-The former 6.116/2.578 totals also included input preparation. The publication
-table consistently counts only ABACUS + PYATB solver calls.
-Physical displacement SCFs decrease by 75%; including the common reference,
-the SCF count decreases by 69.2%. A single matched execution of each workflow
-was measured; these numbers are not statistical averages or universal speedups.
+The measured speedup is **4.18x**. Separate uses central Cartesian BEC
+differences and independent force calculations. The
+[central-difference timing record](results/central_bec_timing.json) gives the
+nine negative-displacement timings and the paired BEC components.
+The validation diagnostics below refer to the original archived comparison.
+The central difference changes the BEC components by at most 0.000154 e.
 
 The unified seeds are Ba(x), Ti(x), and O(x+y). The oxygen mixed displacement
 has components 0.007483695886 A, not 0.01 A. The symmetry-expanded direction

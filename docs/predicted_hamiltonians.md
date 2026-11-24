@@ -96,9 +96,9 @@ and [upstream export implementation](https://github.com/liangzhixin-202169/Hot-H
       --fermi-energy ENERGY_IN_EV --output-dir hotham-pyatb
     (cd hotham-pyatb && pyatb)
 
-For Hot-Ham's single-frame extended XYZ, install ASE with
-`pip install 'zstar[hotham]'`. A matching prediction STRU or POSCAR also
-works. Supply the original ABACUS S(R) and r(R) for that inference
+Install the Hot-Ham interface from a current ZStar checkout with
+`pip install '.[hotham]'`. The extra installs ASE for Hot-Ham's single-frame
+extended XYZ. A matching prediction STRU or POSCAR also works. Supply the original ABACUS S(R) and r(R) for that inference
 geometry in the template. Keep the numerical orbital files, shell order
 and atom order used to build the inference dataset. ZStar compares
 the exported overlap with the template overlap over the union of their

@@ -1,4 +1,4 @@
-"""Plot measured Separate/Unified workflow costs from manuscript Tables 14 and 15."""
+"""Plot measured Separate/Unified workflow costs from manuscript Tables 15 and 16."""
 
 from __future__ import annotations
 
@@ -300,7 +300,7 @@ def build_figure() -> None:
                 "additional validation runs",
             ],
         },
-        "source": "manuscript Tables 14 and 15",
+        "source": "manuscript Tables 15 and 16",
         "source_data": str(SOURCE.relative_to(ROOT)).replace("\\", "/"),
         "source_sha256": _sha256(SOURCE),
         "exports": {kind: path.name for kind, path in exports.items()},

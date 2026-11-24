@@ -13,9 +13,9 @@
       "additional validation runs"
     ]
   },
-  "source": "manuscript Tables 14 and 15",
+  "source": "manuscript Tables 15 and 16",
   "source_data": "source_data/unified_efficiency_benchmarks.csv",
-  "source_sha256": "cae6dc0c29d4d56636a5f9e2c633ea50e0718ab63d739b2fbcf4d796e1aee433",
+  "source_sha256": "71881e06cc074b18b4220141399b0d756a876a1b5626266b4577bd82019bdf9a",
   "exports": {
     "pdf": "unified_efficiency_benchmarks.pdf",
     "svg": "unified_efficiency_benchmarks.svg",

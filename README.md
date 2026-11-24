@@ -264,7 +264,7 @@ Torque/PBS are supported.
 
 ## Measured Efficiency
 
-Matched Separate/Unified benchmarks reach **3.98x** speedup for BEC/APT plus
+Matched Separate/Unified benchmarks reach **4.18x** speedup for BEC/APT plus
 Gamma phonons and **8.35x** for combined IR/Raman. Bars show normalized cost,
 absolute solver CPU core-hours, and speedup.
 

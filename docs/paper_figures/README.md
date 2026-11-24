@@ -13,7 +13,7 @@ now available in the public repository `examples/` tree.
 ![Measured Separate and Unified workflow costs](unified_efficiency_benchmarks.png)
 
 The paired bars reproduce the measured total solver core-hours in manuscript
-Tables 14 and 15. Panel (a) compares Separate and Unified BEC/APT plus
+Tables 15 and 16. Panel (a) compares Separate and Unified BEC/APT plus
 Gamma-point phonon calculations for ten systems; panel (b) extends the same
 accounting to combined IR and Raman workflows in 3D, 2D, 1D, and 0D. Each
 Separate bar is normalized to 100%, numbers inside the bars give absolute CPU
@@ -223,7 +223,7 @@ source-data sizes, and SHA-256 hashes.
 - `source_data/bec_literature_benchmark.csv` contains the plotted ZStar and
   literature BEC/APT values together with DOI and method provenance.
 - `source_data/unified_efficiency_benchmarks.csv` contains the task counts,
-  measured core-hours and reported speedups from manuscript Tables 14 and 15.
+  measured core-hours and reported speedups from manuscript Tables 15 and 16.
 - `source_data/in2se3/` contains the Gamma-point Phonopy data, corrected BEC
   tensors, and the derived planar charge-difference profile and dipole summary.
 - `source_data/potential/` contains compact slab-normal profiles, local

@@ -11,29 +11,37 @@ import tarfile
 from tools.shared_response.example_paths import CASE_PATHS
 
 ROOT = Path(__file__).resolve().parents[2]
+CUBIC_CENTRAL = ROOT / "examples" / CASE_PATHS["cubic_BaTiO3"] / "results/central_bec_timing.json"
 
 
-def records(path, member=None):
+def records(path, member=None, json_key=None):
     if member is None:
         payload = path.read_bytes()
     else:
         with tarfile.open(path) as archive:
             payload = archive.extractfile(member).read()
-    rows = [json.loads(line) for line in payload.decode().splitlines() if line.strip()]
+    if json_key is not None:
+        rows = json.loads(payload)[json_key]
+    else:
+        rows = [json.loads(line) for line in payload.decode().splitlines() if line.strip()]
     return rows, {
         'path': path.relative_to(ROOT).as_posix(), 'member': member,
         'sha256': hashlib.sha256(payload).hexdigest(),
     }
 
 
-def summarize(path, member=None, static=False):
-    rows, source = records(path, member)
+def summarize(path, member=None, static=False, json_key=None):
+    rows, source = records(path, member, json_key)
     counts = Counter()
     costs = Counter()
     for row in rows:
         if not row.get('success', True):
             continue
-        kind = row.get('kind')
+        kind = {
+            'SCF': 'ABACUS',
+            'input_preparation': 'preparation',
+            'polarization_and_electronic_response': 'PYATB',
+        }.get(row.get('kind'), row.get('kind'))
         if kind not in ('ABACUS', 'PYATB', 'preparation', 'independent_force_scf'):
             command = row['command']
             if static:
@@ -83,6 +91,8 @@ def build():
                     if part['source']['sha256'] != digest:
                         raise ValueError(f'Changed production ledger: {oldpath}')
                     pieces.append(part)
+                if case == 'cubic_BaTiO3' and scheme == 'Separate':
+                    pieces.append(summarize(CUBIC_CENTRAL, json_key='new_timing_ledger'))
                 evidence[scheme] = pieces
         else:
             folder = 'Nanotube_BN_9_0' if case == 'BN_9_0' else 'Nanowire_Sb2S3'

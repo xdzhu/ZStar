@@ -32,6 +32,21 @@
                 "member": null,
                 "sha256": "799e387ce68a33af2c320fab3d34af87904897fb0aaea1d69dc71d32afd85191"
               }
+            },
+            {
+              "calls": {
+                "ABACUS": 9,
+                "PYATB": 9
+              },
+              "costs": {
+                "ABACUS": 2.418234062463873,
+                "PYATB": 2.2020596782366435
+              },
+              "source": {
+                "path": "examples/3D_Bulk/cubic_BaTiO3/results/central_bec_timing.json",
+                "member": null,
+                "sha256": "638a4a5c58aca092848e852015224746404a2e4098c2251b7c7ef8cff904c0b1"
+              }
             }
           ],
           "Unified": [
@@ -52,7 +67,7 @@
             }
           ]
         },
-        "NSCF_Separate": 11,
+        "NSCF_Separate": 20,
         "NSCF_Unified": 5
       },
       "SiC": {
@@ -446,7 +461,7 @@
             "source": {
               "path": "docs/research/unified_spectroscopy_20260906/evidence/HfO2/unified/component_times.jsonl",
               "member": null,
-              "sha256": "c4da0eecda19905f994b8acae2425fe9aa1496b36c5210a6ad8e15e3d017db79"
+              "sha256": "bea3e608bae5c844da53f64f569e021cc8551e5bd4db92b1c9e59e202543a462"
             }
           }
         }
@@ -467,7 +482,7 @@
             "source": {
               "path": "docs/research/unified_spectroscopy_20260906/evidence/MoS2/direct_control/component_times.jsonl",
               "member": null,
-              "sha256": "f20055b9c8cf7c22862b15c65bfd0dc4a695fd05e5907ab4666ae29547756c50"
+              "sha256": "0739c5d322df0b37fd75efcbf4347818525b95f791f8823777d5d8c775d01224"
             }
           },
           "additional_Unified": {
@@ -480,7 +495,7 @@
             "source": {
               "path": "docs/research/unified_spectroscopy_20260906/evidence/MoS2/unified/component_times.jsonl",
               "member": null,
-              "sha256": "5285c505d615bb23581cb71c8bdd7043613ffee036a45ff80bceda70821a9cfb"
+              "sha256": "ff529a4b682248d9a4891453e70c7484bb3509d8382307ffc1eaa8ca8f46a217"
             }
           }
         }
@@ -514,7 +529,7 @@
             "source": {
               "path": "docs/research/unified_spectroscopy_20260906/evidence/Sb2S3/unified/component_times.jsonl",
               "member": null,
-              "sha256": "4ae00e7df5f231ab1789538a5e5eddd83083c9151b71f7ad3a22690d03f174cd"
+              "sha256": "65e50625a37187b3500dc7016cbed41722cfefcf285f6220c81f796c9a439093"
             }
           }
         }
@@ -535,7 +550,7 @@
             "source": {
               "path": "docs/research/unified_spectroscopy_20260906/evidence/CH4/direct_control/component_times.jsonl",
               "member": null,
-              "sha256": "f49cd24634d0401ff03f1f5f6c9b38370f567f690710c07180ce0726cec92cd6"
+              "sha256": "7153af387669ab2ec07da5bf51adedde471eec7ada5677b2cb4c32b5b760b152"
             }
           },
           "additional_Unified": {
@@ -548,7 +563,7 @@
             "source": {
               "path": "docs/research/unified_spectroscopy_20260906/evidence/CH4/unified/component_times.jsonl",
               "member": null,
-              "sha256": "2236f28aa7289af0566f24a58181f04f1dcdc9a15ba5789fcd6963bd1a253a52"
+              "sha256": "b80b0b8e13a54075444a4e4ba2e38e72a24aa179d1b3087834919bc791f92729"
             }
           }
         }

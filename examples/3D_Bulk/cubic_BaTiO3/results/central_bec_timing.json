@@ -1,0 +1,552 @@
+{
+  "record": "cubic BaTiO3, central Cartesian BEC plus independent Gamma phonons",
+  "stage_count": 18,
+  "separate": {
+    "SCF": 22,
+    "PYATB": 20,
+    "core_h": 10.699445753882497
+  },
+  "unified": {
+    "SCF": 4,
+    "PYATB": 5,
+    "core_h": 2.5598515689166055
+  },
+  "added_negative": {
+    "SCF": 9,
+    "PYATB": 9,
+    "core_h": 4.620293740700516
+  },
+  "speedup": 4.179713341117968,
+  "max_change_e_vs_forward": 0.00015439254815508008,
+  "paired_columns": [
+    {
+      "stage": "1.Ba/x",
+      "positive_polarization_C_m2": [
+        0.007342808773382164,
+        -5.661336711542221e-07,
+        -5.659794816627044e-07
+      ],
+      "negative_polarization_C_m2": [
+        -0.007343930096594144,
+        -5.661336710906898e-07,
+        -5.659794818140486e-07
+      ],
+      "central_BEC_e": [
+        2.733167155216856,
+        -1.182319786500891e-14,
+        2.8164804252065974e-14
+      ],
+      "forward_BEC_e": [
+        2.7331693335618357,
+        1.4166838723746687e-07,
+        1.444918099994621e-07
+      ],
+      "max_change_e": 2.1783449795087506e-06
+    },
+    {
+      "stage": "1.Ba/y",
+      "positive_polarization_C_m2": [
+        -5.661336710099675e-07,
+        0.0073428087729142805,
+        -5.659794816879706e-07
+      ],
+      "negative_polarization_C_m2": [
+        -5.661336708544262e-07,
+        -0.007343930096126331,
+        -5.659794818398505e-07
+      ],
+      "central_BEC_e": [
+        -2.8945864944795614e-14,
+        2.7331671550427252,
+        2.8264486039263735e-14
+      ],
+      "forward_BEC_e": [
+        1.416684218815676e-07,
+        2.733169333387711,
+        1.444918005954835e-07
+      ],
+      "max_change_e": 2.1783449857259995e-06
+    },
+    {
+      "stage": "1.Ba/z",
+      "positive_polarization_C_m2": [
+        -5.662222379539443e-07,
+        -5.66222238218514e-07,
+        0.0073428089918043
+      ],
+      "negative_polarization_C_m2": [
+        -5.66222237794675e-07,
+        -5.662222380275609e-07,
+        -0.007343930029603975
+      ],
+      "central_BEC_e": [
+        -2.963963757322675e-14,
+        -3.5535916760812e-14,
+        2.7331671833979847
+      ],
+      "forward_BEC_e": [
+        1.0870422684023972e-07,
+        1.0870414741543105e-07,
+        2.7331693602923623
+      ],
+      "max_change_e": 2.1768943776478977e-06
+    },
+    {
+      "stage": "2.Ti/x",
+      "positive_polarization_C_m2": [
+        0.01998720729420633,
+        -5.659665668866585e-07,
+        -5.660910100902027e-07
+      ],
+      "negative_polarization_C_m2": [
+        -0.019989169492196746,
+        -5.659665668432314e-07,
+        -5.660910100697251e-07
+      ],
+      "central_BEC_e": [
+        7.439508592375913,
+        -8.081692522921292e-15,
+        -3.8108431972267165e-15
+      ],
+      "forward_BEC_e": [
+        7.439354285925567,
+        2.0386380034375892e-07,
+        1.0298146006947154e-07
+      ],
+      "max_change_e": 0.00015430645034619772
+    },
+    {
+      "stage": "2.Ti/y",
+      "positive_polarization_C_m2": [
+        -5.659665668733184e-07,
+        0.019987207294206215,
+        -5.660910100988025e-07
+      ],
+      "negative_polarization_C_m2": [
+        -5.659665668414042e-07,
+        -0.019989169492196597,
+        -5.660910101869293e-07
+      ],
+      "central_BEC_e": [
+        -5.9391547695070166e-15,
+        7.439508592375864,
+        1.6400185939011724e-14
+      ],
+      "forward_BEC_e": [
+        2.0386378626212527e-07,
+        7.4393542859255435,
+        1.0298145686865959e-07
+      ],
+      "max_change_e": 0.00015430645032044055
+    },
+    {
+      "stage": "2.Ti/z",
+      "positive_polarization_C_m2": [
+        -5.659608463154742e-07,
+        -5.659608462700882e-07,
+        0.019987206824400458
+      ],
+      "negative_polarization_C_m2": [
+        -5.659608463438779e-07,
+        -5.659608463125833e-07,
+        -0.01998916919183235
+      ],
+      "central_BEC_e": [
+        5.285873556907347e-15,
+        7.908239513887515e-15,
+        7.439508449049058
+      ],
+      "forward_BEC_e": [
+        2.0599295066653678e-07,
+        2.059929866057323e-07,
+        7.439354056500903
+      ],
+      "max_change_e": 0.00015439254815508008
+    },
+    {
+      "stage": "3.O/x",
+      "positive_polarization_C_m2": [
+        -0.015748066698574086,
+        -5.664853614303873e-07,
+        -5.663253775417877e-07
+      ],
+      "negative_polarization_C_m2": [
+        0.01574694375692112,
+        -5.664853807251914e-07,
+        -5.663253797924588e-07
+      ],
+      "central_BEC_e": [
+        -5.861146500408216,
+        3.590717122285584e-12,
+        4.1884452551878976e-13
+      ],
+      "forward_BEC_e": [
+        -5.861144623251253,
+        1.0770940209379454e-08,
+        1.575100998862471e-08
+      ],
+      "max_change_e": 1.8771569632036744e-06
+    },
+    {
+      "stage": "3.O/y",
+      "positive_polarization_C_m2": [
+        -5.661566090877564e-07,
+        -0.005795571220734247,
+        -5.664054580937209e-07
+      ],
+      "negative_polarization_C_m2": [
+        -5.661566091571915e-07,
+        0.005793952333362079,
+        -5.664054583439663e-07
+      ],
+      "central_BEC_e": [
+        1.292170731708681e-14,
+        -2.156782755048683,
+        4.657007387303672e-14
+      ],
+      "forward_BEC_e": [
+        1.3313097849517536e-07,
+        -2.1568731722098944,
+        -1.4054590322397395e-08
+      ],
+      "max_change_e": 9.04171612114979e-05
+    },
+    {
+      "stage": "3.O/z",
+      "positive_polarization_C_m2": [
+        -5.661922378149954e-07,
+        -5.666000434742667e-07,
+        -0.005795571319806783
+      ],
+      "negative_polarization_C_m2": [
+        -5.661922380128875e-07,
+        -5.666000434728459e-07,
+        0.005793952830739647
+      ],
+      "central_BEC_e": [
+        3.682724810842594e-14,
+        -2.644059898016882e-16,
+        -2.1567828660466284
+      ],
+      "forward_BEC_e": [
+        1.1987013578069983e-07,
+        -3.1913170728964175e-08,
+        -2.1568732636493926
+      ],
+      "max_change_e": 9.039760276419173e-05
+    }
+  ],
+  "timing_sources": {
+    "positive_and_reference": {
+      "sha256": "bec66f4ec38f1c9cf5b6b1b4b0d570abedd207f554ed74fdb084da411379e1c1"
+    },
+    "independent_phonons": {
+      "sha256": "799e387ce68a33af2c320fab3d34af87904897fb0aaea1d69dc71d32afd85191"
+    },
+    "unified": {
+      "sha256": "fae7c6e01e17d72d79c466868230ce2ecad6110d5fe2e9a9cf41b44f3cd659f5"
+    },
+    "negative": {
+      "sha256": "dab49da5389d5c54c466c734d08907a737163c75c45b3c7a43db80e31a3fd684"
+    }
+  },
+  "new_timing_ledger": [
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 22.989578725770116,
+      "reserved_core_hours": 0.25543976361966797,
+      "stage": "1.Ba/x-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 1.8408555313944817,
+      "reserved_core_hours": 0.020453950348827573,
+      "stage": "1.Ba/x-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 27.801164023578167,
+      "reserved_core_hours": 0.30890182248420184,
+      "stage": "1.Ba/x-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 22.23473623022437,
+      "reserved_core_hours": 0.2470526247802708,
+      "stage": "1.Ba/y-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.3142351247370243,
+      "reserved_core_hours": 0.003491501385966937,
+      "stage": "1.Ba/y-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.20885611139238,
+      "reserved_core_hours": 0.23565395679324866,
+      "stage": "1.Ba/y-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 23.316348779946566,
+      "reserved_core_hours": 0.25907054199940627,
+      "stage": "1.Ba/z-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.2975067310035229,
+      "reserved_core_hours": 0.0033056303444835874,
+      "stage": "1.Ba/z-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.279316011816263,
+      "reserved_core_hours": 0.23643684457573627,
+      "stage": "1.Ba/z-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 23.253520648926497,
+      "reserved_core_hours": 0.2583724516547389,
+      "stage": "2.Ti/x-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.32593523897230625,
+      "reserved_core_hours": 0.0036215026552478473,
+      "stage": "2.Ti/x-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.240654794499278,
+      "reserved_core_hours": 0.23600727549443642,
+      "stage": "2.Ti/x-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 22.620735324919224,
+      "reserved_core_hours": 0.2513415036102136,
+      "stage": "2.Ti/y-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.2839368209242821,
+      "reserved_core_hours": 0.003154853565825356,
+      "stage": "2.Ti/y-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.298198459669948,
+      "reserved_core_hours": 0.2366466495518883,
+      "stage": "2.Ti/y-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 24.05834419839084,
+      "reserved_core_hours": 0.267314935537676,
+      "stage": "2.Ti/z-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.2884504236280918,
+      "reserved_core_hours": 0.003205004706978798,
+      "stage": "2.Ti/z-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.3716437574476,
+      "reserved_core_hours": 0.23746270841608444,
+      "stage": "2.Ti/z-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 23.415635608136654,
+      "reserved_core_hours": 0.26017372897929614,
+      "stage": "3.O/x-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.279552036896348,
+      "reserved_core_hours": 0.0031061337432927555,
+      "stage": "3.O/x-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.228479826822877,
+      "reserved_core_hours": 0.23587199807580975,
+      "stage": "3.O/x-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 26.71917780674994,
+      "reserved_core_hours": 0.29687975340833267,
+      "stage": "3.O/y-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.3028419278562069,
+      "reserved_core_hours": 0.0033649103095134097,
+      "stage": "3.O/y-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.317946111783385,
+      "reserved_core_hours": 0.2368660679087043,
+      "stage": "3.O/y-/pyatb"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "SCF",
+      "success": true,
+      "wall_seconds": 29.03298829868436,
+      "reserved_core_hours": 0.32258875887427063,
+      "stage": "3.O/z-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 1,
+      "omp": 40,
+      "reserved_cores": 40,
+      "kind": "input_preparation",
+      "success": true,
+      "wall_seconds": 0.2802399694919586,
+      "reserved_core_hours": 0.0031137774387995404,
+      "stage": "3.O/z-"
+    },
+    {
+      "host": "cu25",
+      "mpi": 40,
+      "omp": 1,
+      "reserved_cores": 40,
+      "kind": "polarization_and_electronic_response",
+      "success": true,
+      "wall_seconds": 21.439111944288015,
+      "reserved_core_hours": 0.2382123549365335,
+      "stage": "3.O/z-/pyatb"
+    }
+  ]
+}

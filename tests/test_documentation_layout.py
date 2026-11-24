@@ -50,7 +50,7 @@ class DocumentationLayoutTests(unittest.TestCase):
                     "Unified", "BEC/APT", "--dim", "q_GAPT", "7.440", "5.394",
                     "CP2K", "VASP", "Quantum ESPRESSO", "zstar piezo",
                     "LO-TO", "PYATB", "Slurm", "Torque", "Specified", "Current",
-                    "Global", "--pp", "--orb", "3.98", "8.35", "zstar data db/qnep",
+                    "Global", "--pp", "--orb", "4.18", "8.35", "zstar data db/qnep",
                     r"Z^*_{\kappa,\alpha\beta}",
                 ):
                     self.assertIn(snippet, text)

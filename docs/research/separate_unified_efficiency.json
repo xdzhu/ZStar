@@ -2,6 +2,11 @@
   "definition": "Measured Separate BEC/APT and independent force SCFs versus Unified.",
   "caveat": "Non-cubic-BaTiO3 retained BEC routes already requested forces. That output cost was not subtracted; independent force tasks supply the Separate phonons.",
   "original_joint_control_record": "eight_system_efficiency.json",
+  "cubic_batio3_central_extension": {
+    "path": "examples/3D_Bulk/cubic_BaTiO3/results/central_bec_timing.json",
+    "member": null,
+    "sha256": "638a4a5c58aca092848e852015224746404a2e4098c2251b7c7ef8cff904c0b1"
+  },
   "one_dimensional_sources": {
     "BN_9_0": {
       "path": "examples/IR_Raman_Spectra/Nanotube_BN_9_0/results/benchmark/benchmark_summary.json",
@@ -14,13 +19,13 @@
   },
   "cases": {
     "cubic_BaTiO3": {
-      "BEC_Separate": 9,
+      "BEC_Separate": 18,
       "BEC_Unified": 3,
-      "SCF_Separate": 13,
+      "SCF_Separate": 22,
       "SCF_Unified": 4,
-      "core_h_Separate": 6.0791520131819805,
+      "core_h_Separate": 10.699445753882497,
       "core_h_Unified": 2.5598515689166055,
-      "speedup": 2.374806448545309,
+      "speedup": 4.179713341117968,
       "independent_force_core_h_added": 0.0,
       "static_response_relative_difference": null
     },

@@ -36,10 +36,10 @@ the matching GitHub tag for frozen example inputs.
 
 Unified obtains BEC and Gamma force constants from the same SCFs. Separate
 adds independently executed force-only SCFs to the Cartesian BEC cost.
-Cubic BaTiO3 retains its historical forward BEC timing; the other nine
-comparisons use central differences. The reference-state comparison
-separately lists prepared central-displacement counts for every system.
-Prepared counts do not change the measured forward timing denominator.
+All ten comparisons use central Cartesian BEC differences. The cubic BaTiO3
+baseline combines the archived positive displacements and independent phonons
+with nine measured negative displacements. See the
+[paired BEC and timing record](../3D_Bulk/cubic_BaTiO3/results/central_bec_timing.json).
 
 The [independent phonon archive](independent_phonons/README.md) contains the
 measured additional force tasks. Original Cartesian joint-response controls

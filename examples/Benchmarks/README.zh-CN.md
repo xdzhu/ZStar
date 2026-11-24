@@ -19,9 +19,9 @@ python examples/3D_Bulk/cubic_BaTiO3/verify.py
 安装 `zstar==0.3.1` 并使用相同 GitHub 标签下的冻结案例输入。
 
 Unified 从同一批位移 SCF 同时获得 BEC 和 Gamma 力常数。Separate 的机时
-包含 Cartesian BEC 与另外实际执行的力计算。立方 BTO 历史计时采用 forward，
-其他九个体系采用 central；参考态对照表统一列出的 central **准备任务数**
-不等于这些任务都已执行，也不用于替换历史 forward 实测分母。
+包含笛卡尔中心差分 BEC 与另外实际执行的力计算。十个体系采用相同的差分口径。
+立方 BaTiO3 复用已归档的正位移和独立声子结果，并实测九组负位移。详见
+[正负位移配对及计时记录](../3D_Bulk/cubic_BaTiO3/results/central_bec_timing.json)。
 
 [独立声子档案](independent_phonons/README.md)保留实际力计算证据。计时包括
 成功的 ABACUS/PYATB、参考态及能带检查，不包括优化、传输和无完整计时的中断。

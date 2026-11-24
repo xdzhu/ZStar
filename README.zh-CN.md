@@ -236,7 +236,7 @@ zstar bec job --system slurm
 
 ## 实测计算效率
 
-同设置 Separate/Unified 基准中，BEC/APT 加 Gamma 声子最高加速 **3.98 倍**，
+同设置 Separate/Unified 基准中，BEC/APT 加 Gamma 声子最高加速 **4.18 倍**，
 IR/Raman 最高加速 **8.35 倍**。成对柱标出归一化成本、求解器 CPU 核时和加速比。
 
 ![Separate 与 Unified 工作流实测成本](docs/paper_figures/unified_efficiency_benchmarks.png)

@@ -5,6 +5,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from tools.shared_response.audit_manuscript_nscf import CUBIC_CENTRAL, summarize
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -41,6 +43,14 @@ def build(include_one_dimensional=False):
             'independent_force_core_h_added': force_cost,
             'static_response_relative_difference': item.get('static_response_relative_difference'),
         }
+    central = summarize(CUBIC_CENTRAL, json_key='new_timing_ledger')
+    if central['calls'] != {'ABACUS': 9, 'PYATB': 9}:
+        raise ValueError('Incomplete cubic BaTiO3 negative-displacement timings')
+    cubic = cases['cubic_BaTiO3']
+    cubic['BEC_Separate'] += central['calls']['ABACUS']
+    cubic['SCF_Separate'] += central['calls']['ABACUS']
+    cubic['core_h_Separate'] += sum(central['costs'].values())
+    cubic['speedup'] = cubic['core_h_Separate'] / cubic['core_h_Unified']
     sources = {}
     if include_one_dimensional:
         from tools.shared_response.verify_one_dimensional_example import verify_benchmark
@@ -69,6 +79,7 @@ def build(include_one_dimensional=False):
             'caveat': 'Non-cubic-BaTiO3 retained BEC routes already requested forces. That output cost '
                       'was not subtracted; independent force tasks supply the Separate phonons.',
             'original_joint_control_record': 'eight_system_efficiency.json',
+            'cubic_batio3_central_extension': central['source'],
             'one_dimensional_sources':sources, 'cases': cases}
 
 
