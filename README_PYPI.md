@@ -87,6 +87,8 @@ frequencies, and IR and Raman output paths.
 - IR, Raman, and static/frequency-dependent dielectric response.
 - Proper bulk piezoelectric and elastic response through the ABACUS + PYATB
   finite-strain API or VASP-native collection.
+- [PYATB input preparation](https://github.com/xdzhu/ZStar/blob/main/docs/predicted_hamiltonians.md)
+  for Hamiltonians predicted by DeepH, HamGNN, NextHAM, and Hot-Ham.
 - A packaged `zstar-workflows` agent skill with JSON preflight.
 - Slab electrostatic-potential maps, directional profiles, and local two-sided
   vacuum diagnostics.

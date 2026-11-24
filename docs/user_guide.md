@@ -278,12 +278,10 @@ retained only for auditing an existing reference/displaced cube pair.
 
 ## Installation
 
-For Hot-Ham Hamiltonians, use the
-[repository source installation](predicted_hamiltonians.md#hot-ham).
-The PyPI 0.3.6 release predates this interface.
-
-
 ZStar requires Python 3.9 or newer.
+
+For Hot-Ham Hamiltonians, install `zstar[hotham]` and follow the
+[input preparation guide](predicted_hamiltonians.md#hot-ham).
 
 The repository contains reproducible inputs and retained reference results.
 Examples are not included in the PyPI package.

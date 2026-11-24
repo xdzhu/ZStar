@@ -1,4 +1,15 @@
-## Unreleased
+## 0.4.0 - 2026-11-24
+
+- Prepare predicted Hamiltonians from DeepH, HamGNN, NextHAM, and Hot-Ham for
+  PYATB response calculations. Check the cell, orbital basis, and matrix
+  conventions for the inputs supported by each adapter.
+- Add bulk electro-optic postprocessing and document the AlP free-stress
+  Pockels benchmark.
+- Provide CP2K and Quantum ESPRESSO response examples alongside the ABACUS
+  and VASP examples. Refresh the manuscript benchmarks for Born charges,
+  vibrational spectra, dielectric response, and workflow cost.
+- Rename the bundled agent skill to `zstar-workflows` and update its
+  installation instructions and SiC quick start.
 
 - Organize the electromechanical workflow under `zstar.response`, with dedicated
   ABACUS and VASP strain collectors. New results and ensemble manifests use

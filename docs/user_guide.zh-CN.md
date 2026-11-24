@@ -248,11 +248,10 @@ zstar bec post
 
 ## 安装
 
-Hot-Ham 哈密顿量接口请使用[仓库源码安装](predicted_hamiltonians.md#hot-ham)。
-PyPI 0.3.6 的发布早于该接口。
-
-
 ZStar 要求 Python 3.9 或更高版本。
+
+使用 Hot-Ham 哈密顿量接口时，请安装 `zstar[hotham]`，并参照
+[输入准备指南](predicted_hamiltonians.md#hot-ham)。
 
 仓库中的 `examples/` 目录提供可复现输入和保留结果。PyPI 安装包不包含案例目录。
 参见[可复现基准](../examples/Benchmarks/README.zh-CN.md)
